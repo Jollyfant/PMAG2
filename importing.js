@@ -1358,7 +1358,7 @@ function downloadInterpretations() {
   );
 
   if(samples.length === 0) {
-    return notify("danger", new Exception("No specimens to export."));
+    return notify("danger", new Exception("No interpretations available to export."));
   }
 
   var rows = new Array(CSV_HEADER.join(","));
@@ -1370,7 +1370,11 @@ function downloadInterpretations() {
     });
   });
 
-  downloadAsCSV(FILENAME, rows.join("\n"));
+  if(rows.length === 1) {
+    return notify("danger", new Exception("No interpretations available to export."));
+  }
+
+  downloadAsCSV(FILENAME, rows.join(LINE_DELIMITER));
 
 }
 
@@ -1395,8 +1399,10 @@ function __init__() {
   samples = JSON.parse(localStorage.getItem("specimens"));
 
   if(samples === null) {
+    samples = new Array();
     return notify("success", "Welcome to Paleomagnetism.org. No specimens are available. Add data to start interpreting.");
   }
+
   notify("success", "Welcome back! Succesfully loaded <b>" + samples.length + "</b> specimens from local storage.");
 
   updateSelect();
