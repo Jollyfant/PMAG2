@@ -1388,6 +1388,78 @@ function downloadAsCSV(filename, csv) {
 
 
 
+function HTTPRequest(url, type, callback) {
+
+  /*
+   * Function HTTPRequest
+   * Makes an async XMLHTTPRequest to a remote resource
+   */
+
+  const HTTP_OK = 200;
+
+  var xhr = new XMLHttpRequest();
+
+  // When the resource is ready
+  xhr.onload = function() {
+
+    console.debug(type + " HTTP Request to " + url + " returned with status code " + this.status);
+
+    // Ignore HTTP errors
+    if(this.status !== HTTP_OK) {
+      return callback(null);
+    }
+
+    // Check the content type
+    switch(this.getResponseHeader("Content-Type")) {
+      case "application/json":
+      case "application/vnd.schemaorg.ld+json":
+        return callback(JSON.parse(xhr.response));
+      default:
+        return callback(xhr.response);
+    }
+
+  }
+
+  xhr.onerror = function(error) {
+    callback(null);
+  }
+
+  // Open and finish the request
+  xhr.open(type, url);
+  xhr.send();
+
+}
+
+function getPublicationFromPID() {
+
+  /*
+   * Function getPublicationFromPID
+   * Returns the resource that belogns to the PID
+   */
+
+  // Get the publication from the URL
+  var SHA256 = location.search.substring(1);
+  
+  if(!PUBLICATIONS.hasOwnProperty(SHA256)) {
+    notify("danger", "Data from this persistent identifier could not be found.");
+  }
+
+  // Request the persistent resource from disk
+  HTTPRequest("./publications/" + SHA256 + ".pid", "GET", __unlock__);
+  
+}
+
+function __unlock__(json) {
+
+  samples = JSON.parse(json);
+
+  notify("success", "Welcome back! Succesfully loaded <b>" + samples.length + "</b> specimens from local storage.");
+
+  updateSelect();
+  stepSelector.reset();
+
+}
+
 function __init__() {
 
   // Check local storage
@@ -1395,18 +1467,19 @@ function __init__() {
     return notify("warning", "Local storage is not supported by your browser. Save your work manually by exporting your data.");
   }
 
+  if(location.search) {
+    return getPublicationFromPID();
+  }
+
   // Load the specimens from local storage
-  samples = JSON.parse(localStorage.getItem("specimens"));
+  samples = localStorage.getItem("specimens");
 
   if(samples === null) {
     samples = new Array();
-    return notify("success", "Welcome to Paleomagnetism.org. No specimens are available. Add data to start interpreting.");
+    return notify("warning", "Welcome to <b>Paleomagnetism.org</b>. No specimens are available. Add data to begin.");
   }
 
-  notify("success", "Welcome back! Succesfully loaded <b>" + samples.length + "</b> specimens from local storage.");
-
-  updateSelect();
-  stepSelector.reset();
+  __unlock__(samples);
 
 }
 
