@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+  <head>
+<style>
+body {
+  padding-top: 5rem;
+}
+
+select {
+  text-align: center;
+}
+
+#notification-container {
+  text-align: center;
+}
+
+.table-scroll {
+  height: 400px;
+  direction: rtl;
+  overflow-y: auto;
+}
+
+#table-container {
+  text-align: center;
+}
+
+#step-container { 
+  text-align: center;
+  cursor: pointer;
+}
+
+#step-container tr.selected {
+  font-weight: bold;
+}
+
+#step-container tr.current {
+  background-image: linear-gradient(to right, rgba(0,0,0,0), rgba(124,181,236,0.25), rgba(0,0,0,0));
+}
+
+#step-container tr:hover {
+  background-image: linear-gradient(to right, rgba(0,0,0,0), rgba(124,181,236,0.25), rgba(0,0,0,0));
+}
+
+</style>
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+    <title>Paleomagnetism.org 2.0.0</title>
+  </head>
+
+  <body>
+
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+
+      <a class="navbar-brand" href="#">Paleomagnetism.org</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span>	</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Interpretation</a>
+          </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0">
+          <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
+          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search Publication</button>
+        </form>
+      </div>
+
+    </nav>
+
+    <div class="container">
+
+      <div id="notification-container"></div>
+
+      <!-- Tab Headers -->
+      <nav>
+        <div class="nav nav-tabs nav-justified" id="nav-tab" role="tablist">
+          <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Data Import</a>
+          <a id='interpretation-container' class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Interpretation</a>
+          <a class="nav-item nav-link" id="nav-settings-tab" data-toggle="tab" href="#nav-settings" role="tab" aria-controls="nav-settings" aria-selected="false">Settings and Export</a>
+        </div>
+      </nav>
+
+      <div class="tab-content">
+        <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+          <br>
+          Data from various formats can be imported to Paleomagnetism.org. Select the appropriate type and select a file from disk to read.
+          <hr>
+          <form>
+
+            <div class="input-group mb-6">
+
+              <div class="input-group-prepend">
+                <label class="input-group-text" for="format-selection">Data Format</label>
+              </div>
+              <select class="custom-select" id="format-selection">
+                <option value="UTRECHT">Utrecht University</option>
+                <option value="HELSINKI">Helsinki University</option>
+                <option value="PALEOMAC">PaleoMac</option>
+                <option value="PMAGORG">Paleomagnetism.org</option>
+              </select>
+
+              <div class="custom-file">
+                <input type="file" class="custom-file-input" id="customFile" multiple>
+                <label class="custom-file-label" for="customFile">Select</label>
+              </div>
+
+            </div>
+          </form>
+        </div>
+      <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+
+         <br>
+
+         <!-- Specimen Scroller -->
+         <div class="input-group">
+           <div class="input-group-prepend">
+             <button onclick='handleSpecimenScroll(-1)' type="button" class="btn btn-primary btn-lg"><</button>
+           </div>
+           <select class="custom-select custom-select-lg" id="specimen-select"></select>
+           <div class="input-group-append">
+             <button onclick='handleSpecimenScroll(1)' type="button" class="btn btn-primary btn-lg">></button>
+          </div>
+        </div>
+
+        <br>
+        <table id="table-container" class='table table-sm table-striped'></table>
+        <hr>
+
+        <div class="container">
+          <div class="row">
+            <div class="col-md-2 table-scroll">
+              <table class='table table-sm' id="step-container"></table>
+            </div>
+            <div class="col-md-5">
+              <div id="zijderveld-container"></div>
+            </div>
+            <div class="col-md-5">
+              <div id="hemisphere-container"></div>
+            </div>
+          </div>
+          <br>
+          <div class="row">
+            <div class="col-md-12">
+              <div id="interpretation-table-container"></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div id="intensity-container"></div>
+            </div>
+          </div>
+        </div>
+        
+
+      </div>
+
+      <div class="tab-pane fade" id="nav-settings" role="tabpanel" aria-labelledby="nav-settings-tab">
+        <br>
+        <h2> Data Export </h2>
+        <button onclick="downloadAsJSON()" type="button" class="btn btn-primary">Download application save</button>
+        <button onclick="downloadAsCSV()" type="button" class="btn btn-primary">Download Interpretations</button>
+        <br>
+        <h2> Sorting </h2>
+        <button onclick="sortSamples('name')" type="button" class="btn btn-primary">Name</button>
+        <button onclick="sortSamples('bogo')" type="button" class="btn btn-primary">Bogo</button>
+        <hr>
+        <h2> Keyboard Shortcuts</h2>
+        <table class="table table-sm table-striped text-center">
+          <tr>
+            <td>Previous Specimen</td>
+            <td>Next Specimen</td>
+            <td>Previous Step</td>
+            <td>Next Step</td>
+            <td>Select Step</td>
+            <td>Hide Step</td>
+            <td>PCA (Direction)</td>
+            <td>PCA (Great Circle)</td>
+            <td>Anchor Component</td>
+            <td>Cycle Projection</td>
+            <td>Cycle Coordinates</td>
+            <td>Change Group</td>
+          </tr>
+            <td><i class="fas fa-arrow-left"></i> or A</td>
+            <td><i class="fas fa-arrow-right"></i> or D</td>
+            <td><i class="fas fa-arrow-up"></i> or W</td>
+            <td><i class="fas fa-arrow-right"></i> or S</td>
+            <td><i class="fas fa-plus"></i> or X</td>
+            <td><i class="fas fa-minus"></i> or Z</td>
+            <td>1</td>
+            <td>2</td>
+            <td>Control</td>
+            <td>3</td>
+            <td>8</td>
+            <td>g</td>
+        </table>
+
+        <h2> Application Save </h2>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox" id="auto-save" value="option1" checked>
+          <label class="form-check-label" for="auto-save"> Auto-save to local storage</label>
+        </div>
+
+        <h2> Application Reset </h2>
+        <button onclick="clearLocalStorage()" type="button" class="btn btn-danger">Reset Local Storage</button>
+
+      </div>
+
+
+    </div>
+
+    <hr>
+
+    <footer id='footer-container' class='container utext-muted'></footer>
+
+    <br>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/highcharts-more.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+
+    <script src="./numeric.js"></script>
+
+    <script src="./graphs-p.js"></script>
+    <script src="./Exception.js"></script>
+    <script src="./Direction.js"></script>
+
+    <script src="./Coordinates.js"></script>
+    <script src="./importing.js"></script>
+
+  </body>
+</html>
