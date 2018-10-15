@@ -10,7 +10,35 @@ const HIGHCHARTS_TURQUOISE = "#2B908F";
 const HIGHCHARTS_RED = "#F45B5B";
 const HIGHCHARTS_WHITE = "#FFFFFF";
 
+function generateHemisphereTooltip() {
+
+  /*
+   * Function generateHemisphereTooltip
+   * Generates the Hemisphere chart tooltip
+   */
+
+  if(this.series.name === "Directions") {
+    return [
+      "<b>Demagnetization step: </b>" + this.point.step,
+      "<b>Declination: </b>" + this.x.toFixed(1),
+      "<b>Inclination </b>" + this.point.inc.toFixed(1)
+    ].join("<br>");
+  } else {
+    return [
+      "<b>Interpretation</b>",
+      "<b>Declination: </b>" + this.x.toFixed(1),
+      "<br> <b>Inclination: </b>" + this.point.inc.toFixed(1)
+    ].join("<br>");
+  }
+
+}
+
 function generateZijderveldTooltip() {
+
+  /*
+   * Function generateZijderveldTooltip
+   * Generates the Zijderveld chart tooltip
+   */
 
   return [
     "<b>Demagnetization Step: </b>" + this.point.step,
@@ -23,34 +51,39 @@ function generateZijderveldTooltip() {
 
 function inReferenceCoordinates(reference, specimen, coordinates) {
 
-  // Do the geographic correction
-  if(reference !== "specimen") {
+  /*
+   * Function inReferenceCoordinates
+   * Gets the coordinates in the reference coordinates
+   */
 
-    coordinates = coordinates.rotateTo(specimen.coreAzimuth, specimen.coreDip);
-
-    // Do the tectonic correction
-    // See Lisa Tauxe: 9.3 Changing coordinate systems; last paragraph
-    if(reference === "tectonic") {
-
-      var dipDirection = specimen.beddingStrike + 90;
-
-      coordinates = coordinates.rotateTo(-dipDirection, 90).rotateTo(0, 90 - specimen.beddingDip).rotateTo(dipDirection, 90);
-
-    }
-
+  if(reference === "specimen") {
+    return coordinates;
   }
 
-  return coordinates;
+  // Do the geographic correction
+  coordinates = coordinates.rotateTo(specimen.coreAzimuth, specimen.coreDip);
+
+  if(reference === "geographic") {
+    return coordinates;
+  }
+
+  // Do the tectonic correction
+  // See Lisa Tauxe: 9.3 Changing coordinate systems; last paragraph
+  var dipDirection = specimen.beddingStrike + 90;
+
+  return coordinates.rotateTo(-dipDirection, 90).rotateTo(0, 90 - specimen.beddingDip).rotateTo(dipDirection, 90);
 
 }
-/*
- * FUNCTION zijderveld
- * Description: handles graphing for zijderveld plot
- * Input: samples (sample[sampleIndex])
- * Output: VOID (plots zijderveld graph)
- */
+
 function plotZijderveldDiagram(specimen) {
-	
+
+  /*
+   * Function plotZijderveldDiagram
+   * Handles plotting of Zijderveld plot
+   */
+
+  const ENABLE_ZIJDERVELD_TOOLTIP = true;
+
   //Specimen metadata (core and bedding orientations)
   var coreBedding = specimen.coreAzimuth;
   var coreDip = specimen.coreDip;
@@ -90,9 +123,10 @@ function plotZijderveldDiagram(specimen) {
 
   specimen.steps.forEach(function(step, i) {
 
+    // If the step is not visible: stop
     if(!step.visible) {
       return;
-	}
+    }
 
     if(stepSelector._selectedStep === i) {
       var marker = {"radius": MARKER_RADIUS_SELECTED}
@@ -101,6 +135,7 @@ function plotZijderveldDiagram(specimen) {
     }
 
     var coordinates = inReferenceCoordinates(COORDINATES, specimen, new Coordinates(step.x, step.y, step.z));
+    var direction = coordinates.toVector(Direction);
 
     if(UPWEST) {
    
@@ -108,9 +143,12 @@ function plotZijderveldDiagram(specimen) {
       horizontal.push({
         "x": coordinates.x, 
         "y": coordinates.y, 
+        "dec": direction.dec,
+        "inc": direction.inc,
+        "intensity": direction.length,
         "step": step.step,
         "marker": marker,
-        "index": i
+        "stepIndex": i
       });
       
       // Vertical projection is in the x, z plane
@@ -118,9 +156,12 @@ function plotZijderveldDiagram(specimen) {
       vertical.push({
         "x": coordinates.x, 
         "y": coordinates.z,
+        "dec": direction.dec,
+        "inc": direction.inc,
+        "intensity": direction.length,
         "step": step.step,
         "marker": marker,
-        "index": i
+        "stepIndex": i
       });
 
      } else {
@@ -129,9 +170,12 @@ function plotZijderveldDiagram(specimen) {
       horizontal.push({
         "x": coordinates.y,
         "y": -coordinates.x, 
+        "dec": direction.dec,
+        "inc": direction.inc,
+        "intensity": direction.length,
         "step": step.step,
         "marker": marker,
-        "index": i
+        "stepIndex": i
       });
       
       // Vertical projection is in the x, z plane
@@ -139,9 +183,11 @@ function plotZijderveldDiagram(specimen) {
       vertical.push({
         "x": coordinates.y, 
         "y": coordinates.z,
+        "dec": direction.dec,
+        "inc": direction.inc,
+        "intensity": direction.length,
         "step": step.step,
         "marker": marker,
-        "index": i
       });
 
      }
@@ -150,10 +196,10 @@ function plotZijderveldDiagram(specimen) {
     graphScale.push(Math.abs(coordinates.x), Math.abs(coordinates.y), Math.abs(coordinates.z));
 
   });
-var graphScale = Math.max.apply(Math, graphScale) + 1;
-var tickFlag = false;
-var enableLabels = false;
 
+  var graphScale = Math.max.apply(Math, graphScale) + 1;
+  var tickFlag = false;
+  var enableLabels = false;
 
   Highcharts.chart("zijderveld-container", {
     "chart": {
@@ -168,145 +214,144 @@ var enableLabels = false;
       "text": specimen.name
     },
     "tooltip": {
-      "enabled": false,
-      "useHTML": true,
-        "formatter": generateZijderveldTooltip
-      },
-      "exporting": {
-        "filename": "zijderveld-diagram",
-        "sourceWidth": 600,
-        "sourceHeight": 600,
-        "buttons": {
-          "contextButton": {
-            "symbolStroke": HIGHCHARTS_BLUE,
-            "align": "right"
-          }
+      "enabled": ENABLE_ZIJDERVELD_TOOLTIP,
+      "formatter": generateZijderveldTooltip
+    },
+    "exporting": {
+      "filename": "zijderveld-diagram",
+      "sourceWidth": 600,
+      "sourceHeight": 600,
+      "buttons": {
+        "contextButton": {
+          "symbolStroke": HIGHCHARTS_BLUE,
+          "align": "right"
         }
+      }
+    },
+    "subtitle": {
+      "text": getProjectionTitle()
+    },
+    "xAxis": {
+      "gridLineWidth": 0,
+      "lineColor": "black",
+      "crossing": 0,
+      "min": -graphScale,
+      "max": graphScale,
+      "gridLineWidth": 0,
+      "startOnTick": true,
+      "endOnTick": true,
+      "tickWidth": tickFlag ? 1 : 0,
+      "lineWidth": 1,
+      "opposite": true,
+      "title": {
+        "enabled": false
       },
-      "subtitle": {
-        "text": getProjectionTitle()
-      },
-      "xAxis": {
-        "gridLineWidth": 0,
-        "lineColor": "black",
-        "crossing": 0,
-        "min": -graphScale,
-        "max": graphScale,
-        "gridLineWidth": 0,
-        "startOnTick": true,
-        "endOnTick": true,
-        "tickWidth": tickFlag ? 1 : 0,
-        "lineWidth": 1,
-        "opposite": true,
-        "title": {
-          "enabled": false
-        },
-        "labels": {
-          "enabled": tickFlag,
-          "formatter": function () {
-            if(this.value === 0) return "";
-            else return this.value;
-          }
+      "labels": {
+        "enabled": tickFlag,
+        "formatter": function () {
+          if(this.value === 0) return "";
+          else return this.value;
         }
+      }
+    },
+    "yAxis": {
+      "reversed": true,
+      "gridLineWidth": 0,
+      "lineWidth": 1,
+      "endOnTick": true,
+      "tickWidth": tickFlag ? 1 : 0,
+      "minRange": 10,
+      "lineColor": "black",
+      "startOnTick": true,
+      "crossing": 0,
+      "min": -graphScale,
+      "max": graphScale,
+      "title": {
+        "enabled": false
       },
-      "yAxis": {
-        "reversed": true,
-        "gridLineWidth": 0,
-        "lineWidth": 1,
-        "endOnTick": true,
-        "tickWidth": tickFlag ? 1 : 0,
-        "minRange": 10,
-        "lineColor": "black",
-        "startOnTick": true,
-        "crossing": 0,
-        "min": -graphScale,
-        "max": graphScale,
-        "title": {
-          "enabled": false
-        },
-        "labels": {
-          "enabled": tickFlag,
-          "formatter": function () {
-            if(this.value === 0) return "";
-            else return this.value;
-          }
+      "labels": {
+        "enabled": tickFlag,
+        "formatter": function () {
+          if(this.value === 0) return "";
+          else return this.value;
         }
-      },
-      "plotOptions": {
-        "series": {
-          "cursor": "pointer",
-          "point": {
-            "events": {
-              "click": function () {
-                stepSelector.setActiveStep(this.index);
-              }
+      }
+    },
+    "plotOptions": {
+      "series": {
+        "cursor": "pointer",
+        "point": {
+          "events": {
+            "click": function () {
+              stepSelector.setActiveStep(this.stepIndex);
             }
+          }
+        },
+        "animation": false,
+        "dataLabels": {
+          "color": "grey",
+          "enabled": enableLabels,
+          "style": {
+            "fontSize": "10px"
           },
-          "animation": false,
-          "dataLabels": {
-            "color": "grey",
-            "enabled": enableLabels,
-            "style": {
-              "fontSize": "10px"
-            },
-            "formatter": function () {
-              return this.point.step;
-            }
+          "formatter": function() {
+            return this.point.step;
           }
-        },
-        "line": {
-          "lineWidth": 1,
         }
       },
-      "credits": {
-        "enabled": true,
-        "text": "Paleomagnetism.org (Zijderveld Diagram)",
-        "href": ""
-      },
-      "series": [{
-        "type": "line",
-        "linkedTo": "horizontal",
-        "enableMouseTracking": false,
-        "data": horizontal,
-        "color": "rgb(119, 152, 191)",
-        "marker": {
-          "enabled": false
-        }
-      }, {
-        "type": "scatter",
-        "id": "horizontal",
-        "name": "Horizontal Projection", 
-        "data": horizontal,
-        "color": "rgb(119, 152, 191)",
-        "marker": {
-          "lineWidth": 1,
-          "symbol": "circle",
-	      "lineColor": "rgb(119, 152, 191)",
-	      "fillColor": "rgb(119, 152, 191)"
-        }
-      }, {
-        "name": "Vertical Projection",
-        "type": "line",
-        "linkedTo": "vertical",
-        "enableMouseTracking": false,
-        "data": vertical,
-        "color": "rgb(119, 152, 191)",
-        "marker": {
-          "enabled": false
-        }
-      }, {
-        "type": "scatter",
-        "id": "vertical",
-        "name": "Vertical Projection",
-        "data": vertical,
-        "color": "rgb(119, 152, 191)",
-        "marker": {
-          "symbol": "circle",
-          "lineWidth": 1,
-          "lineColor": "rgb(119, 152, 191)",
-          "fillColor": "white"
-        }
-      }].concat(formatInterpretationSeries(specimen.interpretations))
+      "line": {
+        "lineWidth": 1,
+      }
+    },
+    "credits": {
+      "enabled": true,
+      "text": "Paleomagnetism.org (Zijderveld Diagram)",
+      "href": ""
+    },
+    "series": [{
+      "type": "line",
+      "linkedTo": "horizontal",
+      "enableMouseTracking": false,
+      "data": horizontal,
+      "color": "rgb(119, 152, 191)",
+      "marker": {
+        "enabled": false
+      }
+    }, {
+      "type": "scatter",
+      "id": "horizontal",
+      "name": "Horizontal Projection", 
+      "data": horizontal,
+      "color": "rgb(119, 152, 191)",
+      "marker": {
+        "lineWidth": 1,
+        "symbol": "circle",
+        "lineColor": HIGHCHARTS_BLUE,
+        "fillColor": HIGHCHARTS_BLUE
+      }
+    }, {
+      "name": "Vertical Projection",
+      "type": "line",
+      "linkedTo": "vertical",
+      "enableMouseTracking": false,
+      "data": vertical,
+      "color": HIGHCHARTS_BLUE,
+      "marker": {
+        "enabled": false
+      }
+    }, {
+      "type": "scatter",
+      "id": "vertical",
+      "name": "Vertical Projection",
+      "data": vertical,
+      "color": HIGHCHARTS_BLUE,
+      "marker": {
+        "symbol": "circle",
+        "lineWidth": 1,
+        "lineColor": HIGHCHARTS_BLUE,
+        "fillColor": HIGHCHARTS_WHITE
+      }
+    }].concat(formatInterpretationSeries(graphScale, specimen.interpretations))
   });
 
 }
@@ -350,6 +395,11 @@ function getRotationMatrix(lambda, phi) {
 
 function getPlaneData(direction) {
 
+  /*
+   * Function getPlaneData
+   * Returns plane data
+   */
+
   const ANGLE = 90;
 
   return getConfidenceEllipse(ANGLE).map(x => x.toCartesian()).map(x => x.rotateTo(direction.dec, direction.inc)).map(x => x.toVector(Direction)).map(x => x.highchartsData());
@@ -358,13 +408,17 @@ function getPlaneData(direction) {
 
 function formatInterpretationSeriesArea(interpretations) {
 
+  /*
+   * Function formatInterpretationSeriesArea
+   * Description
+   */
+
   var series = new Array();
 
   // Extract TAU3 interpretations for plotting
   interpretations.forEach(function(interpretation) {
 
     var coordinates = interpretation[COORDINATES];
-
     var direction = new Coordinates(coordinates.x, coordinates.y, coordinates.z).toVector(Direction);
 
     series.push({
@@ -385,6 +439,7 @@ function formatInterpretationSeriesArea(interpretations) {
     });
 
     // Get the plane data (confidence ellipse with angle 90)
+    // Only for TAU3
     if(interpretation.type === "TAU3") {
 
       series.push({
@@ -408,15 +463,14 @@ function formatInterpretationSeriesArea(interpretations) {
 
 }
 
-function formatInterpretationSeries(interpretations) {
+function formatInterpretationSeries(scaling, interpretations) {
 
   /*
    * Function formatInterpretationSeries
    * Formats the series used for showing interpretated directions
    */
 
-  const SCALING = 1000000;
-
+  var scaling = 2 * scaling;
   var series = new Array();
 
   interpretations.forEach(function(interpretation) {
@@ -434,38 +488,38 @@ function formatInterpretationSeries(interpretations) {
       // Create a line that represents the vector
       // Add line for horizontal projection (x, y)
       var linearFitHorizontal = [{
-        "x": interpretation.centerMass.x + interpretation.x * SCALING, 
-        "y": interpretation.centerMass.y + interpretation.y * SCALING
+        "x": interpretation.centerMass.x + interpretation.x * scaling, 
+        "y": interpretation.centerMass.y + interpretation.y * scaling
       }, {
-        "x": interpretation.centerMass.x - interpretation.x * SCALING,
-        "y": interpretation.centerMass.y - interpretation.y * SCALING
+        "x": interpretation.centerMass.x - interpretation.x * scaling,
+        "y": interpretation.centerMass.y - interpretation.y * scaling
       }];
       
       // Do the same for line for horizontal projection (y, z)
       var linearFitVertical = [{
-        "x": interpretation.centerMass.x + interpretation.x * SCALING, 
-        "y": interpretation.centerMass.z + interpretation.z * SCALING
+        "x": interpretation.centerMass.x + interpretation.x * scaling, 
+        "y": interpretation.centerMass.z + interpretation.z * scaling
       }, {
-        "x": interpretation.centerMass.x - interpretation.x * SCALING, 
-        "y": interpretation.centerMass.z - interpretation.z * SCALING
+        "x": interpretation.centerMass.x - interpretation.x * scaling, 
+        "y": interpretation.centerMass.z - interpretation.z * scaling
       }];
 
     } else {
 
       var linearFitHorizontal = [{
-        "x": interpretation.centerMass.y + interpretation.y * SCALING, 
-        "y": -interpretation.centerMass.x - interpretation.x * SCALING
+        "x": interpretation.centerMass.y + interpretation.y * scaling, 
+        "y": -interpretation.centerMass.x - interpretation.x * scaling
       }, {
-        "x": interpretation.centerMass.y - interpretation.y * SCALING,
-        "y": -interpretation.centerMass.x + interpretation.x * SCALING
+        "x": interpretation.centerMass.y - interpretation.y * scaling,
+        "y": -interpretation.centerMass.x + interpretation.x * scaling
       }];
       
       var linearFitVertical = [{
-        "x": interpretation.centerMass.y + interpretation.y * SCALING, 
-        "y": interpretation.centerMass.z + interpretation.z * SCALING
+        "x": interpretation.centerMass.y + interpretation.y * scaling, 
+        "y": interpretation.centerMass.z + interpretation.z * scaling
       }, {
-        "x": interpretation.centerMass.y - interpretation.y * SCALING, 
-        "y": interpretation.centerMass.z - interpretation.z * SCALING
+        "x": interpretation.centerMass.y - interpretation.y * scaling, 
+        "y": interpretation.centerMass.z - interpretation.z * scaling
       }];
 
     }
@@ -601,7 +655,7 @@ function createIntensityDiagram(sample, series) {
         "point": {
           "events": {
             "click": function () {
-              stepSelector.setActiveStep(this.index);
+              stepSelector.setActiveStep(this.stepIndex);
             }
           }
         }
@@ -686,7 +740,7 @@ function eqAreaProjection(specimen) {
       "inc": direction.inc, 
       "step": step.step,
       "marker": marker,
-      "index": i
+      "stepIndex": i
     });
     
   });
@@ -746,6 +800,9 @@ function eqAreaProjection(specimen) {
       "minorTickLength": 5,
       "minorTickWidth": 1,
     },
+    "tooltip": {
+      "formatter": generateHemisphereTooltip
+    },
     "plotOptions": {
       "line": {
         "lineWidth": 1,
@@ -757,7 +814,7 @@ function eqAreaProjection(specimen) {
         "point": {
           "events": {
             "click": function () {
-              stepSelector.setActiveStep(this.index);
+              stepSelector.setActiveStep(this.stepIndex);
             }
           }
         },
@@ -775,17 +832,15 @@ function eqAreaProjection(specimen) {
     },
     "series": [{
       "name": "Directions",
-      "id": "Directions",
       "type": "scatter",
       "zIndex": 100,
       "data": dataSeries
     }, {
-      "name": "Directions",
       "enableMouseTracking": false,
       "marker": {
         "enabled": false
       },
-      "linkedTo": "Directions",
+      "linkedTo": ":previous",
       "type": "line", 
       "data": dataSeries		
     }].concat(formatInterpretationSeriesArea(specimen.interpretations)),
