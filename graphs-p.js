@@ -304,7 +304,7 @@ function plotZijderveldDiagram(specimen) {
       }
     },
     "credits": {
-      "enabled": true,
+      "enabled": ENABLE_CREDITS,
       "text": "Paleomagnetism.org (Zijderveld Diagram)",
       "href": ""
     },
@@ -364,7 +364,7 @@ function getConfidenceEllipse(angle) {
    */
 
   // Define the number of discrete points on an ellipse
-  const NUMBER_OF_POINTS = 51;
+  const NUMBER_OF_POINTS = 101;
 
   var vectors = new Array();
 
@@ -413,6 +413,7 @@ function formatInterpretationSeriesArea(interpretations) {
    * Description
    */
 
+  const SHOW_TAU3 = true;
   var series = new Array();
 
   // Extract TAU3 interpretations for plotting
@@ -421,29 +422,32 @@ function formatInterpretationSeriesArea(interpretations) {
     var coordinates = interpretation[COORDINATES];
     var direction = new Coordinates(coordinates.x, coordinates.y, coordinates.z).toVector(Direction);
 
-    series.push({
-      "name": "Interpretation (" + interpretation.type + ")",
-      "type": "scatter",
-      "color": HIGHCHARTS_ORANGE,
-      "marker": {
-        "symbol": "circle",
-        "lineColor": HIGHCHARTS_ORANGE,
-        "lineWidth": 1,
-        "fillColor": (direction.inc < 0) ? HIGHCHARTS_WHITE : HIGHCHARTS_ORANGE
-      },
-      "data": [{
-        "x": direction.dec, 
-        "y": projectInclination(direction.inc),
-        "inc": direction.inc,
-      }]
-    });
+    if(interpretation.type === "TAU1" || SHOW_TAU3) {
+
+      series.push({
+        "name": "Interpretation (" + interpretation.type + ")",
+        "type": "scatter",
+        "color": HIGHCHARTS_ORANGE,
+        "marker": {
+          "symbol": "circle",
+          "lineColor": HIGHCHARTS_ORANGE,
+          "lineWidth": 1,
+          "fillColor": (direction.inc < 0) ? HIGHCHARTS_WHITE : HIGHCHARTS_ORANGE
+        },
+        "data": [{
+          "x": direction.dec, 
+          "y": projectInclination(direction.inc),
+          "inc": direction.inc,
+        }]
+      });
+
+    }
 
     // Get the plane data (confidence ellipse with angle 90)
     // Only for TAU3
     if(interpretation.type === "TAU3") {
 
       series.push({
-        "name": "95% Confidence",
         "data": getPlaneData(direction),
         "linkedTo": ":previous",
         "type": "line",
@@ -644,7 +648,7 @@ function createIntensityDiagram(sample, series) {
       }
     },
     "credits": {
-      "enabled": true,
+      "enabled": ENABLE_CREDITS,
       "text": "Paleomagnetism.org (Intensity Diagram)",
       "href": ""
     },
@@ -689,6 +693,113 @@ function projectInclination(inc) {
 
 }
 
+function createHemisphereChart(dataSeries, planeSeries) {
+
+  function generateTooltip() {
+
+    return [
+      "<b>Sample: </b>" + this.point.sample,
+      "<b>Declination: </b>" + this.x.toFixed(1),
+      "<b>Inclination </b>" + this.point.inc.toFixed(1)
+    ].join("<br>");
+
+  }
+
+  Highcharts.chart("fitting-container", {
+    "chart": {
+      "polar": true,
+      "animation": false
+    },
+    "exporting": {
+      "filename": "interpreted-components",
+      "sourceWidth": 600,
+      "sourceHeight": 600,
+      "buttons": {
+        "contextButton": {
+          "symbolStroke": HIGHCHARTS_BLUE,
+          "align": "right"
+        }
+      }
+    },
+    "title": {
+      "text": "Interpreted Components"
+    },
+    "subtitle": {
+      "text": "(" + COORDINATES + " coordinates)" + (GROUP === "DEFAULT" ? "" : " <i>" + GROUP + "</i>") 
+    },
+    "pane": {
+      "startAngle": 0,
+      "endAngle": 360
+    },
+    "yAxis": {
+      "type": "linear",
+      "reversed": true,
+      "labels": {
+        "enabled": false
+      },
+      "tickInterval": 90,
+      "min": 0,
+      "max": 90,
+    },
+    "credits": {
+      "enabled": ENABLE_CREDITS,
+      "text": "Paleomagnetism.org (Equal Area Projection)",
+      "href": ""
+    },
+    "xAxis": {
+      "minorTickPosition": "inside",
+      "type": "linear",
+      "min": 0,
+      "max": 360,
+      "minorGridLineWidth": 0,
+      "tickPositions": [0, 90, 180, 270, 360],
+      "minorTickInterval": 10,
+      "minorTickLength": 5,
+      "minorTickWidth": 1,
+    },
+    "tooltip": {
+      "formatter": generateTooltip
+    },
+    "plotOptions": {
+      "series": {
+        "animation": false
+      }
+    },
+    "series": [{
+      "name": "Great Circles Components",
+      "type": "line",
+      "color": HIGHCHARTS_ORANGE,
+      "enableMouseTracking": false,
+      "dashStyle": "ShortDash",
+      "lineWidth": 1,
+      "enableMouseTracking": false,
+      "marker": {
+        "enabled": false
+      },
+      "data": planeSeries
+    }, {
+      "color": HIGHCHARTS_ORANGE,
+      "name": "Direction Components",
+      "marker": {
+        "symbol": "circle"
+      },
+      "type": "scatter",
+      "data": dataSeries
+    }]
+  });
+
+}
+
+function getMarkerColor(inclination) {
+
+  if(inclination < 0) {
+   return HIGHCHARTS_WHITE;
+  } else {
+    return HIGHCHARTS_BLUE;
+  }
+
+}
+
 function eqAreaProjection(specimen) {
 
   /* 
@@ -725,12 +836,7 @@ function eqAreaProjection(specimen) {
 
     var direction = inReferenceCoordinates(COORDINATES, specimen, new Coordinates(step.x, step.y, step.z)).toVector(Direction);
 
-    if(direction.inc < 0) {
-      marker.fillColor = HIGHCHARTS_WHITE;
-    } else {
-      marker.fillColor = HIGHCHARTS_BLUE;
-    }
-
+    marker.fillColor = getMarkerColor(direction.inc);
     marker.lineWidth = 1;
     marker.lineColor = HIGHCHARTS_BLUE;
 
@@ -785,7 +891,7 @@ function eqAreaProjection(specimen) {
       "max": 90,
     },
     "credits": {
-      "enabled": true,
+      "enabled": ENABLE_CREDITS,
       "text": "Paleomagnetism.org (Equal Area Projection)",
       "href": ""
     },

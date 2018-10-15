@@ -5,6 +5,7 @@ const RADIANS = Math.PI / 180;
 const PROJECTION_TYPE = "AREA";
 const MARKER_RADIUS = 4;
 const MARKER_RADIUS_SELECTED = 6;
+const ENABLE_CREDITS = false;
 
 var GROUP = "DEFAULT";
 var UPWEST = true;
@@ -1093,6 +1094,185 @@ function saveLocalStorage() {
 
 }
 
+function redrawInt(fit) {
+
+  var dataSeries = new Array();
+  var dataSeriesPlane = new Array();
+
+  samples.forEach(function(sample) {
+
+    sample.interpretations.forEach(function(interpretation) {
+
+      if(interpretation.group !== GROUP) {
+        return;
+      }
+
+      var coordinates = interpretation[COORDINATES];
+      var direction = new Coordinates(coordinates.x, coordinates.y, coordinates.z).toVector(Direction);
+
+      if(interpretation.type === "TAU1") {
+
+        dataSeries.push({
+          "x": direction.dec, 
+          "y": projectInclination(direction.inc), 
+          "inc": direction.inc, 
+          "sample": sample.name,
+          "marker": {
+            "fillColor": (direction.inc < 0) ? HIGHCHARTS_WHITE : HIGHCHARTS_ORANGE,
+            "lineWidth": 1,
+            "lineColor": HIGHCHARTS_ORANGE
+          }
+        });
+
+      } else if(interpretation.type === "TAU3") {
+
+        dataSeriesPlane = dataSeriesPlane.concat(getPlaneData(direction), null);
+
+      }
+
+    });
+
+  });
+
+  if(fit) {
+
+    // Points on great circles that were fitted
+    var fittedPoints = getFittedGreatCircles();
+    
+    fittedPoints.forEach(function(x) {
+    
+      var direction = x.toVector(Direction);
+    
+      // Add all extra fitted points for plotting
+      dataSeries.push({
+        "x": direction.dec, 
+        "y": projectInclination(direction.inc), 
+        "inc": direction.inc,
+        "marker": {
+          "fillColor": (direction.inc < 0) ? HIGHCHARTS_WHITE : HIGHCHARTS_GREEN,
+          "lineWidth": 1,
+          "lineColor": HIGHCHARTS_GREEN
+        }
+      });
+    
+    });
+
+  }
+
+  createHemisphereChart(dataSeries, dataSeriesPlane);
+
+}
+
+function getFittedGreatCircles() {
+
+  const ANGLE_CUTOFF = 1;
+
+  // Vector to keep track of the mean
+  var meanVector = new Coordinates(0, 0, 0);
+
+  // Container for all TAU3 interpretations
+  var circleCoordinates = new Array();
+
+  samples.forEach(function(sample) {
+
+    sample.interpretations.forEach(function(interpretation) {
+
+      // Skip interpretations not in group
+      if(interpretation.group !== GROUP) {
+        return;
+      }
+
+      // Get the right reference
+      var reference = interpretation[COORDINATES];
+      var coordinates = new Coordinates(reference.x, reference.y, reference.z);
+
+      // Add the set point to the mean vector
+      // Or add the TAU3 component 
+      if(interpretation.type === "TAU1") {
+        meanVector = meanVector.add(coordinates);
+      } else if(interpretation.type === "TAU3") {
+        circleCoordinates.push(coordinates);
+      }
+    
+    });
+
+  });
+
+  // No reference points.. ask user for a reference
+  if(meanVector.isNull()) {
+    meanVector = new Direction(...prompt("No reference points for fitting. Give suggestion: declination, inclination").split(",")).toCartesian();
+  }
+
+  var fittedCircleCoordinates = new Array();
+  var fittedCoordinates;
+
+  // Do the first fit on the mean
+  circleCoordinates.forEach(function(circle) {
+
+    // Fit the closest point on each great circle to the mean vector
+    fittedCoordinates = vClose(circle, meanVector);
+
+    // Add this coordinate for the next fit
+    meanVector = meanVector.add(fittedCoordinates);
+
+    // Keep a reference of what was added
+    fittedCircleCoordinates.push(fittedCoordinates);
+
+  });
+
+  var angles;
+
+  // Converge the mean vector
+  while(true) {
+
+    angles = new Array();
+
+    fittedCircleCoordinates.forEach(function(fittedCircle, i) {
+
+      // Remove the previously fitted coordinate (prevents bias)
+      meanVector = meanVector.subtract(fittedCircle);
+
+      // Get the closest point
+      var fittedCoordinates = vClose(circleCoordinates[i], meanVector);
+
+      // Add the closest point to the mean vector
+      meanVector = meanVector.add(fittedCoordinates);
+
+      // Replace for next iteration
+      fittedCircleCoordinates[i] = fittedCoordinates;
+
+      angles.push(Math.acos(Math.min(1, fittedCoordinates.dot(fittedCircle))) / RADIANS);
+
+    });
+
+    // All fitted directions are stable
+    if(Math.max(...angles) < ANGLE_CUTOFF) {
+      break;
+    }
+   
+  }
+
+  notify("success", "Succesfully fitted <b>" + fittedCircleCoordinates.length + "</b> great circles to directional components.");
+
+  return fittedCircleCoordinates;
+
+}
+
+function vClose(circleVector, meanVector) {
+
+  var meanUnitVector = meanVector.unit();
+
+  var tau = circleVector.dot(meanUnitVector);
+  var rho = Math.sqrt(1 - tau * tau);
+	
+  return new Coordinates(
+    (meanUnitVector.x - tau * circleVector.x) / rho,
+    (meanUnitVector.y - tau * circleVector.y) / rho,
+    (meanUnitVector.z - tau * circleVector.z) / rho,
+  );
+
+}
+
 function redrawCharts() {
 
   /*
@@ -1109,6 +1289,9 @@ function redrawCharts() {
   plotZijderveldDiagram(specimen);
   plotIntensityDiagram(specimen);
   eqAreaProjection(specimen);
+
+  // Redraw
+  redrawInt(false);
 
   updateInterpretationTable(specimen);
 
@@ -1217,7 +1400,13 @@ document.addEventListener("keydown", keyboardHandler);
 
 function interpretationTabOpen() {
 
-  return Array.from($("#nav-tab a.active")).pop().id === "interpretation-container";
+  return Array.from($("#nav-tab a.active")).pop().id === "nav-profile-tab";
+
+}
+
+function fittingTabOpen() {
+
+  return Array.from($("#nav-tab a.active")).pop().id === "nav-fitting-tab";
 
 }
 
@@ -1229,7 +1418,7 @@ function keyboardHandler(event) {
    */
 
   // Block all key commands if the interpretation tab is not open
-  if(!interpretationTabOpen()) {
+  if(!interpretationTabOpen() && !fittingTabOpen()) {
     return;
   }
 
@@ -1253,6 +1442,7 @@ function keyboardHandler(event) {
     "KEYPAD_TWO": 50,
     "KEYPAD_THREE": 51,
     "KEYPAD_EIGHT": 56,
+    "KEYPAD_NINE": 57,
     "ESCAPE_KEY": 27
   }
 
@@ -1307,6 +1497,8 @@ function keyboardHandler(event) {
       return switchProjection();
     case CODES.KEYPAD_EIGHT:
       return switchCoordinates();
+    case CODES.KEYPAD_NINE:
+      return redrawInt(true);
     case CODES.ESCAPE_KEY:
       return document.getElementById("notification-container").innerHTML = "";
   }

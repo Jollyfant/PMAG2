@@ -13,6 +13,39 @@ var Coordinates = function(x, y, z) {
 
 }
 
+Coordinates.prototype.isNull = function() {
+  return this.x === 0 && this.y === 0 && this.z === 0;
+}
+
+Coordinates.prototype.add = function(coordinates) {
+
+  return new Coordinates(this.x + coordinates.x, this.y + coordinates.y, this.z + coordinates.z);
+
+}
+
+Coordinates.prototype.subtract = function(coordinates) {
+
+  return new Coordinates(this.x - coordinates.x, this.y - coordinates.y, this.z - coordinates.z);
+
+}
+
+Coordinates.prototype.dot = function(coordinates) {
+
+  return this.x * coordinates.x + this.y * coordinates.y + this.z * coordinates.z;
+
+}
+
+Coordinates.prototype.unit = function() {
+
+  /*
+   * Function Coordinates.unit
+   * Reflects the Coordinates as a unit vector
+   */
+
+  return new Coordinates(this.x / this.length, this.y / this.length, this.z / this.length);
+
+}
+
 Coordinates.prototype.reflect = function() {
 
   /*

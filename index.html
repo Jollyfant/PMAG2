@@ -87,12 +87,14 @@ select {
       <nav>
         <div class="nav nav-tabs nav-justified" id="nav-tab" role="tablist">
           <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Data Import</a>
-          <a id='interpretation-container' class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Interpretation</a>
+          <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Interpretation</a>
+          <a class="nav-item nav-link" id="nav-fitting-tab" data-toggle="tab" href="#nav-fitting" role="tab" aria-controls="nav-profile" aria-selected="false">Components and Fitting</a>
           <a class="nav-item nav-link" id="nav-settings-tab" data-toggle="tab" href="#nav-settings" role="tab" aria-controls="nav-settings" aria-selected="false">Settings and Export</a>
         </div>
       </nav>
 
       <div class="tab-content">
+
         <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
           <br>
           Data from various formats can be imported to Paleomagnetism.org. Select the appropriate type and select a file to read from disk.
@@ -124,106 +126,122 @@ select {
             </div>
           </form>
         </div>
-      <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
 
-         <br>
+        <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
 
-         <!-- Specimen Scroller -->
-         <div class="input-group">
-           <div class="input-group-prepend">
-             <button onclick='handleSpecimenScroll(-1)' type="button" class="btn btn-primary btn-lg"><</button>
-           </div>
-           <select class="custom-select custom-select-lg" id="specimen-select"></select>
-           <div class="input-group-append">
-             <button onclick='handleSpecimenScroll(1)' type="button" class="btn btn-primary btn-lg">></button>
-          </div>
-        </div>
-
-        <br>
-        <table id="table-container" class='table table-sm table-striped'></table>
-        <hr>
-
-        <div class="container">
-          <div class="row">
-            <div class="col-md-2 table-scroll">
-              <table class='table table-sm' id="step-container"></table>
-            </div>
-            <div class="col-md-5">
-              <div id="zijderveld-container"></div>
-            </div>
-            <div class="col-md-5">
-              <div id="hemisphere-container"></div>
-            </div>
-          </div>
           <br>
-          <div class="row">
-            <div class="col-md-12">
-              <div id="interpretation-table-container"></div>
+          
+          <!-- Specimen Scroller -->
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <button onclick='handleSpecimenScroll(-1)' type="button" class="btn btn-primary btn-lg"><</button>
             </div>
+            <select class="custom-select custom-select-lg" id="specimen-select"></select>
+            <div class="input-group-append">
+              <button onclick='handleSpecimenScroll(1)' type="button" class="btn btn-primary btn-lg">></button>
+           </div>
           </div>
-          <div class="row">
-            <div class="col-md-12">
-              <div id="intensity-container"></div>
-            </div>
+          
+          <br>
+          <table id="table-container" class='table table-sm table-striped'></table>
+          <hr>
+          
+          <div class="container">
+				<div class="row">
+				<div class="col-md-2 table-scroll">
+					<table class='table table-sm' id="step-container"></table>
+				</div>
+				<div class="col-md-5">
+					<div id="zijderveld-container"></div>
+				</div>
+				<div class="col-md-5">
+					<div id="hemisphere-container"></div>
+
+				</div>
+				</div>
+				<br>
+				<div class="row">
+				<div class="col-md-12">
+					<div id="interpretation-table-container"></div>
+				</div>
+				</div>
+				<div class="row">
+				<div class="col-md-12">
+					<div id="intensity-container"></div>
+                    <figcaption class="figure-caption">Figure showing the resultant magnetization, vector difference sum, and the unblocking spectrum.</figcaption>
+				</div>
+				</div>
           </div>
-        </div>
         
-
-      </div>
-
-      <div class="tab-pane fade" id="nav-settings" role="tabpanel" aria-labelledby="nav-settings-tab">
-        <br>
-        <h2> Data Export </h2>
-        <button onclick="downloadAsJSON()" type="button" class="btn btn-primary">Download application save</button>
-        <button onclick="downloadInterpretations()" type="button" class="btn btn-primary">Download Interpretations</button>
-        <br>
-        <h2> Sorting </h2>
-        <button onclick="sortSamples('name')" type="button" class="btn btn-primary">Name</button>
-        <button onclick="sortSamples('bogo')" type="button" class="btn btn-primary">Bogo</button>
-        <hr>
-        <h2> Keyboard Shortcuts</h2>
-        <table class="table table-sm table-striped text-center">
-          <tr>
-            <td>Previous Specimen</td>
-            <td>Next Specimen</td>
-            <td>Previous Step</td>
-            <td>Next Step</td>
-            <td>Select Step</td>
-            <td>Hide Step</td>
-            <td>PCA (Direction)</td>
-            <td>PCA (Plane)</td>
-            <td>Anchor Component</td>
-            <td>Cycle Projection</td>
-            <td>Cycle Coordinates</td>
-            <td>Change Group</td>
-          </tr>
-            <td><i class="fas fa-arrow-left"></i> or A</td>
-            <td><i class="fas fa-arrow-right"></i> or D</td>
-            <td><i class="fas fa-arrow-up"></i> or W</td>
-            <td><i class="fas fa-arrow-right"></i> or S</td>
-            <td><i class="fas fa-plus"></i> or X</td>
-            <td><i class="fas fa-minus"></i> or Z</td>
-            <td>1</td>
-            <td>2</td>
-            <td>Control</td>
-            <td>3</td>
-            <td>8</td>
-            <td>g</td>
-        </table>
-
-        <h2> Application Save </h2>
-        <div class="form-check form-check-inline">
-          <input class="form-check-input" type="checkbox" id="auto-save" value="option1" checked>
-          <label class="form-check-label" for="auto-save"> Auto-save to local storage</label>
         </div>
 
-        <h2> Application Reset </h2>
-        <button onclick="clearLocalStorage()" type="button" class="btn btn-danger">Reset Local Storage</button>
+        <div class="tab-pane fade" id="nav-fitting" role="tabpanel" aria-labelledby="nav-settings-tab">
+          <br>
+          <div class="row justify-content-md-center">
+            <div class="col-md-6 ">
+              <div id="fitting-container"></div>
+              <figcaption class="figure-caption">Figure showing interpreted components. Great circles can be fitted to directional set points by pressing key <b>9</b>.</figcaption>
+            </div>
+          </div>
+          
+        </div>
+
+        <div class="tab-pane fade" id="nav-settings" role="tabpanel" aria-labelledby="nav-settings-tab">
+          <br>
+          <h2> Data Export </h2>
+          <button onclick="downloadAsJSON()" type="button" class="btn btn-primary">Download application save</button>
+          <button onclick="downloadInterpretations()" type="button" class="btn btn-primary">Download Interpretations</button>
+          <br>
+          <h2> Sorting </h2>
+          <button onclick="sortSamples('name')" type="button" class="btn btn-primary">Name</button>
+          <button onclick="sortSamples('bogo')" type="button" class="btn btn-primary">Bogo</button>
+          <hr>
+          <h2> Keyboard Shortcuts</h2>
+          <small>
+            <table class="table table-sm table-striped text-center">
+              <tr>
+                <td>Previous Specimen</td>
+                <td>Next Specimen</td>
+                <td>Previous Step</td>
+                <td>Next Step</td>
+                <td>Select Step</td>
+                <td>Hide Step</td>
+                <td>PCA (Direction)</td>
+                <td>PCA (Plane)</td>
+                <td>Anchor Component</td>
+                <td>Cycle Projection</td>
+                <td>Cycle Coordinates</td>
+                <td>Fit Great Circles</td>
+                <td>Change Group</td>
+              </tr>
+                <td>Left, A</td>
+                <td>Right, D</td>
+                <td>Up, W</td>
+                <td>Down, S</td>
+                <td>Plus, X</td>
+                <td>Minus, Z</td>
+                <td>1</td>
+                <td>2</td>
+                <td>Control</td>
+                <td>3</td>
+                <td>8</td>
+                <td>9</td>
+                <td>g</td>
+            </table>
+          </small>
+        
+          <h2> Application Save </h2>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="auto-save" value="option1" checked>
+            <label class="form-check-label" for="auto-save"> Auto-save to local storage</label>
+          </div>
+        
+          <h2> Application Reset </h2>
+          <button onclick="clearLocalStorage()" type="button" class="btn btn-danger">Reset Local Storage</button>
+        
+        </div>
 
       </div>
-
-
-    </div>
 
     <hr>
 
