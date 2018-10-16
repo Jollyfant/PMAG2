@@ -46,6 +46,12 @@ Coordinates.prototype.unit = function() {
 
 }
 
+Coordinates.prototype.isValid = function() {
+
+  return !isNaN(this.x) && !isNaN(this.y) && !isNaN(this.z);
+
+}
+
 Coordinates.prototype.reflect = function() {
 
   /*
@@ -105,9 +111,11 @@ Coordinates.prototype.rotate = function(rotationMatrix) {
 
 Coordinates.prototype.correctBedding = function(strike, plunge) {
 
+  var dipDirection = strike + 90;
+
   // We can subtract the dip direction from the declination because 
   // the inclination will not change (See Lisa Tauxe: 9.3 Changing coordinate systems; last paragraph)
-  return this.rotateTo(-(strike + 90), 90).rotateTo(0, 90 - plunge).rotateTo(strike + 90, 90);
+  return this.rotateTo(-dipDirection, 90).rotateTo(0, 90 - plunge).rotateTo(dipDirection, 90);
 
 }
 
@@ -124,6 +132,24 @@ Coordinates.prototype.rotateTo = function(azimuth, plunge) {
 
   // Create the rotation matrix
   var rotationMatrix = getRotationMatrix(azimuth, plunge);
+
+  return this.rotate(rotationMatrix);
+
+}
+
+Coordinates.prototype.rotateFrom = function(azimuth, plunge) {
+
+  /*
+   * Function Coordinates.rotateFrom
+   * Rotates a direction to azimuth, plunge
+   */
+
+  // Convert to radians
+  var azimuth = azimuth * RADIANS;
+  var plunge = plunge * RADIANS;
+
+  // Create the rotation matrix
+  var rotationMatrix = getRotationMatrixR(azimuth, plunge);
 
   return this.rotate(rotationMatrix);
 

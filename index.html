@@ -64,16 +64,27 @@ select {
 
       <div class="collapse navbar-collapse" id="navbarsExampleDefault">
         <ul class="navbar-nav mr-auto">
+
           <li class="nav-item active">
             <a class="nav-link" href="#">Home <span class="sr-only">(current)</span>	</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#">Interpretation</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Statistics</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Tectonics</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Magnetostratigraphy</a>
+          </li>
         </ul>
+
         <form class="form-inline my-2 my-lg-0">
           <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
-          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search Publication</button>
+          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Find Publication</button>
         </form>
       </div>
 
@@ -106,6 +117,7 @@ select {
               <div class="input-group-prepend">
                 <label class="input-group-text" for="format-selection">Data Format</label>
               </div>
+
               <select class="custom-select" id="format-selection">
                 <option value="UTRECHT">Utrecht University</option>
                 <option value="PALEOMAC">PaleoMac Software</option>
@@ -143,34 +155,41 @@ select {
           </div>
           
           <br>
+
+          <!-- Specimen information -->
           <table id="table-container" class='table table-sm table-striped'></table>
+
           <hr>
           
           <div class="container">
-				<div class="row">
-				<div class="col-md-2 table-scroll">
-					<table class='table table-sm' id="step-container"></table>
-				</div>
-				<div class="col-md-5">
-					<div id="zijderveld-container"></div>
-				</div>
-				<div class="col-md-5">
-					<div id="hemisphere-container"></div>
+			<div class="row">
+			  <div class="col-md-2 table-scroll">
+			  	<table class="table table-sm" id="step-container"></table>
+			  </div>
+			  <div class="col-md-5">
+			  	<div id="zijderveld-container"></div>
+			  </div>
+			  <div class="col-md-5">
+			  	<div id="hemisphere-container"></div>
+			  </div>
+			</div>
+			<br>
 
-				</div>
-				</div>
-				<br>
-				<div class="row">
-				<div class="col-md-12">
-					<div id="interpretation-table-container"></div>
-				</div>
-				</div>
-				<div class="row">
-				<div class="col-md-12">
-					<div id="intensity-container"></div>
-                    <figcaption class="figure-caption">Figure showing the resultant magnetization, vector difference sum, and the unblocking spectrum.</figcaption>
-				</div>
-				</div>
+			<div class="row">
+			  <div class="col-md-12">
+                <hr>
+			  	<div id="interpretation-table-container"></div>
+                <hr>
+			  </div>
+			</div>
+
+			<div class="row">
+			  <div class="col-md-12">
+			  	<div id="intensity-container"></div>
+                  <figcaption class="figure-caption">Figure showing the resultant magnetization, vector difference sum, and the unblocking spectrum.</figcaption>
+			  </div>
+			</div>
+
           </div>
         
         </div>
@@ -180,8 +199,17 @@ select {
           <div class="row justify-content-md-center">
             <div class="col-md-6 ">
               <div id="fitting-container"></div>
-              <figcaption class="figure-caption">Figure showing interpreted components. Great circles can be fitted to directional set points by pressing key <b>9</b> (McFadden & McElhinny, 1992).</figcaption>
+              <figcaption class="figure-caption">Figure showing interpreted components. Great circles can be fitted to directional set points by pressing <b>9</b> in all reference coordinates (McFadden & McElhinny, 1992).</figcaption>
               <hr>
+            </div>
+          </div>
+          <div class="row justify-content-md-center">
+            <div class="col-md-6 ">
+			 <table class='table table-sm table-striped' id="fitted-table-container"></table>
+            </div>
+          </div>
+          <div class="row justify-content-md-center">
+            <div class="col-md-6 ">
               <div class='text-center'>
                 <button onclick="downloadInterpretations()" type="button" class="btn btn-primary">Download Interpretations</button>
                 <button onclick="downloadInterpretations(true)" type="button" class="btn btn-primary">Download Interpretations (Fitted)</button>
@@ -200,7 +228,8 @@ select {
           <button onclick="sortSamples('name')" type="button" class="btn btn-primary">Name</button>
           <button onclick="sortSamples('bogo')" type="button" class="btn btn-primary">Bogo</button>
           <hr>
-          <h2> Keyboard Shortcuts</h2>
+
+          <h5> Keyboard Shortcuts</h5>
           <small>
             <table class="table table-sm table-striped text-center">
               <tr>
@@ -249,7 +278,16 @@ select {
 
     <hr>
 
-    <footer id='footer-container' class='container utext-muted'></footer>
+    <footer id='footer-container' class='container text-muted'></footer>
+
+    <br> 
+    <div class="row justify-content-md-center text-center">
+	  <div style="text-align: right; display: inline-block;">
+	    <a href="http://www.geo.uu.nl/~forth/"><img style="margin: 0px; height: 60px;" src="./images/UU.png"></a>
+        <a href="http://erc.europa.eu/"><img style="margin: 0px; height: 60px;" src="./images/ERC.png"></a>
+	    <a href="http://www.nwo.nl/"><img style="margin: 0px; height: 60px;" src="./images/NWO_logo_plain.png"></a>
+	  </div>
+	</div>
 
     <br>
 

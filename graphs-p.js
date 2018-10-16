@@ -51,21 +51,25 @@ function generateZijderveldTooltip() {
 
 function fromReferenceCoordinates(reference, specimen, coordinates) {
 
+  /*
+   * Function fromReferenceCoordinates
+   * Rotates all the way back to specimen coordinates
+   */
+
+  // We are already in specimen coordinates
   if(reference === "specimen") {
     return coordinates; 
   }
 
-  // Do the tectonic correction
-  // See Lisa Tauxe: 9.3 Changing coordinate systems; last paragraph
-  var dipDirection = specimen.beddingStrike + 90;
-
-  coordinates = coordinates.rotateTo(-dipDirection, 90).rotateTo(0, 90 + specimen.beddingDip).rotateTo(dipDirection, 90);
-
+  // In geographic: rotate backwards to specimen
   if(reference === "geographic") {
-    return coordinates;
+    return coordinates.rotateFrom(specimen.coreAzimuth, specimen.coreDip);
   }
 
-  return coordinates.rotateTo(specimen.coreAzimuth, -specimen.coreDip);
+  // In tectonic coordinates: inverse bedding correction
+  // and geographic correctiono at the end
+  var dipDirection = specimen.beddingStrike + 90;
+  return coordinates.rotateTo(-dipDirection, 90).rotateFrom(0, 90 - specimen.beddingDip).rotateTo(dipDirection, 90).rotateFrom(specimen.coreAzimuth, specimen.coreDip);
 
 }
 
@@ -89,9 +93,7 @@ function inReferenceCoordinates(reference, specimen, coordinates) {
 
   // Do the tectonic correction
   // See Lisa Tauxe: 9.3 Changing coordinate systems; last paragraph
-  var dipDirection = specimen.beddingStrike + 90;
-
-  return coordinates.rotateTo(-dipDirection, 90).rotateTo(0, 90 - specimen.beddingDip).rotateTo(dipDirection, 90);
+  return coordinates.correctBedding(specimen.beddingStrike, specimen.beddingDip);
 
 }
 
@@ -413,6 +415,22 @@ function getRotationMatrix(lambda, phi) {
 
 }
 
+function getRotationMatrixR(lambda, phi) {
+
+  /*
+   * Function getRotationMatrix
+   * Returns the rotation matrix
+   */
+
+  return new Array(
+    new Array(Math.cos(lambda) * Math.sin(phi), Math.sin(phi) * Math.sin(lambda), -Math.cos(phi)),
+    new Array(-Math.sin(lambda), Math.cos(lambda), 0),
+    new Array(Math.cos(phi) * Math.cos(lambda), Math.sin(lambda) * Math.cos(phi), Math.sin(phi))
+  );
+
+}
+
+
 function getPlaneData(direction, angle) {
 
   /*
@@ -441,8 +459,8 @@ function formatInterpretationSeriesArea(interpretations) {
   // Extract TAU3 interpretations for plotting
   interpretations.forEach(function(interpretation) {
 
-    var coordinates = interpretation[COORDINATES];
-    var direction = new Coordinates(coordinates.x, coordinates.y, coordinates.z).toVector(Direction);
+    var component = interpretation[COORDINATES];
+    var direction = new Coordinates(component.coordinates.x, component.coordinates.y, component.coordinates.z).toVector(Direction);
 
     if(interpretation.type === "TAU1" || SHOW_TAU3) {
 
@@ -506,7 +524,7 @@ function formatInterpretationSeries(scaling, interpretations) {
       return;
     }
 
-    interpretation = interpretation[COORDINATES];
+    var component = interpretation[COORDINATES];
 
     // Handle the projection
     if(UPWEST) {
@@ -514,38 +532,38 @@ function formatInterpretationSeries(scaling, interpretations) {
       // Create a line that represents the vector
       // Add line for horizontal projection (x, y)
       var linearFitHorizontal = [{
-        "x": interpretation.centerMass.x + interpretation.x * scaling, 
-        "y": interpretation.centerMass.y + interpretation.y * scaling
+        "x": component.centerMass.x + component.coordinates.x * scaling, 
+        "y": component.centerMass.y + component.coordinates.y * scaling
       }, {
-        "x": interpretation.centerMass.x - interpretation.x * scaling,
-        "y": interpretation.centerMass.y - interpretation.y * scaling
+        "x": component.centerMass.x - component.coordinates.x * scaling,
+        "y": component.centerMass.y - component.coordinates.y * scaling
       }];
       
       // Do the same for line for horizontal projection (y, z)
       var linearFitVertical = [{
-        "x": interpretation.centerMass.x + interpretation.x * scaling, 
-        "y": interpretation.centerMass.z + interpretation.z * scaling
+        "x": component.centerMass.x + component.coordinates.x * scaling, 
+        "y": component.centerMass.z + component.coordinates.z * scaling
       }, {
-        "x": interpretation.centerMass.x - interpretation.x * scaling, 
-        "y": interpretation.centerMass.z - interpretation.z * scaling
+        "x": component.centerMass.x - component.coordinates.x * scaling, 
+        "y": component.centerMass.z - component.coordinates.z * scaling
       }];
 
     } else {
 
       var linearFitHorizontal = [{
-        "x": interpretation.centerMass.y + interpretation.y * scaling, 
-        "y": -interpretation.centerMass.x - interpretation.x * scaling
+        "x": component.centerMass.y + component.coordinates.y * scaling, 
+        "y": -component.centerMass.x - component.coordinates.x * scaling
       }, {
-        "x": interpretation.centerMass.y - interpretation.y * scaling,
-        "y": -interpretation.centerMass.x + interpretation.x * scaling
+        "x": component.centerMass.y - component.coordinates.y * scaling,
+        "y": -component.centerMass.x + component.coordinates.x * scaling
       }];
       
       var linearFitVertical = [{
-        "x": interpretation.centerMass.y + interpretation.y * scaling, 
-        "y": interpretation.centerMass.z + interpretation.z * scaling
+        "x": component.centerMass.y + component.coordinates.y * scaling, 
+        "y": component.centerMass.z + component.coordinates.z * scaling
       }, {
-        "x": interpretation.centerMass.y - interpretation.y * scaling, 
-        "y": interpretation.centerMass.z - interpretation.z * scaling
+        "x": component.centerMass.y - component.coordinates.y * scaling, 
+        "y": component.centerMass.z - component.coordinates.z * scaling
       }];
 
     }
@@ -715,7 +733,7 @@ function projectInclination(inc) {
 
 }
 
-function createHemisphereChart(dataSeries, planeSeries) {
+function createHemisphereChart(series) {
 
   function generateTooltip() {
 
@@ -787,27 +805,7 @@ function createHemisphereChart(dataSeries, planeSeries) {
         "animation": false
       }
     },
-    "series": [{
-      "name": "Great Circles Components",
-      "type": "line",
-      "color": HIGHCHARTS_ORANGE,
-      "enableMouseTracking": false,
-      "dashStyle": "ShortDash",
-      "lineWidth": 1,
-      "enableMouseTracking": false,
-      "marker": {
-        "enabled": false
-      },
-      "data": planeSeries
-    }, {
-      "color": HIGHCHARTS_ORANGE,
-      "name": "Direction Components",
-      "marker": {
-        "symbol": "circle"
-      },
-      "type": "scatter",
-      "data": dataSeries
-    }]
+    "series": series
   });
 
 }
