@@ -49,6 +49,26 @@ function generateZijderveldTooltip() {
 
 }
 
+function fromReferenceCoordinates(reference, specimen, coordinates) {
+
+  if(reference === "specimen") {
+    return coordinates; 
+  }
+
+  // Do the tectonic correction
+  // See Lisa Tauxe: 9.3 Changing coordinate systems; last paragraph
+  var dipDirection = specimen.beddingStrike + 90;
+
+  coordinates = coordinates.rotateTo(-dipDirection, 90).rotateTo(0, 90 + specimen.beddingDip).rotateTo(dipDirection, 90);
+
+  if(reference === "geographic") {
+    return coordinates;
+  }
+
+  return coordinates.rotateTo(specimen.coreAzimuth, -specimen.coreDip);
+
+}
+
 function inReferenceCoordinates(reference, specimen, coordinates) {
 
   /*
@@ -393,16 +413,18 @@ function getRotationMatrix(lambda, phi) {
 
 }
 
-function getPlaneData(direction) {
+function getPlaneData(direction, angle) {
 
   /*
    * Function getPlaneData
    * Returns plane data
    */
 
-  const ANGLE = 90;
+  if(angle === undefined) {
+    angle = 90;
+  }
 
-  return getConfidenceEllipse(ANGLE).map(x => x.toCartesian()).map(x => x.rotateTo(direction.dec, direction.inc)).map(x => x.toVector(Direction)).map(x => x.highchartsData());
+  return getConfidenceEllipse(angle).map(x => x.toCartesian()).map(x => x.rotateTo(direction.dec, direction.inc)).map(x => x.toVector(Direction)).map(x => x.highchartsData());
 
 }
 
