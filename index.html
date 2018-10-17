@@ -6,6 +6,11 @@ body {
   padding-top: 5rem;
 }
 
+.map {
+  height: 400px;
+  width: 100%;
+}
+
 select {
   text-align: center;
 }
@@ -47,6 +52,15 @@ select {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
+    <!-- OpenLayers CSS -->
+ <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
+   integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+   crossorigin=""/>
+
+ <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"
+   integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA=="
+   crossorigin=""></script>
+
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
@@ -65,10 +79,10 @@ select {
       <div class="collapse navbar-collapse" id="navbarsExampleDefault">
         <ul class="navbar-nav mr-auto">
 
-          <li class="nav-item active">
-            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span>	</a>
-          </li>
           <li class="nav-item">
+            <a class="nav-link" href="#">Home</a>
+          </li>
+          <li class="nav-item active">
             <a class="nav-link" href="#">Interpretation</a>
           </li>
           <li class="nav-item">
@@ -157,7 +171,7 @@ select {
           <br>
 
           <!-- Specimen information -->
-          <table id="table-container" class='table table-sm table-striped'></table>
+          <div class="table-responsive"><table id="table-container" class="table table-sm table-striped"></table></div>
 
           <hr>
           
@@ -231,7 +245,7 @@ select {
 
           <h5> Keyboard Shortcuts</h5>
           <small>
-            <table class="table table-sm table-striped text-center">
+            <table class="table table-sm table-striped table-responsive text-center">
               <tr>
                 <td>Previous Specimen</td>
                 <td>Next Specimen</td>
@@ -291,6 +305,75 @@ select {
 
     <br>
 
+<!-- Confirmation Modal -->
+<div class="modal fade" id="exampleModal2" tabindex="1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Confirm</h5>
+      </div>
+      <div id="prompt-question" class="modal-body"></div>
+      <div class="modal-footer">
+        <button id="confirm-button" type="button" class="btn btn-success" data-dismiss="modal">Confirm</button>
+        <button id="cancel-button" type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Leaflet Map Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><i class='fas fa-map-marker-alt'></i> &nbsp; Select Specimen location</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+        <!-- Latitude, Longitude container -->
+        <div class="row">
+          <div class="col">
+            <div class="input-group mb-6">
+              <input id='specimen-longitude-input' type="text" class="form-control input-sm" placeholder="Longitude">
+              <div class="input-group-append">
+                <div class="input-group-text">°E</div>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="input-group mb-6">
+            <input id='specimen-latitude-input' type="text" class="form-control input-sm" placeholder="Latitude">
+              <div class="input-group-append">
+                <div class="input-group-text">°N</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <br>
+
+        <div id="map" class="map"></div>
+        <p><figcaption class="figure-caption">Click the map to select a location.</figcaption>
+
+      </div>
+      <div class="modal-footer">
+        <div class="mr-auto">
+          <button id="save-location" type="button" class="btn btn-primary">Save Location</button>
+          &nbsp;
+          <div class="form-check form-check-inline">
+            <input type="checkbox" class="form-check-input" id="location-apply-all">
+            <label class="form-check-label" for="location-apply-all">Apply to all</label>
+          </div>
+        </div>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
@@ -299,6 +382,9 @@ select {
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="https://code.highcharts.com/highcharts-more.js"></script>
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
+
+    <!-- Include OpenLayers -->
+    <script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.2.0/build/ol.js"></script>
 
     <script src="./numeric.js"></script>
 
@@ -309,6 +395,7 @@ select {
 
     <script src="./Coordinates.js"></script>
     <script src="./importing.js"></script>
+    <script src="./index.js"></script>
 
   </body>
 </html>

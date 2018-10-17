@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+  <head>
+<style>
+body {
+  padding-top: 5rem;
+}
+
+select {
+  text-align: center;
+}
+
+#notification-container {
+  text-align: center;
+}
+
+.table-scroll {
+  height: 400px;
+  direction: rtl;
+  overflow-y: auto;
+}
+
+#table-container {
+  text-align: center;
+}
+
+#step-container { 
+  text-align: center;
+  cursor: pointer;
+}
+
+#step-container tr.selected {
+  font-weight: bold;
+}
+
+#step-container tr.current {
+  background-image: linear-gradient(to right, rgba(0,0,0,0), rgba(124,181,236,0.25), rgba(0,0,0,0));
+}
+
+#step-container tr:hover {
+  background-image: linear-gradient(to right, rgba(0,0,0,0), rgba(124,181,236,0.25), rgba(0,0,0,0));
+}
+
+</style>
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- OpenLayers CSS -->
+ <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
+   integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+   crossorigin=""/>
+
+ <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"
+   integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA=="
+   crossorigin=""></script>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+    <title>Paleomagnetism.org 2.0.0</title>
+  </head>
+
+  <body>
+
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+
+      <a class="navbar-brand" href="#">Paleomagnetism.org</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <ul class="navbar-nav mr-auto">
+
+          <li class="nav-item">
+            <a class="nav-link" href="#">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="./interpretation.html">Interpretation</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Statistics</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Tectonics</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Magnetostratigraphy</a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="./pid">Persistent Identifiers</a>
+          </li>
+        </ul>
+
+        <form class="form-inline my-2 my-lg-0">
+          <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
+          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Find Publication</button>
+        </form>
+      </div>
+
+    </nav>
+
+    <div class="container">
+
+      <div id="notification-container"></div>
+
+      <h5> Object </h5>
+      <table class='table table-sm table-striped' id="publication-table"></table>
+
+    <footer id='footer-container' class='container text-muted'></footer>
+
+    <br> 
+    <div class="row justify-content-md-center text-center">
+	  <div style="text-align: right; display: inline-block;">
+	    <a href="http://www.geo.uu.nl/~forth/"><img style="margin: 0px; height: 60px;" src="./images/UU.png"></a>
+        <a href="http://erc.europa.eu/"><img style="margin: 0px; height: 60px;" src="./images/ERC.png"></a>
+	    <a href="http://www.nwo.nl/"><img style="margin: 0px; height: 60px;" src="./images/NWO_logo_plain.png"></a>
+	  </div>
+	</div>
+
+    <br>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/highcharts-more.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+
+    <script src="./Coordinates.js"></script>
+    <script src="./Direction.js"></script>
+    <script src="./importing.js"></script>
+
+  <script>
+
+function HTTPRequest(url, type, callback) {
+
+  /*
+   * Function HTTPRequest
+   * Makes an async XMLHTTPRequest to a remote resource
+   */
+
+  const HTTP_OK = 200;
+
+  var xhr = new XMLHttpRequest();
+
+  // When the resource is ready
+  xhr.onload = function() {
+
+    console.debug(type + " HTTP Request to " + url + " returned with status code " + this.status);
+
+    // Ignore HTTP errors
+    if(this.status !== HTTP_OK) {
+      return callback(null);
+    }
+
+    // Check the content type
+    switch(this.getResponseHeader("Content-Type")) {
+      case "application/json":
+      case "application/vnd.schemaorg.ld+json":
+        return callback(JSON.parse(xhr.response));
+      default:
+        return callback(xhr.response);
+    }
+
+  }
+
+  xhr.onerror = function(error) {
+    callback(null);
+  }
+
+  // Open and finish the request
+  xhr.open(type, url);
+  xhr.send();
+
+}
+
+if(window.location.search) {
+  resolvePID(window.location.search.slice(1));
+} else {
+  alert("NO PID");
+}
+
+function formatSpecimenTable(pid, publication, specimen) {
+
+  notify("success", "Succesfully loaded specimen from publication with PID: <b>" + pid + "</b>.");
+
+  if(specimen.interpretations.length === 0) {
+    return;
+  }
+
+  document.getElementById("publication-table").innerHTML = [
+    "<caption>Available interpretations</caption>",
+    "<head>",
+    "  <tr>",
+    "    <th colspan='2'>Specimen</th>",
+    "    <th colspan='2'>Geographic</th>",
+    "    <th colspan='2'>Tectonic</th>",
+    "    <th>MAD</th>",
+    "    <th>Type</th>",
+    "    <th>Steps</th>",
+    "    <th>Anchored</th>",
+    "    <th>Comment</th>",
+    "    <th>Created</th>",
+    "  </tr>",
+    "</head>"
+  ].concat(specimen.interpretations.map(formatInterpretationRows)).join("\n");
+
+}
+
+function formatInterpretationRows(sample, i) {
+
+  // Convert x,y,z to coordinates
+  var specimen = new Coordinates(sample.specimen.coordinates.x, sample.specimen.coordinates.y, sample.specimen.coordinates.z).toVector(Direction);
+  var geographic = new Coordinates(sample.geographic.coordinates.x, sample.geographic.coordinates.y, sample.geographic.coordinates.z).toVector(Direction);
+  var tectonic = new Coordinates(sample.tectonic.coordinates.x, sample.tectonic.coordinates.y, sample.tectonic.coordinates.z).toVector(Direction);
+
+  return "<tr>" + new Array(
+    specimen.dec.toFixed(2),
+    specimen.inc.toFixed(2),
+    geographic.dec.toFixed(2),
+    geographic.inc.toFixed(2),
+    tectonic.dec.toFixed(2),
+    tectonic.inc.toFixed(2),
+    sample.MAD.toFixed(2),
+    sample.type,
+    sample.steps.join(", "),
+    sample.anchored,
+    sample.comment,
+    sample.created
+  ).map(x => "<td>" + x + "</td>").join("\n") + "</tr>";
+}
+
+function formatPublicationTable(pid, publication) {
+
+  notify("success", "Succesfully loaded specimens from publication with PID: <b>" + pid + "</b>.");
+
+  document.getElementById("publication-table").innerHTML = [
+    "<caption>Specimens Available from " + pid + ".</caption>",
+    "<head>",
+    "  <tr>",
+    "    <th>Sample</th>",
+    "    <th>Core Azimuth</th>",
+    "    <th>Core Dip</th>",
+    "    <th>Bedding Strike</th>",
+    "    <th>Bedding Dip</th>",
+    "    <th>Longitude</th>",
+    "    <th>Latitude</th>",
+    "    <th>Interpretations</th>",
+    "    <th>Steps</th>",
+    "    <th>Created</th>",
+    "  </tr>",
+    "</head>"
+  ].concat(publication.map(formatSampleRows)).join("\n");
+
+}
+
+function formatSampleRows(sample, i) {
+
+  if(sample.location) {
+    var longitude = sample.location.lng;
+    var latitude = sample.location.lat;
+  } else {
+    var longitude = "";
+    var latitude = "";
+  }
+
+  return "<tr>" + new Array(
+    "<a href='./pid.html" + window.location.search + "." + i + "'>" + sample.name + "</a>",
+    sample.coreAzimuth,
+    sample.coreDip,
+    sample.beddingStrike,
+    sample.beddingDip,
+    longitude,
+    latitude,
+    sample.interpretations.length,
+    sample.steps.length,
+    sample.created,
+  ).map(x => "<td>" + x + "</td>").join("\n") + "</tr>";
+
+}
+
+  function resolvePID(pids) {
+
+    var [pid, sample, interpretation] = pids.split(".");
+
+    HTTPRequest("./publications/" + pid + ".pid", "GET", function(json) {
+
+      var publication = JSON.parse(json);
+
+      if(sample === undefined) {
+        return formatPublicationTable(pids, publication);
+      }
+
+      var specimen = publication[Number(sample)];
+
+      if(interpretation === undefined) {
+        return formatSpecimenTable(pids, publication, specimen);
+      }
+
+      var interpret = specimen.interpretations[Number(interpretation)];
+
+      console.log(interpret);
+
+    });
+
+  }
+
+  </script>
+  </body>
+</html>

@@ -151,6 +151,7 @@ function importPaleoMac(file) {
     "created": new Date().toISOString(),
     "steps": steps,
     "level": 0,
+    "location": null,
     "name": sampleName,
     "volume": Number(sampleVolume),
     "beddingStrike": Number(beddingStrike),
@@ -216,6 +217,7 @@ function importOxford(file) {
     "created": new Date().toISOString(),
     "steps": steps,
     "level": 0,
+    "location": null,
     "name": sampleName,
     "volume": Number(sampleVolume),
     "beddingStrike": Number(beddingStrike),
@@ -285,6 +287,7 @@ function importNGU(file) {
     "name": sampleName,
     "volume": null,
     "level": 0,
+    "location": null,
     "beddingStrike": Number(beddingStrike),
     "beddingDip": Number(beddingDip),
     "coreAzimuth": Number(coreAzimuth),
@@ -352,6 +355,7 @@ function importMunich(file) {
     "name": sampleName,
     "volume": null,
     "level": 0,
+    "location": null,
     "beddingStrike": Number(beddingStrike),
     "beddingDip": Number(beddingDip),
     "coreAzimuth": Number(coreAzimuth),
@@ -417,6 +421,7 @@ function importBCN2G(file) {
     "created": new Date().toISOString(),
     "steps": steps,
     "level": 0,
+    "location": null,
     "name": sampleName,
     "declinationCorrection": declinationCorrection,
     "volume": Number(sampleVolume),
@@ -482,6 +487,7 @@ function importCaltech(file) {
     "created": new Date().toISOString(),
     "steps": steps,
     "level": 0,
+    "location": null,
     "name": sampleName,
     "volume": Number(sampleVolume),
     "beddingStrike": Number(beddingStrike),
@@ -557,6 +563,7 @@ function importUtrecht(file) {
       "created": new Date().toISOString(),
       "steps": steps,
       "level": 0,
+      "location": null,
       "name": sampleName,
       "volume": Number(sampleVolume),
       "beddingStrike": Number(beddingStrike),
@@ -617,6 +624,7 @@ function importHelsinki(file) {
     "created": new Date().toISOString(),
     "steps": steps,
     "level": 0,
+    "location": null,
     "name": sampleName,
     "volume": Number(sampleVolume),
     "beddingStrike": Number(beddingStrike),
@@ -710,8 +718,6 @@ function fileSelection(event) {
 
 }
 
-document.getElementById("customFile").addEventListener("change", fileSelection);
-
 function updateSelect() {
 
   removeOptions(document.getElementById("specimen-select"));
@@ -797,160 +803,13 @@ function getSelectedSpecimen() {
 
 }
 
-var StepSelector = function() {
-
-  /*
-   * Class StepSelector
-   * Manages the navigation, visibility, and selection of steps
-   */
-
-  // Initialize
-  this.reset();
-
-  this._container.addEventListener("click", function(event) {
-    this.setActiveStep(Number(event.target.value));
-  }.bind(this));
-
-}
-
-StepSelector.prototype.setActiveStep = function(index) {
-
-  this._selectedStep = index;
-  this.render();
-
-}
-
-StepSelector.prototype._container = document.getElementById("step-container");
-
-StepSelector.prototype.reset = function() {
-
-  /*
-   * Function StepSelector.reset
-   * Resets the step selector for a new specimen
-   */
-
-  this._selectedStep = 0;
-  this.render();
-
-}
-
-StepSelector.prototype.clear = function() {
-
-  /*
-   * Function StepSelector.clear
-   * Clears the HTML of the container
-   */
-
-  this._container.innerHTML = "";
-
-}
-
-StepSelector.prototype.render = function() {
-
-  /*
-   * Function StepSelector.render
-   * Renders the stepSelector component with the current steps and properties
-   */
-
-  const HIDDEN_STEP_SYMBOL = "…";
-
-  this.clear();
+function handleTableClick(event) {
 
   var specimen = getSelectedSpecimen();
 
-  if(specimen === null) {
+  if(event.target.parentElement.rowIndex === 0) {
     return;
   }
-
-  var listSteps = document.createElement("tbody");
-
-  // Add each steps
-  specimen.steps.forEach(function(step, i) {
-
-      var listStep = document.createElement("tr");
-      listStep.value = i;
-
-      // Attach some extra classes
-      if(step.selected) {
-        listStep.className = "selected";
-      }
-
-      // Highlight the current step
-      if(this._selectedStep === i) {
-        listStep.className += " current";
-      }
-
-      // Steps may be hidden
-      if(step.visible) {
-        listStep.appendChild(document.createTextNode(step.step));
-      } else {
-        listStep.appendChild(document.createTextNode(HIDDEN_STEP_SYMBOL));
-        listStep.className += " text-muted";
-      }
-
-      listSteps.appendChild(listStep);
-
-  }, this);
-
-  this._container.appendChild(listSteps);
-
-  redrawCharts();
-  
-}
-
-StepSelector.prototype.formatStepTable = function() {
-
-  /*
-   * Function StepSelector.formatStepTable
-   * Formats parameter table at the top of the page
-   */
-
-  var step = this.getCurrentStep();
-  var specimen = getSelectedSpecimen();
-
-  var direction = inReferenceCoordinates(COORDINATES, specimen, new Coordinates(step.x, step.y, step.z)).toVector(Direction);
-
-  return [
-    "  <caption>Specimen and Demagnetization Details</caption>",
-    "  <thead>",
-    "    <tr>",
-    "      <td>Step</td>",
-    "      <td>Coordinates</td>",
-    "      <td>Declination</td>",
-    "      <td>Inclination</td>",
-    "      <td>Intensity</td>",
-    "      <td>Uncertainty</td>",
-    "      <td>Core Azimuth</td>",
-    "      <td>Core Dip</td>",
-    "      <td>Bedding Strike</td>",
-    "      <td>Bedding Dip</td>",
-    "      <td>Level</td>",
-    "      <td>Format</td>",
-    "    </tr>",
-    "  </thead>",
-    "  <tbody>",
-    "    <tr>",
-    "      <td>" + step.step + "</td>",
-    "      <td>" + COORDINATES + "</td>",
-    "      <td>" + direction.dec.toFixed(2) + "</td>",
-    "      <td>" + direction.inc.toFixed(2) + "</td>",
-    "      <td>" + direction.length.toFixed(2) + "</td>",
-    "      <td>" + step.error.toFixed(2) + "</td>",
-    "      <td style='cursor: pointer;'>" + specimen.coreAzimuth + "</td>",
-    "      <td style='cursor: pointer;'>" + specimen.coreDip + "</td>",
-    "      <td style='cursor: pointer;'>" + specimen.beddingStrike + "</td>",
-    "      <td style='cursor: pointer;'>" + specimen.beddingDip + "</td>",
-    "      <td style='cursor: pointer;'>" + specimen.level + "</td>",
-    "      <td>" + specimen.format + "</td>",
-    "    </tr>",
-    "  </tbody>"
-  ].join("\n");
-
-}
-
-document.getElementById("table-container").addEventListener("click", function(event) {
-
-  var specimen = getSelectedSpecimen();
 
   switch(event.target.cellIndex) {
 
@@ -994,6 +853,9 @@ document.getElementById("table-container").addEventListener("click", function(ev
       specimen.level = Number(response);
       break;
 
+    case 11:
+      return $("#exampleModal").modal('show');
+
     default:
       return;
   }
@@ -1005,96 +867,76 @@ document.getElementById("table-container").addEventListener("click", function(ev
   saveLocalStorage();
   redrawCharts();
 
-});
-
-StepSelector.prototype.hideStep = function() {
-
-  /*
-   * Function StepSelector.hideStep
-   * Hides the currently active step if not selected
-   */
-
-  var step = this.getCurrentStep();
-
-  // Must not be selected
-  if(!step.selected) {
-    step.visible = !step.visible;
-  }
-
-  // Practical to move to the next step
-  this.handleStepScroll(1);
-
-  saveLocalStorage();
-
 }
 
-StepSelector.prototype.getCurrentStep = function() {
+function handleLocation(event) {
 
-  /*
-   * Function StepSelector.getCurrentStep
-   * Returns the currently selected step from the step selector
-   */
+  var longitude = Number(document.getElementById("specimen-longitude-input").value)
+  var latitude = Number(document.getElementById("specimen-latitude-input").value)
 
-  return getSelectedSpecimen().steps[this._selectedStep];
-
-}
-
-
-StepSelector.prototype.selectStep = function() {
-
-  /*
-   * Function StepSelector.selectStep
-   * Selects the currently active step if not hidden
-   */
-
-  var step = this.getCurrentStep();
-
-  // Toggle select if the step is visible
-  if(step.visible) {
-    step.selected = !step.selected;
-  }
-
-  // Practical to move to the next step
-  this.handleStepScroll(1);
-
-  saveLocalStorage();
-
-}
-
-StepSelector.prototype.handleStepScroll = function(direction) {
-
-  /*
-   * Function StepSelector.handleStepScroll
-   * Handles increment/decrement of the selected step
-   */
-
-  var steps = this._container.getElementsByTagName("tr");
-
-  // There are no steps
-  if(steps.length === 0) {
-    return;
-  }
-
-  // Handle the scrolling logic
-  this._selectedStep = this._selectedStep + direction;
-
-  // Negative roll-over
-  if(this._selectedStep === -1) {
-    this._selectedStep = steps.length - 1;
-  }
-
-  // Positive roll-over
-  this._selectedStep = this._selectedStep % steps.length;
-
-  this.render();
-
-  if(this._selectedStep > 15) {
-    this._container.parentElement.scrollTop = (this._selectedStep - 15) * 24;
+  if(longitude === 0 || latitude === 0) { 
+    var specimenLocation = null;
   } else {
-    this._container.parentElement.scrollTop = 0;
+    var specimenLocation = {"lng": longitude, "lat": latitude};
   }
 
+  // If apply all has been checked
+  if(document.getElementById("location-apply-all").checked) {
+
+    for(var i = 0; i < samples.length; i++) {
+      samples[i].location = specimenLocation;
+    } 
+
+  } else {
+    getSelectedSpecimen().location = specimenLocation;
+  }
+
+  notify("success", "Succesfully changed the specimen location to <b>" + longitude + "°E</b>, <b>" + latitude + "°N</b>.");
+
+  $("#exampleModal").modal("hide");
+
+  saveLocalStorage();
+  redrawCharts();
+
 }
+
+
+function promptNew(question, callback) {
+
+  $("#exampleModal2").modal('show');
+
+  document.getElementById("prompt-question").innerHTML = question;
+
+  function temp(event) {
+
+    $("#exampleModal").modal("hide");
+
+    if(event.target.id === "confirm-button") {
+      return callback(true);
+    }
+
+    return callback(false);
+
+  }
+
+  document.getElementById("confirm-button").addEventListener("click", temp);
+  document.getElementById("cancel-button").addEventListener("click", temp);
+
+  $("#exampleModal2").modal("show");
+
+}
+  
+$("#exampleModal").on("shown.bs.modal", function () {
+
+  var specimen = getSelectedSpecimen();
+
+  if(marker && specimen.location) {
+    marker.setLatLng(new L.LatLng(specimen.location.lat, specimen.location.lng));
+  }
+
+  map.invalidateSize();
+
+})
 
 function clearLocalStorage() {
 
@@ -1500,8 +1342,6 @@ function redrawCharts() {
 
 }
 
-document.getElementById("interpretation-table-container").addEventListener("click", interpretationTableClickHandler);
-
 function interpretationTableClickHandler(event) {
 
   var specimen = getSelectedSpecimen();
@@ -1618,7 +1458,7 @@ function updateInterpretationTable(specimen) {
 
 }
 
-document.getElementById("specimen-select").addEventListener("change", function(event) {
+function resetSpecimenHandler(event) {
 
   var specimen = getSelectedSpecimen();
 
@@ -1629,7 +1469,7 @@ document.getElementById("specimen-select").addEventListener("change", function(e
   // Create a new step selector
   stepSelector.reset();
 
-});
+}
 
 document.addEventListener("keydown", keyboardHandler);
 
@@ -1652,6 +1492,10 @@ function keyboardHandler(event) {
    * Function keyboardHandler
    * Handles keypresses on keyboard
    */
+
+  if($("#exampleModal").hasClass("show")) {
+    return;
+  }
 
   // Block all key commands if the interpretation tab is not open
   if(!interpretationTabOpen() && !fittingTabOpen()) {
@@ -2096,9 +1940,6 @@ function TMatrix(data) {
 }
 
 
-// Components
-var stepSelector = new StepSelector();
-
 /* FUNCTION unblockingSpectrum
  * Description: calculates the unblocking spectrum
  * Input: Highcharts Intensity series
@@ -2323,6 +2164,8 @@ function downloadInterpretations(fit) {
     "bedding strike",
     "bedding dip",
     "level",
+    "longitude",
+    "latitude",
     "MAD",
     "anchored",
     "type",
@@ -2343,6 +2186,14 @@ function downloadInterpretations(fit) {
 
       var direction = new Coordinates(interpretation.specimen.coordinates.x, interpretation.specimen.coordinates.y, interpretation.specimen.coordinates.z).toVector(Direction);
 
+      // Make sure location exists
+      if(specimen.location === null) {
+        var specimenLocation = {"lng": null, "lat": null}
+      } else {
+        var specimenLocation = {"lng": specimen.location.lng, "lat": specimen.location.lat}
+      }
+
+
       rows.push(new Array(
         specimen.name,
         direction.dec,
@@ -2353,6 +2204,8 @@ function downloadInterpretations(fit) {
         specimen.beddingStrike,
         specimen.beddingDip,
         specimen.level,
+        specimenLocation.lng,
+        specimenLocation.lat,
         interpretation.MAD,
         interpretation.anchored,
         interpretation.type,
@@ -2424,25 +2277,6 @@ function HTTPRequest(url, type, callback) {
 
 }
 
-function getPublicationFromPID() {
-
-  /*
-   * Function getPublicationFromPID
-   * Returns the resource that belogns to the PID
-   */
-
-  // Get the publication from the URL
-  var SHA256 = location.search.substring(1);
-  
-  if(!PUBLICATIONS.hasOwnProperty(SHA256)) {
-    notify("danger", "Data from this persistent identifier could not be found.");
-  }
-
-  // Request the persistent resource from disk
-  HTTPRequest("./publications/" + SHA256 + ".pid", "GET", __unlock__);
-  
-}
-
 function __unlock__(json) {
 
   samples = JSON.parse(json);
@@ -2453,28 +2287,3 @@ function __unlock__(json) {
   stepSelector.reset();
 
 }
-
-function __init__() {
-
-  // Check local storage
-  if(!window.localStorage) {
-    return notify("warning", "Local storage is not supported by your browser. Save your work manually by exporting your data.");
-  }
-
-  if(location.search) {
-    return getPublicationFromPID();
-  }
-
-  // Load the specimens from local storage
-  samples = localStorage.getItem("specimens");
-
-  if(samples === null) {
-    samples = new Array();
-    return notify("warning", "Welcome to <b>Paleomagnetism.org</b>. No specimens are available. Add data to begin.");
-  }
-
-  __unlock__(samples);
-
-}
-
-__init__();

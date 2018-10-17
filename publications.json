@@ -1,6 +1,5 @@
-var PUBLICATIONS = {
-  "a1f50f938056e1040d72424b03a80c3404b05d2cbcd90944da124bfc5b7f70fb": {
-    "author": "Mathijs Koymans",
-    "pid": "a1f50f938056e1040d72424b03a80c3404b05d2cbcd90944da124bfc5b7f70fb"
-  }
-}
+[{
+  "author": "Mathijs Koymans",
+  "description": "test file for directions",
+  "pid": "a1f50f938056e1040d72424b03a80c3404b05d2cbcd90944da124bfc5b7f70fb"
+}]
