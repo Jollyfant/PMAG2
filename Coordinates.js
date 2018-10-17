@@ -48,6 +48,11 @@ Coordinates.prototype.unit = function() {
 
 Coordinates.prototype.isValid = function() {
 
+  /*
+   * Function Coordinates.isValid
+   * Returns true if the vector is valid
+   */
+
   return !isNaN(this.x) && !isNaN(this.y) && !isNaN(this.z);
 
 }

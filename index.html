@@ -177,8 +177,23 @@ select {
           
           <div class="container">
 			<div class="row">
-			  <div class="col-md-2 table-scroll">
-			  	<table class="table table-sm" id="step-container"></table>
+			  <div class="col-md-2">
+     
+                <div class="btn-group d-flex btn-group-toggle" data-toggle="buttons">
+                  <label value="TH" class="demagnetization-type-radio btn btn-sm btn-light w-100 active">
+                    <input type="radio" name="options" id="option1" autocomplete="off" checked> <span style="pointer-events: none;" class='text-danger'><i class="fas fa-fire"></i> <b></b></span>
+                  </label>
+                  <label value="AF" class="demagnetization-type-radio btn btn-sm btn-light w-100">
+                    <input type="radio" name="options" id="option2" autocomplete="off"> <span style="pointer-events: none;" class='text-primary'><i class="fas fa-bolt"></i> <b></b></span>
+                  </label>
+                  <label value="OT" class="demagnetization-type-radio btn btn-sm btn-light w-100">
+                    <input type="radio" name="options" id="option3" autocomplete="off"> <span style="pointer-events: none;" class='text-success'><i class="fas fa-question"></i> <b></b></span>
+                  </label>
+                </div>
+                <br>
+                <div class="table-scroll">
+			  	  <table class="table table-sm" id="step-container"></table>
+			    </div>
 			  </div>
 			  <div class="col-md-5">
 			  	<div id="zijderveld-container"></div>
@@ -322,7 +337,7 @@ select {
 </div>
 
 <!-- Leaflet Map Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="map-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">

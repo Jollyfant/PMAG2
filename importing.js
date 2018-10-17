@@ -853,8 +853,9 @@ function handleTableClick(event) {
       specimen.level = Number(response);
       break;
 
+    // Location change requested
     case 11:
-      return $("#exampleModal").modal('show');
+      return $("#map-modal").modal("show");
 
     default:
       return;
@@ -893,10 +894,10 @@ function handleLocation(event) {
 
   notify("success", "Succesfully changed the specimen location to <b>" + longitude + "°E</b>, <b>" + latitude + "°N</b>.");
 
-  $("#exampleModal").modal("hide");
+  $("#map-modal").modal("hide");
 
   saveLocalStorage();
-  redrawCharts();
+  formatStepTable();
 
 }
 
@@ -909,7 +910,7 @@ function promptNew(question, callback) {
 
   function temp(event) {
 
-    $("#exampleModal").modal("hide");
+    $("#map-modal").modal("hide");
 
     if(event.target.id === "confirm-button") {
       return callback(true);
@@ -925,18 +926,6 @@ function promptNew(question, callback) {
   $("#exampleModal2").modal("show");
 
 }
-  
-$("#exampleModal").on("shown.bs.modal", function () {
-
-  var specimen = getSelectedSpecimen();
-
-  if(marker && specimen.location) {
-    marker.setLatLng(new L.LatLng(specimen.location.lat, specimen.location.lng));
-  }
-
-  map.invalidateSize();
-
-})
 
 function clearLocalStorage() {
 
@@ -1313,7 +1302,7 @@ function fEquals(one, two) {
 
 }
 
-function redrawCharts() {
+function redrawCharts(hover) {
 
   /*
    * Function redrawCharts
@@ -1326,21 +1315,30 @@ function redrawCharts() {
 
   var specimen = getSelectedSpecimen();
 
-  plotZijderveldDiagram(specimen);
-  plotIntensityDiagram(specimen);
-  eqAreaProjection(specimen);
+  // Redraw the three interpretation charts
+  plotZijderveldDiagram(hover);
+  plotIntensityDiagram(hover);
+  eqAreaProjection(hover);
 
   // Redraw
-  redrawInterpretationGraph(false);
+  //redrawInterpretationGraph(false);
 
   updateInterpretationTable(specimen);
-
-  document.getElementById("table-container").innerHTML = stepSelector.formatStepTable();
+  formatStepTable();
 
   // Reset the scroll position
   window.scrollTo(0, tempScrollTop);
 
 }
+
+Array.from(document.getElementsByClassName("demagnetization-type-radio")).forEach(function(x) {
+
+  x.addEventListener("click", function(event) {
+    getSelectedSpecimen().demagnetizationType = $(event.target).attr("value");
+  });
+
+});
+
 
 function interpretationTableClickHandler(event) {
 
@@ -1493,7 +1491,8 @@ function keyboardHandler(event) {
    * Handles keypresses on keyboard
    */
 
-  if($("#exampleModal").hasClass("show")) {
+  // No key events with map modal open
+  if($("#map-modal").hasClass("show")) {
     return;
   }
 
@@ -1953,7 +1952,7 @@ function getUBS(intensityData) {
     if(i !== intensityData.length) {	
       UBS.push({
         "x": intensityData[i - 1].x,
-	"y": Math.abs(intensityData[i - 1].y - intensityData[i].y),
+	    "y": Math.abs(intensityData[i - 1].y - intensityData[i].y),
         "stepIndex": intensityData[i - 1].stepIndex
       });	
     }
@@ -2009,7 +2008,7 @@ function getVDS(intensityData) {
 
 }
 
-function plotIntensityDiagram(specimen) {
+function plotIntensityDiagram(hover) {
 
   /*
    * Function plotIntensityDiagram
@@ -2038,7 +2037,10 @@ function plotIntensityDiagram(specimen) {
 
   }
 
+  var specimen = getSelectedSpecimen();
+
   var intensities = new Array();
+  var hoverIndex = null;
 
   specimen.steps.forEach(function(step, i) {
 
@@ -2048,53 +2050,105 @@ function plotIntensityDiagram(specimen) {
       return;
     }
 
+    if(stepSelector._selectedStep === i) {
+      hoverIndex = intensities.length;
+    }
+
     // Get the treatment step as a number
     var treatmentStep = Number(step.step.replace(/[^0-9.]/g, ""));
 
-    if(stepSelector._selectedStep === i) {
-      var marker = {"radius": MARKER_RADIUS_SELECTED}
-    } else {
-      var marker = {"radius": MARKER_RADIUS}
-    }
-
-    marker.symbol = "circle";
-
     intensities.push({
-      "x": treatmentStep, 
+      "x": treatmentStep,
       "y": new Coordinates(step.x, step.y, step.z).length,
-      "marker": marker,
       "stepIndex": i
     });
-
-    
 
   });
 
   var normalizedIntensities = normalize(intensities);
+  var VDS = getVDS(normalizedIntensities);
+  var UBS = getUBS(normalizedIntensities);
+
+  // Not hovering over a step: hide points
+  if(hoverIndex === null) {
+    aHover = {"x": null, "y": null}
+    bHover = {"x": null, "y": null}
+  } else {
+    aHover = normalizedIntensities[hoverIndex];
+    bHover = VDS[hoverIndex];
+  }
+
+  var chart = $("#intensity-container").highcharts();
+
+  // Only redraw the hover series
+  if(chart && hover) {
+
+    chart.series[0].data[0].update(aHover);
+    chart.series[1].data[0].update(bHover);
+
+    return;
+
+  }
+
+  var hoverResultant = {
+     "type": "scatter",
+     "data": [aHover],
+     "zIndex": 2,
+     "linkedTo": "resultant",
+     "marker": {
+       "lineWidth": 1,
+       "symbol": "circle",
+       "radius": MARKER_RADIUS_SELECTED,
+       "lineColor": HIGHCHARTS_BLUE,
+       "fillColor": HIGHCHARTS_BLUE
+     }
+   }
+
+  var hoverVDS = {
+     "type": "scatter",
+     "data": [bHover],
+     "zIndex": 2,
+     "linkedTo": "vds",
+     "marker": {
+       "lineWidth": 1,
+       "symbol": "circle",
+       "radius": MARKER_RADIUS_SELECTED,
+       "lineColor": HIGHCHARTS_ORANGE,
+       "fillColor": HIGHCHARTS_ORANGE
+     }
+   }
 
   // Get the unblocking spectrum (UBS) and vector difference sum (VDS)
-  var plotSeries = new Array({
-    "name": 'Resultant Intensity',
+  var plotSeries = new Array(hoverResultant, hoverVDS, {
+    "name": "Resultant Intensity",
+    "id": "resultant",
     "data": normalizedIntensities,
-    "zIndex": 10
+    "color": HIGHCHARTS_BLUE,
+    "zIndex": 1
   }, {
-    "name": 'Vector Difference Sum',
-    "data": getVDS(normalizedIntensities),
-    "zIndex": 10
+    "name": "Vector Difference Sum",
+    "id": "vds",
+    "data": VDS,
+    "color": HIGHCHARTS_ORANGE,
+    "marker": {
+      "symbol": "circle"
+    },
+    "zIndex": 1
   }, {
     "type": "area",
     "step": true,
     "pointWidth": 50,
     "name": "Unblocking Spectrum",
+    "color": HIGHCHARTS_GREEN,
     "marker": {
       "enabled": false,
       "symbol": "circle"
     },
-    "data": getUBS(normalizedIntensities),
+    "data": UBS,
     "zIndex": 0
   });
 
-  createIntensityDiagram(specimen, plotSeries);
+  createIntensityDiagram(hover, plotSeries);
  
 }
 

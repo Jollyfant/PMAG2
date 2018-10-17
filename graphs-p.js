@@ -1,3 +1,5 @@
+"use strict";
+
 const HIGHCHARTS_BLUE = "#7CB5EC";
 const HIGHCHARTS_BLACK = "#434348";
 const HIGHCHARTS_GREEN = "#90ED7D";
@@ -97,7 +99,7 @@ function inReferenceCoordinates(reference, specimen, coordinates) {
 
 }
 
-function plotZijderveldDiagram(specimen) {
+function plotZijderveldDiagram(hover) {
 
   /*
    * Function plotZijderveldDiagram
@@ -105,6 +107,9 @@ function plotZijderveldDiagram(specimen) {
    */
 
   const ENABLE_ZIJDERVELD_TOOLTIP = true;
+  const CHART_CONTAINER = "zijderveld-container";
+
+  var specimen = getSelectedSpecimen();
 
   //Specimen metadata (core and bedding orientations)
   var coreBedding = specimen.coreAzimuth;
@@ -143,6 +148,8 @@ function plotZijderveldDiagram(specimen) {
 
   }
 
+  var hoverIndex = null;
+
   specimen.steps.forEach(function(step, i) {
 
     // If the step is not visible: stop
@@ -150,12 +157,12 @@ function plotZijderveldDiagram(specimen) {
       return;
     }
 
+    // Save index of the active step for displaying the hover icon
     if(stepSelector._selectedStep === i) {
-      var marker = {"radius": MARKER_RADIUS_SELECTED}
-    } else {
-      var marker = {"radius": MARKER_RADIUS}
+      hoverIndex = horizontal.length;
     }
 
+    // Calculate the correction direction for this step
     var coordinates = inReferenceCoordinates(COORDINATES, specimen, new Coordinates(step.x, step.y, step.z));
     var direction = coordinates.toVector(Direction);
 
@@ -169,7 +176,6 @@ function plotZijderveldDiagram(specimen) {
         "inc": direction.inc,
         "intensity": direction.length,
         "step": step.step,
-        "marker": marker,
         "stepIndex": i
       });
       
@@ -182,7 +188,6 @@ function plotZijderveldDiagram(specimen) {
         "inc": direction.inc,
         "intensity": direction.length,
         "step": step.step,
-        "marker": marker,
         "stepIndex": i
       });
 
@@ -223,7 +228,60 @@ function plotZijderveldDiagram(specimen) {
   var tickFlag = false;
   var enableLabels = false;
 
-  Highcharts.chart("zijderveld-container", {
+  var vHover;
+  var hHover;
+
+  // If the step is not visible hide the hover point
+  if(hoverIndex === null) {
+    vHover = {"x": null, "y": null}
+    hHover = {"x": null, "y": null}
+  } else {
+    vHover = vertical[hoverIndex];
+    hHover = horizontal[hoverIndex];
+  }
+
+  var chart = $("#" + CHART_CONTAINER).highcharts();
+
+  // If the chart exists and we are asked to only redraw the hover series
+  if(chart && hover) {
+
+    chart.series[0].data[0].update(hHover);
+    chart.series[1].data[0].update(vHover);
+
+    return;
+
+  }
+
+  var hoverSeriesHorizontal = {
+     "type": "scatter",
+     "data": [hHover],
+     "linkedTo": "horizontal",
+     "zIndex": 10,
+     "marker": {
+       "lineWidth": 1,
+       "symbol": "circle",
+       "radius": MARKER_RADIUS_SELECTED,
+       "lineColor": HIGHCHARTS_BLUE,
+       "fillColor": HIGHCHARTS_BLUE
+     }
+   }
+
+  var hoverSeriesVertical = {
+     "type": "scatter",
+     "data": [vHover],
+     "linkedTo": "vertical",
+     "zIndex": 10,
+     "marker": {
+       "symbol": "circle",
+       "lineWidth": 1,
+       "radius": MARKER_RADIUS_SELECTED,
+       "lineColor": HIGHCHARTS_BLUE,
+       "fillColor": HIGHCHARTS_WHITE
+     }
+   }
+
+  // Create the chart
+  Highcharts.chart(CHART_CONTAINER, {
     "chart": {
     "animation": false,
     "id": "zijderveld-container",
@@ -330,7 +388,9 @@ function plotZijderveldDiagram(specimen) {
       "text": "Paleomagnetism.org (Zijderveld Diagram)",
       "href": ""
     },
-    "series": [{
+    "series": [
+      hoverSeriesHorizontal,
+      hoverSeriesVertical, {
       "type": "line",
       "linkedTo": "horizontal",
       "enableMouseTracking": false,
@@ -418,8 +478,8 @@ function getRotationMatrix(lambda, phi) {
 function getRotationMatrixR(lambda, phi) {
 
   /*
-   * Function getRotationMatrix
-   * Returns the rotation matrix
+   * Function getRotationMatrixR
+   * Returns the reversed rotation matrix (transpose)
    */
 
   return new Array(
@@ -507,14 +567,15 @@ function formatInterpretationSeriesArea(interpretations) {
 
 }
 
-function formatInterpretationSeries(scaling, interpretations) {
+function formatInterpretationSeries(intensity, interpretations) {
 
   /*
    * Function formatInterpretationSeries
    * Formats the series used for showing interpretated directions
    */
 
-  var scaling = 2 * scaling;
+  // Make the lines double as long as the intensity
+  var scaling = 2 * intensity;
   var series = new Array();
 
   interpretations.forEach(function(interpretation) {
@@ -629,7 +690,7 @@ function resetMarkerSize() {
 
 }
 
-function createIntensityDiagram(sample, series) {
+function createIntensityDiagram(hover, series) {
 
   /*
    * Function createIntensityDiagram
@@ -643,15 +704,21 @@ function createIntensityDiagram(sample, series) {
      * Formats the Highcharts intensity diagram tooltip
      */
 
-    return "<b>Demagnetization Step: </b>" + this.x + "<br> <b>Intensity </b>" + this.y.toFixed(2);
+    return [
+      "<b>Demagnetization Step: </b>" + this.x,
+      "<b>Intensity </b>" + this.y.toFixed(2)
+    ].join("<br>");
 
   }
 
   const EXPORTING_WIDTH = 1200;
   const EXPORTING_HEIGHT = 400;
   const EXPORTING_FILENAME = "intensity-diagram";
+  const CHART_CONTAINER = "intensity-container";
 
-  Highcharts.chart("intensity-container", {
+  var specimen = getSelectedSpecimen();
+
+  Highcharts.chart(CHART_CONTAINER, {
     "chart": {
       "animation": false,
       "zoomType": "xy",
@@ -672,7 +739,7 @@ function createIntensityDiagram(sample, series) {
       }
     },
     "title": {
-      "text": "Intensity Diagram " + sample.name
+      "text": "Intensity Diagram " + specimen.name
     },
     "yAxis": {
       "title": {
@@ -735,6 +802,13 @@ function projectInclination(inc) {
 
 function createHemisphereChart(series) {
 
+  /*
+   * Function createHemisphereChart
+   * Creates a hemisphere chart
+   */
+
+  const CHART_CONTAINER = "fitting-container";
+
   function generateTooltip() {
 
     return [
@@ -745,7 +819,7 @@ function createHemisphereChart(series) {
 
   }
 
-  Highcharts.chart("fitting-container", {
+  Highcharts.chart(CHART_CONTAINER, {
     "chart": {
       "polar": true,
       "animation": false
@@ -810,22 +884,16 @@ function createHemisphereChart(series) {
 
 }
 
-function getMarkerColor(inclination) {
-
-  if(inclination < 0) {
-   return HIGHCHARTS_WHITE;
-  } else {
-    return HIGHCHARTS_BLUE;
-  }
-
-}
-
-function eqAreaProjection(specimen) {
+function eqAreaProjection(hover) {
 
   /* 
    * Function eqAreaProjection
    * Description: Handles plotting for equal area projection
    */
+
+  const CHART_CONTAINER = "hemisphere-container";
+
+  var specimen = getSelectedSpecimen();
 
   //Get the bedding and core parameters from the sample object
   var coreAzi = specimen.coreAzimuth;
@@ -835,11 +903,11 @@ function eqAreaProjection(specimen) {
 	
   // Get the Boolean flags for the graph
   var enableLabels = false;
-
-  var information;
 	
   // Format a Highcharts data bucket for samples that are visible
   var dataSeries = new Array();
+
+  var hoverIndex = null;
 
   // Go over each step
   specimen.steps.forEach(function(step, i) {
@@ -848,33 +916,60 @@ function eqAreaProjection(specimen) {
       return;
     }
 
+    // 
     if(stepSelector._selectedStep === i) {
-      var marker = {"radius": MARKER_RADIUS_SELECTED}
-    } else {
-      var marker = {"radius": MARKER_RADIUS}
+      hoverIndex = dataSeries.length;
     }
 
     var direction = inReferenceCoordinates(COORDINATES, specimen, new Coordinates(step.x, step.y, step.z)).toVector(Direction);
-
-    marker.fillColor = getMarkerColor(direction.inc);
-    marker.lineWidth = 1;
-    marker.lineColor = HIGHCHARTS_BLUE;
 
     dataSeries.push({
       "x": direction.dec, 
       "y": projectInclination(direction.inc), 
       "inc": direction.inc, 
       "step": step.step,
-      "marker": marker,
+      "marker": {
+        "fillColor": (direction.inc < 0 ? HIGHCHARTS_WHITE : HIGHCHARTS_BLUE),
+        "lineWidth": 1,
+        "lineColor": HIGHCHARTS_BLUE
+      },
       "stepIndex": i
     });
     
   });
-	
+
+  var hoverPoint;
+  if(hoverIndex === null) {
+    hoverPoint = {"x": null, "y": null}
+  } else {
+    hoverPoint = dataSeries[hoverIndex];
+  }
+
+  var chart = $("#" + CHART_CONTAINER).highcharts();
+
+  // Only redraw the hover series (series: 0, data: 0)
+  if(chart && hover) {
+    return chart.series[0].data[0].update(hoverPoint);
+  }
+
+  var hoverSeriesHorizontal = {
+     "type": "scatter",
+     "linkedTo": "directions",
+     "zIndex": 10,
+     "data": [hoverPoint],
+     "marker": {
+       "lineWidth": 1,
+       "symbol": "circle",
+       "radius": MARKER_RADIUS_SELECTED,
+       "lineColor": HIGHCHARTS_BLUE,
+       "fillColor": HIGHCHARTS_BLUE
+     }
+   }
+
   // Prevent making a connection between first - last data point
   dataSeries.push(null);
 	
-  Highcharts.chart("hemisphere-container", {
+  Highcharts.chart(CHART_CONTAINER, {
     "chart": {
       "polar": true,
       "events": {
@@ -951,15 +1046,17 @@ function eqAreaProjection(specimen) {
           },
           "enabled": enableLabels,
           "formatter": function () {
-               return this.point.step;
+            return this.point.step;
           }
         }
       }
     },
-    "series": [{
+    "series": [hoverSeriesHorizontal, {
       "name": "Directions",
+      "id": "directions",
       "type": "scatter",
-      "zIndex": 100,
+      "zIndex": 5,
+      "color": HIGHCHARTS_BLUE,
       "data": dataSeries
     }, {
       "enableMouseTracking": false,

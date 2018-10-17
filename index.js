@@ -4,32 +4,79 @@ document.getElementById("specimen-select").addEventListener("change", resetSpeci
 document.getElementById("table-container").addEventListener("click", handleTableClick);
 document.getElementById("save-location").addEventListener("click", handleLocation);
 
-var southWest = L.latLng(-90, -180),
-northEast = L.latLng(90, 180);
-var bounds = L.latLngBounds(southWest, northEast);
+  var leafletMarker;
+  var map;
 
-var map = L.map('map', {"minZoom": 1,   maxBounds: bounds,
-  maxBoundsViscosity: 0.5,"attributionControl": false}).setView([35, 0], 1);
+function addMap() {
 
-var marker;
-map.on("click", function(e) {
+  /*
+   * Function addMap
+   * Adds map to the application
+   */
 
-  const LOCATION_PRECISION = 5;
+  const MAP_CONTAINER = "map";
+  const VIEWPORT = new L.latLng(35, 0);
+  const TILE_LAYER = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
 
-  if(marker) {
-      map.removeLayer(marker);
+  var mapOptions = {
+    "minZoom": 1,
+    "maxBounds": new L.latLngBounds(new L.latLng(-90, -180), new L.latLng(90, 180)),
+    "maxBoundsViscosity": 0.5,
+    "attributionControl": true
   }
 
-  document.getElementById("specimen-longitude-input").value = e.latlng.lng.toPrecision(LOCATION_PRECISION);
-  document.getElementById("specimen-latitude-input").value = e.latlng.lat.toPrecision(LOCATION_PRECISION);
+  // Create the map and tile layer
+  map = L.map(MAP_CONTAINER, mapOptions).setView(VIEWPORT, 1);
+  L.tileLayer(TILE_LAYER).addTo(map);
+ 
+  // Attach a click handler
+  map.on("click", mapClickHandler);
 
-  marker = new L.Marker(e.latlng).addTo(map);
+  // Listeners 
+  $("#map-modal").on("shown.bs.modal", modalOpenHandler);
 
-});
+}
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-}).addTo(map);
+function modalOpenHandler() {
+
+  /*
+   * Function modalOpenHandler
+   * Callback fired when the map modal is opened
+   */
+
+  var specimen = getSelectedSpecimen();
+
+  // If this specimen is located, put on map
+  if(leafletMarker && specimen.location) {
+    leafletMarker.setLatLng(new L.LatLng(specimen.location.lat, specimen.location.lng));
+  }
+
+  // Resize map to modal
+  map.invalidateSize();
+
+}
+
+function mapClickHandler(event) {
+
+  /*
+   * Function mapClickHandler
+   * Handles mouse click event on the map
+   */
+  
+  const LOCATION_PRECISION = 5;
+  
+  // Remove previous marker
+  if(leafletMarker) {
+    map.removeLayer(leafletMarker);
+  }
+  
+  // Extract the latitude, longitude
+  document.getElementById("specimen-longitude-input").value = event.latlng.lng.toPrecision(LOCATION_PRECISION);
+  document.getElementById("specimen-latitude-input").value = event.latlng.lat.toPrecision(LOCATION_PRECISION);
+  
+  leafletMarker = new L.Marker(event.latlng).addTo(map);
+
+}
 
 var StepSelector = function() {
 
@@ -49,8 +96,13 @@ var StepSelector = function() {
 
 StepSelector.prototype.setActiveStep = function(index) {
 
+  /*
+   * Function StepSelector.setActiveStep
+   * Sets the active step to a particular index
+   */
+
   this._selectedStep = index;
-  this.render();
+  this.render(true);
 
 }
 
@@ -64,7 +116,7 @@ StepSelector.prototype.reset = function() {
    */
 
   this._selectedStep = 0;
-  this.render();
+  this.render(false);
 
 }
 
@@ -79,7 +131,7 @@ StepSelector.prototype.clear = function() {
 
 }
 
-StepSelector.prototype.render = function() {
+StepSelector.prototype.render = function(hover) {
 
   /*
    * Function StepSelector.render
@@ -94,6 +146,15 @@ StepSelector.prototype.render = function() {
 
   if(specimen === null) {
     return;
+  }
+
+  // Select the appropriate radio button for this demagnetization type
+  if(specimen.demagnetizationType === "TH") {
+    $("#option1").parent().button("toggle");
+  } else if(specimen.demagnetizationType === "AF") {
+    $("#option2").parent().button("toggle");
+  } else {
+    $("#option3").parent().button("toggle");
   }
 
   var listSteps = document.createElement("tbody");
@@ -126,28 +187,29 @@ StepSelector.prototype.render = function() {
 
   }, this);
 
+  // Add to the DOM
   this._container.appendChild(listSteps);
 
-  redrawCharts();
+  // Update the charts
+  redrawCharts(hover);
 
 }
 
-
-StepSelector.prototype.formatStepTable = function() {
+function formatStepTable() {
 
   /*
    * Function StepSelector.formatStepTable
    * Formats parameter table at the top of the page
    */
 
-  var step = this.getCurrentStep();
+  var step = stepSelector.getCurrentStep();
   var specimen = getSelectedSpecimen();
 
   var direction = inReferenceCoordinates(COORDINATES, specimen, new Coordinates(step.x, step.y, step.z)).toVector(Direction);
 
   var specimenLocation = specimen.location === null ? "<span style='pointer-events: none;' class='text-muted'>Unknown</span>" : (specimen.location.lng.toFixed(3) + ", " + specimen.location.lat.toFixed(3));
 
-  return [
+  document.getElementById("table-container").innerHTML = [
     "  <caption>Specimen and Demagnetization Details</caption>",
     "  <thead>",
     "    <tr>",
@@ -201,6 +263,8 @@ StepSelector.prototype.hideStep = function() {
 
   // Practical to move to the next step
   this.handleStepScroll(1);
+
+  this.render(false);
 
   saveLocalStorage();
 
@@ -264,7 +328,7 @@ StepSelector.prototype.handleStepScroll = function(direction) {
   // Positive roll-over
   this._selectedStep = this._selectedStep % steps.length;
 
-  this.render();
+  this.render(true);
 
   if(this._selectedStep > 15) {
     this._container.parentElement.scrollTop = (this._selectedStep - 15) * 24;
@@ -273,10 +337,6 @@ StepSelector.prototype.handleStepScroll = function(direction) {
   }
 
 }
-
-
-// Components
-var stepSelector = new StepSelector();
 
 function getPublicationFromPID() {
 
@@ -316,8 +376,13 @@ function __init__() {
     return notify("warning", "Welcome to <b>Paleomagnetism.org</b>. No specimens are available. Add data to begin.");
   }
 
+  addMap();
+
   __unlock__(samples);
 
 }
+
+// Components
+var stepSelector = new StepSelector();
 
 __init__();
