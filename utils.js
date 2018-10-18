@@ -19,7 +19,7 @@ function notify(type, text) {
   window.scrollTo(0, 0);
 
   // Play sound if enabled
-  if(document.getElementById("enable-sound").checked) {
+  if(document.getElementById("enable-sound") && document.getElementById("enable-sound").checked) {
 
     if(type === "warning" || type === "danger") {
       warning.play();
@@ -35,7 +35,6 @@ function notify(type, text) {
       "<button type='button' class='close' data-dismiss='alert' aria-label='Close'>",
         "<span aria-hidden='true'>&times;</span>",
       "</button>",
-      "<i class='far fa-comment'></i>",
       text,
     "</div>"
   ].join("\n");
@@ -175,6 +174,7 @@ function addFooter() {
    */
 
   document.getElementById("footer-container").innerHTML = new Array(
+    "<hr>",
     "<b>Paleomagnetism<span class='text-danger'>.org</span></b> &copy; " + new Date().getFullYear() + ". All Rights Reserved.",
     "<div style='float: right;' class='text-muted'><small>Version v" + __VERSION__ + "</small></div>",
     "&nbsp; <i class='fab fa-github'></i> <a href='https://github.com/Jollyfant'><b>Source Code</b></a>",

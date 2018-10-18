@@ -53,7 +53,8 @@
           <li class="nav-item">
             <a class="nav-link" href="#">Magnetostratigraphy</a>
           </li>
-          <li class="nav-item">            <span class="nav-link disabled" href="#">|</span></li>
+          <li class="nav-item">
+            <span class="nav-link disabled" href="#">|</span></li>
           <li class="nav-item">
             <a class="nav-link" href="#">References</a>
           </li>
@@ -63,8 +64,8 @@
         </ul>
 
         <form class="form-inline my-2 my-lg-0">
-          <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
-          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Find Publication</button>
+          <input id="search-bar" class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
+          <a href="./pid.html" class="btn btn-sm btn-primary my-2 my-sm-0"><i class="fas fa-search"></i> <b>Search Objects</b></a>
         </form>
       </div>
 
@@ -224,9 +225,10 @@
             <div class="col-md-6 ">
               <div id="fitting-container"></div>
               <figcaption class="figure-caption">Figure showing interpreted components. Great circles can be fitted to directional set points by pressing <b>9</b>.</figcaption>
-              <hr>
             </div>
           </div>
+
+          <br>
 
           <div class="row justify-content-md-center">
             <div class="col-md-6 ">
@@ -237,8 +239,7 @@
           <div class="row justify-content-md-center">
             <div class="col-md-6 ">
               <div class='text-center'>
-                <button onclick="downloadInterpretations()" type="button" class="btn btn-primary">Download Interpretations</button>
-                <button onclick="downloadInterpretations(true)" type="button" class="btn btn-primary">Download Interpretations (Fitted)</button>
+                <button class="btn btn-sm btn-success" onclick="downloadInterpretations()" type="button" class="btn btn-primary"><i class="fas fa-file-download"></i>&nbsp; Download Interpretations</button>
               </div>
             </div>
           </div>
@@ -251,7 +252,7 @@
           <h5> Saving Data </h5>
           <p> Data from the application can be exported in the <b>Paleomagnetism.org 2.0.0</b> format. 
           <p>
-          <button onclick="exportApplicationSave()" type="button" class="btn btn-sm btn-success"><i class="fas fa-file-download"></i> Download application save</button>
+          <button onclick="exportApplicationSave()" type="button" class="btn btn-sm btn-success"><i class="fas fa-file-download"></i>&nbsp; Download application save</button>
           <hr>
 
           <!-- Options for sorting -->
@@ -314,6 +315,10 @@
             &nbsp;
             <input class="form-check-input" type="checkbox" id="enable-sound" value="option1" checked>
             <label class="form-check-label" for="enable-sound"> Sound </label>
+            &nbsp;
+            &nbsp;
+            <input class="form-check-input" type="checkbox" id="auto-comment" value="option1">
+            <label class="form-check-label" for="auto-comment"> Auto comment </label>
           </div>
           <br>
           <br>
@@ -322,18 +327,18 @@
           <h5> Application Reset </h5>
           <p> The application will be resetted as local storage will be cleared. Export your data manually to save it.
           <p>
-          <button onclick="clearLocalStorage()" type="button" class="btn btn-sm btn-danger"><i class="fas fa-times"></i> Reset Local Storage</button>
+          <button onclick="clearLocalStorage()" type="button" class="btn btn-sm btn-danger"><i class="fas fa-times"></i>&nbsp; Reset Local Storage</button>
         
         </div>
 
       </div>
 
-    <hr>
+    </div>
 
     <footer id='footer-container' class='container text-muted'></footer>
 
     <br> 
-    <div class="row justify-content-md-center text-center">
+    <div class="justify-content-md-center text-center">
 	  <div style="text-align: right; display: inline-block;">
 	    <a href="http://www.geo.uu.nl/~forth/"><img style="margin: 0px; height: 60px;" src="./images/UU.png"></a>
         <a href="http://erc.europa.eu/"><img style="margin: 0px; height: 60px;" src="./images/ERC.png"></a>

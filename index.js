@@ -271,7 +271,9 @@ function redrawInterpretationGraph(fit) {
   var dataSeriesPlane = new Array();
   var dataSeriesFitted = new Array();
 
-  if(fit) {
+  IS_FITTED = fit;
+
+  if(IS_FITTED) {
     try {
       var sampless = getFittedGreatCircles();
     } catch(exception) {
@@ -280,6 +282,9 @@ function redrawInterpretationGraph(fit) {
   } else {
     var sampless = samples;
   }
+
+  var meanVector = new Coordinates(0, 0, 0);
+  var nSamples = 0;
 
   sampless.forEach(function(sample) {
 
@@ -291,10 +296,14 @@ function redrawInterpretationGraph(fit) {
       }
 
       var coordinates = interpretation[COORDINATES].coordinates;
-      var direction = new Coordinates(coordinates.x, coordinates.y, coordinates.z).toVector(Direction);
+      var co = new Coordinates(coordinates.x, coordinates.y, coordinates.z);
+      var direction = co.toVector(Direction);
 
       // TAU1 could be fitted component or true component
       if(interpretation.type === "TAU1") {
+
+        meanVector = meanVector.add(co);
+        nSamples++;
 
         // Add fitted components to another series
         if(interpretation.fitted) {
@@ -335,8 +344,14 @@ function redrawInterpretationGraph(fit) {
 
   });
 
+  // Update the mean table
+  var mean = meanVector.toVector(Direction);
+
+  // Update the table
+  updateInterpretationMeanTable(mean, nSamples);
+
   var series = [{
-    "name": "Direction Components",
+    "name": "Directions",
     "type": "scatter",
     "data": dataSeries,
     "color": HIGHCHARTS_ORANGE,
@@ -344,11 +359,28 @@ function redrawInterpretationGraph(fit) {
       "symbol": "circle",
       "lineColor": HIGHCHARTS_ORANGE
     }
+  }, {
+    "name": "Mean",
+    "type": "scatter",
+    "data": [{
+      "sample": "Mean",
+      "x": mean.dec,
+      "y": projectInclination(mean.inc),
+      "inc": mean.inc
+    }],
+    "color": HIGHCHARTS_GREEN,
+    "marker": {
+      "symbol": "circle",
+      "radius": MARKER_RADIUS_SELECTED,
+      "fillColor": mean.inc < 0 ? HIGHCHARTS_WHITE : HIGHCHARTS_GREEN,
+      "lineWidth": 1,
+      "lineColor": HIGHCHARTS_GREEN
+    }
   }];
 
   if(dataSeriesPlane.length) {
     series.push({
-      "name": "Great Circles Components",
+      "name": "Great Circles",
       "type": "line",
       "data": dataSeriesPlane,
       "color": HIGHCHARTS_ORANGE,
@@ -363,7 +395,7 @@ function redrawInterpretationGraph(fit) {
 
   if(dataSeriesFitted.length) {
     series.push({
-      "name": "Fitted Components",
+      "name": "Fitted Directions",
       "type": "scatter",
       "data": dataSeriesFitted,
       "color": HIGHCHARTS_RED,
@@ -776,34 +808,6 @@ function getFittedGreatCircles() {
 
   }
 
-  var direction = meanVector.toVector(Direction);
-
-  var meanTable = [
-    "  <caption>Statistics</caption>",
-    "  <thead>",
-    "    <tr>",
-    "      <td>Count</td>",
-    "      <td>TAU1</td>",
-    "      <td>TAU3</td>",
-    "      <td>Mean Declination</td>",
-    "      <td>Mean Inclination</td>",
-    "      <td>Reference</td>",
-    "    </tr>",
-    "  </thead>",
-    "  <tbody>",
-    "    <tr>",
-    "      <td>" + (interpretationPointers.length + nPoints) + "</td>",
-    "      <td>" + nPoints + "</td>",
-    "      <td>" + interpretationPointers.length + "</td>",
-    "      <td>" + direction.dec.toFixed(2) + "</td>",
-    "      <td>" + direction.inc.toFixed(2) + "</td>",
-    "      <td>" + fixedCoordinates + "</td>",
-    "    </tr>",
-    "  </tbody>"
-  ].join("\n");
-
-  document.getElementById("fitted-table-container").innerHTML = meanTable;
-
   // Mutate the fitted TAU3 components to become TAU1
   fittedCircleCoordinates.forEach(convertInterpretation);
 
@@ -811,6 +815,34 @@ function getFittedGreatCircles() {
 
   // Return the new set of samples
   return copySamples;
+
+}
+
+function updateInterpretationMeanTable(direction, N) {
+
+  var meanTable = [
+    "  <caption>Mean Component Statistics</caption>",
+    "  <thead>",
+    "    <tr>",
+    "      <td>Directions</td>",
+    "      <td>Declination</td>",
+    "      <td>Inclination</td>",
+    "      <td>Reference</td>",
+    "      <td>Fitted</td>",
+    "    </tr>",
+    "  </thead>",
+    "  <tbody>",
+    "    <tr>",
+    "      <td>" + N + "</td>",
+    "      <td>" + direction.dec.toFixed(2) + "</td>",
+    "      <td>" + direction.inc.toFixed(2) + "</td>",
+    "      <td>" + COORDINATES + "</td>",
+    "      <td>" + IS_FITTED + "</td>",
+    "    </tr>",
+    "  </tbody>"
+  ].join("\n");
+
+  document.getElementById("fitted-table-container").innerHTML = meanTable;
 
 }
 
@@ -888,8 +920,13 @@ function __unlock__(json) {
 
   samples = JSON.parse(json);
   
-  notify("success", "Welcome back! Succesfully loaded <b>" + samples.length + "</b> specimen(s) from local storage.");
-  
+  if(samples.length) {
+    notify("success", "Welcome back! Succesfully loaded <b>" + samples.length + "</b> specimen(s) from local storage.");
+    $("#nav-profile-tab").tab("show");
+  } else {
+    notify("success", "Welcome to <b>Paleomagnetism.org</b>! Add data below to get started with your analysis.");
+  }
+
   updateSpecimenSelect();
   stepSelector.reset();
 
@@ -905,6 +942,7 @@ var COORDINATES = "specimen";
 var GROUP = "DEFAULT";
 var UPWEST = true;
 var samples = new Array();
+var IS_FITTED = false;
 
 function keyboardHandler(event) {
 
@@ -915,6 +953,10 @@ function keyboardHandler(event) {
 
   // No key events with map modal open
   if($("#map-modal").hasClass("show")) {
+    return;
+  }
+
+  if(document.activeElement === document.getElementById("search-bar")) {
     return;
   }
 
@@ -1366,16 +1408,33 @@ function getPublicationFromPID() {
   // Get the publication from the URL
   var SHA256 = location.search.substring(1);
 
-  if(!PUBLICATIONS.hasOwnProperty(SHA256)) {
-    notify("danger", "Data from this persistent identifier could not be found.");
-  }
+  HTTPRequest("./publications.json", "GET", function(PUBLICATIONS) {
 
-  // Request the persistent resource from disk
-  HTTPRequest("./publications/" + SHA256 + ".pid", "GET", __unlock__);
+    var [pid, sample] = SHA256.split(".");
+
+    var publication = JSON.parse(PUBLICATIONS).filter(x => x.pid === pid);
+
+    if(!publication.length) {
+      return notify("danger", "Data from this persistent identifier could not be found.");
+    }
+
+    // Request the persistent resource from disk
+    if(!sample) {
+      HTTPRequest("./publications/" + pid + ".pid", "GET", function(samples) {
+console.log(JSON.parse(samples));
+        __unlock__(JSON.stringify(JSON.parse(samples).specimens));
+      });
+    } else {
+      HTTPRequest("./publications/" + pid + ".pid", "GET", function(samples) {
+        __unlock__(JSON.stringify(new Array(JSON.parse(samples).specimens[sample])));
+      });
+    }
+
+  });
 
 }
 
-function downloadInterpretations(fit) {
+function downloadInterpretations() {
 
   /*
    * Function downloadInterpretations
@@ -1401,8 +1460,18 @@ function downloadInterpretations(fit) {
 
   var rows = new Array(CSV_HEADER.join(","));
 
+  if(IS_FITTED) {
+    try {
+      var sampless = getFittedGreatCircles();
+    } catch(exception) {
+      return notify("danger", exception);
+    }
+  } else {
+    var sampless = samples;
+  }
+
   // Export the interpreted components as CSV
-  samples.forEach(function(specimen) {
+  sampless.forEach(function(specimen) {
 
     specimen.interpretations.forEach(function(interpretation) {
 
@@ -1692,6 +1761,14 @@ function makeInterpretation(specimen, options) {
   var tectCoordinates = inReferenceCoordinates("tectonic", specimen, PCA.component.coordinates);
   var tectMass = inReferenceCoordinates("tectonic", specimen, PCA.component.centerMass);
 
+  var comment;
+
+  if(document.getElementById("auto-comment").checked) {
+    comment = prompt("Enter a comment for this interpretation.");
+  } else {
+    comment = null
+  }
+
   // Attach the interpretation to the specimen
   specimen.interpretations.push({
     "steps": stepValues,
@@ -1702,7 +1779,7 @@ function makeInterpretation(specimen, options) {
     "group": GROUP,
     "MAD": PCA.MAD,
     "intensity": PCA.intensity,
-    "comment": null,
+    "comment": comment,
     "fitted": false,
     "specimen": PCA.component,
     "geographic": {"coordinates": geoCoordinates, "centerMass": geoMass},
@@ -1909,8 +1986,7 @@ function __init__() {
   samples = localStorage.getItem("specimens");
 
   if(samples === null) {
-    samples = new Array();
-    notify("success", "Welcome to <b>Paleomagnetism.org</b>. No specimens are available. Add data to begin.");
+    samples = JSON.stringify(new Array());
   }
 
   __unlock__(samples);
