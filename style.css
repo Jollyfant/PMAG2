@@ -1,0 +1,43 @@
+body {
+  padding-top: 5rem;
+}
+
+.map {
+  height: 400px;
+  width: 100%;
+}
+
+select {
+  text-align: center;
+}
+
+#notification-container {
+  text-align: center;
+}
+
+.table-scroll {
+  height: 400px;
+  direction: rtl;
+  overflow-y: auto;
+}
+
+#table-container {
+  text-align: center;
+}
+
+#step-container {
+  text-align: center;
+  cursor: pointer;
+}
+
+#step-container tr.selected {
+  font-weight: bold;
+}
+
+#step-container tr.current {
+  background-image: linear-gradient(to right, rgba(0,0,0,0), rgba(124,181,236,0.25), rgba(0,0,0,0));
+}
+
+#step-container tr:hover {
+  background-image: linear-gradient(to right, rgba(0,0,0,0), rgba(124,181,236,0.25), rgba(0,0,0,0));
+}

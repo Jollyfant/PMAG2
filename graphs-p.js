@@ -12,6 +12,225 @@ const HIGHCHARTS_TURQUOISE = "#2B908F";
 const HIGHCHARTS_RED = "#F45B5B";
 const HIGHCHARTS_WHITE = "#FFFFFF";
 
+const ENABLE_CREDITS = false;
+const MARKER_RADIUS_SELECTED = 6;
+
+function getUBS(intensityData) {
+
+  /*
+   * Function getUBS
+   * Returns the unblocking spectrum
+   */
+
+  var UBS = new Array();
+
+  for(var i = 1; i < intensityData.length + 1; i++) {
+    if(i !== intensityData.length) {
+      UBS.push({
+        "x": intensityData[i - 1].x,
+        "y": Math.abs(intensityData[i - 1].y - intensityData[i].y),
+        "stepIndex": intensityData[i - 1].stepIndex
+      });
+    }
+  }
+
+  // Add the first point
+  if(UBS.length) {
+    UBS.push({
+      "x": intensityData[intensityData.length - 1].x,
+      "y": UBS[UBS.length - 1].y,
+      "stepIndex": intensityData[intensityData.length - 1].stepIndex
+    });
+  }
+
+  return UBS;
+
+}
+
+
+function getVDS(intensityData) {
+
+  /*
+   * Function getVDS
+   * Returns the vector difference sum based on an intensity array
+   */
+
+  // Get the vector difference sum
+  var VDS = new Array();
+  var sum;
+
+  for(var i = 1; i < intensityData.length + 1; i++) {
+
+    sum = 0;
+
+    for(var j = i; j < intensityData.length + 1; j++) {
+
+      if(j === intensityData.length) {
+        sum += Math.abs(intensityData[j-1].y);
+      } else {
+        sum += Math.abs(intensityData[j-1].y - intensityData[j].y);
+      }
+
+    }
+
+    VDS.push({
+      "x": intensityData[i-1].x,
+      "y": sum,
+      "marker": intensityData[i-1].marker,
+      "stepIndex": intensityData[i-1].stepIndex
+    });
+
+  }
+
+  return VDS;
+
+}
+
+function plotIntensityDiagram(hover) {
+
+  /*
+   * Function plotIntensityDiagram
+   *
+   */
+
+  function normalize(intensities) {
+
+    const NORMALIZE_INTENSITIES = true;
+
+    // Normalize the intensities to the maximum resultant intensity
+    if(NORMALIZE_INTENSITIES) {
+      var normalizationFactor = Math.max.apply(null, intensities.map(x => x.y));
+    } else {
+      var normalizationFactor = 1;
+    }
+
+    return intensities.map(function(x) {
+      return {
+        "x": x.x,
+        "y": x.y / normalizationFactor,
+        "marker": x.marker,
+        "stepIndex": x.stepIndex
+      }
+    });
+
+  }
+
+  var specimen = getSelectedSpecimen();
+
+  var intensities = new Array();
+  var hoverIndex = null;
+
+  specimen.steps.forEach(function(step, i) {
+
+    // On show steps that are visible
+    //Remove mT, μT, C or whatever from step - just take a number
+    if(!step.visible) {
+      return;
+    }
+
+    if(stepSelector._selectedStep === i) {
+      hoverIndex = intensities.length;
+    }
+
+    // Get the treatment step as a number
+    var treatmentStep = Number(step.step.replace(/[^0-9.]/g, ""));
+
+    intensities.push({
+      "x": treatmentStep,
+      "y": new Coordinates(step.x, step.y, step.z).length,
+      "stepIndex": i
+    });
+
+  });
+
+  var normalizedIntensities = normalize(intensities);
+  var VDS = getVDS(normalizedIntensities);
+  var UBS = getUBS(normalizedIntensities);
+  var aHover, bHover;
+
+  // Not hovering over a step: hide points
+  if(hoverIndex === null) {
+    aHover = {"x": null, "y": null}
+    bHover = {"x": null, "y": null}
+  } else {
+    aHover = normalizedIntensities[hoverIndex];
+    bHover = VDS[hoverIndex];
+  }
+
+  var chart = $("#intensity-container").highcharts();
+
+  // Only redraw the hover series
+  if(chart && hover) {
+
+    chart.series[0].data[0].update(aHover);
+    chart.series[1].data[0].update(bHover);
+
+    return;
+
+  }
+
+  var hoverResultant = {
+     "type": "scatter",
+     "data": [aHover],
+     "zIndex": 2,
+     "linkedTo": "resultant",
+     "marker": {
+       "lineWidth": 1,
+       "symbol": "circle",
+       "radius": MARKER_RADIUS_SELECTED,
+       "lineColor": HIGHCHARTS_BLUE,
+       "fillColor": HIGHCHARTS_BLUE
+     }
+   }
+
+  var hoverVDS = {
+     "type": "scatter",
+     "data": [bHover],
+     "zIndex": 2,
+     "linkedTo": "vds",
+     "marker": {
+       "lineWidth": 1,
+       "symbol": "circle",
+       "radius": MARKER_RADIUS_SELECTED,
+       "lineColor": HIGHCHARTS_ORANGE,
+       "fillColor": HIGHCHARTS_ORANGE
+     }
+   }
+
+  // Get the unblocking spectrum (UBS) and vector difference sum (VDS)
+  var plotSeries = new Array(hoverResultant, hoverVDS, {
+    "name": "Resultant Intensity",
+    "id": "resultant",
+    "data": normalizedIntensities,
+    "color": HIGHCHARTS_BLUE,
+    "zIndex": 1
+  }, {
+    "name": "Vector Difference Sum",
+    "id": "vds",
+    "data": VDS,
+    "color": HIGHCHARTS_ORANGE,
+    "marker": {
+      "symbol": "circle"
+    },
+    "zIndex": 1
+  }, {
+    "type": "area",
+    "step": true,
+    "pointWidth": 50,
+    "name": "Unblocking Spectrum",
+    "color": HIGHCHARTS_GREEN,
+    "marker": {
+      "enabled": false,
+      "symbol": "circle"
+    },
+    "data": UBS,
+    "zIndex": 0
+  });
+
+  createIntensityDiagram(hover, plotSeries);
+
+}
+
 function generateHemisphereTooltip() {
 
   /*
@@ -41,6 +260,10 @@ function generateZijderveldTooltip() {
    * Function generateZijderveldTooltip
    * Generates the Zijderveld chart tooltip
    */
+
+  if(!document.getElementById("zijderveld-tooltip").checked) {
+    return false;
+  }
 
   return [
     "<b>Demagnetization Step: </b>" + this.point.step,
@@ -106,7 +329,6 @@ function plotZijderveldDiagram(hover) {
    * Handles plotting of Zijderveld plot
    */
 
-  const ENABLE_ZIJDERVELD_TOOLTIP = true;
   const CHART_CONTAINER = "zijderveld-container";
 
   var specimen = getSelectedSpecimen();
@@ -201,7 +423,6 @@ function plotZijderveldDiagram(hover) {
         "inc": direction.inc,
         "intensity": direction.length,
         "step": step.step,
-        "marker": marker,
         "stepIndex": i
       });
       
@@ -213,8 +434,7 @@ function plotZijderveldDiagram(hover) {
         "dec": direction.dec,
         "inc": direction.inc,
         "intensity": direction.length,
-        "step": step.step,
-        "marker": marker,
+        "step": step.step
       });
 
      }
@@ -294,7 +514,6 @@ function plotZijderveldDiagram(hover) {
       "text": specimen.name
     },
     "tooltip": {
-      "enabled": ENABLE_ZIJDERVELD_TOOLTIP,
       "formatter": generateZijderveldTooltip
     },
     "exporting": {

@@ -1,11 +1,1015 @@
-document.getElementById("customFile").addEventListener("change", fileSelection);
-document.getElementById("interpretation-table-container").addEventListener("click", interpretationTableClickHandler);
-document.getElementById("specimen-select").addEventListener("change", resetSpecimenHandler);
-document.getElementById("table-container").addEventListener("click", handleTableClick);
-document.getElementById("save-location").addEventListener("click", handleLocation);
+// Event handlers
+function registerEventHandlers() {
 
-  var leafletMarker;
-  var map;
+  // Simple listeners
+  document.getElementById("customFile").addEventListener("change", fileSelectionHandler);
+  document.addEventListener("keydown", keyboardHandler);
+  document.getElementById("interpretation-table-container").addEventListener("click", interpretationTableClickHandler);
+  document.getElementById("specimen-select").addEventListener("change", resetSpecimenHandler);
+  document.getElementById("table-container").addEventListener("click", handleTableClick);
+  document.getElementById("save-location").addEventListener("click", handleLocationSave);
+
+  // Radio class listeners
+  Array.from(document.getElementsByClassName("demagnetization-type-radio")).forEach(function(x) {
+    x.addEventListener("click", function(event) {
+      getSelectedSpecimen().demagnetizationType = $(event.target).attr("value");
+    });
+  });
+
+}
+
+function readMultipleFiles(files, callback) {
+
+  /*
+   * Function readMultipleFiles
+   * Uses the HTML5 FileReader API to read mutliple fires and fire a callback with its contents
+   */
+
+  var readFile, file, reader
+  var fileContents = new Array();
+
+  // IIFE to read multiple files
+  (readFile = function(file) {
+
+    // All files were read
+    if(!files.length) {
+      return callback(fileContents);
+    }
+
+    // Next queued file: create a new filereader instance
+    file = files.pop();
+    reader = new FileReader();
+
+    // XML should be readable as text
+    reader.readAsText(file);
+
+    // Callback when one file is read (this is async)
+    reader.onload = function() {
+
+      console.debug("FileReader read file " + file.name + " (" + file.size + " bytes)");
+
+      // Append the result
+      fileContents.push({
+        "name": file.name,
+        "data": reader.result,
+        "size": file.size
+      });
+
+      // More files to read: continue
+      readFile();
+
+    }
+
+  })();
+
+}
+
+var Measurement = function(step, coordinates, error) {
+
+  /*
+   * Class Measurement
+   * Container for a single demagnetization step
+   */
+
+  this.step = step;
+
+  this.x = Number(coordinates.x);
+  this.y = Number(coordinates.y);
+  this.z = Number(coordinates.z);
+
+  this.error = Number(error);
+
+  this.visible = true;
+  this.selected = false;
+
+}
+
+
+var Measurement = function(step, coordinates, error) {
+
+  /*
+   * Class Measurement
+   * Container for a single demagnetization step
+   */
+
+  this.step = step;
+
+  this.x = Number(coordinates.x);
+  this.y = Number(coordinates.y);
+  this.z = Number(coordinates.z);
+
+  this.error = Number(error);
+
+  this.visible = true;
+  this.selected = false;
+
+}
+
+
+function addDegmagnetizationFiles(format, files) {
+
+  /*
+   * Function addDegmagnetizationFiles
+   * Adds files loaded by the Filehandler API and delegates to the correct handler
+   */
+
+  switch(format) {
+    case "UTRECHT":
+      return files.forEach(importUtrecht);
+    case "MUNICH":
+      return files.forEach(importMunich);
+    case "PMAGORG2":
+      return files.forEach(importApplicationSave);
+    case "PMAGORG":
+      return files.forEach(importApplicationSaveOld);
+    case "HELSINKI":
+      return files.forEach(importHelsinki);
+    case "CALTECH":
+      return files.forEach(importCaltech);
+    case "BCN2G":
+      return files.forEach(importBCN2G);
+    case "NGU":
+      return files.forEach(importNGU);
+    case "PALEOMAC":
+      return files.forEach(importPaleoMac);
+    case "OXFORD":
+      return files.forEach(importOxford);
+    default:
+      throw(new Exception("Unknown importing format requested."));
+  }
+
+}
+
+function fileSelectionHandler(event) {
+
+  /*
+   * Function fileSelectionHandler
+   * Callback fired when input files are selected
+   */
+
+  const format = document.getElementById("format-selection").value;
+
+  readMultipleFiles(Array.from(event.target.files), function(files) {
+
+    // Drop the samples if not appending
+    if(!document.getElementById("append-input").checked) {
+      samples = new Array();
+    }
+
+    var nSamples = samples.length;
+
+    // Try adding the demagnetization data
+    try {
+      addDegmagnetizationFiles(format, files);
+    } catch(exception) {
+      return notify("danger", exception);
+    }
+
+    updateSpecimenSelect();
+
+    notify("success", "Succesfully added <b>" + (samples.length - nSamples) + "</b> specimen(s) (" + format + "). Proceed to the interpretation tab to find your data.");
+
+  });
+
+}
+
+function updateInterpretationTable(specimen) {
+
+  /*
+   * Function updateInterpretationTable
+   * Updates the table with information on interpreted components
+   */
+
+  const COMMENT_LENGTH = 15;
+  const ERROR_NO_COMPONENTS = "<div class='text-muted text-center'>No Components Available</div>";
+  const DEFAULT_COMMENT = "Click to add";
+
+  var specimen = getSelectedSpecimen();
+
+  // No interpretations to show
+  if(specimen.interpretations.length === 0) {
+    return document.getElementById("interpretation-table-container").innerHTML = ERROR_NO_COMPONENTS;
+  }
+
+  var tableHeader = new Array(
+    "<table class='table table-sm table-striped'>",
+    "  <caption>Interpreted Components</caption>",
+    "  <tr>",
+    "    <td></td>",
+    "    <td>Declination</td>",
+    "    <td>Inclination</td>",
+    "    <td>Intensity</td>",
+    "    <td>MAD</td>",
+    "    <td>Type</td>",
+    "    <td>Anchored</td>",
+    "    <td>Steps</td>",
+    "    <td>Group</td>",
+    "    <td>Comment</td>",
+    "    <td>Created</td>",
+    "    <td class='text-center text-danger' style='text-align: center; cursor: pointer;'><b style='pointer-events: none;'>Clear All</b></td>",
+    "  </tr>"
+  ).join("\n");
+
+  // Start adding all the specimens
+  var rows = specimen.interpretations.map(function(interpretation, i) {
+
+    // Get the interpretation in the right reference frame
+    var component = interpretation[COORDINATES];
+
+    var direction = new Coordinates(component.coordinates.x, component.coordinates.y, component.coordinates.z).toVector(Direction);
+
+    // Handle comments on interpretations
+    if(interpretation.comment === null) {
+      comment = DEFAULT_COMMENT;
+    } else {
+      comment = interpretation.comment;
+    }
+
+    var mad = interpretation.MAD.toFixed(2);
+    if(interpretation.anchored) {
+      mad = "<span class='text-danger' title='The MAD for anchored components is unreliable.'>" + mad + "</span>";
+    }
+
+    var intensity = interpretation.intensity.toFixed(2);
+    if(interpretation.anchored) {
+      intensity = "<span class='text-danger' title='The intensity for anchored components is unreliable.'>" + intensity + "</span>";
+    }
+
+    return [
+      "  </tr>",
+      "    <td><b>#" + i + "</b></td>",
+      "    <td>" + direction.dec.toFixed(2) + "</td>",
+      "    <td>" + direction.inc.toFixed(2) + "</td>",
+      "    <td>" + intensity + "</td>",
+      "    <td>" + mad + "</td>",
+      "    <td>" + interpretation.type + "</td>",
+      "    <td>" + interpretation.anchored + "</td>",
+      "    <td>" + interpretation.steps.length + "</td>",
+      "    <td style='cursor: pointer;' class='text-muted'>" + interpretation.group + "</td>",
+      "    <td style='cursor: pointer;' title='" + comment + "'>" + ((comment.length < COMMENT_LENGTH) ? comment : comment.slice(0, COMMENT_LENGTH) + "…") + "</td>",
+      "    <td>" + interpretation.created + "</td>",
+      "    <td class='text-center text-danger' style='text-align: center; cursor: pointer;'><i style='pointer-events: none;' class='fas fa-times'></i></td>",
+      "  </tr>"
+    ].join("\n");
+
+  });
+
+  var tableFooter = "</table>";
+
+  document.getElementById("interpretation-table-container").innerHTML = tableHeader + rows.join("\n") + tableFooter;
+
+}
+
+function redrawInterpretationGraph(fit) {
+
+  /*
+   * Function redrawInterpretationGraph
+   * Redraws the hemisphere projection with all interpreted TAU1, TAU3
+   */
+
+  var dataSeries = new Array();
+  var dataSeriesPlane = new Array();
+  var dataSeriesFitted = new Array();
+
+  if(fit) {
+    try {
+      var sampless = getFittedGreatCircles();
+    } catch(exception) {
+      return notify("danger", exception);
+    }
+  } else {
+    var sampless = samples;
+  }
+
+  sampless.forEach(function(sample) {
+
+    sample.interpretations.forEach(function(interpretation) {
+
+      // Skip anything not in the group
+      if(interpretation.group !== GROUP) {
+        return;
+      }
+
+      var coordinates = interpretation[COORDINATES].coordinates;
+      var direction = new Coordinates(coordinates.x, coordinates.y, coordinates.z).toVector(Direction);
+
+      // TAU1 could be fitted component or true component
+      if(interpretation.type === "TAU1") {
+
+        // Add fitted components to another series
+        if(interpretation.fitted) {
+
+          dataSeriesFitted.push({
+            "x": direction.dec,
+            "y": projectInclination(direction.inc),
+            "inc": direction.inc,
+            "sample": sample.name,
+            "marker": {
+              "fillColor": direction.inc < 0 ? HIGHCHARTS_WHITE : HIGHCHARTS_RED,
+              "lineWidth": 1
+            }
+          });
+
+        } else {
+
+          dataSeries.push({
+            "x": direction.dec,
+            "y": projectInclination(direction.inc),
+            "inc": direction.inc,
+            "sample": sample.name,
+            "marker": {
+              "fillColor": direction.inc < 0 ? HIGHCHARTS_WHITE : HIGHCHARTS_ORANGE,
+              "lineWidth": 1
+            }
+          });
+
+        }
+
+      }
+
+      if(interpretation.type === "TAU3") {
+        dataSeriesPlane = dataSeriesPlane.concat(getPlaneData(direction), null);
+      }
+
+    });
+
+  });
+
+  var series = [{
+    "name": "Direction Components",
+    "type": "scatter",
+    "data": dataSeries,
+    "color": HIGHCHARTS_ORANGE,
+    "marker": {
+      "symbol": "circle",
+      "lineColor": HIGHCHARTS_ORANGE
+    }
+  }];
+
+  if(dataSeriesPlane.length) {
+    series.push({
+      "name": "Great Circles Components",
+      "type": "line",
+      "data": dataSeriesPlane,
+      "color": HIGHCHARTS_ORANGE,
+      "dashStyle": "ShortDash",
+      "lineWidth": 1,
+      "enableMouseTracking": false,
+      "marker": {
+        "enabled": false
+      }
+    });
+  }
+
+  if(dataSeriesFitted.length) {
+    series.push({
+      "name": "Fitted Components",
+      "type": "scatter",
+      "data": dataSeriesFitted,
+      "color": HIGHCHARTS_RED,
+      "marker": {
+        "symbol": "circle",
+        "lineColor": HIGHCHARTS_RED
+      }
+    });
+  }
+
+  createHemisphereChart(series);
+
+}
+
+function handleLocationSave(event) {
+
+  /*
+   * Function handleLocationSave
+   * Handler when the location and some additional metadata are saved
+   */
+
+  var specimen = getSelectedSpecimen();
+
+  var longitude = Number(document.getElementById("specimen-longitude-input").value);
+  var latitude = Number(document.getElementById("specimen-latitude-input").value);
+
+  var lithology = document.getElementById("specimen-lithology-input").value;
+  if(lithology === "") {
+    lithology = null;
+  }
+
+  var level = document.getElementById("specimen-level-input").value;
+  if(level === "") {
+    level = 0;
+  }
+
+  if(longitude === 0 || latitude === 0) {
+    var specimenLocation = null;
+  } else {
+    var specimenLocation = {"lng": longitude, "lat": latitude};
+  }
+
+  // If apply all has been checked
+  if(document.getElementById("location-apply-all").checked) {
+
+    // Update all samples
+    samples.forEach(function(sample) {
+      sample.location = specimenLocation;
+      sample.lithology = lithology;
+      sample.level = level;
+    });
+
+  } else {
+    specimen.location = specimenLocation;
+    specimen.lithology = lithology;
+    specimen.level = level;
+  }
+
+  // Success
+  notify("success", "Succesfully changed the specimen location to <b>" + longitude + "°E</b>, <b>" + latitude + "°N</b>.");
+
+  $("#map-modal").modal("hide");
+
+  saveLocalStorage();
+  formatStepTable();
+
+}
+
+function handleTableClick(event) {
+
+  /*
+   * Function handleTableClick
+   * Handles event when clicked on table
+   */
+
+  const CORE_AZIMUTH_COLUMN = 6;
+  const CORE_DIP_COLUMN = 7;
+  const BEDDING_STRIKE_COLUMN = 8;
+  const BEDDING_DIP_COLUMN = 9;
+  const INFO_COLUMN = 10;
+
+  var specimen = getSelectedSpecimen();
+
+  if(event.target.parentElement.rowIndex === 0) {
+    return;
+  }
+
+  switch(event.target.cellIndex) {
+
+    case CORE_AZIMUTH_COLUMN:
+      var response = prompt("Enter a value for the core azimuth.");
+      if(response === null) {
+        return;
+      }
+      specimen.coreAzimuth = Number(response);
+      break;
+
+    case CORE_DIP_COLUMN:
+      var response = prompt("Enter a value for the core dip.");
+      if(response === null) {
+        return;
+      }
+      specimen.coreDip = Number(response);
+      break;
+
+    case BEDDING_STRIKE_COLUMN:
+      var response = prompt("Enter a value for the bedding strike.");
+      if(response === null) {
+        return;
+      }
+      specimen.beddingStrike = Number(response);
+      break;
+
+    case BEDDING_DIP_COLUMN:
+      var response = prompt("Enter a value for the bedding dip.");
+      if(response === null) {
+        return;
+      }
+      specimen.beddingDip = Number(response);
+      break;
+
+    // Location change requested
+    case INFO_COLUMN:
+      return $("#map-modal").modal("show");
+
+    default:
+      return;
+  }
+
+  specimen.interpretations = new Array();
+
+  notify("success", "Specimen parameters have been updated. All interpretations have been removed.");
+
+  saveLocalStorage();
+  redrawCharts();
+
+}
+
+function handleSpecimenScroll(direction) {
+
+  /*
+   * Function handleSpecimenScroll
+   * Handles scrolling of the specimen selection box in both directions
+   */
+
+  const specimenSelectElement = document.getElementById("specimen-select");
+  const options = specimenSelectElement.getElementsByTagName("option");
+
+  // Zero or one sample: do nothing
+  if(options.length < 2) {
+    return;
+  }
+
+  // Get the currently selected index
+  var selectedIndex = specimenSelectElement.selectedIndex;
+
+  // Scrolling logic
+  var newIndex = selectedIndex + direction;
+
+  if(newIndex === -1) {
+    newIndex = options.length - 1;
+  }
+
+  // Select the new index
+  options[newIndex % options.length].selected = "selected";
+
+  // Manually dispatch a change event
+  specimenSelectElement.dispatchEvent(new Event("change"));
+
+}
+
+function getSelectedSpecimen() {
+
+  /*
+   * Function getSelectedSpecimen
+   * Returns the currently selected specimen object
+   */
+
+  const specimenSelectElement = document.getElementById("specimen-select");
+
+  var selectedIndex = specimenSelectElement.selectedIndex;
+
+  if(selectedIndex === -1) {
+    return null;
+  }
+
+  return samples[selectedIndex];
+
+}
+
+function updateSpecimenSelect() {
+
+  /*
+   * Function updateSpecimenSelect
+   * Updates the specimenSelector with new samples
+   */
+
+  removeOptions(document.getElementById("specimen-select"));
+
+  samples.forEach(addPrototypeSelection);
+  stepSelector.reset();
+  saveLocalStorage();
+
+}
+
+function removeOptions(selectbox) {
+
+  /*
+   * Function removeOptions
+   * Removes options from a select box
+   */
+
+  Array.from(selectbox.options).forEach(function(x) {
+    selectbox.remove(x);
+  });
+
+}
+
+function addPrototypeSelection(x, i) {
+
+  /*
+   * Function addPrototypeSelection
+   * Adds a prototype to the user prototype selection box
+   */
+
+  var option = document.createElement("option");
+
+  option.text = x.name;
+  option.value = i;
+
+  document.getElementById("specimen-select").add(option);
+
+}
+
+function getFittedGreatCircles() {
+
+  /*
+   * Function getFittedGreatCircles
+   * Returns a new set of samples with TAU3 fitted to TAU1
+   */
+
+  function fitCircle(circleVector, meanVector) {
+  
+    /*
+     * Function getFittedGreatCircles::fitCircle
+     * Returns point on a great circle defined by circleVector closest to meanVector
+     */
+  
+    var meanUnitVector = meanVector.unit();
+  
+    var tau = circleVector.dot(meanUnitVector);
+    var rho = Math.sqrt(1 - tau * tau);
+  	
+    return new Coordinates(
+      (meanUnitVector.x - tau * circleVector.x) / rho,
+      (meanUnitVector.y - tau * circleVector.y) / rho,
+      (meanUnitVector.z - tau * circleVector.z) / rho,
+    );
+  
+  }
+
+  const ANGLE_CUTOFF = 1E-2;
+  const fixedCoordinates = COORDINATES;
+
+  // Container for pointers to the sample / interpretation objects
+  var interpretationPointers = new Array();
+  var meanVector = new Coordinates(0, 0, 0);
+  var nPoints = 0;
+
+  // Prevent mutation and create a clone of all samples in memory
+  // using a trick with JSON serialization/deserialization
+  copySamples = JSON.parse(JSON.stringify(samples));
+
+  copySamples.forEach(function(sample) {
+
+    sample.interpretations.forEach(function(interpretation) {
+
+      // Skip interpretations not in group
+      if(interpretation.group !== GROUP) {
+        return;
+      }
+
+      // Fit in the correct coordinate reference frame
+      var reference = interpretation[fixedCoordinates].coordinates;
+      var coordinates = new Coordinates(reference.x, reference.y, reference.z);
+
+      // Add the set point to the mean vector
+      if(interpretation.type === "TAU1") {
+        nPoints++;
+        return meanVector = meanVector.add(coordinates);
+      }
+
+      // Save the TAU3 component for fitting
+      if(interpretation.type === "TAU3") {
+
+        // Push memory references to the sample and interpretations for later
+        interpretationPointers.push({
+          "coordinates": coordinates,
+          "sample": sample,
+          "interpretation": interpretation
+        });
+
+      }
+    
+    });
+
+  });
+
+  if(nPoints === 0 && interpretationPointers.length === 0) {
+    throw(new Exception("No interpretations available."));
+  }
+
+  if(interpretationPointers.length === 0) {
+    throw(new Exception("No great circles available."));
+  }
+
+  // No reference points.. ask user for a reference
+  if(meanVector.isNull()) {
+    meanVector = new Direction(...prompt("No reference points for great circle fitting. Give suggestion: declination, inclination").split(",")).toCartesian();
+  }
+
+  // Confirm the mean vector is valid
+  if(!meanVector.isValid()) {
+    throw(new Exception("The directional mean vector is invalid."));
+  }
+
+  var fittedCircleCoordinates = new Array();
+  var fittedCoordinates;
+
+  // Do the first G' fit on the vector mean
+  interpretationPointers.forEach(function(circle) {
+
+    // Fit the closest point on each great circle to the mean vector
+    fittedCoordinates = fitCircle(circle.coordinates, meanVector);
+
+    // Add this coordinate for the next fit
+    meanVector = meanVector.add(fittedCoordinates);
+
+    // Keep a reference of what was added
+    fittedCircleCoordinates.push(fittedCoordinates);
+
+  });
+
+  var nIterations = 0;
+
+  // Following the approach of McFadden & McElhinny (1988)
+  // Converge fit points to the mean vector
+  while(true) {
+
+    var angles = new Array();
+
+    // Go over all great circles
+    interpretationPointers.forEach(function(circle, i) {
+
+      // Previously fitted point
+      var GPrime = fittedCircleCoordinates[i];
+
+      // Remove this point, find the new closest point on the circle, and add this point
+      meanVector = meanVector.subtract(GPrime);
+      var GPrimeNew = fitCircle(circle.coordinates, meanVector);
+      meanVector = meanVector.add(GPrimeNew);
+
+      // Angles between G and G' (check for convergence)
+      angles.push(Math.acos(Math.min(1, GPrimeNew.dot(GPrime))) / RADIANS);
+
+      // Replace for next iteration
+      fittedCircleCoordinates[i] = GPrimeNew;
+
+    });
+
+    nIterations++;
+
+    // All angles directions are stable and below a certain threshold
+    if(Math.max(...angles) < ANGLE_CUTOFF) {
+      break;
+    }
+   
+  }
+
+  function convertInterpretation(fittedCoordinates, i) {
+
+    /*
+     * Function getFittedGreatCircles::convertInterpretation
+     * Converts a fitted TAU3 to TAU1 component
+     */
+
+    // Follow the previously saved pointers
+    var specimen = interpretationPointers[i].sample;
+    var interpretation = interpretationPointers[i].interpretation;
+
+    // The interpretation type has now become TAU1
+    interpretation.type = "TAU1";           
+    interpretation.fitted = true;           
+
+    // Great circles are fitted in a particular reference frame!
+    // Backpropogate the direction back to specimen coordinates and update the rotated components
+    var specimenCoordinates = fromReferenceCoordinates(fixedCoordinates, specimen, fittedCoordinates);
+
+    // Rotate the TAU1 back to the appropriate reference frame
+    interpretation.specimen.coordinates = specimenCoordinates;
+    interpretation.geographic.coordinates = inReferenceCoordinates("geographic", specimen, specimenCoordinates);
+    interpretation.tectonic.coordinates = inReferenceCoordinates("tectonic", specimen, specimenCoordinates);
+
+    var coordinates = interpretation[fixedCoordinates].coordinates;
+
+    // Confirm that the rotation to base specimen coordinates went OK
+    if(!fEquals(fittedCoordinates.x, coordinates.x) || !fEquals(fittedCoordinates.y, coordinates.y) || !fEquals(fittedCoordinates.z, coordinates.z)) {
+      throw("Assertion failed in rotation of fitted direction.");
+    }
+
+  }
+
+  var direction = meanVector.toVector(Direction);
+
+  var meanTable = [
+    "  <caption>Statistics</caption>",
+    "  <thead>",
+    "    <tr>",
+    "      <td>Count</td>",
+    "      <td>TAU1</td>",
+    "      <td>TAU3</td>",
+    "      <td>Mean Declination</td>",
+    "      <td>Mean Inclination</td>",
+    "      <td>Reference</td>",
+    "    </tr>",
+    "  </thead>",
+    "  <tbody>",
+    "    <tr>",
+    "      <td>" + (interpretationPointers.length + nPoints) + "</td>",
+    "      <td>" + nPoints + "</td>",
+    "      <td>" + interpretationPointers.length + "</td>",
+    "      <td>" + direction.dec.toFixed(2) + "</td>",
+    "      <td>" + direction.inc.toFixed(2) + "</td>",
+    "      <td>" + fixedCoordinates + "</td>",
+    "    </tr>",
+    "  </tbody>"
+  ].join("\n");
+
+  document.getElementById("fitted-table-container").innerHTML = meanTable;
+
+  // Mutate the fitted TAU3 components to become TAU1
+  fittedCircleCoordinates.forEach(convertInterpretation);
+
+  notify("success", "Succesfully fitted <b>" + fittedCircleCoordinates.length + "</b> great circle(s) to " + nPoints + " directional component(s) in <b>" + nIterations + "</b> iteration(s).");
+
+  // Return the new set of samples
+  return copySamples;
+
+}
+
+function redrawCharts(hover) {
+
+  /*
+   * Function redrawCharts
+   * Redraws all the charts for the active specimen
+   */
+
+  // Save the current scroll position for later, otherwise the scroll position will
+  // jump to the top when a Highcharts chart is drawn
+  var tempScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+  var specimen = getSelectedSpecimen();
+
+  plotZijderveldDiagram(hover);
+  plotIntensityDiagram(hover);
+  eqAreaProjection(hover);
+
+  // Redraw without fitting
+  redrawInterpretationGraph(false);
+
+  updateInterpretationTable();
+  formatStepTable();
+
+  // Reset the scroll position
+  window.scrollTo(0, tempScrollTop);
+
+}
+
+function interpretationTableClickHandler(event) {
+
+  var specimen = getSelectedSpecimen();
+
+  var columnIndex = event.target.cellIndex;
+  var rowIndex = event.target.parentElement.rowIndex;
+
+  if(rowIndex === 0 && columnIndex === 11 && confirm("Are you sure you wish to delete all interpretations?")) {
+    specimen.interpretations = new Array();
+  }
+
+  if(rowIndex > 0) {
+
+    if(columnIndex === 8) {
+      var comment = prompt("Enter the new group for this interpretation.");
+      if(comment === null) return;
+      if(comment === "") comment = "DEFAULT";
+      specimen.interpretations[rowIndex - 1].group = comment;
+    }
+
+    if(columnIndex === 9) {
+      var comment = prompt("Enter a comment for this interpretation.");
+      if(comment === null) return;
+      specimen.interpretations[rowIndex - 1].comment = comment;
+    } else if(columnIndex === 11) {
+      specimen.interpretations.splice(rowIndex - 1, 1);
+    }
+
+  }
+
+  redrawCharts();
+  saveLocalStorage();
+
+}
+
+function __unlock__(json) {
+
+  /*
+   * Function __unlock__
+   * Application has initialized and handlers can be registered
+   */
+
+  registerEventHandlers();
+
+  samples = JSON.parse(json);
+  
+  notify("success", "Welcome back! Succesfully loaded <b>" + samples.length + "</b> specimen(s) from local storage.");
+  
+  updateSpecimenSelect();
+  stepSelector.reset();
+
+  addMap();
+  
+} 
+
+// Some globals
+var leafletMarker;
+var map;
+var COORDINATES_COUNTER = 0;
+var COORDINATES = "specimen";
+var GROUP = "DEFAULT";
+var UPWEST = true;
+var samples = new Array();
+
+function keyboardHandler(event) {
+
+  /*
+   * Function keyboardHandler
+   * Handles keypresses on keyboard
+   */
+
+  // No key events with map modal open
+  if($("#map-modal").hasClass("show")) {
+    return;
+  }
+
+  // Block all key commands if the interpretation tab is not open
+  if(!interpretationTabOpen() && !fittingTabOpen()) {
+    return;
+  }
+
+  const CODES = {
+    "ARROW_RIGHT": 39,
+    "ARROW_LEFT": 37,
+    "ARROW_UP": 38,
+    "ARROW_DOWN": 40,
+    "W_KEY": 87,
+    "D_KEY": 68,
+    "S_KEY": 83,
+    "A_KEY": 65,
+    "Z_KEY": 90,
+    "X_KEY": 88,
+    "G_KEY": 71,
+    "I_KEY": 73,
+    "MINUS_KEY": 173,
+    "MINUS_KEY_NUM": 109,
+    "PLUS_KEY": 61,
+    "PLUS_KEY_NUM": 107,
+    "KEYPAD_ONE": 49,
+    "KEYPAD_TWO": 50,
+    "KEYPAD_THREE": 51,
+    "KEYPAD_EIGHT": 56,
+    "KEYPAD_NINE": 57,
+    "ESCAPE_KEY": 27
+  }
+
+  if(samples.length === 0) {
+    return;
+  }
+
+  // Override the default handlers
+  if(!Object.values(CODES).includes(event.keyCode)) {
+    return;
+  }
+
+  event.preventDefault();
+
+  var specimen = getSelectedSpecimen();
+
+  // Delegate to the appropriate handler
+  switch(event.keyCode) {
+    case CODES.ARROW_RIGHT:
+    case CODES.D_KEY:
+      return handleSpecimenScroll(1);
+    case CODES.ARROW_LEFT:
+    case CODES.A_KEY:
+      return handleSpecimenScroll(-1);
+    case CODES.ARROW_DOWN:
+    case CODES.S_KEY:
+      return stepSelector.handleStepScroll(1);
+    case CODES.ARROW_UP:
+    case CODES.W_KEY:
+      return stepSelector.handleStepScroll(-1);
+    case CODES.MINUS_KEY:
+    case CODES.MINUS_KEY_NUM:
+    case CODES.Z_KEY:
+      return stepSelector.hideStep();
+    case CODES.PLUS_KEY:
+    case CODES.PLUS_KEY_NUM:
+    case CODES.X_KEY:
+      return stepSelector.selectStep();
+    case CODES.G_KEY:
+        return setActiveGroup();
+    case CODES.I_KEY:
+        return $("#map-modal").modal("show");
+    case CODES.KEYPAD_ONE:
+      if(event.ctrlKey) {
+        return makeInterpretation(specimen, {"type": "TAU1", "anchored": true});
+      } else {
+        return makeInterpretation(specimen, {"type": "TAU1", "anchored": false});
+      }
+    case CODES.KEYPAD_TWO:
+      if(event.ctrlKey) {
+        return makeInterpretation(specimen, {"type": "TAU3", "anchored": true});
+      } else {
+        return makeInterpretation(specimen, {"type": "TAU3", "anchored": false});
+      }
+    case CODES.KEYPAD_THREE:
+      return switchProjection();
+    case CODES.KEYPAD_EIGHT:
+      return switchCoordinateReference();
+    case CODES.KEYPAD_NINE:
+      return redrawInterpretationGraph(true);
+    case CODES.ESCAPE_KEY:
+      return document.getElementById("notification-container").innerHTML = "";
+  }
+
+}
 
 function addMap() {
 
@@ -44,12 +1048,28 @@ function modalOpenHandler() {
    * Callback fired when the map modal is opened
    */
 
+
   var specimen = getSelectedSpecimen();
+
+  // Update title to show the specimen
+  document.getElementById("exampleModalLabel").innerHTML = "<i class='fas fa-map-marker-alt'></i> &nbsp; Select Specimen location for " + specimen.name;
 
   // If this specimen is located, put on map
   if(leafletMarker && specimen.location) {
     leafletMarker.setLatLng(new L.LatLng(specimen.location.lat, specimen.location.lng));
   }
+
+  if(specimen.location) {
+    document.getElementById("specimen-longitude-input").value = specimen.location.lng;
+    document.getElementById("specimen-latitude-input").value = specimen.location.lat;
+  }
+
+  // Set the existing lithology
+  if(specimen.lithology) {
+    document.getElementById("specimen-lithology-input").value = specimen.lithology;
+  }
+
+  document.getElementById("specimen-level-input").value = specimen.level;
 
   // Resize map to modal
   map.invalidateSize();
@@ -149,9 +1169,9 @@ StepSelector.prototype.render = function(hover) {
   }
 
   // Select the appropriate radio button for this demagnetization type
-  if(specimen.demagnetizationType === "TH") {
+  if(specimen.demagnetizationType === "thermal") {
     $("#option1").parent().button("toggle");
-  } else if(specimen.demagnetizationType === "AF") {
+  } else if(specimen.demagnetizationType === "alternating") {
     $("#option2").parent().button("toggle");
   } else {
     $("#option3").parent().button("toggle");
@@ -223,8 +1243,7 @@ function formatStepTable() {
     "      <td>Core Dip</td>",
     "      <td>Bedding Strike</td>",
     "      <td>Bedding Dip</td>",
-    "      <td>Level</td>",
-    "      <td title='Specimen location'><i class='fas fa-map-marker-alt'></i></td>",
+    "      <td class='text-success' title='Specimen location'><i class='fas fa-map-marker-alt'></i> Info</td>",
     "    </tr>",
     "  </thead>",
     "  <tbody>",
@@ -239,7 +1258,6 @@ function formatStepTable() {
     "      <td style='cursor: pointer;'>" + specimen.coreDip + "</td>",
     "      <td style='cursor: pointer;'>" + specimen.beddingStrike + "</td>",
     "      <td style='cursor: pointer;'>" + specimen.beddingDip + "</td>",
-    "      <td style='cursor: pointer;'>" + specimen.level + "</td>",
     "      <td style='cursor: pointer;'>" + specimenLocation + "</td>",
     "    </tr>",
     "  </tbody>"
@@ -357,6 +1375,525 @@ function getPublicationFromPID() {
 
 }
 
+function downloadInterpretations(fit) {
+
+  /*
+   * Function downloadInterpretations
+   * Downloads all interpretations
+   */
+
+  const FILENAME = "interpretations.csv";
+  const ITEM_DELIMITER = ",";
+
+  const CSV_HEADER = new Array(
+    "name", "declination", "inclination",
+    "reference", "core azimuth", "core dip",
+    "bedding strike", "bedding dip", "level",
+    "longitude", "latitude", "MAD",
+    "anchored", "type", "comment",
+    "created"
+  );
+
+  // No samples are loaded
+  if(samples.length === 0) {
+    return notify("danger", new Exception("No interpretations available to export."));
+  }
+
+  var rows = new Array(CSV_HEADER.join(","));
+
+  // Export the interpreted components as CSV
+  samples.forEach(function(specimen) {
+
+    specimen.interpretations.forEach(function(interpretation) {
+
+      var direction = new Coordinates(interpretation.specimen.coordinates.x, interpretation.specimen.coordinates.y, interpretation.specimen.coordinates.z).toVector(Direction);
+
+      // Make sure location exists
+      if(specimen.location === null) {
+        var specimenLocation = {"lng": null, "lat": null}
+      } else {
+        var specimenLocation = {"lng": specimen.location.lng, "lat": specimen.location.lat}
+      }
+
+      rows.push(new Array(
+        specimen.name,
+        direction.dec,
+        direction.inc,
+        "specimen",
+        specimen.coreAzimuth,
+        specimen.coreDip,
+        specimen.beddingStrike,
+        specimen.beddingDip,
+        specimen.level,
+        specimenLocation.lng,
+        specimenLocation.lat,
+        interpretation.MAD,
+        interpretation.anchored,
+        interpretation.type,
+        interpretation.comment,
+        interpretation.created
+      ).join(ITEM_DELIMITER));
+
+    });
+
+  });
+
+  // No interpretations (only header)
+  if(rows.length === 1) {
+    return notify("danger", new Exception("No interpretations available to export."));
+  }
+
+  downloadAsCSV(FILENAME, rows.join(LINE_DELIMITER));
+
+}
+
+function TMatrix(data) {
+
+  var T = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+
+  data.forEach(function(vector) {
+    for(var k = 0; k < 3; k++) {
+      for(var l = 0; l < 3; l++) {
+        T[k][l] += vector[k] * vector[l]
+      }
+    }
+  });
+
+  return T;
+
+}
+
+var sortEigenvectors = function(eig) {
+
+  /*
+   * Function sortEigenvectors
+   * sorts eigenvalues and corresponding eigenvectors from highest to lowest 
+   */
+
+  // Algorithm to sort eigenvalues and corresponding eigenvectors
+  // as taken from the PmagPY library
+  var t1 = 0;
+  var t2 = 0;
+  var t3 = 1;
+  var ind1 = 0;
+  var ind2 = 1;
+  var ind3 = 2;
+
+  // Normalize eigenvalues (impure)
+  normalizeEigenValues(eig);
+
+  //Determine what eigenvalues are largest and smallest
+  eig.lambda.x.forEach(function(value, i) {
+
+    // Find the largest eigenvalue
+    if(value > t1) {
+      t1 = value;
+      ind1 = i;
+    }
+
+    // Find the smallest eigenvalue
+    if(value < t3) {
+      t3 = value;
+      ind3 = i;
+    }
+
+  });
+
+  // Middle eigenvector
+  eig.lambda.x.forEach(function(value, i) {
+    if(value !== t1 && value !== t3) {
+      t2 = value;
+      ind2 = i;
+    }
+  });
+
+  // Sort eigenvectors
+  return {
+    "v1": new Array(eig.E.x[0][ind1], eig.E.x[1][ind1], eig.E.x[2][ind1]),
+    "v2": new Array(eig.E.x[0][ind2], eig.E.x[1][ind2], eig.E.x[2][ind2]),
+    "v3": new Array(eig.E.x[0][ind3], eig.E.x[1][ind3], eig.E.x[2][ind3]),
+    "tau": new Array(t1, t2, t3)
+  }
+
+}
+
+function normalizeEigenValues(eig) {
+
+  /*
+   * Function normalizeEigenValues
+   * Modifies the eigen object in place and normalizes the eigenvalues to within [0, 1]
+   */
+
+  var trace = 0;
+
+  // Get the trace of the matrix
+  for(var i = 0; i < 3; i++) {
+    trace += eig.lambda.x[i];
+  }
+
+  for(var i = 0; i < 3; i++) {
+    eig.lambda.x[i] = eig.lambda.x[i] / trace;
+  }
+
+}
+
+function makeInterpretations(options, selectedSteps, reference) {
+
+  /*
+   * Function makeInterpretation
+   * Does a PCA interpretation on the selected steps
+   */
+
+  var anchored = options.anchored;
+  var type = options.type;
+
+  var specimen = getSelectedSpecimen();
+
+  var centerMass = new Array(0, 0, 0);
+
+  var vectors = selectedSteps.map(function(step) {
+    return new Array(step.x, step.y, step.z);
+  });
+
+  // Vector of first & last step
+  var firstVector = new Coordinates(...vectors[0]);
+
+  // When anchoring we mirror the points and add them
+  if(anchored) {
+    vectors = vectors.concat(selectedSteps.map(function(step) {
+      return new Array(-step.x, -step.y, -step.z);
+    }));
+  }
+
+  var lastVector = new Coordinates(...vectors[vectors.length - 1]);
+
+  // Transform to the center of mass (not needed when anchoring)
+  if(!anchored) {
+
+    for(var i = 0; i < vectors.length; i++) {
+      for(var j = 0; j < 3; j++) {
+        centerMass[j] += vectors[i][j] / selectedSteps.length;
+      }
+    }
+
+    for(var i = 0; i < vectors.length; i++) {
+      for(var j = 0; j < 3; j++) {
+        vectors[i][j] = vectors[i][j] - centerMass[j];
+      }
+    }
+
+  }
+
+  // Library call (numeric.js) to get the eigenvector / eigenvalues
+  try {
+    var eig = sortEigenvectors(numeric.eig(TMatrix(vectors)));
+  } catch(exception) {
+    throw(new Exception("Could not calculate the eigenvectors."));
+  }
+
+  // Extract all the steps used in the interpretation
+  var stepValues = selectedSteps.map(x => x.step)
+  var centerMassCoordinates = new Coordinates(...centerMass);
+  var directionVector = firstVector.subtract(lastVector);
+  var intensity = directionVector.length;
+
+  var vectorTAU1 = new Coordinates(...eig.v1);
+  var vectorTAU3 = new Coordinates(...eig.v3);
+
+  if(directionVector.dot(vectorTAU1) < 0) {
+    vectorTAU1 = vectorTAU1.reflect();
+  }
+
+  // Determine what eigenvector to use (tau1 for directions; tau3 for planes)
+  switch(type) {
+
+    case "TAU1":
+
+      // Calculation of maximum angle of deviation
+      var s1 = Math.sqrt(eig.tau[0]);
+      var MAD = Math.atan(Math.sqrt(eig.tau[1] + eig.tau[2]) / s1)  / RADIANS;
+
+      // Get the dec/inc of the maximum eigenvector stored in v1
+      var eigenVectorCoordinates = vectorTAU1;
+
+      break;
+
+    case "TAU3":
+
+      // Calculation of maximum angle of deviation
+      var s1 = Math.sqrt((eig.tau[2] / eig.tau[1]) + (eig.tau[2] / eig.tau[0]));
+      var MAD = Math.atan(s1) / RADIANS;
+
+      // Get the coordinates of the maximum eigenvector stored in v3
+      var eigenVectorCoordinates = vectorTAU3;
+
+      // Always take the negative pole by convention
+      if(eigenVectorCoordinates.z > 0) {
+        eigenVectorCoordinates = eigenVectorCoordinates.reflect();
+      }
+
+      break;
+
+    default:
+      throw(new Exception("Unknown interpretation type requested."));
+
+  }
+
+  if(isNaN(MAD)) {
+    MAD = 0;
+  }
+
+  return {
+    "component": {
+      "coordinates": eigenVectorCoordinates,
+      "centerMass": centerMassCoordinates
+    },
+    "intensity": intensity,
+    "MAD": MAD
+  }
+
+}
+
+function makeInterpretation(specimen, options) {
+
+  /*
+   * Function makeInterpretation
+   * Does a PCA on the selected specimen (and its selected steps)
+   */
+
+  // Get the selected steps
+  var selectedSteps = specimen.steps.filter(function(step) {
+    return step.selected;
+  });
+
+  if(selectedSteps.length < 2) {
+    return notify("danger", "A minimum of two selected steps is required.");
+  }
+
+  var stepValues = selectedSteps.map(x => x.step);
+
+  // Check if the interpretation already exists
+  var exists = Boolean(specimen.interpretations.filter(function(interpretation) {
+    return interpretation.steps.join() === stepValues.join() && interpretation.type === options.type && interpretation.anchored === options.anchored;
+  }).length);
+
+  if(exists) {
+    return notify("warning", "This component already exists.");
+  }
+
+  // Get the prinicple component
+  var PCA = makeInterpretations(options, selectedSteps, "specimen");
+
+  // Rotate component to geographic coordinates
+  var geoCoordinates = inReferenceCoordinates("geographic", specimen, PCA.component.coordinates);
+  var geoMass = inReferenceCoordinates("geographic", specimen, PCA.component.centerMass);
+
+  // Rotate component to tectonic coordinates
+  var tectCoordinates = inReferenceCoordinates("tectonic", specimen, PCA.component.coordinates);
+  var tectMass = inReferenceCoordinates("tectonic", specimen, PCA.component.centerMass);
+
+  // Attach the interpretation to the specimen
+  specimen.interpretations.push({
+    "steps": stepValues,
+    "anchored": options.anchored,
+    "type": options.type,
+    "anchored": options.anchored,
+    "created": new Date().toISOString(),
+    "group": GROUP,
+    "MAD": PCA.MAD,
+    "intensity": PCA.intensity,
+    "comment": null,
+    "fitted": false,
+    "specimen": PCA.component,
+    "geographic": {"coordinates": geoCoordinates, "centerMass": geoMass},
+    "tectonic": {"coordinates": tectCoordinates, "centerMass": tectMass},
+    "version": __VERSION__,
+  });
+
+  if(options.refresh === undefined) {
+    redrawCharts();
+  }
+
+  saveLocalStorage();
+
+}
+
+function switchCoordinateReference() {
+
+  /*
+   * Function switchCoordinateReference
+   * Cycles through the available coordinate reference frames
+   */
+
+  const AVAILABLE_COORDINATES = new Array(
+    "specimen",
+    "geographic",
+    "tectonic"
+  );
+
+  // Increment the counter
+  COORDINATES_COUNTER++;
+
+  COORDINATES_COUNTER = COORDINATES_COUNTER % AVAILABLE_COORDINATES.length
+  COORDINATES = AVAILABLE_COORDINATES[COORDINATES_COUNTER];
+
+  // Always redraw the interpretation charts after a reference switch
+  redrawCharts();
+
+}
+
+function switchProjection() {
+
+  /*
+   * Function switchProjection
+   * Toggles the projection between Up/West and Up/North
+   */
+
+  // Toggle and redraw Zijderveld diagram
+  UPWEST = !UPWEST;
+  plotZijderveldDiagram();
+
+}
+
+function sortSamples(type) {
+
+  /*
+   * Function sortSamples
+   * Mutates the samples array in place sorted by a particular type
+   */
+
+  function getSortFunction(type) {
+
+    /*
+     * Function getSortFunction
+     * Returns the sort fuction based on the requested type
+     */
+
+    function lithologySorter(x, y) {
+      return x.lithology < y.lithology ? -1 : x.lithology > y.lithology ? 1 : 0;
+    }
+
+    function nameSorter(x, y) {
+      return x.name < y.name ? -1 : x.name > y.name ? 1 : 0;
+    }
+
+    function randomSorter(x, y) {
+      return Math.random() < 0.5;
+    }
+
+    function stratigraphySorter(x, y) {
+      return x.level - y.level;
+    }
+
+    switch(type) {
+      case "name":
+        return nameSorter;
+      case "bogo":
+        return randomSorter;
+      case "stratigraphy":
+        return stratigraphySorter;
+      case "lithology":
+        return lithologySorter;
+    }
+
+  }
+
+  // Sort the samples in place
+  samples.sort(getSortFunction(type));
+
+  notify("success", "Succesfully sorted specimens by <b>" + type + "</b>.");
+
+  updateSpecimenSelect();
+
+}
+
+function interpretationTabOpen() {
+
+  return Array.from($("#nav-tab a.active")).pop().id === "nav-profile-tab";
+
+}
+
+function fittingTabOpen() {
+
+  return Array.from($("#nav-tab a.active")).pop().id === "nav-fitting-tab";
+
+}
+
+function resetSpecimenHandler(event) {
+
+  /*
+   * Function resetSpecimenHandler
+   * Handler for when a new specimen is selected
+   */
+
+  var specimen = getSelectedSpecimen();
+
+  if(specimen === null) {
+    return;
+  }
+
+  // Create a new step selector
+  stepSelector.reset();
+
+}
+
+function setActiveGroup() {
+
+  /*
+   * Function setActiveGroup
+   * Sets an active group
+   */
+
+  var group = prompt("Enter a new group identifier! Leave empty for the default group.");
+
+  // Cancel was clicked: do nothing
+  if(group === null) {
+    return;
+  }
+
+  // If empty we will reset the group to default
+  if(group === "") {
+    GROUP = "DEFAULT";
+  } else {
+    GROUP = group;
+  }
+
+  notify("success", "Succesfully changed group to <b>" + GROUP + "</b>.");
+
+  // Redraw the intepretation graph (hiding specimens not in group)
+  redrawInterpretationGraph();
+
+}
+
+function exportApplicationSave() {
+
+  /*
+   * Function downloadAsJSON
+   * Generates JSON representation of station table
+   */
+
+  const MIME_TYPE = "data:application/json;charset=utf-8";
+  const FILENAME = "specimens.dir";
+
+  if(samples.length === 0) {
+    return notify("danger", new Exception("No specimens to export"));
+  }
+
+  // Create the persistent identifier
+  var pid = forge_sha256(JSON.stringify(samples));
+
+  // Create the payload with some additional metadata
+  var payload = encodeURIComponent(JSON.stringify({
+    "pid": pid,
+    "specimens": samples,
+    "version": __VERSION__,
+    "created": new Date().toISOString()
+  }));
+
+  downloadURIComponent(FILENAME, MIME_TYPE + "," + payload);
+
+}
+
 function __init__() {
 
   // Check local storage
@@ -373,10 +1910,8 @@ function __init__() {
 
   if(samples === null) {
     samples = new Array();
-    return notify("warning", "Welcome to <b>Paleomagnetism.org</b>. No specimens are available. Add data to begin.");
+    notify("success", "Welcome to <b>Paleomagnetism.org</b>. No specimens are available. Add data to begin.");
   }
-
-  addMap();
 
   __unlock__(samples);
 
