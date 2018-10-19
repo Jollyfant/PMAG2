@@ -60,14 +60,18 @@ function clearLocalStorage() {
 
 }
 
-function saveLocalStorage() {
+function saveLocalStorage(force) {
 
   /*
    * Function saveLocalStorage
    * Saves sample object to local storage
    */
 
-  if(!document.getElementById("auto-save").checked) {
+  if(!force && !document.getElementById("auto-save").checked) {
+    return;
+  }
+
+  if(!force && window.location.search) {
     return;
   }
 
@@ -164,6 +168,24 @@ function HTTPRequest(url, type, callback) {
 
 }
 
+function getDemagnetizationTypeLabel(type) {
+
+  /*
+   * Function getDemagnetizationTypeLabel
+   * Maps the demagnetization type to a neat symbol
+   */
+
+  switch(type) {
+    case "thermal":
+      return "<i class='fas fa-fire text-danger'></i>";
+    case "alternating":
+      return "<i class='fas fa-bolt text-warning'></i>";
+    default:
+      return "<i class='fas fa-question text-secondary'></i>";
+  }
+
+}
+
 function addFooter() {
 
   /*
@@ -177,6 +199,16 @@ function addFooter() {
     "<div style='float: right;' class='text-muted'><small>Version v" + __VERSION__ + "</small></div>",
     "&nbsp; <i class='fab fa-github'></i> <a href='https://github.com/Jollyfant'><b>Source Code</b></a>",
     "&nbsp; <i class='fas fa-balance-scale'></i> Licensed under <a href='https://github.com/Jollyfant'><b>MIT</b>.</a>",
+    "<br>",
+    "<br>",
+    "<div class='justify-content-md-center text-center'>",
+    "  <div style='text-align: right; display: inline-block;'>",
+    "    <a href='http://www.geo.uu.nl/~forth/'><img style='margin: 0px; height: 60px;' src='../images/UU.png'></a>",
+    "    <a href='http://erc.europa.eu/'><img style='margin: 0px; height: 60px;' src='../images/ERC.png'></a>",
+	"     <a href='http://www.nwo.nl/'><img style='margin: 0px; height: 60px;' src='../images/NWO_logo_plain.png'></a>",
+    "  </div>",
+    "</div>",
+    "<br>"
   ).join("\n");
 
 }

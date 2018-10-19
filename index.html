@@ -65,7 +65,7 @@
 
         <form class="form-inline my-2 my-lg-0">
           <!--<input id="search-bar" class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">-->
-          <a href="./pid.html" class="btn btn-sm btn-primary my-2 my-sm-0"><i class="fas fa-search"></i> <b>Search Objects</b></a>
+          <a href="./library/index.html" class="btn btn-sm btn-primary my-2 my-sm-0"><i class="fas fa-book-open"></i> <b>Data Library</b></a>
         </form>
 
       </div>
@@ -82,8 +82,8 @@
       <nav>
         <div class="nav nav-tabs nav-justified" id="nav-tab" role="tablist">
           <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Data Import</a>
-          <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Interpretation</a>
-          <a class="nav-item nav-link" id="nav-fitting-tab" data-toggle="tab" href="#nav-fitting" role="tab" aria-controls="nav-profile" aria-selected="false">Components and Fitting</a>
+          <a class="nav-item nav-link disabled" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Interpretation</a>
+          <a class="nav-item nav-link disabled" id="nav-fitting-tab" data-toggle="tab" href="#nav-fitting" role="tab" aria-controls="nav-profile" aria-selected="false">Components and Fitting</a>
           <a class="nav-item nav-link" id="nav-settings-tab" data-toggle="tab" href="#nav-settings" role="tab" aria-controls="nav-settings" aria-selected="false">Settings and Export</a>
         </div>
       </nav>
@@ -94,55 +94,58 @@
         <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
 
           <br>
-          <p> Data from various formats can be imported to Paleomagnetism.org. Select the appropriate type and select a file to read from disk.
-          <hr>
 
-            <div class="input-group mb-6">
+          <div class="alert alert-light" role="alert">
+            <h5> Paleomagnetism.org 2 - Interpretation </h5>
+            Data from various formats can be imported to Paleomagnetism.org. Select the appropriate input format and select one or multiple files to read from disk. New specimens can be appended to an existing by checking the respective checkbox.
+          </div>
 
-              <!-- File input -->
-              <div class="custom-file">
-                <input type="file" class="custom-file-input" id="customFile" multiple>
-                <label class="custom-file-label" for="customFile"><i class="fas fa-search"></i> Select files </label>
-              </div>
+          <div class="input-group mb-6">
 
-              &nbsp;
-
-              <!-- Format type selector -->
-              <div class="input-group-prepend">
-                <label class="input-group-text" for="format-selection">Data Format</label>
-              </div>
-
-              <select class="custom-select" id="format-selection">
-                <optgroup label="Application Formats">
-                  <option value="PMAGORG2">Paleomagnetism.org (2.0.0)</option>
-                  <option value="PMAGORG">Paleomagnetism.org (1.0.0)</option>
-                </optgroup>
-
-                <optgroup label="Institution Formats">
-                  <option value="UTRECHT">Utrecht University</option>
-                  <option value="PALEOMAC">PaleoMac Software</option>
-                  <option value="OXFORD">University of Oxford</option>
-                  <option value="MUNICH">University of Munich</option>
-                  <option value="NGU">Geological Survey of Norway</option>
-                  <option value="BCN2G">University of Barcelona</option>
-                  <option value="HELSINKI">Helsinki University</option>
-                  <option value="CALTECH">Caltech Institute of Technology</option>
-                </optgroup>
-
-              </select>
-
-              <div class="input-group-append">
-                <div class="input-group-text">
-                  <input id='append-input' type="checkbox" aria-label="Checkbox for following text input">
-                  <label class="form-check-label" for="append-input">
-                    &nbsp; Append
-                  </label>
-                </div>
-              </div>
-
+            <!-- File input -->
+            <div class="custom-file">
+              <input type="file" class="custom-file-input" id="customFile" multiple>
+              <label class="custom-file-label" for="customFile"><i class="fas fa-search"></i> Select files </label>
             </div>
 
-            <p><figcaption class="figure-caption">Your institution's format is not here? Write us an e-mail on the contact page.</figcaption>
+            &nbsp;
+
+            <!-- Format type selector -->
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="format-selection">Data Format &nbsp; <small><i class="fas fa-angle-right"></i></small></label>
+            </div>
+
+            <select class="custom-select" id="format-selection">
+              <optgroup label="Application Formats">
+                <option value="PMAGORG2">Paleomagnetism.org (2.0.0)</option>
+                <option value="PMAGORG">Paleomagnetism.org (1.0.0)</option>
+              </optgroup>
+
+              <optgroup label="Institution Formats">
+                <option value="UTRECHT">Utrecht University</option>
+                <option value="PALEOMAC">PaleoMac Software</option>
+                <option value="OXFORD">University of Oxford</option>
+                <option value="MUNICH">University of Munich</option>
+                <option value="NGU">Geological Survey of Norway</option>
+                <option value="BCN2G">University of Barcelona</option>
+                <option value="HELSINKI">Helsinki University</option>
+                <option value="CALTECH">Caltech Institute of Technology</option>
+              </optgroup>
+
+            </select>
+
+            <div class="input-group-append">
+              <div class="input-group-text">
+                <input id='append-input' type="checkbox" aria-label="Checkbox for following text input">
+                <label class="form-check-label" for="append-input">
+                  &nbsp; Append
+                </label>
+              </div>
+            </div>
+
+          </div>
+
+          <p><figcaption class="figure-caption text-right"><i class="far fa-frown"></i> Your institution's format not here? Write us an e-mail on the <a href=''>contact page</a>.</figcaption>
 
         </div>
 
@@ -251,7 +254,7 @@
         <div class="tab-pane fade" id="nav-settings" role="tabpanel" aria-labelledby="nav-settings-tab">
           <br>
           <h5> Saving Data </h5>
-          <p> Data from the application can be exported in the <b>Paleomagnetism.org 2.0.0</b> format. 
+          <p> Data from the application can be exported in the <b>Paleomagnetism.org 2.0.0</b> format.
           <p>
           <button onclick="exportApplicationSave()" type="button" class="btn btn-sm btn-success"><i class="fas fa-file-download"></i>&nbsp; Download application save</button>
           <hr>

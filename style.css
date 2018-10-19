@@ -1,7 +1,9 @@
 body {
   padding-top: 5rem;
 }
-
+.leaflet-popup-close-button {
+  display: none;
+}
 .map {
   height: 400px;
   width: 100%;

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+  <head>
+
+    <!-- Required metadata tags -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Paleomagnetism.org 2 - An online environment for paleomagnetic analysis">
+    <meta name="keywords" content="paleomagnetism, interpretation, zijderveld, pca">
+
+    <meta name="author" content="Mathijs Koymans">
+
+    <link rel="stylesheet" href="../style.css">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
+          integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+          crossorigin=""/>
+
+    <!-- Bootstrap & Font Awesome CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css"
+          integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz"
+          crossorigin="anonymous">
+
+  </head>
+
+  <body>
+
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+
+      <a class="navbar-brand" href="#">Paleomagnetism<span class="text-danger">.org</span></a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <ul class="navbar-nav mr-auto">
+
+          <li class="nav-item">
+            <a class="nav-link" href="../index.html">Interpretation</a>
+          </li>
+          <!--
+          <li class="nav-item">
+            <a class="nav-link" href="#">Statistics</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Tectonics</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Magnetostratigraphy</a>
+          </li>
+          -->
+          <li class="nav-item active">
+            <a class="nav-link" href="../library/index.html">Search</a>
+          </li>
+        </ul>
+
+        <form class="form-inline my-2 my-lg-0">
+          <!--<input id="search-bar" class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">-->
+          <a href="../library/index.html" class="btn btn-sm btn-primary my-2 my-sm-0"><i class="fas fa-book-open"></i> <b>Data Library</b></a>
+        </form>
+
+      </div>
+
+    </nav>
+
+    <!-- Main container -->
+    <div class="container">
+
+      <div class="row">
+        
+       <div class="col-md-12">
+
+        <div class="alert alert-light" role="alert">
+          <h5> Paleomagnetism.org 2 - Data Library </h5>
+          <p>Data collections that were exported from Paleomagnetism.org can be added to this library. Data sets will be published on this page and become openly available for anyone.
+          All data collections, specimens, and interpretations are assigned <b>persistent identifiers</b> (PID) that can be used to reference each digital object respectively.
+          If you want to add your data to the collective library write us an e-mail on the <a href='./contact'><b>contact page</b></a>.
+          <p><b><i class='fas fa-code-branch'></i> Forking</b> copies an existing dataset from the library. This dataset can be modified and will reference the original data collection.
+                <hr>
+         <div class="table-responsive">
+           <table id="card-table" class="table text-center table-sm table-striped"></table>
+	     </div>
+        </div>
+
+       </div>
+
+      </div>
+
+      <div id="table-header"></div>
+
+      <!-- Tab for table view -->
+
+        <div class="table-responsive">
+          <table class='table table-sm text-center table-striped' id="publication-table"></table>
+        </div>
+    
+    </div>
+
+    <footer id='footer-container' class='container text-muted'></footer>
+
+  </body>
+
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+  <script src="../utils.js"></script>
+
+  <script>
+
+function loadDigitalObjects() {
+
+  /*
+   * Function loadDigitalObjects
+   * Loads all digital objects from disk
+   */
+
+  // Load the information from a JSON
+  HTTPRequest("publications.json", "GET", function(publications) {
+
+    var rows = publications.map(function(x) {
+      return [
+        "<tr>",
+        "  <td>" + x.author + "</td>",
+        "  <td>" + x.institution + "</td>",
+        "  <td>" + x.description + "</td>",
+        "  <td><code><a href='../collection/index.html?" + x.pid + "'>" + x.pid.slice(0, 16) + "…</a></code></td>",
+        "  <td>" + new Date(x.created).toISOString().slice(0, 10) + "</td>",
+        "</tr>"
+      ].join("\n");
+    });
+
+    document.getElementById("publication-table").innerHTML = [
+      "<head>",
+      "  <tr>",
+      "    <th>Author</th>",
+      "    <th>Institution</th>",
+      "    <th>Description</th>",
+      "    <th>Persistent Identifier (PID)</th>",
+      "    <th>Created</th>",
+      "  </tr>",
+      "</head>",
+    ].concat(rows).join("\n");
+  
+  });
+
+}
+
+function __init__() {
+
+  // No search specified: show all digital objects
+  if(!window.location.search) {
+    return loadDigitalObjects();
+  }
+
+  // Attempt to resolve the persistent identifier
+  resolvePID(window.location.search.slice(1));
+
+}
+
+__init__();
+
+  </script>
+</html>

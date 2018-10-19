@@ -167,9 +167,27 @@ function fileSelectionHandler(event) {
 
     updateSpecimenSelect();
 
-    notify("success", "Succesfully added <b>" + (specimens.length - nSamples) + "</b> specimen(s) (" + format + "). Proceed to the interpretation tab to find your data.");
+    if(specimens.length) {
+      enableInterpretationTabs();
+    }
+
+    notify("success", "Succesfully added <b>" + (specimens.length - nSamples) + "</b> specimen(s) (" + format + ").");
 
   });
+
+}
+
+function enableInterpretationTabs() {
+
+  /*
+   * Function enableInterpretationTabs
+   * Removes disabled component from the interpretations tabs
+   */
+
+  $("#nav-profile-tab").removeClass("disabled");
+  $("#nav-fitting-tab").removeClass("disabled");
+
+  $("#nav-profile-tab").tab("show");
 
 }
 
@@ -909,6 +927,19 @@ function interpretationTableClickHandler(event) {
 
 }
 
+function persistFork() {
+
+  /*
+   * Function persistFork
+   * Writes fork to local storage
+   */
+
+  saveLocalStorage(true);
+
+  window.location = window.location.pathname
+
+}
+
 function __unlock__(json) {
 
   /*
@@ -926,8 +957,15 @@ function __unlock__(json) {
   registerEventHandlers();
   
   if(json.length) {
-    notify("success", "Welcome back! Succesfully loaded <b>" + json.length + "</b> specimen(s).");
-    $("#nav-profile-tab").tab("show");
+
+    if(window.location.search) {
+      notify("success", "Succesfully forked <b>" + json.length + "</b> specimen(s). Changes to this session will not be saved (<small><a href='' onclick='persistFork()'><i class='fas fa-code-branch'></i><b> Persist Fork</b></a></small>).");
+    } else {
+      notify("success", "Welcome back! Succesfully loaded <b>" + json.length + "</b> specimen(s).");
+    }
+
+    enableInterpretationTabs();
+
   } else {
     notify("success", "Welcome to <b>Paleomagnetism.org</b>! Add data below to get started with your analysis.");
   }
