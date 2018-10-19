@@ -64,9 +64,10 @@
         </ul>
 
         <form class="form-inline my-2 my-lg-0">
-          <input id="search-bar" class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
+          <!--<input id="search-bar" class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">-->
           <a href="./pid.html" class="btn btn-sm btn-primary my-2 my-sm-0"><i class="fas fa-search"></i> <b>Search Objects</b></a>
         </form>
+
       </div>
 
     </nav>
@@ -176,7 +177,7 @@
                     <input type="radio" name="options" id="option1" autocomplete="off" checked> <span style="pointer-events: none;" class='text-danger'><i class="fas fa-fire"></i> <b></b></span>
                   </label>
                   <label title="Alternating Field Demagnetization" value="alternating" class="demagnetization-type-radio btn btn-sm btn-light w-100">
-                    <input type="radio" name="options" id="option2" autocomplete="off"> <span style="pointer-events: none;" class='text-primary'><i class="fas fa-bolt"></i> <b></b></span>
+                    <input type="radio" name="options" id="option2" autocomplete="off"> <span style="pointer-events: none;" class='text-warning'><i class="fas fa-bolt"></i> <b></b></span>
                   </label>
                   <label title="Unknown Demagnetization" value="null" class="demagnetization-type-radio btn btn-sm btn-light w-100">
                     <input type="radio" name="options" id="option3" autocomplete="off"> <span style="pointer-events: none;" class='text-success'><i class="fas fa-question"></i> <b></b></span>
@@ -224,7 +225,7 @@
           <div class="row justify-content-md-center">
             <div class="col-md-6 ">
               <div id="fitting-container"></div>
-              <figcaption class="figure-caption">Figure showing interpreted components. Great circles can be fitted to directional set points by pressing <b>9</b>.</figcaption>
+              <figcaption class="figure-caption">Great circles can be fitted to directional set points by pressing <b>9</b>.</figcaption>
             </div>
           </div>
 
@@ -232,7 +233,7 @@
 
           <div class="row justify-content-md-center">
             <div class="col-md-6 ">
-              <table class='table table-sm table-striped' id="fitted-table-container"></table>
+              <table class='table table-sm text-center table-striped' id="fitted-table-container"></table>
             </div>
           </div>
 
@@ -284,6 +285,7 @@
                 <td>Fit Great Circles</td>
                 <td>Change Group</td>
                 <td>Set Location</td>
+                <td>Remove Specimen</td>
               </tr>
                 <td>Left, A</td>
                 <td>Right, D</td>
@@ -299,6 +301,7 @@
                 <td>9</td>
                 <td>g</td>
                 <td>i</td>
+                <td>q</td>
             </table>
           </small>
 
@@ -335,101 +338,89 @@
 
     </div>
 
-    <footer id='footer-container' class='container text-muted'></footer>
+    <footer id="footer-container" class="container text-muted"></footer>
 
     <br> 
+
+    <!-- Logo's -->
     <div class="justify-content-md-center text-center">
-	  <div style="text-align: right; display: inline-block;">
-	    <a href="http://www.geo.uu.nl/~forth/"><img style="margin: 0px; height: 60px;" src="./images/UU.png"></a>
+      <div style="text-align: right; display: inline-block;">
+        <a href="http://www.geo.uu.nl/~forth/"><img style="margin: 0px; height: 60px;" src="./images/UU.png"></a>
         <a href="http://erc.europa.eu/"><img style="margin: 0px; height: 60px;" src="./images/ERC.png"></a>
-	    <a href="http://www.nwo.nl/"><img style="margin: 0px; height: 60px;" src="./images/NWO_logo_plain.png"></a>
-	  </div>
-	</div>
+        <a href="http://www.nwo.nl/"><img style="margin: 0px; height: 60px;" src="./images/NWO_logo_plain.png"></a>
+      </div>
+    </div>
 
     <br>
 
-<!-- Confirmation Modal -->
-<div class="modal fade" id="exampleModal2" tabindex="1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel2">Confirm</h5>
-      </div>
-      <div id="prompt-question" class="modal-body"></div>
-      <div class="modal-footer">
-        <button id="confirm-button" type="button" class="btn btn-success" data-dismiss="modal">Confirm</button>
-        <button id="cancel-button" type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Leaflet Map Modal -->
-<div class="modal fade" id="map-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel"></h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-
-        <!-- Latitude, Longitude container -->
-        <div class="form-group">
-        <div class="row">
-          <div class="col">
-            <div class="input-group mb-6">
-              <input id='specimen-longitude-input' type="text" class="form-control input-sm" placeholder="Longitude">
-              <div class="input-group-append">
-                <div class="input-group-text">°E</div>
+    <!-- Leaflet Map Modal -->
+    <div class="modal fade" id="map-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel"></h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+    
+            <!-- Latitude, Longitude container -->
+            <div class="form-group">
+            <div class="row">
+              <div class="col">
+                <div class="input-group mb-6">
+                  <input id='specimen-longitude-input' type="text" class="form-control input-sm" placeholder="Longitude">
+                  <div class="input-group-append">
+                    <div class="input-group-text">°E</div>
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <div class="input-group mb-6">
+                <input id='specimen-latitude-input' type="text" class="form-control input-sm" placeholder="Latitude">
+                  <div class="input-group-append">
+                    <div class="input-group-text">°N</div>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="col">
-            <div class="input-group mb-6">
-            <input id='specimen-latitude-input' type="text" class="form-control input-sm" placeholder="Latitude">
-              <div class="input-group-append">
-                <div class="input-group-text">°N</div>
+            </div>
+    
+            <div id="map" class="map"></div>
+            <p>
+            <div class="input-group input-group-sm">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="">Lithology</span>
               </div>
+              <select id="specimen-lithology-input" class="form-control custom-select" id="exampleFormControlSelect1">
+                <option value="null">Unknown</option>
+                <option value="volcanic">Volcanic</option>
+                <option value="sediment">Sediment</option>
+              </select>
+              <div class="input-group-prepend">
+                <span class="input-group-text">Stratigraphic Level</span>
+              </div>
+              <input id="specimen-level-input" type="number" class="form-control">
             </div>
           </div>
-        </div>
-        </div>
-
-        <div id="map" class="map"></div>
-        <p>
-        <div class="input-group input-group-sm">
-          <div class="input-group-prepend">
-            <span class="input-group-text" id="">Lithology</span>
-          </div>
-          <select id="specimen-lithology-input" class="form-control custom-select" id="exampleFormControlSelect1">
-            <option value="null">Unknown</option>
-            <option value="volcanic">Volcanic</option>
-            <option value="sediment">Sediment</option>
-          </select>
-          <div class="input-group-prepend">
-            <span class="input-group-text">Stratigraphic Level</span>
-          </div>
-          <input id="specimen-level-input" type="number" class="form-control">
-        </div>
-      </div>
-
-      <div class="modal-footer">
-        <div class="mr-auto">
-          <button id="save-location" type="button" class="btn btn-primary">Save Location</button>
-          &nbsp;
-          <div class="form-check form-check-inline">
-            <input type="checkbox" class="form-check-input" id="location-apply-all">
-            <label class="form-check-label" for="location-apply-all">Apply to all</label>
+    
+          <div class="modal-footer">
+            <div class="mr-auto">
+              <button id="save-location" type="button" class="btn btn-primary">Save Location</button>
+              &nbsp;
+              <div class="form-check form-check-inline">
+                <input type="checkbox" class="form-check-input" id="location-apply-all">
+                <label class="form-check-label" for="location-apply-all">Apply to all</label>
+              </div>
+            </div>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           </div>
         </div>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
       </div>
     </div>
-  </div>
-</div>
+
+    </body>
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -458,5 +449,4 @@
     <script src="./importing.js"></script>
     <script src="./index.js"></script>
 
-  </body>
 </html>

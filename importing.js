@@ -56,7 +56,7 @@ function importPaleoMac(file) {
   });
 
   // Add the data to the application
-  samples.push({
+  specimens.push({
     "demagnetizationType": null,
     "coordinates": "specimen",
     "format": "PALEOMAC",
@@ -128,7 +128,7 @@ function importOxford(file) {
   });
  
   // Add the data to the application
-  samples.push({
+  specimens.push({
     "demagnetizationType": demagnetizationType,
     "coordinates": "specimen",
     "format": "OXFORD",
@@ -197,7 +197,7 @@ function importNGU(file) {
     }
   }
 
-  samples.push({
+  specimens.push({
     "demagnetizationType": null,
     "coordinates": "specimen",
     "format": "NGU",
@@ -266,7 +266,7 @@ function importMunich(file) {
     }
   }
 	
-  samples.push({
+  specimens.push({
     "demagnetizationType": null,
     "coordinates": "specimen",
     "format": "MUNICH",
@@ -340,7 +340,7 @@ function importBCN2G(file) {
 
   });
 
-  samples.push({
+  specimens.push({
     "demagnetizationType": null,
     "coordinates": "specimen",
     "format": "BCN2G",
@@ -406,7 +406,7 @@ function importCaltech(file) {
 
   }
 
-  samples.push({
+  specimens.push({
     "demagnetizationType": null,
     "coordinates": "specimen",
     "format": "CALTECH",
@@ -506,7 +506,7 @@ function importApplicationSaveOld(file) {
 
     });
 
-    samples.push(sample);
+    specimens.push(sample);
 
   });
 
@@ -529,7 +529,7 @@ function importApplicationSave(file) {
   }
 
   json.specimens.forEach(function(specimen) {
-    samples.push(specimen);
+    specimens.push(specimen);
   });
 
 }
@@ -576,7 +576,7 @@ function importUtrecht(file) {
 
     });
 
-    samples.push({
+    specimens.push({
       "demagnetizationType": null,
       "coordinates": "specimen",
       "format": "UTRECHT",
@@ -638,7 +638,7 @@ function importHelsinki(file) {
 
   });
 
-  samples.push({
+  specimens.push({
     "demagnetizationType": demagnetizationType,
     "coordinates": "specimen",
     "format": "HELSINKI",

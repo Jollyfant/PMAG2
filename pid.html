@@ -56,9 +56,10 @@
         </ul>
 
         <form class="form-inline my-2 my-lg-0">
-          <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
-          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Find Publication</button>
+          <!--<input id="search-bar" class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">-->
+          <a href="./pid.html" class="btn btn-sm btn-primary my-2 my-sm-0"><i class="fas fa-search"></i> <b>Search Objects</b></a>
         </form>
+
       </div>
 
     </nav>
@@ -68,58 +69,24 @@
 
       <div id="notification-container"></div>
 
-       <div class="row">
-	      <div class="col-md-2">
-      <div class="card" style="width: auto;">
-        <img class="card-img-top" src="./images/core.jpg" alt="Card image cap">
-        <div class="card-body">
-          <p class="card-text text-center text-muted"><b>Specimen</b></p>
-        </div>
-      </div>
-      </div>
-	      <div class="col-md-10">
-            <table class="table table-sm table-striped table-responsive text-center">
-              <tr>
-                <td>Previous Specimen</td>
-                <td>Next Specimen</td>
-                <td>Previous Step</td>
-                <td>Next Step</td>
-                <td>Select Step</td>
-                <td>Hide Step</td>
-                <td>PCA (Direction)</td>
-                <td>PCA (Plane)</td>
-                <td>Anchor Component</td>
-                <td>Cycle Projection</td>
-                <td>Cycle Coordinates</td>
-                <td>Fit Great Circles</td>
+      <div class="row">
+        <div class="col-lg-2">
+          <div id="card-content" class="card" style="width: auto; max-width: 200px;"></div>
+          <p>
+       </div>
+        
+       <div class="col-md-10">
+         <div style='float: right;' id="back-thing"></div>
+         <h5> Digital Object Details <small><code><span id="pid-box"></span></code></small></h5>
+         <div class="table-responsive">
+           <table id="card-table" class="table text-center table-sm table-striped"></table>
+	 </div>
+       </div>
 
-              </tr>
-              <tr>
-                <td>Left, A</td>
-                <td>Right, D</td>
-                <td>Up, W</td>
-                <td>Down, S</td>
-                <td>Plus, X</td>
-                <td>Minus, Z</td>
-                <td>1</td>
-                <td>2</td>
-                <td>Control</td>
-                <td>3</td>
-                <td>8</td>
-                <td>9</td>
-              <tr>
-
-            </table>
-	      </div>
-
-	</div>
-
-      <span id="table-header"></span>
-      <hr>
-      <table class='table table-sm table-striped' id="publication-table"></table>
-
-
-	</div>
+    </div>
+    <div class="table-responsive">
+      <table class='table table-sm text-center table-striped' id="publication-table"></table>
+    </div>
 
     <footer id='footer-container' class='container text-muted'></footer>
 
@@ -127,48 +94,104 @@
 
     <!-- Logo's -->
     <div class="justify-content-md-center text-center">
-	  <div style="text-align: right; display: inline-block;">
-	    <a href="http://www.geo.uu.nl/~forth/"><img style="margin: 0px; height: 60px;" src="./images/UU.png"></a>
+      <div style="text-align: right; display: inline-block;">
+        <a href="http://www.geo.uu.nl/~forth/"><img style="margin: 0px; height: 60px;" src="./images/UU.png"></a>
         <a href="http://erc.europa.eu/"><img style="margin: 0px; height: 60px;" src="./images/ERC.png"></a>
-	    <a href="http://www.nwo.nl/"><img style="margin: 0px; height: 60px;" src="./images/NWO_logo_plain.png"></a>
-	  </div>
-	</div>
+	<a href="http://www.nwo.nl/"><img style="margin: 0px; height: 60px;" src="./images/NWO_logo_plain.png"></a>
+      </div>
+    </div>
 
     <br>
+
+    </body>
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-    <script src="https://code.highcharts.com/highcharts.js"></script>
-    <script src="https://code.highcharts.com/highcharts-more.js"></script>
-    <script src="https://code.highcharts.com/modules/exporting.js"></script>
 
     <script src="./Coordinates.js"></script>
-    <script src="./Direction.js"></script>
     <script src="./Direction.js"></script>
     <script src="./utils.js"></script>
 
   <script>
 
-function FK() {
+function updateCardContent(type) {
 
- HTTPRequest("./publications.json", "GET", function(json) {
+  /*
+   * Function updateCardContent
+   * Updates the card content showing the type of the digital object
+   */
 
-  notify("success", "<i class='fas fa-check'></i> Succesfully loaded all digital objects and persistent identifiers.");
+  switch(type) {
+    case "specimen":
+      return [
+        "<img id='object-image' class='card-img-top' src='./images/core.jpg' alt='Card image cap'>",
+        "<div class='card-body'>",
+        "  <p class='card-text text-center text-secondary'><b>Specimen</b></p>",
+        "</div>",
+      ].join("\n");
+    case "collection":
+      return [
+        "<img id='object-image' class='card-img-top' src='./images/unknown.jpg' alt='Card image cap'>",
+        "<div class='card-body'>",
+        "  <p class='card-text text-center text-secondary'><b>Collection</b></p>",
+        "</div>"
+      ].join("\n");
+    default:
+      return [
+        "<img id='object-image' class='card-img-top' src='./images/unknown.jpg' alt='Card image cap'>",
+        "<div class='card-body'>",
+        "  <p class='card-text text-center text-secondary'><b>Objects</b></p>",
+        "</div>"
+      ].join("\n");
+  }
 
+}
 
-    var publications = JSON.parse(json);
+function loadDigitalObjectMetadata(pid, callback) {
+
+  /*
+   * Fuction loadDigitalObjectMetadata
+   * Get the parent metadata object that describes this collection
+   */
+
+  HTTPRequest("publications.json", "GET", function(json) {
+    callback(json.filter(x => pid === x.pid));
+  });
+
+}
+
+function loadDigitalObjects() {
+
+  /*
+   * Function loadDigitalObjects
+   * Loads all digital objects from disk
+   */
+
+  // Load the information from a JSON
+  HTTPRequest("publications.json", "GET", function(publications) {
 
     var rows = publications.map(function(x) {
-      return "<td>" + x.author + "</td><td>" + x.description + "</td><td><code><a href='./pid.html?" + x.pid + "'>" + x.pid + "</a></code></td><td>" + x.created + "</td>";
+      return [
+        "<tr>",
+        "  <td>" + x.author + "</td>",
+        "  <td>" + x.institution + "</td>",
+        "  <td>" + x.description + "</td>",
+        "  <td><code><a href='./pid.html?" + x.pid + "'>" + x.pid.slice(0, 16) + "…</a></code></td>",
+        "  <td>" + new Date(x.created).toISOString().slice(0, 10) + "</td>",
+        "</tr>"
+      ].join("\n");
     });
+
+    document.getElementById("card-content").innerHTML = updateCardContent("objects");
 
     document.getElementById("publication-table").innerHTML = [
       "<head>",
       "  <tr>",
       "    <th>Author</th>",
+      "    <th>Institution</th>",
       "    <th>Description</th>",
       "    <th>Persistent Identifier (PID)</th>",
       "    <th>Created</th>",
@@ -184,7 +207,7 @@ function FK() {
 
     var [pid, sample, interpretation] = pid.split(".");
 
-    HTTPRequest("./publications/" + pid + ".pid", "GET", function(json) {
+    HTTPRequest("publications/" + pid + ".pid", "GET", function(json) {
 
       var publication = JSON.parse(json);
 
@@ -198,12 +221,58 @@ function FK() {
     });
 
   }
+
 }
 
-if(window.location.search) {
+function __init__() {
+
+  // No search specified: show all digital objects
+  if(!window.location.search) {
+    return loadDigitalObjects();
+  }
+
+  // Attempt to resolve the persistent identifier
   resolvePID(window.location.search.slice(1));
-} else {
-  FK();
+
+}
+
+__init__();
+
+function updateCardTable(pid, pub, specimen) {
+
+  /*
+   * Function updateCardTable
+   * Updates the upper table
+   */
+
+  return new Array(
+    "<caption> Metadata associated with this specimen.</caption>",
+    "<thead>",
+    "  <tr>",
+    "    <th>Sample</th>",
+    "    <th>Reference</th>",
+    "    <th>Longitude</th>",
+    "    <th>Latitude</th>",
+    "    <th>Type</th>",
+    "    <th>Interpretations</th>",
+    "    <th>Steps</th>",
+    "    <th>Created</th>",
+    "  </tr>",
+    "</thead>",
+    "<tbody>",
+    "  <tr>",
+    "    <td>" + specimen.name + " </td>",
+    "    <td>" + (specimen.reference ? "YES" : "NO") + " </td>",
+    "    <td>" + (specimen.location ? specimen.location.lng : '') + " </td>",
+    "    <td>" + (specimen.location ? specimen.location.lat : '') + " </td>",
+    "    <td>" + getDemagnetizationTypeLabel(specimen.demagnetizationType) + "</td>",
+    "    <td>" + specimen.interpretations.length + "</td>",
+    "    <td>" + specimen.steps.length + "</td>",
+    "    <td>" + new Date(specimen.created).toISOString().slice(0, 10) + "</td>",
+    "  </tr>",
+    "</tbody>"
+  ).join("\n");
+  
 }
 
 function formatSpecimenTable(pid, publication, specimen) {
@@ -213,14 +282,17 @@ function formatSpecimenTable(pid, publication, specimen) {
    * Formats the table containing all the specimens referenced by a particular PID
    */
 
+  document.getElementById("card-content").innerHTML = updateCardContent("specimen");
+  document.getElementById("card-table").innerHTML = updateCardTable(pid, publication, specimen);
+
   if(specimen.interpretations.length === 0) {
-    return notify("warning", "No Interpretations available from PID: <b>" + pid + "</b>.");
+    return document.getElementById("publication-table").innerHTML = [
+      "<caption>No interpretations available. <a href='./index.html?" + pid +"'><b>View in paleomagnetism.org</b></a>.</caption>"
+    ].join("\n");
   }
 
-  notify("success", "Succesfully loaded specimen from publication with PID: <b>" + pid + "</b>.");
-
-  document.getElementById("publication-table").innerHTML = [
-    "<caption>Interpretations associated with this persistent identifier. <a href='./index.html?" + pid +"'><b>View in paleomagnetism.org</b></a>.",
+  document.getElementById("publication-table").innerHTML = new Array(
+    "<caption>Components associated with this persistent identifier. <a href='./index.html?" + pid +"'><b>View in paleomagnetism.org</b></a>.",
     "<head>",
     "  <tr>",
     "    <th colspan='2'>Specimen</th>",
@@ -234,31 +306,92 @@ function formatSpecimenTable(pid, publication, specimen) {
     "    <th>Created</th>",
     "  </tr>",
     "</head>"
-  ].concat(specimen.interpretations.map(formatInterpretationRows)).join("\n");
+  ).concat(specimen.interpretations.map(formatInterpretationRows)).join("\n");
+
+}
+
+function literalToCoordinates(coordinates) {
+
+  /*
+   * Function literalToCoordinates
+   * Returns an object literal {x, y, z} to a Coordinate instance
+   */
+
+  return new Coordinates(coordinates.x, coordinates.y, coordinates.z);
 
 }
 
 function formatInterpretationRows(sample, i) {
 
+  /*
+   * Function formatInterpretationRows
+   * Creates HTML for the component table
+   */
+
+  const PRECISION = 2;
+
   // Convert x,y,z to coordinates
-  var specimen = new Coordinates(sample.specimen.coordinates.x, sample.specimen.coordinates.y, sample.specimen.coordinates.z).toVector(Direction);
-  var geographic = new Coordinates(sample.geographic.coordinates.x, sample.geographic.coordinates.y, sample.geographic.coordinates.z).toVector(Direction);
-  var tectonic = new Coordinates(sample.tectonic.coordinates.x, sample.tectonic.coordinates.y, sample.tectonic.coordinates.z).toVector(Direction);
+  var specimen = literalToCoordinates(sample.specimen.coordinates).toVector(Direction);
+  var geographic = literalToCoordinates(sample.geographic.coordinates).toVector(Direction);
+  var tectonic = literalToCoordinates(sample.tectonic.coordinates).toVector(Direction);
 
   return "<tr>" + new Array(
-    specimen.dec.toFixed(2),
-    specimen.inc.toFixed(2),
-    geographic.dec.toFixed(2),
-    geographic.inc.toFixed(2),
-    tectonic.dec.toFixed(2),
-    tectonic.inc.toFixed(2),
-    sample.MAD.toFixed(2),
+    specimen.dec.toFixed(PRECISION),
+    specimen.inc.toFixed(PRECISION),
+    geographic.dec.toFixed(PRECISION),
+    geographic.inc.toFixed(PRECISION),
+    tectonic.dec.toFixed(PRECISION),
+    tectonic.inc.toFixed(PRECISION),
+    sample.MAD.toFixed(PRECISION),
     sample.type,
-    sample.steps.join(", "),
+    "<small>" + sample.steps.join(", ") + "</small>",
     sample.anchored,
     sample.comment,
-    sample.created
+    new Date(sample.created).toISOString().slice(0, 10)
   ).map(x => "<td>" + x + "</td>").join("\n") + "</tr>";
+}
+
+function getDemagnetizationTypeLabel(type) {
+
+  switch(type) {
+    case "thermal":
+      return "<i class='fas fa-fire text-danger'></i>";
+    case "alternating":
+      return "<i class='fas fa-bolt text-warning'></i>";
+    default:
+      return "<i class='fas fa-question text-success'></i>";
+  }
+
+}
+
+function metadataContent(json) {
+
+  /*
+   * Function metadataContent
+   * Fills upper table with metadata about the collection
+   */
+
+  // First element
+  json = json.pop();
+
+  return new Array(
+    "<caption>Metadata associated with this collection.</caption>",
+    "<thead>",
+    "  <tr>",
+    "    <th>Author</th>",
+    "    <th>Description</th>",
+    "    <th>Created</th>",
+    "  </tr>",
+    "</thead>", 
+    "<tbody>",
+    "  <tr>",
+    "    <td>" + json.author + "</td>",
+    "    <td>" + json.description + "</td>",
+    "    <td>" + json.created + "</td>",
+    "  </tr>",
+    "</tbody>"
+  ).join("\n");
+
 }
 
 function formatPublicationTable(pid, publication) {
@@ -268,12 +401,14 @@ function formatPublicationTable(pid, publication) {
    *
    */
 
-  document.getElementById("table-header").innerHTML = "Specimens associated with this persistent identifier. <a href='./index.html?" + pid +"'><b>View in paleomagnetism.org</b></a>.";
+  loadDigitalObjectMetadata(pid, function(json) {
+    document.getElementById("card-table").innerHTML = metadataContent(json);
+  });
 
-  notify("success", "Succesfully loaded specimens with PID: <b>" + pid + "</b>.");
+  document.getElementById("card-content").innerHTML = updateCardContent("collection");
 
   document.getElementById("publication-table").innerHTML = [
-    "<caption>Specimens available from " + pid + ". </caption>",
+    "<caption>Specimens associated with this persistent identifier. <a href='./index.html?" + pid +"'><b>View in paleomagnetism.org</b></a>.",
     "<head>",
     "  <tr>",
     "    <th>Sample</th>",
@@ -284,7 +419,7 @@ function formatPublicationTable(pid, publication) {
     "    <th>Longitude</th>",
     "    <th>Latitude</th>",
     "    <th>Type</th>",
-    "    <th>Interpretations</th>",
+    "    <th>Components</th>",
     "    <th>Steps</th>",
     "    <th>Created</th>",
     "  </tr>",
@@ -293,7 +428,30 @@ function formatPublicationTable(pid, publication) {
 
 }
 
+if(window.location.search) {
+
+  /*
+   * Add return button
+   */
+
+  var sp = window.location.search.split(".");
+
+  if(sp.length === 1) {
+    href = "./pid.html";
+  } else {
+    href = sp.slice(0, -1).join();
+  }
+
+  document.getElementById("back-thing").innerHTML = "<a href='" + href + "'><p><b><i class='fas fa-backward'></i>&nbsp; Return</b></a>";
+
+}
+
 function formatSampleRows(sample, i) {
+
+  /*
+   * Function formatSampleRows
+   * Creates HTML for rows of the sample table
+   */
 
   if(sample.location) {
     var longitude = sample.location.lng;
@@ -303,48 +461,60 @@ function formatSampleRows(sample, i) {
     var latitude = "";
   }
 
+  var name = sample.name;
+  if(sample.reference) {
+    name += "&nbsp; <a href='./pid.html?" + sample.reference + "'><i class='fas fa-code-branch'></i>";
+  }
+
   return "<tr>" + new Array(
-    "<a href='./pid.html" + window.location.search + "." + i + "'>" + sample.name + "</a>",
+    "<a href='./pid.html" + window.location.search + "." + i + "'>" + name + "</a>",
     sample.coreAzimuth,
     sample.coreDip,
     sample.beddingStrike,
     sample.beddingDip,
     longitude,
     latitude,
-    sample.demagnetizationType || "",
+    getDemagnetizationTypeLabel(sample.demagnetizationType),
     sample.interpretations.length,
     sample.steps.length,
-    sample.created,
+    new Date(sample.created).toISOString().slice(0, 10),
   ).map(x => "<td>" + x + "</td>").join("\n") + "</tr>";
 
 }
 
-  function resolvePID(pids) {
+function resolvePID(pids) {
 
-    var [pid, sample, interpretation] = pids.split(".");
+  /*
+   * Function resolvePID
+   * Resolves the persistent identifier
+   */
 
-    HTTPRequest("./publications/" + pid + ".pid", "GET", function(json) {
+  var [pid, sample, interpretation] = pids.split(".");
 
-      var publication = JSON.parse(json).specimens;
+  // Show what pid is being resolved
+  document.getElementById("pid-box").innerHTML = pids;
 
-      if(sample === undefined) {
-        return formatPublicationTable(pids, publication);
-      }
+  HTTPRequest("publications/" + pid + ".pid", "GET", function(json) {
 
-      var specimen = publication[Number(sample)];
+    var publication = json.specimens;
 
-      if(interpretation === undefined) {
-        return formatSpecimenTable(pids, publication, specimen);
-      }
+    if(sample === undefined) {
+      return formatPublicationTable(pids, publication);
+    }
 
-      var interpret = specimen.interpretations[Number(interpretation)];
+    var specimen = publication[Number(sample)];
 
-      console.log(interpret);
+    if(interpretation === undefined) {
+      return formatSpecimenTable(pids, publication, specimen);
+    }
 
-    });
+    var interpret = specimen.interpretations[Number(interpretation)];
 
-  }
+    console.log(interpret);
+
+  });
+
+}
 
   </script>
-  </body>
 </html>

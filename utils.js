@@ -3,8 +3,8 @@ const __VERSION__ = "2.0.0";
 const RADIANS = Math.PI / 180;
 const PROJECTION_TYPE = "AREA";
 
-const warning = new Audio("./sounds/error.mp3");
-const notification = new Audio("./sounds/notification.mp3");
+const warning = new Audio("sounds/error.mp3");
+const notification = new Audio("sounds/notification.mp3");
 
 document.title = "Paleomagnetism.org " + __VERSION__;
 
@@ -71,8 +71,12 @@ function saveLocalStorage() {
     return;
   }
 
-  // Set local storage
-  localStorage.setItem("specimens", JSON.stringify(samples));
+  // Attempt to set local storage
+  try {
+    localStorage.setItem("specimens", JSON.stringify(specimens));
+  } catch(exception) {
+    notify("danger", "Could not write to local storage. Export your data manually to save it.");
+  }
 
 }
 
@@ -146,13 +150,7 @@ function HTTPRequest(url, type, callback) {
     }
 
     // Check the content type
-    switch(this.getResponseHeader("Content-Type")) {
-      case "application/json":
-      case "application/vnd.schemaorg.ld+json":
-        return callback(JSON.parse(xhr.response));
-      default:
-        return callback(xhr.response);
-    }
+    return callback(JSON.parse(xhr.response));
 
   }
 

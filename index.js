@@ -153,10 +153,10 @@ function fileSelectionHandler(event) {
 
     // Drop the samples if not appending
     if(!document.getElementById("append-input").checked) {
-      samples = new Array();
+      specimens = new Array();
     }
 
-    var nSamples = samples.length;
+    var nSamples = specimens.length;
 
     // Try adding the demagnetization data
     try {
@@ -167,7 +167,7 @@ function fileSelectionHandler(event) {
 
     updateSpecimenSelect();
 
-    notify("success", "Succesfully added <b>" + (samples.length - nSamples) + "</b> specimen(s) (" + format + "). Proceed to the interpretation tab to find your data.");
+    notify("success", "Succesfully added <b>" + (specimens.length - nSamples) + "</b> specimen(s) (" + format + "). Proceed to the interpretation tab to find your data.");
 
   });
 
@@ -280,7 +280,7 @@ function redrawInterpretationGraph(fit) {
       return notify("danger", exception);
     }
   } else {
-    var sampless = samples;
+    var sampless = specimens;
   }
 
   var meanVector = new Coordinates(0, 0, 0);
@@ -442,10 +442,10 @@ function handleLocationSave(event) {
   if(document.getElementById("location-apply-all").checked) {
 
     // Update all samples
-    samples.forEach(function(sample) {
-      sample.location = specimenLocation;
-      sample.lithology = lithology;
-      sample.level = level;
+    specimens.forEach(function(x) {
+      x.location = specimenLocation;
+      x.lithology = lithology;
+      x.level = level;
     });
 
   } else {
@@ -582,7 +582,7 @@ function getSelectedSpecimen() {
     return null;
   }
 
-  return samples[selectedIndex];
+  return specimens[selectedIndex];
 
 }
 
@@ -595,7 +595,7 @@ function updateSpecimenSelect() {
 
   removeOptions(document.getElementById("specimen-select"));
 
-  samples.forEach(addPrototypeSelection);
+  specimens.forEach(addPrototypeSelection);
   stepSelector.reset();
   saveLocalStorage();
 
@@ -667,7 +667,7 @@ function getFittedGreatCircles() {
 
   // Prevent mutation and create a clone of all samples in memory
   // using a trick with JSON serialization/deserialization
-  copySamples = JSON.parse(JSON.stringify(samples));
+  copySamples = JSON.parse(JSON.stringify(specimens));
 
   copySamples.forEach(function(sample) {
 
@@ -837,7 +837,7 @@ function updateInterpretationMeanTable(direction, N) {
     "      <td>" + direction.dec.toFixed(2) + "</td>",
     "      <td>" + direction.inc.toFixed(2) + "</td>",
     "      <td>" + COORDINATES + "</td>",
-    "      <td>" + IS_FITTED + "</td>",
+    "      <td>" + (IS_FITTED ? "<i class='fas fa-check text-success'></i>" : "<i class='fas fa-times text-danger'></i>") + "</td>",
     "    </tr>",
     "  </tbody>"
   ].join("\n");
@@ -916,16 +916,23 @@ function __unlock__(json) {
    * Application has initialized and handlers can be registered
    */
 
-  registerEventHandlers();
+  // Loaded from a publication: save the reference pid
+  if(window.location.search) {
+    json.forEach(function(sample, i) {
+      sample.reference = window.location.search.slice(1) + "." + i;
+    });
+  }
 
-  samples = JSON.parse(json);
+  registerEventHandlers();
   
-  if(samples.length) {
-    notify("success", "Welcome back! Succesfully loaded <b>" + samples.length + "</b> specimen(s) from local storage.");
+  if(json.length) {
+    notify("success", "Welcome back! Succesfully loaded <b>" + json.length + "</b> specimen(s).");
     $("#nav-profile-tab").tab("show");
   } else {
     notify("success", "Welcome to <b>Paleomagnetism.org</b>! Add data below to get started with your analysis.");
   }
+
+  specimens = json;
 
   updateSpecimenSelect();
   stepSelector.reset();
@@ -941,7 +948,7 @@ var COORDINATES_COUNTER = 0;
 var COORDINATES = "specimen";
 var GROUP = "DEFAULT";
 var UPWEST = true;
-var samples = new Array();
+var specimens = new Array();
 var IS_FITTED = false;
 
 function keyboardHandler(event) {
@@ -978,6 +985,7 @@ function keyboardHandler(event) {
     "X_KEY": 88,
     "G_KEY": 71,
     "I_KEY": 73,
+    "Q_KEY": 81,
     "MINUS_KEY": 173,
     "MINUS_KEY_NUM": 109,
     "PLUS_KEY": 61,
@@ -990,7 +998,7 @@ function keyboardHandler(event) {
     "ESCAPE_KEY": 27
   }
 
-  if(samples.length === 0) {
+  if(specimens.length === 0) {
     return;
   }
 
@@ -1026,9 +1034,11 @@ function keyboardHandler(event) {
     case CODES.X_KEY:
       return stepSelector.selectStep();
     case CODES.G_KEY:
-        return setActiveGroup();
+      return setActiveGroup();
     case CODES.I_KEY:
-        return $("#map-modal").modal("show");
+      return $("#map-modal").modal("show");
+    case CODES.Q_KEY:
+      return deleteCurrentSpecimen();
     case CODES.KEYPAD_ONE:
       if(event.ctrlKey) {
         return makeInterpretation(specimen, {"type": "TAU1", "anchored": true});
@@ -1053,6 +1063,33 @@ function keyboardHandler(event) {
 
 }
 
+function deleteCurrentSpecimen() {
+
+  /*
+   * Function deleteCurrentSpecimen
+   * Deletes the currently active specimen
+   */
+
+  const specimenSelectElement = document.getElementById("specimen-select");
+
+  var selectedIndex = specimenSelectElement.selectedIndex;
+
+  if(selectedIndex === -1) {
+    return;
+  }
+
+  if(!confirm("Are you sure you wish to delete this specimen?")) {
+    return;
+  }
+
+  // Remove from the array
+  specimens.splice(selectedIndex, 1);
+
+  updateSpecimenSelect();
+
+}
+
+
 function addMap() {
 
   /*
@@ -1061,9 +1098,10 @@ function addMap() {
    */
 
   const MAP_CONTAINER = "map";
-  const VIEWPORT = new L.latLng(35, 0);
   const TILE_LAYER = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+  const VIEWPORT = new L.latLng(35, 0);
 
+  // Set map options (bounds)
   var mapOptions = {
     "minZoom": 1,
     "maxBounds": new L.latLngBounds(new L.latLng(-90, -180), new L.latLng(90, 180)),
@@ -1089,7 +1127,6 @@ function modalOpenHandler() {
    * Function modalOpenHandler
    * Callback fired when the map modal is opened
    */
-
 
   var specimen = getSelectedSpecimen();
 
@@ -1408,11 +1445,11 @@ function getPublicationFromPID() {
   // Get the publication from the URL
   var SHA256 = location.search.substring(1);
 
-  HTTPRequest("./publications.json", "GET", function(PUBLICATIONS) {
+  HTTPRequest("publications.json", "GET", function(PUBLICATIONS) {
 
     var [pid, sample] = SHA256.split(".");
 
-    var publication = JSON.parse(PUBLICATIONS).filter(x => x.pid === pid);
+    var publication = PUBLICATIONS.filter(x => x.pid === pid);
 
     if(!publication.length) {
       return notify("danger", "Data from this persistent identifier could not be found.");
@@ -1420,13 +1457,12 @@ function getPublicationFromPID() {
 
     // Request the persistent resource from disk
     if(!sample) {
-      HTTPRequest("./publications/" + pid + ".pid", "GET", function(samples) {
-console.log(JSON.parse(samples));
-        __unlock__(JSON.stringify(JSON.parse(samples).specimens));
+      HTTPRequest("./publications/" + pid + ".pid", "GET", function(json) {
+        __unlock__(json.specimens);
       });
     } else {
-      HTTPRequest("./publications/" + pid + ".pid", "GET", function(samples) {
-        __unlock__(JSON.stringify(new Array(JSON.parse(samples).specimens[sample])));
+      HTTPRequest("./publications/" + pid + ".pid", "GET", function(json) {
+        __unlock__(new Array(json.specimens[sample]));
       });
     }
 
@@ -1454,7 +1490,7 @@ function downloadInterpretations() {
   );
 
   // No samples are loaded
-  if(samples.length === 0) {
+  if(specimens.length === 0) {
     return notify("danger", new Exception("No interpretations available to export."));
   }
 
@@ -1467,7 +1503,7 @@ function downloadInterpretations() {
       return notify("danger", exception);
     }
   } else {
-    var sampless = samples;
+    var sampless = specimens;
   }
 
   // Export the interpreted components as CSV
@@ -1876,7 +1912,7 @@ function sortSamples(type) {
   }
 
   // Sort the samples in place
-  samples.sort(getSortFunction(type));
+  specimens.sort(getSortFunction(type));
 
   notify("success", "Succesfully sorted specimens by <b>" + type + "</b>.");
 
@@ -1952,17 +1988,14 @@ function exportApplicationSave() {
   const MIME_TYPE = "data:application/json;charset=utf-8";
   const FILENAME = "specimens.dir";
 
-  if(samples.length === 0) {
+  if(specimens.length === 0) {
     return notify("danger", new Exception("No specimens to export"));
   }
 
-  // Create the persistent identifier
-  var pid = forge_sha256(JSON.stringify(samples));
-
   // Create the payload with some additional metadata
   var payload = encodeURIComponent(JSON.stringify({
-    "pid": pid,
-    "specimens": samples,
+    "pid": forge_sha256(JSON.stringify(specimens)),
+    "specimens": specimens,
     "version": __VERSION__,
     "created": new Date().toISOString()
   }));
@@ -1983,13 +2016,13 @@ function __init__() {
   }
 
   // Load the specimens from local storage
-  samples = localStorage.getItem("specimens");
+  specimens = JSON.parse(localStorage.getItem("specimens"));
 
-  if(samples === null) {
-    samples = JSON.stringify(new Array());
+  if(specimens === null) {
+    specimens = new Array();
   }
 
-  __unlock__(samples);
+  __unlock__(specimens);
 
 }
 

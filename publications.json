@@ -1,6 +1,13 @@
 [{
   "author": "Mathijs Koymans",
-  "description": "test file for directions",
-  "pid": "46658953231a43aea922afb9530e1d5282b3d5d7a55bcd60d493384d5d9e449c",
+  "institution": "Koninklijk Nederlands Metereologisch Instituut",
+  "description": "Sivas Basin site KO",
+  "pid": "b66030bc390dff755fc1ba71040b7e37c375149ea7785b653bc4ee30a3ed5faf",
+  "created": "2018-10-18T19:49:25.000Z"
+}, {
+  "author": "Felix Fixit",
+  "institution": "Koninklijk Nederlands Metereologisch Instituut",
+  "description": "Sivas Basin site KO FIXED!",
+  "pid": "c91632d50fef680df629170ae7ce347698f44ef50e03d09fa2dd001061a8d4a1",
   "created": "2018-10-18T19:49:25.000Z"
 }]
