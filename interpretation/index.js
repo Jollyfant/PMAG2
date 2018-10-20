@@ -1823,30 +1823,6 @@ function makeInterpretation(specimen, options) {
 
 }
 
-function switchCoordinateReference() {
-
-  /*
-   * Function switchCoordinateReference
-   * Cycles through the available coordinate reference frames
-   */
-
-  const AVAILABLE_COORDINATES = new Array(
-    "specimen",
-    "geographic",
-    "tectonic"
-  );
-
-  // Increment the counter
-  COORDINATES_COUNTER++;
-
-  COORDINATES_COUNTER = COORDINATES_COUNTER % AVAILABLE_COORDINATES.length
-  COORDINATES = AVAILABLE_COORDINATES[COORDINATES_COUNTER];
-
-  // Always redraw the interpretation charts after a reference switch
-  redrawCharts();
-
-}
-
 function switchProjection() {
 
   /*

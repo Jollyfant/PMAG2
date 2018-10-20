@@ -3,16 +3,106 @@ var sites = new Array();
 function __init__() {
 
 
-  notify("success", "Welcome to statistics!");
+  notify("success", "Welcome to the statistics portal. Add data below from the <b>Paleomagnetism.org 2.0.0</b> format to get started.");
 
   registerEventHandlers();
 
 }
 
+var COORDINATES_COUNTER = 0;
+var COORDINATES = "specimen";
+
+function keyboardHandler(event) {
+
+  /*
+   * Function keyboardHandler
+   * Handles keypresses on keyboard
+   */
+
+  const CODES = {
+    "KEYPAD_EIGHT": 56,
+    "ESCAPE_KEY": 27
+  }
+
+  if(sites.length === 0) {
+    return;
+  }
+
+  // Override the default handlers
+  if(!Object.values(CODES).includes(event.keyCode)) {
+    return;
+  }
+
+  event.preventDefault();
+
+  // Delegate to the appropriate handler
+  switch(event.keyCode) {
+    case CODES.KEYPAD_EIGHT:
+      return switchCoordinateReference();
+    case CODES.ESCAPE_KEY:
+      return document.getElementById("notification-container").innerHTML = "";
+  }
+
+}
+
 function registerEventHandlers() {
+
+  /*
+   * Function getSelectedSites
+   * Registers DOM event listeners and handler
+   */
 
   // Simple listeners
   document.getElementById("customFile").addEventListener("change", fileSelectionHandler);
+  document.getElementById("specimen-select").addEventListener("change", siteSelectionHandler);
+  document.addEventListener("keydown", keyboardHandler);
+
+}
+
+function redrawCharts() {
+
+  /*
+   * Function redrawCharts
+   * Functions that handles logic of which charts to redraw
+   */
+
+  eqAreaProjection();
+
+}
+
+function siteSelectionHandler() {
+
+  /*
+   * Function siteSelectionHandler
+   * Handler fired when the collection selector changes
+   */
+
+  if(getSelectedSites().length === 0) {
+    return notify("danger", "No collections selected.");
+  }
+
+  eqAreaProjection();
+
+}
+
+var Component = function(specimen, coordinates) {
+
+  this.name = specimen.name
+  this.rejected = false;
+
+  this.coreAzimuth = specimen.coreAzimuth
+  this.coreDip = specimen.coreDip
+  this.beddingStrike = specimen.beddingStrike
+  this.beddingDip = specimen.beddingDip
+
+  this.coordinates = literalToCoordinates(coordinates);
+
+}
+
+Component.prototype.inReferenceCoordinates = function(coordinates) {
+
+  // Return a itself as a new component but in reference coordinates
+  return new Component(this, inReferenceCoordinates(COORDINATES, this, this.coordinates));
 
 }
 
@@ -24,43 +114,28 @@ function addData(files) {
 
     var siteName = file.name;
     var reference = json.pid;
-    var directions = new Array();
+    var components = new Array();
 
     json.specimens.forEach(function(specimen) {
 
        specimen.interpretations.forEach(function(interpretation) {
 
+         // Skip components that are great circles
          if(interpretation.type === "TAU3") {
            return;
          }
 
-         var direction = literalToCoordinates(interpretation.specimen.coordinates).toVector(Direction);
-         var site = new Site(specimen.location);
-
-         directions.push({
-           "name": specimen.name,
-           "coreAzimuth": specimen.coreAzimuth,
-           "location": site,
-           "coreDip": specimen.coreDip,
-           "rejected": false,
-           "beddingStrike": specimen.beddingStrike,
-           "beddingDip": specimen.beddingDip,
-           "direction": direction
-         });
+         components.push(new Component(specimen, interpretation.specimen.coordinates));
 
        });
 
     });
 
     // Do the cutoff and accept/reject direction
-    values = doCutoff(directions);
-    ee = getStatisticalParameters(values);
-
     sites.push({
       "name": siteName,
       "reference": reference,
-      "components": values,
-      "pole": ee.pole,
+      "components": components,
       "created": new Date().toISOString()
     });
 
@@ -97,6 +172,8 @@ function updateSpecimenSelect() {
 
   sites.forEach(addPrototypeSelection);
 
+  $('.selectpicker').selectpicker('refresh');
+
 }
 
 function removeOptions(selectbox) {
@@ -127,9 +204,8 @@ function getStatisticalParameters(directions) {
 
   var site = new Site({"lng": 0, "lat": 0});
 
-  // Calculate 
-  var poles = directions.filter(x => !x.rejected).map(x => site.poleFrom(new Direction(x.direction.dec, x.direction.inc)));
-  var dirs = directions.filter(x => !x.rejected).map(x => new Direction(x.direction.dec, x.direction.inc));
+  var poles = directions.filter(x => !x.rejected).map(x => site.poleFrom(literalToCoordinates(x.coordinates).toVector(Direction)));
+  var dirs = directions.filter(x => !x.rejected).map(x => literalToCoordinates(x.coordinates).toVector(Direction));
 
   var p = new PoleDistribution(poles);
   var d = new DirectionDistribution(dirs);
@@ -137,8 +213,9 @@ function getStatisticalParameters(directions) {
   var butler = getButlerParameters(p.confidence, d.lambda, d.mean.inc);
 
   return {
-    "directions": directions,
-    "pole": p
+    "dir": d,
+    "pole": p,
+    "butler": butler
   }
 
 }
@@ -167,6 +244,8 @@ function getButlerParameters(confidence, lambda, inclination) {
 
 }
 
+$('.selectpicker').selectpicker('hide');
+
 function doCutoff(directions) {
 
   /*
@@ -174,6 +253,7 @@ function doCutoff(directions) {
    * Does the Vandamme or 45-cutoff
    */
 
+  // Get the cutoff type from the DOM
   var cutoffType = document.getElementById("cutoff-selection").value;
 
   // Create a fake site at 0, 0
@@ -182,7 +262,7 @@ function doCutoff(directions) {
   // Create a copy in memory
   var iterateDirections = memcpy(directions);
 
-  //  No cutoff
+  //  No cutoff: simply return
   if(cutoffType === "null") {
     return iterateDirections;
   }
@@ -193,15 +273,22 @@ function doCutoff(directions) {
     var deltaSum = 0;
     var cutoffValue = getCutoffAngle(cutoffType);
 
-    // Calculate the poles & mean poles
-    var poles = iterateDirections.filter(x => !x.rejected).map(x => site.poleFrom(new Direction(x.direction.dec, x.direction.inc)));
+    // Calculate the poles & mean pole from the accepted group
+    var poles = iterateDirections.filter(x => !x.rejected).map(x => site.poleFrom(literalToCoordinates(x.coordinates).toVector(Direction)));
     var poleDistribution = new PoleDistribution(poles);
 
     // Go over all all poles
-    poleDistribution.vectors.forEach(function(vector, i) {
+    iterateDirections.forEach(function(component, i) {
+
+      // Do not incude directions that were already rejected
+      if(component.rejected) {
+        return;
+      }
+
+      var pole = site.poleFrom(literalToCoordinates(component.coordinates).toVector(Direction));
 
       // Find the angle between the mean VGP (mLon, mLat) and the particular VGPj.
-      var angleToMean = poleDistribution.mean.toCartesian().dot(vector.toCartesian());
+      var angleToMean = poleDistribution.mean.toCartesian().angle(pole.toCartesian());
 
       // Capture the maximum angle from the mean and save its index
       if(angleToMean > cutoffValue) {
@@ -236,7 +323,11 @@ function doCutoff(directions) {
 
   }
 
-  return iterateDirections;
+  return {
+    "components": iterateDirections,
+    "cutoff": cutoffValue,
+    "scatter": ASD
+  }
 
 }
 
@@ -265,6 +356,13 @@ function fileSelectionHandler(event) {
     } catch(exception) {
       return notify("danger", exception);
     }
+
+    $(".selectpicker").selectpicker("show");
+    $(".selectpicker").selectpicker("val", "0");
+    $("#nav-profile-tab").removeClass("disabled");
+    $("#nav-fitting-tab").removeClass("disabled");
+
+    $("#nav-profile-tab").tab("show");
 
     notify("success", "Succesfully added <b>" + (sites.length - nSites) + "</b> specimen(s) (" + cutoff + ").");
 

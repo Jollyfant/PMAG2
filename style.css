@@ -1,16 +1,31 @@
 body {
   padding-top: 5rem;
 }
+
 .leaflet-popup-close-button {
   display: none;
 }
+
 .map {
   height: 400px;
   width: 100%;
 }
+a .dropdown-item {
+  text-align: center;
+}
+
+.filter-option-inner-inner{
+  text-align: center;
+}
 
 select {
  text-align: center;
+}
+
+.card-img-top {
+min-width: 100%;
+width: auto;
+height: auto;
 }
 
 #notification-container {

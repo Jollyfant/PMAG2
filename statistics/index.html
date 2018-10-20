@@ -27,6 +27,7 @@
           integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz"
           crossorigin="anonymous">
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.2/css/bootstrap-select.min.css">
   </head>
 
   <body>
@@ -34,7 +35,7 @@
     <!-- Header -->
     <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
 
-      <a class="navbar-brand" href="http://www.paleomagnetism.org">Paleomagnetism.org</a>
+      <a class="navbar-brand" href="http://www.paleomagnetism.org">Paleomagnetism<span class="text-danger">.org</span></a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -42,7 +43,7 @@
       <div class="collapse navbar-collapse" id="navbarsExampleDefault">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item">
-            <a class="nav-link" href="#">Interpretation</a>
+            <a class="nav-link" href="../interpretation/index.html">Interpretation</a>
           </li>
           <li class="nav-item active">
             <a class="nav-link" href="#">Statistics</a>
@@ -50,10 +51,10 @@
           <li class="nav-item">
             <span class="nav-link disabled" href="#">|</span></li>
           <li class="nav-item">
-            <a class="nav-link" href="#">References</a>
+            <a class="nav-link" href="../references/index.html">References</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Team & Contact</a>
+            <a class="nav-link" href="../team/index.html">Team & Contact</a>
           </li>
         </ul>
 
@@ -72,18 +73,29 @@
       <!-- Container for user notifications -->
       <div id="notification-container"></div>
 
+      <!-- Specimen Scroller -->
+      <div class="input-group">
+        <select class="selectpicker form-control text-center" data-actions-box="true" id="specimen-select" title="<i class='far fa-hand-point-down'></i> Select one or multiple collections" multiple></select>
+      </div>
+
+      <br>
+
       <!-- Tab Headers -->
       <nav>
         <div class="nav nav-tabs nav-justified" id="nav-tab" role="tablist">
           <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Data Import</a>
-          <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Geomagnetic Directions</a>
-          <a class="nav-item nav-link" id="nav-fitting-tab" data-toggle="tab" href="#nav-fitting" role="tab" aria-controls="nav-profile" aria-selected="false">Mean Directions</a>
+          <a class="nav-item nav-link disabled" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Directions</a>
+          <a class="nav-item nav-link disabled" id="nav-fitting-tab" data-toggle="tab" href="#nav-fitting" role="tab" aria-controls="nav-profile" aria-selected="false">Mean Directions</a>
+<!--
           <a class="nav-item nav-link" id="nav-settings-tab" data-toggle="tab" href="#nav-settings" role="tab" aria-controls="nav-settings" aria-selected="false">Common True Mean Directions</a>
           <a class="nav-item nav-link" id="nav-settings-tab" data-toggle="tab" href="#nav-settings" role="tab" aria-controls="nav-settings" aria-selected="false">Foldtest</a>
           <a class="nav-item nav-link" id="nav-settings-tab" data-toggle="tab" href="#nav-settings" role="tab" aria-controls="nav-settings" aria-selected="false">Inclination Shallowing</a>
+-->
           <a class="nav-item nav-link" id="nav-settings-tab" data-toggle="tab" href="#nav-settings" role="tab" aria-controls="nav-settings" aria-selected="false">Export and Settings</a>
+
         </div>
       </nav>
+
 
       <div class="tab-content">
 
@@ -94,7 +106,7 @@
 
           <div class="alert alert-light" role="alert">
             <h5> Paleomagnetism.org 2 - Statistics </h5>
-            <p> Data from the Paleomagnetism 2.0.0 .dir format can be imported to the statistics portal. Each selected file will be associated with a new site.
+            <p> Data from the Paleomagnetism 2.0.0 .dir format can be imported to the statistics portal. Each selected file will be associated with a new selectable collection.
           </div>
 
           <div class="input-group mb-6">
@@ -116,74 +128,47 @@
 
             &nbsp;
 
-            <!-- Format type selector -->
-            <div class="input-group-prepend">
-              <label class="input-group-text" for="cutoff-selection">Direction Cutoff &nbsp; <small><i class="fas fa-angle-right"></i></small></label>
-            </div>
-
-            <select class="custom-select" id="cutoff-selection">
-              <optgroup label="Recommended Cutoffs">
-                <option value="CUTOFF45">45 Cutoff</option>
-              </optgroup>
-              <optgroup label="Other Cutoffs">
-                <option value="VANDAMME">Vandamme</option>
-                <option value="null">None</option>
-              </optgroup>
-            </select>
-
           </div>
 
-          <p><figcaption class="figure-caption text-right"><i class="far fa-frown"></i> Your institution's format not here? Write us an e-mail on the <a href=''>contact page</a>.</figcaption>
-
         </div>
+
 
         <!-- Tab for data interpretation -->
         <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
 
           <br>
-          
-          <!-- Specimen Scroller -->
-          <div class="input-group">
-            <select class="custom-select custom-select-lg" id="specimen-select" multiple></select>
+
+          <div class="alert alert-light" role="alert">
+            <h5> Statistics - Geomagnetic Directions </h5>
+            <p> Figures showing the selected collections and their geomagnetic directions & distribution of virtual geomagnetic poles. The table lists standard Fisher parameters for this set of directions.
           </div>
-          
-          <br>
 
-          <!-- Specimen information -->
-          <div class="table-responsive"><table id="table-container" class="table table-sm table-striped"></table></div>
-
-          <hr>
-          
           <div class="container">
             <div class="row">
-	          <div class="col-md-6">
-                <div id="direction-container"></div>
-	      </div>
 
-              <div class="col-md-6">
-                <div id="pole-container"></div>
-	      </div>
-            </div>
-
-            <br>
-
-            <!-- Table for PCA -->
-            <div class="row">
-              <div class="col-md-12">
-                <hr>
-                <div id="interpretation-table-container"></div>
-                <hr>
+              <div class="table-responsive">
+                <table class='table table-sm text-center table-striped' id="direction-table"></table>
               </div>
+
+              <!-- ChRM Directions -->
+	          <div class="col-lg-6">
+                <div style="height: 600px;" id="direction-container"></div>
+	          </div>
+
+              <!-- VGPs -->
+              <div class="col-lg-6">
+                <div style="height: 600px;" id="pole-container"></div>
+	          </div>
+
             </div>
 
-            <div class="row">
-              <div class="col-md-12">
-                <div id="intensity-container"></div>
-                <figcaption class="figure-caption">Figure showing the resultant magnetization, vector difference sum, and the unblocking spectrum.</figcaption>
-	       </div>
-	     </div>
-
+        <div class="text-right">
+	        <button class="btn btn-sm btn-light" id="export-png"><i class="far fa-file-image"></i> PNG</button>
+	        <button class="btn btn-sm btn-light" id="export-svg"><i class="far fa-file-image"></i> SVG</button>
+	        <button class="btn btn-sm btn-light" id="export-pdf"><i class="far fa-file-image"></i> PDF</button>
           </div>
+          </div>
+
         </div>
 
         <!-- Tab for fitting great circles to directions -->
@@ -234,6 +219,30 @@
           <button onclick="sortSamples('lithology')" type="button" class="btn btn-sm btn-light"><i class="fas fa-sort"></i> Lithology</button>
           <button onclick="sortSamples('bogo')" type="button" class="btn btn-sm btn-light"><i class="fas fa-sort"></i> Randomly</button>
           <hr>
+
+
+          <!-- Cutoff selector -->
+          <h5> Select Cutoff </h5>
+          <div class="input-group mb-6">
+
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="cutoff-selection">Direction Cutoff &nbsp; <small><i class="fas fa-angle-right"></i></small></label>
+            </div>
+
+
+            <select class="custom-select" id="cutoff-selection">
+              <optgroup label="Recommended Cutoffs">
+                <option value="CUTOFF45">45 Cutoff</option>
+              </optgroup>
+              <optgroup label="Other Cutoffs">
+                <option value="VANDAMME">Vandamme</option>
+                <option value="null">None</option>
+              </optgroup>
+            </select>
+
+          </div>
+
+          <br>
 
           <!-- Keyboard tips -->
           <h5> Keyboard Shortcuts</h5>
@@ -309,98 +318,22 @@
 
     <footer id="footer-container" class="container text-muted"></footer>
 
-    <br> 
-
-    <!-- Logo's -->
-    <div class="justify-content-md-center text-center">
-      <div style="text-align: right; display: inline-block;">
-        <a href="http://www.geo.uu.nl/~forth/"><img style="margin: 0px; height: 60px;" src="./images/UU.png"></a>
-        <a href="http://erc.europa.eu/"><img style="margin: 0px; height: 60px;" src="./images/ERC.png"></a>
-        <a href="http://www.nwo.nl/"><img style="margin: 0px; height: 60px;" src="./images/NWO_logo_plain.png"></a>
-      </div>
-    </div>
-
     <br>
 
-    <!-- Leaflet Map Modal -->
-    <div class="modal fade" id="map-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel"></h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-    
-            <!-- Latitude, Longitude container -->
-            <div class="form-group">
-            <div class="row">
-              <div class="col">
-                <div class="input-group mb-6">
-                  <input id='specimen-longitude-input' type="text" class="form-control input-sm" placeholder="Longitude">
-                  <div class="input-group-append">
-                    <div class="input-group-text">°E</div>
-                  </div>
-                </div>
-              </div>
-              <div class="col">
-                <div class="input-group mb-6">
-                <input id='specimen-latitude-input' type="text" class="form-control input-sm" placeholder="Latitude">
-                  <div class="input-group-append">
-                    <div class="input-group-text">°N</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            </div>
-    
-            <div id="map" class="map"></div>
-            <p>
-            <div class="input-group input-group-sm">
-              <div class="input-group-prepend">
-                <span class="input-group-text" id="">Lithology</span>
-              </div>
-              <select id="specimen-lithology-input" class="form-control custom-select" id="exampleFormControlSelect1">
-                <option value="null">Unknown</option>
-                <option value="volcanic">Volcanic</option>
-                <option value="sediment">Sediment</option>
-              </select>
-              <div class="input-group-prepend">
-                <span class="input-group-text">Stratigraphic Level</span>
-              </div>
-              <input id="specimen-level-input" type="number" class="form-control">
-            </div>
-          </div>
-    
-          <div class="modal-footer">
-            <div class="mr-auto">
-              <button id="save-location" type="button" class="btn btn-primary">Save Location</button>
-              &nbsp;
-              <div class="form-check form-check-inline">
-                <input type="checkbox" class="form-check-input" id="location-apply-all">
-                <label class="form-check-label" for="location-apply-all">Apply to all</label>
-              </div>
-            </div>
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          </div>
-        </div>
-      </div>
-    </div>
+  </body>
 
-    </body>
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/highcharts-more.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/modules/offline-exporting.js"></script>
 
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-    <script src="https://code.highcharts.com/highcharts.js"></script>
-    <script src="https://code.highcharts.com/highcharts-more.js"></script>
-    <script src="https://code.highcharts.com/modules/exporting.js"></script>
-
-    <!-- Include leaflet -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.2/js/bootstrap-select.min.js"></script>
+  <!-- Include leaflet -->
    <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"
      integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA=="
      crossorigin=""></script>

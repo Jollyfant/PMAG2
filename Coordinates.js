@@ -29,6 +29,12 @@ Coordinates.prototype.subtract = function(coordinates) {
 
 }
 
+Coordinates.prototype.angle = function(coordinates) {
+
+  return Math.acos(this.unit().dot(coordinates.unit())) / RADIANS;
+
+}
+
 Coordinates.prototype.dot = function(coordinates) {
 
   return this.x * coordinates.x + this.y * coordinates.y + this.z * coordinates.z;

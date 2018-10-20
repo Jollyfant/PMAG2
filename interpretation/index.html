@@ -12,7 +12,7 @@
 
     <meta name="author" content="Mathijs Koymans">
 
-    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="../style.css">
 
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
@@ -34,7 +34,7 @@
     <!-- Header -->
     <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
 
-      <a class="navbar-brand" href="http://www.paleomagnetism.org">Paleomagnetism.org</a>
+      <a class="navbar-brand" href="http://www.paleomagnetism.org">Paleomagnetism<span class="text-danger">.org</span></a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -45,27 +45,21 @@
             <a class="nav-link" href="#">Interpretation</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Statistics</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Tectonics</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Magnetostratigraphy</a>
+            <a class="nav-link" href="../statistics/index.html">Statistics</a>
           </li>
           <li class="nav-item">
             <span class="nav-link disabled" href="#">|</span></li>
           <li class="nav-item">
-            <a class="nav-link" href="#">References</a>
+            <a class="nav-link" href="../references/index.html">References</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Team & Contact</a>
+            <a class="nav-link" href="../team/index.html">Team & Contact</a>
           </li>
         </ul>
 
         <form class="form-inline my-2 my-lg-0">
           <!--<input id="search-bar" class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">-->
-          <a href="./library/index.html" class="btn btn-sm btn-primary my-2 my-sm-0"><i class="fas fa-book-open"></i> <b>Data Library</b></a>
+          <a href="../library/index.html" class="btn btn-sm btn-primary my-2 my-sm-0"><i class="fas fa-book-open"></i> <b>Data Library</b></a>
         </form>
 
       </div>
@@ -344,19 +338,6 @@
 
     <footer id="footer-container" class="container text-muted"></footer>
 
-    <br> 
-
-    <!-- Logo's -->
-    <div class="justify-content-md-center text-center">
-      <div style="text-align: right; display: inline-block;">
-        <a href="http://www.geo.uu.nl/~forth/"><img style="margin: 0px; height: 60px;" src="./images/UU.png"></a>
-        <a href="http://erc.europa.eu/"><img style="margin: 0px; height: 60px;" src="./images/ERC.png"></a>
-        <a href="http://www.nwo.nl/"><img style="margin: 0px; height: 60px;" src="./images/NWO_logo_plain.png"></a>
-      </div>
-    </div>
-
-    <br>
-
     <!-- Leaflet Map Modal -->
     <div class="modal fade" id="map-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
@@ -442,14 +423,14 @@
 
     <script src="./numeric.js"></script>
 
-    <script src="./graphs-p.js"></script>
+    <script src="./graphs.js"></script>
     <script src="./publications.json"></script>
-    <script src="./Exception.js"></script>
-    <script src="./Direction.js"></script>
-    <script src="./sha.js"></script>
-    <script src="./utils.js"></script>
+    <script src="../Exception.js"></script>
+    <script src="../Direction.js"></script>
+    <script src="../sha.js"></script>
+    <script src="../utils.js"></script>
 
-    <script src="./Coordinates.js"></script>
+    <script src="../Coordinates.js"></script>
     <script src="./importing.js"></script>
     <script src="./index.js"></script>
 

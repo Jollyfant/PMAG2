@@ -239,51 +239,26 @@ function generateZijderveldTooltip() {
 
 }
 
-function fromReferenceCoordinates(reference, specimen, coordinates) {
+function generateHemisphereTooltip() {
 
   /*
-   * Function fromReferenceCoordinates
-   * Rotates all the way back to specimen coordinates
+   * Function generateHemisphereTooltip
+   * Generates the Hemisphere chart tooltip
    */
 
-  // We are already in specimen coordinates
-  if(reference === "specimen") {
-    return coordinates; 
+  if(this.series.name === "Directions") {
+    return [
+      "<b>Demagnetization step: </b>" + this.point.step,
+      "<b>Declination: </b>" + this.x.toFixed(1),
+      "<b>Inclination </b>" + this.point.inc.toFixed(1)
+    ].join("<br>");
+  } else {
+    return [
+      "<b>Interpretation</b>",
+      "<b>Declination: </b>" + this.x.toFixed(1),
+      "<br><b>Inclination: </b>" + this.point.inc.toFixed(1)
+    ].join("<br>");
   }
-
-  // In geographic: rotate backwards to specimen
-  if(reference === "geographic") {
-    return coordinates.rotateFrom(specimen.coreAzimuth, specimen.coreDip);
-  }
-
-  // In tectonic coordinates: inverse bedding correction
-  // and geographic correctiono at the end
-  var dipDirection = specimen.beddingStrike + 90;
-  return coordinates.rotateTo(-dipDirection, 90).rotateFrom(0, 90 - specimen.beddingDip).rotateTo(dipDirection, 90).rotateFrom(specimen.coreAzimuth, specimen.coreDip);
-
-}
-
-function inReferenceCoordinates(reference, specimen, coordinates) {
-
-  /*
-   * Function inReferenceCoordinates
-   * Gets the coordinates in the reference coordinates
-   */
-
-  if(reference === "specimen") {
-    return coordinates;
-  }
-
-  // Do the geographic correction
-  coordinates = coordinates.rotateTo(specimen.coreAzimuth, specimen.coreDip);
-
-  if(reference === "geographic") {
-    return coordinates;
-  }
-
-  // Do the tectonic correction
-  // See Lisa Tauxe: 9.3 Changing coordinate systems; last paragraph
-  return coordinates.correctBedding(specimen.beddingStrike, specimen.beddingDip);
 
 }
 
@@ -619,43 +594,6 @@ function plotZijderveldDiagram(hover) {
       }
     }].concat(formatInterpretationSeries(graphScale, specimen.interpretations))
   });
-
-}
-
-function getConfidenceEllipse(angle) {
-
-  /*
-   * Function getConfidenceEllipse
-   * Returns confidence ellipse around up North
-   */
-
-  // Define the number of discrete points on an ellipse
-  const NUMBER_OF_POINTS = 101;
-
-  var vectors = new Array();
-
-  // Create a circle around the pole with angle confidence
-  for(var i = 0; i < NUMBER_OF_POINTS; i++) {
-    vectors.push(new Direction((i * 360) / (NUMBER_OF_POINTS - 1), 90 - angle));
-  }
-
-  // Handle the correct distribution type
-  return vectors;
-
-}
-
-function getPlaneData(direction, angle) {
-
-  /*
-   * Function getPlaneData
-   * Returns plane data
-   */
-
-  if(angle === undefined) {
-    angle = 90;
-  }
-
-  return getConfidenceEllipse(angle).map(x => x.toCartesian()).map(x => x.rotateTo(direction.dec, direction.inc)).map(x => x.toVector(Direction)).map(x => x.highchartsData());
 
 }
 

@@ -67,8 +67,8 @@ Site.prototype.directionFrom = function(pole) {
   }
 
   // Convert to Radians
-  var siteLat = this.latitude * RADIANS;
-  var siteLong = this.longitude * RADIANS;
+  var siteLat = this.lat * RADIANS;
+  var siteLong = this.lng * RADIANS;
   var poleLat = pole.lat * RADIANS;
   var poleLong = pole.lng * RADIANS
 

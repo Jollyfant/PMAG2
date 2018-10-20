@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+  <head>
+
+    <!-- Required metadata tags -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Paleomagnetism.org 2 - An online environment for paleomagnetic analysis">
+    <meta name="keywords" content="paleomagnetism, interpretation, zijderveld, pca">
+
+    <meta name="author" content="Mathijs Koymans">
+
+    <link rel="stylesheet" href="../style.css">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
+          integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+          crossorigin=""/>
+
+    <!-- Bootstrap & Font Awesome CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css"
+          integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz"
+          crossorigin="anonymous">
+
+  </head>
+
+  <body>
+
+    <!-- Header -->
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+
+      <a class="navbar-brand" href="http://www.paleomagnetism.org">Paleomagnetism<span class="text-danger">.org</span></a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="../interpretation/index.html">Interpretation</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../statistics/index.html">Statistics</a>
+          </li>
+          <li class="nav-item">
+            <span class="nav-link disabled" href="#">|</span></li>
+          <li class="nav-item">
+            <a class="nav-link active" href="">References</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../team/index.html">Team & Contact</a>
+          </li>
+        </ul>
+
+        <form class="form-inline my-2 my-lg-0">
+          <!--<input id="search-bar" class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">-->
+          <a href="../library/index.html" class="btn btn-sm btn-primary my-2 my-sm-0"><i class="fas fa-book-open"></i> <b>Data Library</b></a>
+        </form>
+
+      </div>
+
+    </nav>
+
+    <!-- Main body -->
+    <div class="container">
+
+      <!-- Container for user notifications -->
+      <div id="notification-container"></div>
+
+        <div class="alert alert-light" role="alert">
+          <h5> Paleomagnetism.org 2 - References </h5>
+          <p> The following list of publications should be cited when the respective parts of this application are used, or methods are applied. Corrections about the information provided on this page can be sent to us through the <a href="./">contact page</a>.
+        </div>
+
+        <div class="card">
+          <h5 class="card-header"> Paleomagnetism.org </h5>
+          <div class="card-body">
+            <h5 class="card-title"><span class="badge badge-light"><a href="https://www.doi.org/10.1016/j.cageo.2016.05.007"><i class="fas fa-globe-americas"></i> 10.1016/j.cageo.2016.05.007</a></span></h5>
+            <p class="card-text">Koymans, M.R., Langereis, C.G., Pastor-Galan, D., and van Hinsbergen, D.J.J., Paleomagnetism.org: An online multi-platform open source environment for paleomagnetic data analysis, Computers and Geosciences, Volume 93, Pages 127–137 (2016)</p>
+          </div>
+        </div>
+
+        <br>
+
+        <div class="card">
+          <h5 class="card-header"> Interpretation Portal  </h5>
+          <div class="card-body">
+            <h5 class="card-title"><span class="badge badge-light"><a href="https://doi.org/10.1016/0012-821X(88)90072-6"><i class="fas fa-globe-americas"></i> 10.1016/0012-821X(88)90072-6</a></span></h5>
+            <p class="card-text">McFadden, P.L., McElhinny, M.W. The combined analysis of remagnetization circles and direct observations in palaeomagnetism Earth and Planetary Science Letters 87 (1-2), pp. 161-17241 (1988)</p>
+            <h5 class="card-title"><span class="badge badge-light"><a href="https://doi.org/10.1111/j.1365-246X.1980.tb02601.x"><i class="fas fa-globe-americas"></i> 10.1111/j.1365-246X.2011.05050.x</a></span></h5>
+            <p class="card-text">Kirschvink, J.L. The least-squares line and plane and the analysis of palaeomagnetic data. Geophysical Journal, Royal Astronomical Society 62 (3), pp. 699-718 (1980)</p>
+            <h5 class="card-title"><span class="badge badge-light"><span class="text-secondary">No DOI Available</span></h5>
+            <p class="card-text">Fisher, R. Dispersion on a Sphere Proceedings of the Royal Society, A: 217: 295-305 (1953)</p>	
+            <h5 class="card-title"><span class="badge badge-light"><span class="text-secondary">No DOI Available</span></h5>
+            <p class="card-text"> Butler, R.F. Paleomagnetism: magnetic domains to geologic terranes (book) (1992)</p>
+          </div>
+        </div>
+
+        <br>
+
+        <div class="card">
+          <h5 class="card-header"> Statistics Portal </h5>
+          <div class="card-body">
+            <h5 class="card-title"><span class="badge badge-light"><a href="https://www.doi.org/10.1016/j.cageo.2016.05.007"><i class="fas fa-globe-americas"></i> 10.1016/j.cageo.2016.05.007</a></span></h5>
+            <p class="card-text">Tauxe, L., with contributions from Butler, R.F., Van der Voo, R., and Banerjee, S.K., Essentials of Paleomagnetism, University of California Press, ISBN: 9780520260313 (2010)</p>
+            <h5 class="card-title"><span class="badge badge-light"><a href="https://doi.org/10.1111/j.1365-246X.2011.05050.x"><i class="fas fa-globe-americas"></i> 10.1111/j.1365-246X.2011.05050.x</a></span></h5>
+            <p class="card-text">Deenen, M.H.L., Langereis, C.G., van Hinsbergen, D.J.J., and Biggin, A.J., Geomagnetic secular variation and the statistics of paleomagnetic directions, Geophysical Journal International 186, p. 509-520 (2011) </p>
+            <h5 class="card-title"><span class="badge badge-light"><span class="text-secondary">No DOI Available</span></h5>
+            <p class="card-text">Zijderveld, J.D.A. (1967): A.C. demagnetization of rocks: analysis of results. In D.W. Collinson, K.M. Crees and S.K. Runcorn (Eds.) Methods in Paleomagnetism (pp. 254-286). Elsevier, Amsterdam.</p>
+            <h5 class="card-title"><span class="badge badge-light"><a href="https://doi.org/10.1111/j.1365-246X.1990.tb05683.x"><i class="fas fa-globe-americas"></i> 10.1111/j.1365-246X.1990.tb05683.x</a></span></h5>
+            <p class="card-text">McFadden, P.L., McElhinny, M.W. Classification of the reversal test in palaeomagnetism Geophysical Journal International 103 (3), pp. 725-729 (1990).</p>
+            <h5 class="card-title"><span class="badge badge-light"><span class="text-secondary">No DOI Available</span></h5>
+            <p class="card-text">Tauxe, L. Essentials of Paleomagnetism, 2010. University of California press.</p>
+            <h5 class="card-title"><span class="badge badge-light"><a href="https://doi.org/10.1016/0012-821X(94)90006-X"><i class="fas fa-globe-americas"></i> 10.1016/0012-821X(94)90006-X</a></span></h5>
+            <p class="card-text">Tauxe, L., Watson, G.S. The fold test: an eigen analysis approach Earth and Planetary Science Letters 122 (3-4), pp. 331-341 (1994).</p>
+            <h5 class="card-title"><span class="badge badge-light"><a href="https://doi.org/10.1016/j.pepi.2008.05.006"><i class="fas fa-globe-americas"></i> 10.1016/j.pepi.2008.05.006</a></span></h5>
+            <p class="card-text">Tauxe, L., Kodama, K., & Kent, D. V. Testing corrections for paleomagnetic inclination error in sedimentary rocks: a comparative approach. Phys. Earth Planet. Int., 169, 152–165. (2008)</p>
+            <h5 class="card-title"><span class="badge badge-light"><a href="https://doi.org/10.7916/D81N89JT"><i class="fas fa-globe-americas"></i> 10.7916/D81N89JT</a></span></h5>
+            <p class="card-text">Tauxe, L. & Kent, D. V. A simplified statistical model for the geomagnetic field and the detection of shallow bias in paleomagnetic inclinations: Was the ancient magnetic field dipolar? Timescales of the Paleomagnetic Field, volume 145 (pp. 101–116) (2004)</p>
+            <h5 class="card-title"><span class="badge badge-light"><span class="text-secondary">No DOI Available</span></h5>
+            <p class="card-text"> R. F. King The Remanent Magnetism of Artificially Deposited Sediments Mon. Nat. Roy. astr. Soc., Geophys. Suppl., 7, 115–134. (1955).</p>
+          </div>
+        </div>
+
+        <br>
+
+        <div class="card">
+          <h5 class="card-header"> Tectonics Portal </h5>
+          <div class="card-body">
+            <h5 class="card-title"><span class="badge badge-light"><a href="https://www.doi.org/10.1016/j.earscirev.2012.06.007"><i class="fas fa-globe-americas"></i> 10.1016/j.earscirev.2012.06.007</a></span></h5>
+            <p class="card-text">Torsvik et al., Phanerozoic polar wander, palaeogeography and dynamics Source of the Document Earth-Science Reviews 114 (3-4), pp. 325-368 (2012).</p>
+            <h5 class="card-title"><span class="badge badge-light"><a href="https://doi.org/10.1029/2000JB000050"><i class="fas fa-globe-americas"></i> 10.1029/2000JB000050</a></span></h5>
+            <p class="card-text">Besse, J., Courtillot, V. Apparent and true polar wander and the geometry of the geomagnetic field over the last 200 Myr Journal of Geophysical Research: Solid Earth 107 (11), pp. EPM 6-1 - 6-31 (2002).</p>	
+            <h5 class="card-title"><span class="badge badge-light"><a href="https://doi.org/10.1029/2009JB007205"><i class="fas fa-globe-americas"></i> 10.1029/2009JB007205</a></span></h5>
+            <p class="card-text">Kent, D.V., Irving, E. Influence of inclination error in sedimentary rocks on the Triassic and Jurassic apparent pole wander path for North America and implications for Cordilleran tectonics Journal of Geophysical Research: Solid Earth 115 (10), B10103 (2010).</p>	
+            <h5 class="card-title"><span class="badge badge-light"><a href="https://doi.org/10.1371/journal.pone.0126946"><i class="fas fa-globe-americas"></i> 10.1371/journal.pone.0126946</a></span></h5>
+            <p class="card-text">van Hinsbergen et al., A Paleolatitude Calculator for Paleoclimate Studies (model version 1.2), PLOS ONE (2015).</p>	
+          </div>
+        </div>
+
+        <br>
+
+        <div class="card">
+          <h5 class="card-header"> Miscellaneous Portal </h5>
+          <div class="card-body">
+            <h5 class="card-title"><span class="badge badge-light"><a href="https://doi.org/10.1130/0091-7613(1987)15%3C593:SSOTTO%3E2.0.CO;2"><i class="fas fa-globe-americas"></i> 10.1130/0091-7613(1987)15<593:SSOTTO>2.0.CO;2</a></span></h5>
+            <p class="card-text">Allerton, S., Vine, F.J. Spreading structure of the Troodos ophiolite, Cyprus: some paleomagnetic constraints. (1987) Geology, 15 (7), pp. 593-597.</p>
+            <h5 class="card-title"><span class="badge badge-light"><span class="text-secondary">No DOI Available</span></h5>
+            <p class="card-text">Morris, A., Anderson, M.W., Robertson, A.H.F. Multiple tectonic rotations and transform tectonism in an intraoceanic suture zone, SW Cyprus (1998) Tectonophysics, 299 (1-3), pp. 229-253.</p>	
+          </div>
+        </div>
+
+    </div>
+
+    <footer id="footer-container" class="container text-muted"></footer>
+
+    <br> 
+
+    <!-- Logo's -->
+    <div class="justify-content-md-center text-center">
+      <div style="text-align: right; display: inline-block;">
+        <a href="http://www.geo.uu.nl/~forth/"><img style="margin: 0px; height: 60px;" src="../images/UU.png"></a>
+        <a href="http://erc.europa.eu/"><img style="margin: 0px; height: 60px;" src="../images/ERC.png"></a>
+        <a href="http://www.nwo.nl/"><img style="margin: 0px; height: 60px;" src="../images/NWO_logo_plain.png"></a>
+      </div>
+    </div>
+
+    <br>
+
+  </body>
+
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+</html>
