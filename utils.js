@@ -6,7 +6,74 @@ const PROJECTION_TYPE = "AREA";
 const warning = new Audio("sounds/error.mp3");
 const notification = new Audio("sounds/notification.mp3");
 
+const HIGHCHARTS_BLUE = "#7CB5EC";
+const HIGHCHARTS_BLACK = "#434348";
+const HIGHCHARTS_GREEN = "#90ED7D";
+const HIGHCHARTS_ORANGE = "#F7A35C";
+const HIGHCHARTS_PURPLE = "#8085E9";
+const HIGHCHARTS_CYAN = "#91E8E1";
+const HIGHCHARTS_PINK = "#F15C80";
+const HIGHCHARTS_YELLOW = "#E4D354";
+const HIGHCHARTS_TURQUOISE = "#2B908F";
+const HIGHCHARTS_RED = "#F45B5B";
+const HIGHCHARTS_WHITE = "#FFFFFF";
+
+const ENABLE_CREDITS = false;
+
 document.title = "Paleomagnetism.org " + __VERSION__;
+
+function getRotationMatrix(lambda, phi) {
+
+  /*
+   * Function getRotationMatrix
+   * Returns the rotation matrix
+   */
+
+  return new Array(
+    new Array(Math.cos(lambda) * Math.sin(phi), -Math.sin(lambda), Math.cos(phi) * Math.cos(lambda)),
+    new Array(Math.sin(phi) * Math.sin(lambda), Math.cos(lambda), Math.sin(lambda) * Math.cos(phi)),
+    new Array(-Math.cos(phi), 0, Math.sin(phi))
+  );
+
+}
+
+function getRotationMatrixR(lambda, phi) {
+
+  /*
+   * Function getRotationMatrixR
+   * Returns the reversed rotation matrix (transpose)
+   */
+
+  return new Array(
+    new Array(Math.cos(lambda) * Math.sin(phi), Math.sin(phi) * Math.sin(lambda), -Math.cos(phi)),
+    new Array(-Math.sin(lambda), Math.cos(lambda), 0),
+    new Array(Math.cos(phi) * Math.cos(lambda), Math.sin(lambda) * Math.cos(phi), Math.sin(phi))
+  );
+
+}
+
+function generateHemisphereTooltip() {
+
+  /*
+   * Function generateHemisphereTooltip
+   * Generates the Hemisphere chart tooltip
+   */
+
+  if(this.series.name === "Directions") {
+    return [
+      "<b>Demagnetization step: </b>" + this.point.step,
+      "<b>Declination: </b>" + this.x.toFixed(1),
+      "<b>Inclination </b>" + this.point.inc.toFixed(1)
+    ].join("<br>");
+  } else {
+    return [
+      "<b>Interpretation</b>",
+      "<b>Declination: </b>" + this.x.toFixed(1),
+      "<br> <b>Inclination: </b>" + this.point.inc.toFixed(1)
+    ].join("<br>");
+  }
+
+}
 
 function notify(type, text) {
 
@@ -132,6 +199,36 @@ function downloadAsCSV(filename, csv) {
 
 }
 
+
+function memcpy(object) {
+
+  return JSON.parse(JSON.stringify(object));
+
+}
+
+function projectInclination(inc) {
+
+  /*
+   * Function projectInclination
+   * Converts the inclination to a project inclination (equal area; equal angle)
+   * used in the equal area projection plots
+   */
+
+  // Value can be treated as being absolute since the
+  // lower & upper hemisphere are both being projected
+  var inc = Math.abs(inc);
+
+  switch(PROJECTION_TYPE) {
+    case "AREA":
+      return 90 - (Math.sqrt(2) * 90 * Math.sin(Math.PI * (90 - inc) / 360));
+    case "ANGLE":
+      return 90 - (90 * Math.tan(Math.PI * (90 - inc) / 360));
+    default:
+      throw(new Exception("Unknown projection type requested."));
+  }
+
+}
+
 function HTTPRequest(url, type, callback) {
 
   /*
@@ -165,6 +262,63 @@ function HTTPRequest(url, type, callback) {
   // Open and finish the request
   xhr.open(type, url);
   xhr.send();
+
+}
+
+function literalToCoordinates(coordinates) {
+
+  /*
+   * Function literalToCoordinates
+   * Returns an object literal {x, y, z} to a Coordinate instance
+   */
+
+  return new Coordinates(coordinates.x, coordinates.y, coordinates.z);
+
+}
+
+function readMultipleFiles(files, callback) {
+
+  /*
+   * Function readMultipleFiles
+   * Uses the HTML5 FileReader API to read mutliple fires and fire a callback with its contents
+   */
+
+  var readFile, file, reader
+  var fileContents = new Array();
+
+  // IIFE to read multiple files
+  (readFile = function(file) {
+
+    // All files were read
+    if(!files.length) {
+      return callback(fileContents);
+    }
+
+    // Next queued file: create a new filereader instance
+    file = files.pop();
+    reader = new FileReader();
+
+    // XML should be readable as text
+    reader.readAsText(file);
+
+    // Callback when one file is read (this is async)
+    reader.onload = function() {
+
+      console.debug("FileReader read file " + file.name + " (" + file.size + " bytes)");
+
+      // Append the result
+      fileContents.push({
+        "name": file.name,
+        "data": reader.result,
+        "size": file.size
+      });
+
+      // More files to read: continue
+      readFile();
+
+    }
+
+  })();
 
 }
 

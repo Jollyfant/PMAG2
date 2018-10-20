@@ -12,7 +12,7 @@
 
     <meta name="author" content="Mathijs Koymans">
 
-    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="../style.css">
 
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
@@ -41,17 +41,11 @@
 
       <div class="collapse navbar-collapse" id="navbarsExampleDefault">
         <ul class="navbar-nav mr-auto">
-          <li class="nav-item active">
+          <li class="nav-item">
             <a class="nav-link" href="#">Interpretation</a>
           </li>
-          <li class="nav-item">
+          <li class="nav-item active">
             <a class="nav-link" href="#">Statistics</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Tectonics</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Magnetostratigraphy</a>
           </li>
           <li class="nav-item">
             <span class="nav-link disabled" href="#">|</span></li>
@@ -82,9 +76,12 @@
       <nav>
         <div class="nav nav-tabs nav-justified" id="nav-tab" role="tablist">
           <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Data Import</a>
-          <a class="nav-item nav-link disabled" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Interpretation</a>
-          <a class="nav-item nav-link disabled" id="nav-fitting-tab" data-toggle="tab" href="#nav-fitting" role="tab" aria-controls="nav-profile" aria-selected="false">Components and Fitting</a>
-          <a class="nav-item nav-link" id="nav-settings-tab" data-toggle="tab" href="#nav-settings" role="tab" aria-controls="nav-settings" aria-selected="false">Settings and Export</a>
+          <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Geomagnetic Directions</a>
+          <a class="nav-item nav-link" id="nav-fitting-tab" data-toggle="tab" href="#nav-fitting" role="tab" aria-controls="nav-profile" aria-selected="false">Mean Directions</a>
+          <a class="nav-item nav-link" id="nav-settings-tab" data-toggle="tab" href="#nav-settings" role="tab" aria-controls="nav-settings" aria-selected="false">Common True Mean Directions</a>
+          <a class="nav-item nav-link" id="nav-settings-tab" data-toggle="tab" href="#nav-settings" role="tab" aria-controls="nav-settings" aria-selected="false">Foldtest</a>
+          <a class="nav-item nav-link" id="nav-settings-tab" data-toggle="tab" href="#nav-settings" role="tab" aria-controls="nav-settings" aria-selected="false">Inclination Shallowing</a>
+          <a class="nav-item nav-link" id="nav-settings-tab" data-toggle="tab" href="#nav-settings" role="tab" aria-controls="nav-settings" aria-selected="false">Export and Settings</a>
         </div>
       </nav>
 
@@ -96,9 +93,8 @@
           <br>
 
           <div class="alert alert-light" role="alert">
-            <h5> Paleomagnetism.org 2 - Interpretation </h5>
-            <p> Data from various formats can be imported to Paleomagnetism.org. Select the appropriate input format and select one or multiple files to read from disk. New specimens can be appended to an existing by checking the respective checkbox.
-            <p> It is recommended to do analyis on a logical collection of samples that belong together.
+            <h5> Paleomagnetism.org 2 - Statistics </h5>
+            <p> Data from the Paleomagnetism 2.0.0 .dir format can be imported to the statistics portal. Each selected file will be associated with a new site.
           </div>
 
           <div class="input-group mb-6">
@@ -107,34 +103,8 @@
             <div class="custom-file">
               <input type="file" class="custom-file-input" id="customFile" multiple>
               <label class="custom-file-label" for="customFile"><i class="fas fa-search"></i> Select files </label>
+
             </div>
-
-            &nbsp;
-
-            <!-- Format type selector -->
-            <div class="input-group-prepend">
-              <label class="input-group-text" for="format-selection">Data Format &nbsp; <small><i class="fas fa-angle-right"></i></small></label>
-            </div>
-
-            <select class="custom-select" id="format-selection">
-              <optgroup label="Application Formats">
-                <option value="PMAGORG2">Paleomagnetism.org (2.0.0)</option>
-                <option value="PMAGORG">Paleomagnetism.org (1.0.0)</option>
-              </optgroup>
-
-              <optgroup label="Institution Formats">
-                <option value="UTRECHT">Utrecht University</option>
-                <option value="PALEOMAC">PaleoMac Software</option>
-                <option value="OXFORD">University of Oxford</option>
-                <option value="MUNICH">University of Munich</option>
-                <option value="NGU">Geological Survey of Norway</option>
-                <option value="BCN2G">University of Barcelona</option>
-                <option value="HELSINKI">Helsinki University</option>
-                <option value="CALTECH">Caltech Institute of Technology</option>
-              </optgroup>
-
-            </select>
-
             <div class="input-group-append">
               <div class="input-group-text">
                 <input id='append-input' type="checkbox" aria-label="Checkbox for following text input">
@@ -143,6 +113,23 @@
                 </label>
               </div>
             </div>
+
+            &nbsp;
+
+            <!-- Format type selector -->
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="cutoff-selection">Direction Cutoff &nbsp; <small><i class="fas fa-angle-right"></i></small></label>
+            </div>
+
+            <select class="custom-select" id="cutoff-selection">
+              <optgroup label="Recommended Cutoffs">
+                <option value="CUTOFF45">45 Cutoff</option>
+              </optgroup>
+              <optgroup label="Other Cutoffs">
+                <option value="VANDAMME">Vandamme</option>
+                <option value="null">None</option>
+              </optgroup>
+            </select>
 
           </div>
 
@@ -157,13 +144,7 @@
           
           <!-- Specimen Scroller -->
           <div class="input-group">
-            <div class="input-group-prepend">
-              <button onclick='handleSpecimenScroll(-1)' type="button" class="btn btn-primary btn-lg"><</button>
-            </div>
-            <select class="custom-select custom-select-lg" id="specimen-select"></select>
-            <div class="input-group-append">
-              <button onclick='handleSpecimenScroll(1)' type="button" class="btn btn-primary btn-lg">></button>
-           </div>
+            <select class="custom-select custom-select-lg" id="specimen-select" multiple></select>
           </div>
           
           <br>
@@ -175,29 +156,13 @@
           
           <div class="container">
             <div class="row">
-	      <div class="col-md-2">
-                <div style='border: 1px solid lightgrey;' class="btn-group d-flex btn-group-toggle" data-toggle="buttons">
-                  <label title="Thermal Demagnetization" value="thermal" class="demagnetization-type-radio btn btn-sm btn-light w-100 active">
-                    <input type="radio" name="options" id="option1" autocomplete="off" checked> <span style="pointer-events: none;" class='text-danger'><i class="fas fa-fire"></i> <b></b></span>
-                  </label>
-                  <label title="Alternating Field Demagnetization" value="alternating" class="demagnetization-type-radio btn btn-sm btn-light w-100">
-                    <input type="radio" name="options" id="option2" autocomplete="off"> <span style="pointer-events: none;" class='text-warning'><i class="fas fa-bolt"></i> <b></b></span>
-                  </label>
-                  <label title="Unknown Demagnetization" value="null" class="demagnetization-type-radio btn btn-sm btn-light w-100">
-                    <input type="radio" name="options" id="option3" autocomplete="off"> <span style="pointer-events: none;" class='text-success'><i class="fas fa-question"></i> <b></b></span>
-                  </label>
-                </div>
-                <hr>
-                <div class="table-scroll">
-	          <table class="table table-sm" id="step-container"></table>
-                </div>
+	          <div class="col-md-6">
+                <div id="direction-container"></div>
 	      </div>
-              <div class="col-md-5">
-                <div id="zijderveld-container"></div>
+
+              <div class="col-md-6">
+                <div id="pole-container"></div>
 	      </div>
-	      <div class="col-md-5">
-                <div id="hemisphere-container"></div>
-              </div>
             </div>
 
             <br>
@@ -440,17 +405,16 @@
      integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA=="
      crossorigin=""></script>
 
-    <script src="./numeric.js"></script>
+    <script src="../utils.js"></script>
 
-    <script src="./graphs-p.js"></script>
-    <script src="./publications.json"></script>
-    <script src="./Exception.js"></script>
-    <script src="./Direction.js"></script>
-    <script src="./sha.js"></script>
-    <script src="./utils.js"></script>
-
-    <script src="./Coordinates.js"></script>
-    <script src="./importing.js"></script>
+    <script src="../Exception.js"></script>
+    <script src="../Direction.js"></script>
+    <script src="../Pole.js"></script>
+    <script src="../Location.js"></script>
+    <script src="../Coordinates.js"></script>
+    <script src="../Site.js"></script>
+    <script src="../Distribution.js"></script>
     <script src="./index.js"></script>
+    <script src="./graphs.js"></script>
 
 </html>

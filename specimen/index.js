@@ -182,17 +182,6 @@ function formatSpecimenTable(pid, specimen) {
 
 }
 
-function literalToCoordinates(coordinates) {
-
-  /*
-   * Function literalToCoordinates
-   * Returns an object literal {x, y, z} to a Coordinate instance
-   */
-
-  return new Coordinates(coordinates.x, coordinates.y, coordinates.z);
-
-}
-
 function formatInterpretationRows(sample, i) {
 
   /*

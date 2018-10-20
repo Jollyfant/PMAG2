@@ -18,52 +18,6 @@ function registerEventHandlers() {
 
 }
 
-function readMultipleFiles(files, callback) {
-
-  /*
-   * Function readMultipleFiles
-   * Uses the HTML5 FileReader API to read mutliple fires and fire a callback with its contents
-   */
-
-  var readFile, file, reader
-  var fileContents = new Array();
-
-  // IIFE to read multiple files
-  (readFile = function(file) {
-
-    // All files were read
-    if(!files.length) {
-      return callback(fileContents);
-    }
-
-    // Next queued file: create a new filereader instance
-    file = files.pop();
-    reader = new FileReader();
-
-    // XML should be readable as text
-    reader.readAsText(file);
-
-    // Callback when one file is read (this is async)
-    reader.onload = function() {
-
-      console.debug("FileReader read file " + file.name + " (" + file.size + " bytes)");
-
-      // Append the result
-      fileContents.push({
-        "name": file.name,
-        "data": reader.result,
-        "size": file.size
-      });
-
-      // More files to read: continue
-      readFile();
-
-    }
-
-  })();
-
-}
-
 var Measurement = function(step, coordinates, error) {
 
   /*

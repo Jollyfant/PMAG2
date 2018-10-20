@@ -1,18 +1,6 @@
 "use strict";
 
-const HIGHCHARTS_BLUE = "#7CB5EC";
-const HIGHCHARTS_BLACK = "#434348";
-const HIGHCHARTS_GREEN = "#90ED7D";
-const HIGHCHARTS_ORANGE = "#F7A35C";
-const HIGHCHARTS_PURPLE = "#8085E9";
-const HIGHCHARTS_CYAN = "#91E8E1";
-const HIGHCHARTS_PINK = "#F15C80";
-const HIGHCHARTS_YELLOW = "#E4D354";
-const HIGHCHARTS_TURQUOISE = "#2B908F";
-const HIGHCHARTS_RED = "#F45B5B";
-const HIGHCHARTS_WHITE = "#FFFFFF";
 
-const ENABLE_CREDITS = false;
 const MARKER_RADIUS_SELECTED = 6;
 
 function getUBS(intensityData) {
@@ -228,29 +216,6 @@ function plotIntensityDiagram(hover) {
   });
 
   createIntensityDiagram(hover, plotSeries);
-
-}
-
-function generateHemisphereTooltip() {
-
-  /*
-   * Function generateHemisphereTooltip
-   * Generates the Hemisphere chart tooltip
-   */
-
-  if(this.series.name === "Directions") {
-    return [
-      "<b>Demagnetization step: </b>" + this.point.step,
-      "<b>Declination: </b>" + this.x.toFixed(1),
-      "<b>Inclination </b>" + this.point.inc.toFixed(1)
-    ].join("<br>");
-  } else {
-    return [
-      "<b>Interpretation</b>",
-      "<b>Declination: </b>" + this.x.toFixed(1),
-      "<br> <b>Inclination: </b>" + this.point.inc.toFixed(1)
-    ].join("<br>");
-  }
 
 }
 
@@ -679,37 +644,6 @@ function getConfidenceEllipse(angle) {
 
 }
 
-function getRotationMatrix(lambda, phi) {
-
-  /*
-   * Function getRotationMatrix
-   * Returns the rotation matrix
-   */
-
-  return new Array(
-    new Array(Math.cos(lambda) * Math.sin(phi), -Math.sin(lambda), Math.cos(phi) * Math.cos(lambda)),
-    new Array(Math.sin(phi) * Math.sin(lambda), Math.cos(lambda), Math.sin(lambda) * Math.cos(phi)),
-    new Array(-Math.cos(phi), 0, Math.sin(phi))
-  );
-
-}
-
-function getRotationMatrixR(lambda, phi) {
-
-  /*
-   * Function getRotationMatrixR
-   * Returns the reversed rotation matrix (transpose)
-   */
-
-  return new Array(
-    new Array(Math.cos(lambda) * Math.sin(phi), Math.sin(phi) * Math.sin(lambda), -Math.cos(phi)),
-    new Array(-Math.sin(lambda), Math.cos(lambda), 0),
-    new Array(Math.cos(phi) * Math.cos(lambda), Math.sin(lambda) * Math.cos(phi), Math.sin(phi))
-  );
-
-}
-
-
 function getPlaneData(direction, angle) {
 
   /*
@@ -993,29 +927,6 @@ function createIntensityDiagram(hover, series) {
     },
     "series": series
   });
-
-}
-
-function projectInclination(inc) {
-
-  /*
-   * Function projectInclination
-   * Converts the inclination to a project inclination (equal area; equal angle)
-   * used in the equal area projection plots
-   */
-
-  // Value can be treated as being absolute since the
-  // lower & upper hemisphere are both being projected
-  var inc = Math.abs(inc);
-
-  switch(PROJECTION_TYPE) {
-    case "AREA":
-      return 90 - (Math.sqrt(2) * 90 * Math.sin(Math.PI * (90 - inc) / 360));
-    case "ANGLE":
-      return 90 - (90 * Math.tan(Math.PI * (90 - inc) / 360));
-    default:
-      throw(new Exception("Unknown projection type requested."));
-  }
 
 }
 
