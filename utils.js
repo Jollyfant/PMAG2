@@ -37,6 +37,50 @@ function getRotationMatrix(lambda, phi) {
 
 }
 
+function meanDirection(vectors) {
+
+  /*
+   * Function Distribution.meanDirection
+   * Calculates the mean vector from a set of directions
+   */
+
+  var xSum = 0;
+  var ySum = 0
+  var zSum = 0;
+
+  vectors.map(vector => vector.toCartesian()).forEach(function(coordinates) {
+
+    xSum += coordinates.x;
+    ySum += coordinates.y;
+    zSum += coordinates.z;
+
+  });
+
+  return new Coordinates(xSum, ySum, zSum).toVector(Direction);
+
+}
+
+function TMatrix(data) {
+
+  /*
+   * Function TMatrix
+   * Returns the orientation matrix for a set of directions
+   */
+
+  var T = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+
+  data.forEach(function(vector) {
+    for(var k = 0; k < 3; k++) {
+      for(var l = 0; l < 3; l++) {
+        T[k][l] += vector[k] * vector[l]
+      }
+    }
+  });
+
+  return T;
+
+}
+
 function inReferenceCoordinates(reference, specimen, coordinates) {
 
   /*

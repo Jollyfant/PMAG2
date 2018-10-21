@@ -100,10 +100,14 @@ var Component = function(specimen, coordinates) {
 
 }
 
-Component.prototype.inReferenceCoordinates = function() {
+Component.prototype.inReferenceCoordinates = function(coordinates) {
+
+  if(coordinates === undefined) {
+    coordinates = COORDINATES;
+  }
 
   // Return a itself as a new component but in reference coordinates
-  return new Component(this, inReferenceCoordinates(COORDINATES, this, this.coordinates));
+  return new Component(this, inReferenceCoordinates(coordinates, this, this.coordinates));
 
 }
 
@@ -402,6 +406,7 @@ function fileSelectionHandler(event) {
     $("#nav-profile-tab").removeClass("disabled");
     $("#nav-fitting-tab").removeClass("disabled");
     $("#nav-ctmd-tab").removeClass("disabled");
+    $("#nav-foldtest-tab").removeClass("disabled");
 
     $("#nav-profile-tab").tab("show");
 

@@ -1544,22 +1544,6 @@ function downloadInterpretations() {
 
 }
 
-function TMatrix(data) {
-
-  var T = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
-
-  data.forEach(function(vector) {
-    for(var k = 0; k < 3; k++) {
-      for(var l = 0; l < 3; l++) {
-        T[k][l] += vector[k] * vector[l]
-      }
-    }
-  });
-
-  return T;
-
-}
-
 var sortEigenvectors = function(eig) {
 
   /*

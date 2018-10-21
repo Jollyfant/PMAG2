@@ -85,13 +85,11 @@
         <div class="nav nav-tabs nav-justified" id="nav-tab" role="tablist">
           <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Data Import</a>
           <a class="nav-item nav-link disabled" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Directions</a>
-          <a class="nav-item nav-link disabled" id="nav-fitting-tab" data-toggle="tab" href="#nav-fitting" role="tab" aria-controls="nav-profile" aria-selected="false">Mean Directions</a>
+          <a class="nav-item nav-link disabled" id="nav-fitting-tab" data-toggle="tab" href="#nav-fitting" role="tab" aria-controls="nav-profile" aria-selected="false">Means</a>
           <a class="nav-item nav-link disabled" id="nav-ctmd-tab" data-toggle="tab" href="#nav-ctmd" role="tab" aria-controls="nav-ctmd" aria-selected="false">CTMD</a>
-<!--
-          <a class="nav-item nav-link" id="nav-settings-tab" data-toggle="tab" href="#nav-settings" role="tab" aria-controls="nav-settings" aria-selected="false">Foldtest</a>
-          <a class="nav-item nav-link" id="nav-settings-tab" data-toggle="tab" href="#nav-settings" role="tab" aria-controls="nav-settings" aria-selected="false">Inclination Shallowing</a>
--->
-          <a class="nav-item nav-link" id="nav-settings-tab" data-toggle="tab" href="#nav-settings" role="tab" aria-controls="nav-settings" aria-selected="false">Export and Settings</a>
+          <a class="nav-item nav-link disabled" id="nav-foldtest-tab" data-toggle="tab" href="#nav-foldtest" role="tab" aria-controls="nav-foldtest" aria-selected="false">Foldtest</a>
+          <a class="nav-item nav-link" id="nav-shallowing-tab" data-toggle="tab" href="#nav-shallowing" role="tab" aria-controls="nav-shallowing" aria-selected="false">Shallowing</a>
+          <a class="nav-item nav-link" id="nav-settings-tab" data-toggle="tab" href="#nav-settings" role="tab" aria-controls="nav-settings" aria-selected="false">Settings</a>
 
         </div>
       </nav>
@@ -140,7 +138,7 @@
 
           <div class="alert alert-light" role="alert">
             <h5> Statistics - Geomagnetic Directions </h5>
-            <p> Figures showing the selected collections and their geomagnetic directions & distribution of virtual geomagnetic poles. The table lists standard Fisher parameters for this set of directions.
+            <p> Figures showing the selected collections and their geomagnetic directions & distribution of virtual geomagnetic poles. The table lists standard Fisher parameters for this set of directions. When multiple collections are selected, its components will be combined before a cutoff is applied. Press <b>8</b> to switch between coordinate frames.
           </div>
 
           <div class="container">
@@ -179,7 +177,7 @@
 
           <div class="alert alert-light" role="alert">
             <h5> Statistics - Mean Geomagnetic Directions </h5>
-            <p> Figures showing the mean direction of the mean of all collections.
+            <p> Figures showing the mean direction of the mean of all selected collections seperately. Press <b>8</b> to switch between coordinate frames.
           </div>
 
           <div class="container">
@@ -248,19 +246,73 @@
 
         </div>
 
+        <!-- Tab for fitting great circles to directions -->
+        <div class="tab-pane fade" id="nav-foldtest" role="tabpanel" aria-labelledby="nav-settings-tab">
+
+          <br>
+
+          <div class="alert alert-light" role="alert">
+            <h5> Statistics - Foldtest </h5>
+            <p> This module allows the user to do a classical foldtest on one or multiple collections. <b>No cutoff will be applied</b>. Select any number of collections and click <b>initialize</b> to begin the bootstrap. The simulation may take some seconds.
+            <p> <button onclick="bootstrapFoldtest()" type="button" class="btn btn-sm pull-right btn-primary"><i class="far fa-clock"></i> <b>Initialize Foldtest</b></button>
+            <div class="progress">
+              <div id="foldtest-progress" class="progress-bar progress-bar-striped progress-bar-animated" style="width: 0%; transition: none;"></div>
+            </div> 
+          </div>
+
+          <div class="container">
+
+            <div class="row">
+
+              <!-- In geographic coordinates -->
+	          <div class="col-lg-6">
+                <div style="height: 600px;" id="foldtest-geographic-container"></div>
+	          </div>
+
+              <!-- In tectonic coordinates -->
+	          <div class="col-lg-6">
+                <div style="height: 600px;" id="foldtest-tectonic-container"></div>
+	          </div>
+
+            </div>
+
+            <!-- Container for the foldtest itself -->
+            <div class="row">
+	          <div class="col-lg-12">
+                <div id="foldtest-full-container"></div>
+	          </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Tab for fitting great circles to directions -->
+        <div class="tab-pane fade" id="nav-shallowing" role="tabpanel" aria-labelledby="nav-settings-tab">
+
+          <br>
+
+          <div class="alert alert-light" role="alert">
+            <h5> Statistics - Shallowing </h5>
+            <p> This module allows the user to do a classical foldtest on one or multiple collections. <b>No cutoff will be applied</b>. Select any number of collections and click <b>initialize</b> to begin the bootstrap. The simulation may take some seconds.
+            <p> <button onclick="bootstrapShallowing()" type="button" class="btn btn-sm pull-right btn-primary"><i class="far fa-clock"></i> <b>Initialize Shallowing</b></button>
+            <div class="progress">
+              <div id="shallowing-progress" class="progress-bar progress-bar-striped progress-bar-animated" style="width: 0%; transition: none;"></div>
+            </div> 
+        </div>
+
+         <div class="row">
+	       <div class="col-lg-12">
+             <div id="ei-cdf-container"></div>
+	       </div>
+         </div>
+
+        </div>
+
         <!-- Tab for settings & preferences --> 
         <div class="tab-pane fade" id="nav-settings" role="tabpanel" aria-labelledby="nav-settings-tab">
 
           <br>
-
-          <!-- Options for sorting -->
-          <h5> Sorting Options </h5>
-          <p> Collections can be sorted by the following attributes.
-          <p>
-          <button onclick="sortSamples('name')" type="button" class="btn btn-sm btn-light"><i class="fas fa-sort"></i> Name</button>
-          <button onclick="sortSamples('bogo')" type="button" class="btn btn-sm btn-light"><i class="fas fa-sort"></i> Randomly</button>
-          <hr>
-
 
           <!-- Cutoff selector -->
           <h5> Select Cutoff </h5>
@@ -269,7 +321,6 @@
             <div class="input-group-prepend">
               <label class="input-group-text" for="cutoff-selection">Direction Cutoff &nbsp; <small><i class="fas fa-angle-right"></i></small></label>
             </div>
-
 
             <select class="custom-select" id="cutoff-selection">
               <optgroup label="Recommended Cutoffs">
@@ -285,44 +336,14 @@
 
           <br>
 
-          <!-- Keyboard tips -->
-          <h5> Keyboard Shortcuts</h5>
-          <small>
-            <table class="table table-sm table-striped table-responsive text-center">
-              <tr>
-                <td>Previous Specimen</td>
-                <td>Next Specimen</td>
-                <td>Previous Step</td>
-                <td>Next Step</td>
-                <td>Select Step</td>
-                <td>Hide Step</td>
-                <td>PCA (Direction)</td>
-                <td>PCA (Plane)</td>
-                <td>Anchor Component</td>
-                <td>Cycle Projection</td>
-                <td>Cycle Coordinates</td>
-                <td>Fit Great Circles</td>
-                <td>Change Group</td>
-                <td>Set Location</td>
-                <td>Remove Specimen</td>
-              </tr>
-                <td>Left, A</td>
-                <td>Right, D</td>
-                <td>Up, W</td>
-                <td>Down, S</td>
-                <td>Plus, X</td>
-                <td>Minus, Z</td>
-                <td>1</td>
-                <td>2</td>
-                <td>Control</td>
-                <td>3</td>
-                <td>8</td>
-                <td>9</td>
-                <td>g</td>
-                <td>i</td>
-                <td>q</td>
-            </table>
-          </small>
+          <!-- Options for sorting -->
+          <h5> Sorting Options </h5>
+          <p> Collections can be sorted by the following attributes.
+          <p>
+          <button onclick="sortSamples('name')" type="button" class="btn btn-sm btn-light"><i class="fas fa-sort"></i> Name</button>
+          <button onclick="sortSamples('bogo')" type="button" class="btn btn-sm btn-light"><i class="fas fa-sort"></i> Randomly</button>
+
+          <br>
 
           <!-- Preferences -->
           <h5> Preferences </h5>
@@ -331,16 +352,8 @@
             <label class="form-check-label" for="auto-save"> Auto-save </label>
             &nbsp;
             &nbsp;
-            <input class="form-check-input" type="checkbox" id="zijderveld-tooltip" value="option1" checked>
-            <label class="form-check-label" for="zijderveld-tooltip"> Zijderveld tooltip</label>
-            &nbsp;
-            &nbsp;
             <input class="form-check-input" type="checkbox" id="enable-sound" value="option1" checked>
             <label class="form-check-label" for="enable-sound"> Sound </label>
-            &nbsp;
-            &nbsp;
-            <input class="form-check-input" type="checkbox" id="auto-comment" value="option1">
-            <label class="form-check-label" for="auto-comment"> Auto comment </label>
           </div>
           <br>
           <br>
@@ -388,7 +401,9 @@
     <script src="../Coordinates.js"></script>
     <script src="../Site.js"></script>
     <script src="../Distribution.js"></script>
+    <script src="../interpretation/numeric.js"></script>
     <script src="./index.js"></script>
+    <script src="./temp.json"></script>
     <script src="./graphs.js"></script>
 
 </html>

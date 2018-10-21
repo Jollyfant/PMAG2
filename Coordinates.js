@@ -116,7 +116,7 @@ Coordinates.prototype.rotate = function(rotationMatrix) {
   }
 
   // Return the rotated coordinates
-  return new Coordinates(...rotatedVector);
+  return new Coordinates(rotatedVector[0], rotatedVector[1], rotatedVector[2]);
 
 }
 
@@ -136,6 +136,8 @@ Coordinates.prototype.rotateTo = function(azimuth, plunge) {
    * Function Coordinates.rotateTo
    * Rotates a direction to azimuth, plunge
    */
+
+  // TODO return early when plunge = 90: add azimuth to declination
 
   // Convert to radians
   var azimuth = azimuth * RADIANS;
