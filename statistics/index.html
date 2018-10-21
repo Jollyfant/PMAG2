@@ -60,7 +60,7 @@
 
         <form class="form-inline my-2 my-lg-0">
           <!--<input id="search-bar" class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">-->
-          <a href="./library/index.html" class="btn btn-sm btn-primary my-2 my-sm-0"><i class="fas fa-book-open"></i> <b>Data Library</b></a>
+          <a href="../library/index.html" class="btn btn-sm btn-primary my-2 my-sm-0"><i class="fas fa-book-open"></i> <b>Data Library</b></a>
         </form>
 
       </div>
@@ -86,8 +86,8 @@
           <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Data Import</a>
           <a class="nav-item nav-link disabled" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Directions</a>
           <a class="nav-item nav-link disabled" id="nav-fitting-tab" data-toggle="tab" href="#nav-fitting" role="tab" aria-controls="nav-profile" aria-selected="false">Mean Directions</a>
+          <a class="nav-item nav-link disabled" id="nav-ctmd-tab" data-toggle="tab" href="#nav-ctmd" role="tab" aria-controls="nav-ctmd" aria-selected="false">CTMD</a>
 <!--
-          <a class="nav-item nav-link" id="nav-settings-tab" data-toggle="tab" href="#nav-settings" role="tab" aria-controls="nav-settings" aria-selected="false">Common True Mean Directions</a>
           <a class="nav-item nav-link" id="nav-settings-tab" data-toggle="tab" href="#nav-settings" role="tab" aria-controls="nav-settings" aria-selected="false">Foldtest</a>
           <a class="nav-item nav-link" id="nav-settings-tab" data-toggle="tab" href="#nav-settings" role="tab" aria-controls="nav-settings" aria-selected="false">Inclination Shallowing</a>
 -->
@@ -162,11 +162,12 @@
 
             </div>
 
-        <div class="text-right">
-	        <button class="btn btn-sm btn-light" id="export-png"><i class="far fa-file-image"></i> PNG</button>
-	        <button class="btn btn-sm btn-light" id="export-svg"><i class="far fa-file-image"></i> SVG</button>
-	        <button class="btn btn-sm btn-light" id="export-pdf"><i class="far fa-file-image"></i> PDF</button>
-          </div>
+            <div class="text-right">
+	          <button class="btn btn-sm btn-light" id="export-png"><i class="far fa-file-image"></i> PNG</button>
+	          <button class="btn btn-sm btn-light" id="export-svg"><i class="far fa-file-image"></i> SVG</button>
+	          <button class="btn btn-sm btn-light" id="export-pdf"><i class="far fa-file-image"></i> PDF</button>
+            </div>
+
           </div>
 
         </div>
@@ -176,47 +177,87 @@
 
           <br>
 
-          <div class="row justify-content-md-center">
-            <div class="col-md-6 ">
-              <div id="fitting-container"></div>
-              <figcaption class="figure-caption">Great circles can be fitted to directional set points by pressing <b>9</b>.</figcaption>
-            </div>
+          <div class="alert alert-light" role="alert">
+            <h5> Statistics - Mean Geomagnetic Directions </h5>
+            <p> Figures showing the mean direction of the mean of all collections.
           </div>
+
+          <div class="container">
+            <div class="row justify-content-md-center">
+
+              <div class="table-responsive">
+                <table class='table table-sm text-center table-striped' id="mean-table"></table>
+              </div>
+
+              <!-- ChRM Directions -->
+	          <div class="col-lg-6">
+                <div style="height: 600px;" id="mean-container"></div>
+	          </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Tab for fitting great circles to directions -->
+        <div class="tab-pane fade" id="nav-ctmd" role="tabpanel" aria-labelledby="nav-settings-tab">
 
           <br>
 
-          <div class="row justify-content-md-center">
-            <div class="col-md-6 ">
-              <table class='table table-sm text-center table-striped' id="fitted-table-container"></table>
-            </div>
+          <div class="alert alert-light" role="alert">
+
+            <h5> Statistics - Common True Mean Directions </h5>
+            <p> Figures showing <b>1000</b> bootstrapped mean coordinates for the selected collections following the approach of <a href='../references/index.html'>Tauxe et al., 2014</a>. Select two collections and click <b>initialize</b> to begin the bootstrap. Overlapping distributions indicidate that two collections are the same within confidence limits.
+            <p> <button onclick="bootstrapCTMD()" type="button" class="btn btn-sm pull-right btn-primary"><i class="fas fa-play"></i> <b>Initialize Bootstrap</b></button>
+
+
           </div>
 
-          <div class="row justify-content-md-center">
-            <div class="col-md-6 ">
-              <div class='text-center'>
-                <button class="btn btn-sm btn-success" onclick="downloadInterpretations()" type="button" class="btn btn-primary"><i class="fas fa-file-download"></i>&nbsp; Download Interpretations</button>
+          <div class="container">
+            <div class="row justify-content-md-center">
+
+              <div class="table-responsive">
+                <table class='table table-sm text-center table-striped' id="bootstrap-table"></table>
               </div>
+
+              <!-- ChRM Directions -->
+	          <div class="col-lg-4">
+                <div id="ctmd-container-x"></div>
+	          </div>
+	          <div class="col-lg-4">
+                <div id="ctmd-container-y"></div>
+	          </div>
+	          <div class="col-lg-4">
+                <div id="ctmd-container-z"></div>
+	          </div>
+
             </div>
+
+            <br>
+
+
+            <div class="text-right">
+
+	          <button class="btn btn-sm btn-light" id="export-bootstrap-png"><i class="far fa-file-image"></i> PNG</button>
+	          <button class="btn btn-sm btn-light" id="export-bootstrap-svg"><i class="far fa-file-image"></i> SVG</button>
+	          <button class="btn btn-sm btn-light" id="export-bootstrap-pdf"><i class="far fa-file-image"></i> PDF</button>
+            </div>
+
           </div>
-          
+
         </div>
 
         <!-- Tab for settings & preferences --> 
         <div class="tab-pane fade" id="nav-settings" role="tabpanel" aria-labelledby="nav-settings-tab">
+
           <br>
-          <h5> Saving Data </h5>
-          <p> Data from the application can be exported in the <b>Paleomagnetism.org 2.0.0</b> format.
-          <p>
-          <button onclick="exportApplicationSave()" type="button" class="btn btn-sm btn-success"><i class="fas fa-file-download"></i>&nbsp; Download application save</button>
-          <hr>
 
           <!-- Options for sorting -->
           <h5> Sorting Options </h5>
-          <p> Specimens can be sorted by the following attributes.
+          <p> Collections can be sorted by the following attributes.
           <p>
           <button onclick="sortSamples('name')" type="button" class="btn btn-sm btn-light"><i class="fas fa-sort"></i> Name</button>
-          <button onclick="sortSamples('stratigraphy')" type="button" class="btn btn-sm btn-light"><i class="fas fa-sort"></i> Stratigraphy</button>
-          <button onclick="sortSamples('lithology')" type="button" class="btn btn-sm btn-light"><i class="fas fa-sort"></i> Lithology</button>
           <button onclick="sortSamples('bogo')" type="button" class="btn btn-sm btn-light"><i class="fas fa-sort"></i> Randomly</button>
           <hr>
 

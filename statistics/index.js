@@ -67,6 +67,7 @@ function redrawCharts() {
    */
 
   eqAreaProjection();
+  eqAreaProjectionMean();
 
 }
 
@@ -81,7 +82,7 @@ function siteSelectionHandler() {
     return notify("danger", "No collections selected.");
   }
 
-  eqAreaProjection();
+  redrawCharts();
 
 }
 
@@ -99,7 +100,7 @@ var Component = function(specimen, coordinates) {
 
 }
 
-Component.prototype.inReferenceCoordinates = function(coordinates) {
+Component.prototype.inReferenceCoordinates = function() {
 
   // Return a itself as a new component but in reference coordinates
   return new Component(this, inReferenceCoordinates(COORDINATES, this, this.coordinates));
@@ -331,6 +332,45 @@ function doCutoff(directions) {
 
 }
 
+function sortSamples(type) {
+
+  /*
+   * Function sortSamples
+   * Mutates the samples array in place sorted by a particular type
+   */
+
+  function getSortFunction(type) {
+
+    /*
+     * Function getSortFunction
+     * Returns the sort fuction based on the requested type
+     */
+
+    function nameSorter(x, y) {
+      return x.name < y.name ? -1 : x.name > y.name ? 1 : 0;
+    }
+
+    function randomSorter(x, y) {
+      return Math.random() < 0.5;
+    }
+
+    switch(type) {
+      case "name":
+        return nameSorter;
+      case "bogo":
+        return randomSorter;
+    }
+
+  }
+
+  // Sort the samples in place
+  sites.sort(getSortFunction(type));
+
+  notify("success", "Succesfully sorted specimens by <b>" + type + "</b>.");
+
+  updateSpecimenSelect();
+
+}
 
 function fileSelectionHandler(event) {
 
@@ -361,6 +401,7 @@ function fileSelectionHandler(event) {
     $(".selectpicker").selectpicker("val", "0");
     $("#nav-profile-tab").removeClass("disabled");
     $("#nav-fitting-tab").removeClass("disabled");
+    $("#nav-ctmd-tab").removeClass("disabled");
 
     $("#nav-profile-tab").tab("show");
 

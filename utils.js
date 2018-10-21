@@ -426,6 +426,10 @@ function getDemagnetizationTypeLabel(type) {
 
 }
 
+function numericSort(a, b) {
+  return a > b ? 1 : a < b ? -1 : 0;
+}
+
 function addFooter() {
 
   /*

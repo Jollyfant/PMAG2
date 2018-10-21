@@ -6,6 +6,10 @@ body {
   display: none;
 }
 
+img:hover {
+  opacity: 0.75;
+}
+
 .map {
   height: 400px;
   width: 100%;
