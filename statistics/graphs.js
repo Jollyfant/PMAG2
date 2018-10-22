@@ -412,7 +412,7 @@ function plotEIBootstraps(bootstraps, totalBootstraps) {
       "text": "Bootstrapped E-I Pairs",
     },
     "subtitle": {
-      "text": "Found " + totalBootstraps + " bootstrapped intersections with the TK03.GAD Field Model"
+      "text": "Found " + totalBootstraps + " bootstrapped intersections with the TK03.GAD Field Model (" + COORDINATES + " coordinates)"
     },
     "exporting": {
       "filename": "TK03-EI",
@@ -1771,7 +1771,9 @@ function eqAreaChart(container, dataSeries, plotBands) {
   Highcharts.chart(container, {
     "chart": {
       "polar": true,
-      "animation": false
+      "animation": false,
+      "height": 600,
+      "width": 600
     },
     "exporting": {
       "filename": "hemisphere-projection",

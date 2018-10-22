@@ -31,32 +31,29 @@
 
   <body>
 
+    <!-- Header -->
     <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
 
-      <a class="navbar-brand" href="#">Paleomagnetism<span class="text-danger">.org</span></a>
+      <a class="navbar-brand" href="http://www.paleomagnetism.org">Paleomagnetism<span class="text-danger">.org</span></a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
 
       <div class="collapse navbar-collapse" id="navbarsExampleDefault">
         <ul class="navbar-nav mr-auto">
-
           <li class="nav-item">
             <a class="nav-link" href="../interpretation/index.html">Interpretation</a>
           </li>
-          <!--
           <li class="nav-item">
-            <a class="nav-link" href="#">Statistics</a>
+            <a class="nav-link" href="../statistics/index.html">Statistics</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Tectonics</a>
+            <span class="nav-link disabled" href="#">|</span></li>
+          <li class="nav-item">
+            <a class="nav-link" href="">References</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Magnetostratigraphy</a>
-          </li>
-          -->
-          <li class="nav-item active">
-            <a class="nav-link" href="../library/index.html">Search</a>
+            <a class="nav-link" href="../team/index.html">Team & Contact</a>
           </li>
         </ul>
 
@@ -69,34 +66,55 @@
 
     </nav>
 
-    <!-- Main container -->
+    <!-- Main body -->
     <div class="container">
 
-      <div class="row">
-        
-       <div class="col-md-12">
+      <!-- Container for user notifications -->
+      <div id="notification-container"></div>
 
         <div class="alert alert-light" role="alert">
-          <h5> Paleomagnetism.org 2 - Data Library </h5>
-          <p>Data collections that were exported from Paleomagnetism.org can be added to this library. Data sets will be published on this page and become openly available for anyone.
-          All data collections, specimens, and interpretations are assigned <b>persistent identifiers</b> (PID) that can be used to reference each digital object respectively.
-          If you want to add your data to the collective library write us an e-mail on the <a href='../team/index.html'><b>contact page</b></a>.
-          <p><b><i class='fas fa-code-branch'></i> Forking</b> copies an existing dataset from the library. This dataset can be modified and will reference the original data collection.
-                <hr>
+          <h5> Paleomagnetism.org 2 - Homepage </h5>
+          <p> Welcome to Paleomagnetism.org 2 - In this application we emphasize on the clear distinction between the <i>interpretation</i> and <i>statistical analysis</i> of derived components. Inside the interpretation portal, metadata is collected at the specimen level, and specimens can be combined to form a <b> collection</b>. This collection is a permanent data object that can be published in the <a href="./library/index.html">Data Library</a> and used as the input for the other portals. 
         </div>
-       </div>
-      </div>
-
-      <h5>Available Collections</h5>
-      <!-- Tab for table view -->
-
-        <div class="table-responsive">
-          <table class='table table-sm text-center table-striped' id="publication-table"></table>
+        <hr>
+        <div class="card-deck">
+          <div class="card">
+            <img class="card-img-top" src="../images/banner.jpg" alt="Card image cap">
+            <div class="card-body">
+              <h5 class="card-title">Interpretation Portal</h5>
+              <p class="card-text">The interpretation portal accepts demagnetization data from many laboratory formats. This is the portal where data is interpreted and specimen <b>collections</b> are created.</p>
+            </div>
+            <div class="card-footer text-center">
+              <small class="text-muted"><a href="../interpretation/index.html"><b>Click to Visit</b></a></small>
+            </div>
+          </div>
+          <div class="card">
+            <img class="card-img-top" src="../images/banner2.jpg" alt="Card image cap">
+            <div class="card-body">
+              <h5 class="card-title">Statistics Portal</h5>
+              <p class="card-text">The statistics portal reads data from a <b>collection</b> that was created inside the Paleomagnetism.org 2 interpretation portal. This portal has tools for the statistical analysis of collections.</p>
+            </div>
+            <div class="card-footer text-center">
+              <small class="text-muted"><a href="../statistics/index.html"><b>Click to Visit</b></a></small>
+            </div>
+          </div>
+          <div class="card">
+            <img style="opacity: 0.25;" class="card-img-top" src="../images/banner3.jpg" alt="Card image cap">
+            <div class="card-body">
+              <h5 class="card-title">Tectonics</h5>
+              <p class="card-text">The tectonics portal reads data from a <b>collection</b> that was created using Paleomagnetism.org 2.0.0. It has tools for visualing apparant polar wander paths.</p>
+            </div>
+            <div class="card-footer text-center">
+              <small class="text-danger"><b>Currently Unavailable</b></small>
+            </div>
+          </div>
         </div>
-    
+
     </div>
 
-    <footer id='footer-container' class='container text-muted'></footer>
+    <footer id="footer-container" class="container text-muted"></footer>
+
+    <br> 
 
   </body>
 
@@ -108,59 +126,4 @@
 
   <script src="../utils.js"></script>
 
-  <script>
-
-function loadDigitalObjects() {
-
-  /*
-   * Function loadDigitalObjects
-   * Loads all digital objects from disk
-   */
-
-  // Load the information from a JSON
-  HTTPRequest("publications.json", "GET", function(publications) {
-
-    var rows = publications.map(function(x) {
-      return [
-        "<tr>",
-        "  <td>" + x.author + "</td>",
-        "  <td>" + x.institution + "</td>",
-        "  <td>" + x.description + "</td>",
-        "  <td><code><a href='../collection/index.html?" + x.pid + "'>" + x.pid.slice(0, 16) + "…</a></code></td>",
-        "  <td>" + new Date(x.created).toISOString().slice(0, 10) + "</td>",
-        "</tr>"
-      ].join("\n");
-    });
-
-    document.getElementById("publication-table").innerHTML = [
-      "<head>",
-      "  <tr>",
-      "    <th>Author</th>",
-      "    <th>Institution</th>",
-      "    <th>Description</th>",
-      "    <th>Persistent Identifier (PID)</th>",
-      "    <th>Created</th>",
-      "  </tr>",
-      "</head>",
-    ].concat(rows).join("\n");
-  
-  });
-
-}
-
-function __init__() {
-
-  // No search specified: show all digital objects
-  if(!window.location.search) {
-    return loadDigitalObjects();
-  }
-
-  // Attempt to resolve the persistent identifier
-  resolvePID(window.location.search.slice(1));
-
-}
-
-__init__();
-
-  </script>
 </html>

@@ -410,6 +410,19 @@ function handleLocationSave(event) {
     var specimenLocation = {"lng": longitude, "lat": latitude};
   }
 
+  var ageMin = document.getElementById("age-min-input").value;
+  var ageMax = document.getElementById("age-max-input").value;
+  var ageValue = document.getElementById("age-input").value;
+  var ageName = document.getElementById("specimen-age-select").value;
+
+  // Get the age from the boxes
+  var age = {
+    "name": (ageName === "Unknown" ? null : ageName),
+    "value": (ageValue === "" ? null : Number(ageValue)),
+    "min": (ageMin === "" ? null : Number(ageMin)),
+    "max": (ageMax === "" ? null : Number(ageMax))
+  }
+
   // If apply all has been checked
   if(document.getElementById("location-apply-all").checked) {
 
@@ -418,12 +431,16 @@ function handleLocationSave(event) {
       x.location = specimenLocation;
       x.lithology = lithology;
       x.level = level;
+      x.age = age;
     });
 
   } else {
+
     specimen.location = specimenLocation;
     specimen.lithology = lithology;
     specimen.level = level;
+    specimen.age = age;
+
   }
 
   // Success
@@ -1157,6 +1174,14 @@ function modalOpenHandler() {
   if(specimen.location) {
     document.getElementById("specimen-longitude-input").value = specimen.location.lng;
     document.getElementById("specimen-latitude-input").value = specimen.location.lat;
+  }
+
+  // Set the age
+  if(specimen.age) {
+    document.getElementById("age-min-input").value = specimen.age.min;
+    document.getElementById("age-max-input").value = specimen.age.max;
+    document.getElementById("age-input").value = specimen.age.value;
+    document.getElementById("specimen-age-select").value = specimen.age.name;
   }
 
   // Set the existing lithology

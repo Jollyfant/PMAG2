@@ -172,7 +172,6 @@ function formatPublicationTable(collection) {
   var rows = collection.specimens.map(formatSampleRows);
 
   document.getElementById("publication-table").innerHTML = new Array(
-    "<caption>Specimens associated with this persistent identifier.",
     "<head>",
     "  <tr>",
     "    <th>Sample</th>",
@@ -190,6 +189,10 @@ function formatPublicationTable(collection) {
     "</head>"
   ).concat(rows).join("\n");
 
+}
+
+function downloadTableAsCSV() {
+  alert("Not implemented");
 }
 
 function formatSampleRows(sample, i) {

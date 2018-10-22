@@ -194,11 +194,17 @@ function switchCoordinateReference() {
     "tectonic"
   );
 
+  if(shallowingRunning || foldtestRunning) {
+    return notify("danger", "Cannot change coordinate system while a module is running.");
+  }
+
   // Increment the counter
   COORDINATES_COUNTER++;
 
   COORDINATES_COUNTER = COORDINATES_COUNTER % AVAILABLE_COORDINATES.length
   COORDINATES = AVAILABLE_COORDINATES[COORDINATES_COUNTER];
+
+  notify("info", "Coordinate system changed to <b>" + COORDINATES + "</b> coordinates.");
 
   // Always redraw the interpretation charts after a reference switch
   redrawCharts();
@@ -220,7 +226,7 @@ function notify(type, text) {
 
     if(type === "warning" || type === "danger") {
       warning.play();
-    } else {
+    } else if(type === "success") {
       notification.play();
     }
 
@@ -456,7 +462,7 @@ function addFooter() {
    * Function addFooter
    * Adds footer to all HTML pages
    */
-
+console.log(window.location);
   document.getElementById("footer-container").innerHTML = new Array(
     "<hr>",
     "<b>Paleomagnetism<span class='text-danger'>.org</span></b> &copy; " + new Date().getFullYear() + ". All Rights Reserved.",

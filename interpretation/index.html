@@ -249,7 +249,7 @@
         <div class="tab-pane fade" id="nav-settings" role="tabpanel" aria-labelledby="nav-settings-tab">
           <br>
           <h5> Saving Data </h5>
-          <p> Data from the application can be exported in the <b>Paleomagnetism.org 2.0.0</b> format.
+          <p> Data from the application can be exported in the <b>Paleomagnetism.org 2.0.0</b> format to a <b>collection</b>. All specimens that are available in this session will be included in a new collection.
           <p>
           <button onclick="exportApplicationSave()" type="button" class="btn btn-sm btn-success"><i class="fas fa-file-download"></i>&nbsp; Download application save</button>
           <hr>
@@ -378,7 +378,7 @@
               <div class="input-group-prepend">
                 <span class="input-group-text" id="">Lithology</span>
               </div>
-              <select id="specimen-lithology-input" class="form-control custom-select" id="exampleFormControlSelect1">
+              <select id="specimen-lithology-input" class="form-control custom-select text-left">
                 <option value="null">Unknown</option>
                 <option value="volcanic">Volcanic</option>
                 <option value="sediment">Sediment</option>
@@ -386,10 +386,29 @@
               <div class="input-group-prepend">
                 <span class="input-group-text">Stratigraphic Level</span>
               </div>
-              <input id="specimen-level-input" type="number" class="form-control">
+              <input id="specimen-level-input" class="form-control">
             </div>
+
+            <p>
+
+            <div class="input-group input-group-sm">
+              <select style="width: 25%" id="specimen-age-select" class="form-control custom-select text-center"></select>
+              <div class="input-group-prepend ">
+                <span class="input-group-text" id="">Age</span>
+              </div>
+              <input id="age-input"class="form-control">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="">Min</span>
+              </div>
+              <input id="age-min-input"class="form-control">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="">Max</span>
+              </div>
+              <input id="age-max-input"class="form-control">
+            </div>
+            <figcaption class="figure-caption text-right">Age must be given in <b>Ma</b>.</figcaption>
           </div>
-    
+
           <div class="modal-footer">
             <div class="mr-auto">
               <button id="save-location" type="button" class="btn btn-primary">Save Location</button>
@@ -429,7 +448,7 @@
     <script src="../Direction.js"></script>
     <script src="../sha.js"></script>
     <script src="../utils.js"></script>
-
+    <script src="./ages.js"></script>
     <script src="../Coordinates.js"></script>
     <script src="./importing.js"></script>
     <script src="./index.js"></script>
