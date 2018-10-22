@@ -1,10 +1,10 @@
 const PLOTBAND_COLOR_BLUE = "rgba(119, 152, 191, 0.25)";
 const PLOTBAND_COLOR_RED = "rgba(191, 119, 152, 0.25)";
 
-function getSelectedSites() {
+function getSelectedCollections() {
 
   /*
-   * Function getSelectedSites
+   * Function getSelectedCollections
    * Returns a reference to the sites that were selected
    */
 
@@ -13,7 +13,7 @@ function getSelectedSites() {
   }
 
   function mapIndexToSite(index) {
-    return sites[index];
+    return collections[index];
   }
 
   function getIndex(option) {
@@ -108,18 +108,18 @@ function bootstrapFoldtest() {
   const NUMBER_OF_BOOTSTRAPS = 1000;
   const progressBarElement = $("#foldtest-progress");
 
+  // Get a list of the selected sites
+  var collections = getSelectedCollections();
+
+  if(collections.length === 0) {
+    return notify("danger", "Select at least one collection.");
+  }
+
   if(foldtestRunning) {
     return notify("warning", "The foldtest module is already running.");
   }
 
   foldtestRunning = true;
-
-  // Get a list of the selected sites
-  var collections = getSelectedSites();
-
-  if(collections.length === 0) {
-    return notify("danger", "Select at least one collection.");
-  }
 
   // We are required to apply the cutoff for each collection seperately
   var cutoffCollectionsG = collections.map(function(collection) {
@@ -188,17 +188,33 @@ var foldtestRunning = false;
 
 function bootstrapShallowing() {
 
-  const NUMBER_OF_BOOTSTRAPS = 250;
-  const progressBarElement = $("#shallowing-progress");
+    /*
+     * Function bootstrapShallowing
+     * Bootstraps the inclination shallowing module
+     */
 
-  if(shallowingRunning) {
-    return notify("warning", "The inclination shallowing module is already running.");
+  function formatHSArray(x) {
+
+    /*
+     * Function formatHSArray
+     * Formats the derived elongation, flattening as a highcharts point object
+     */
+
+    return {
+      "x": x.inclination,
+      "y": x.elongation,
+      "f": x.flattening
+    }
+
   }
 
-  shallowingRunning = true;
+  const NUMBER_OF_BOOTSTRAPS = 2500;
+  const NUMBER_OF_BOOTSTRAPS_SAVED = 25;
+
+  const progressBarElement = $("#shallowing-progress");
 
   // Get the single selected site
-  var collections = getSelectedSites();
+  var collections = getSelectedCollections();
  
   if(collections.length === 0) {
     return notify("danger", "No collections are selected.");
@@ -207,75 +223,68 @@ function bootstrapShallowing() {
     return notify("danger", "Only one collection may be selected.");
   }
 
+  if(shallowingRunning) {
+    return notify("warning", "The inclination shallowing module is already running.");
+  }
+
+  shallowingRunning = true;
+
   // Get the vector in the reference coordinates
-  var vectors = collections[0].components.map(x => x.inReferenceCoordinates());
+  var dirs = doCutoff(collections[0].components.map(x => x.inReferenceCoordinates())).components;
 
   var nIntersections = 0;
   var bootstrapIteration = 0;
 
   var inclinations = new Array();
-  var elongations = new Array();
-  var bootstraps = new Array();
 
-  // Some fake data
-  var dirs = FAKE.data[0].data.map(function(x) {
+  // Some fake data (compare to pmag live)
+  var dirs = FAKE.data[0].data.filter(x => x[4] !== "EI_Example.16").map(function(x) {
     return new Direction(x[0], x[1])
   });
 
+  if(dirs.length < 80) {
+    return notify("danger", "A minimum of 80 components is recommended.");
+  }
+
   var originalInclination = meanDirection(dirs).inc;
   var originalUnflatted = unflattenDirections(dirs);
-  var unflattenedInclination = originalUnflatted.len > 0 ? lastIndex(originalUnflatted.inclinations) : null;
 
   var savedBootstraps = new Array();
-  var iteration = 0;
-  var next;
-  var nIntersections = 0;
 
-  var datArray = new Array();
-  for(var i = 0; i < originalUnflatted.len; i++) {
-    datArray.push({
-      'x': originalUnflatted.inclinations[i], 
-      'y': originalUnflatted.elongations[i],
-      'f': originalUnflatted.flatteningFactors[i]
-    });
+  // Original data does not have an intersection with TK03.GAD
+  if(originalUnflatted !== null) {
+    savedBootstraps.push(originalUnflatted.map(formatHSArray));
+    unflattenedInclination = originalUnflatted[originalUnflatted.length - 1].inclination;
+  } else {
+    savedBootstraps.push({"x": null, "y": null});
+    unflattenedInclination = null;
   }
-  savedBootstraps.push(datArray);
+
+  var next;
+  var iteration = 0;
 
   // Asynchronous bootstrapping
   (next = function() {
 
-    // Number of bootstraps were completed
+    // Bootstrapp completed: finish
     if(++iteration > NUMBER_OF_BOOTSTRAPS) {
-      progressBarElement.css("width", "0%");
-      shallowingRunning = false;
-      return PLotEi(inclinations, originalInclination, unflattenedInclination, nIntersections)
+      return EICompletionCallback(inclinations, originalInclination, unflattenedInclination, savedBootstraps);
     }
 
-    result = unflattenDirections(drawBootstrap(dirs));
+    var result = unflattenDirections(drawBootstrap(dirs));
 
-    var datArray = new Array();
-    for(var i = 0; i < result.len; i++) {
-      datArray.push({
-        'x': result.inclinations[i], 
-        'y': result.elongations[i],
-        'f': result.flatteningFactors[i]
-      });
-    }
-
-    // No intersection
-    if(result.len === 0) {
+    // No intersection with TK03.GAD: next bootstrap
+    if(result === null) {
       return setTimeout(next, 0);
     }
 
-    nIntersections++;
-
     // Save the first 24 bootstraps
-    if(iteration < 24) {
-      savedBootstraps.push(datArray);
+    if(iteration < NUMBER_OF_BOOTSTRAPS_SAVED) {
+      savedBootstraps.push(result.map(formatHSArray));
     }
 
-    inclinations.push(lastIndex(result.inclinations));
-    elongations.push(lastIndex(result.elongations));
+    // Save the inclination of intersection
+    inclinations.push(result.pop().inclination);
 
     progressBarElement.css("width", 100 * (iteration / NUMBER_OF_BOOTSTRAPS) + "%");
 
@@ -286,21 +295,165 @@ function bootstrapShallowing() {
 
 }
 
-function PLotEi(inclinations, originalInclination, unflattenedInclination, nIntersections) {
+function EICompletionCallback(inclinations, originalInclination, unflattenedInclination, bootstraps) {
 
-  var cdf = getCDF(inclinations);
+  /*
+   * Function EICompletionCallback
+   * Callback fired when the EI module has completed
+   */
 
-  var lower = inclinations[parseInt(0.025 * nIntersections, 10)] || 0;
-  var upper = inclinations[parseInt(0.975 * nIntersections, 10)] || 0;
+  // Unlock
+  shallowingRunning = false;
+  $("#shallowing-progress").css("width", "0%");
 
-  // Add the confidence plot band
-  var plotBands = [{
-    "color": PLOTBAND_COLOR_BLUE,
-    "from": lower,
-    "to": upper,
-  }];
+  // Initialize the charts
+  plotEIBootstraps(bootstraps, inclinations.length);
+  plotEICDF(inclinations, originalInclination, unflattenedInclination);
 
-  EICDF(cdf, originalInclination, unflattenedInclination, plotBands);
+}
+
+function EIBootstrapTooltipFormatter() {
+
+  /*
+   * Function EIBootstrapTooltipFormatter
+   * Formatter for the EI bootstrap chart
+   */
+
+  if(this.series.name == "Bootstraps") {
+    return  [
+      "<b>Unflattened Collection</b>",
+      "<b>Inclination: </b> " + this.x.toFixed(3),
+      "<b>Elongation: </b>" + this.y.toFixed(3),
+      "<b>Flattening factor </b> at " + this.point.f
+    ].join("<br>");
+  } else {
+    return [
+      "<b>TK03.GAD Expected Elongation</b>",
+      "<b>Inclination: </b>" + this.x,
+      "<br><b>Elongation </b>" + this.y.toFixed(3)
+    ].join("<br>");
+  }
+
+}
+
+function getPolynomialSeries(min, max) {
+
+  /*
+   * Function getPolynomialSeries
+   * Gets the TK03.GAD Polynomial as a Highcharts data array from min to max
+   */
+
+  var TK03Poly = new Array();
+
+  for(var i = min; i <= max; i++) {
+    TK03Poly.push({
+      "x": i,
+      "y": TK03Polynomial(i)
+    });
+  }
+
+  return TK03Poly;
+
+}
+
+function plotEIBootstraps(bootstraps, totalBootstraps) {
+  
+  /*
+   * Function plotEIBootstraps
+   * Plotting function for the EI bootstraps
+   */
+
+  const CHART_CONTAINER = "ei-bootstrap-container";
+
+  // Define the initial series (TK03.GAD Polynomial) and the unflattening of the actual non-bootstrapped data (kept in data[0])
+  var mySeries = [{
+    "name": "TK03.GAD Polynomial", 
+    "data": getPolynomialSeries(-90, 90),
+    "dashStyle": "ShortDash",
+    "lineWidth": 3,
+    "zIndex": 100,
+    "type": "spline",
+    "marker": {
+      "enabled": false
+    }
+  }, {
+    "name": "Bootstraps",
+    "color": HIGHCHARTS_PINK,
+    "id": "bootstrap",
+    "type": 'spline',
+    "data": bootstraps.shift(),
+    "zIndex": 100,
+    "lineWidth": 3,
+    "marker": {
+      "enabled": false,
+      "symbol": "circle",
+    }  
+  }]
+
+  // Add the other bootstraps
+  bootstraps.forEach(function(bootstrap) {
+    mySeries.push({
+      "data": bootstrap,
+      "type": "spline",
+      "color": PLOTBAND_COLOR_BLUE, 
+      "linkedTo": "bootstrap",
+      "enableMouseTracking": false, 
+      "marker": {
+        "enabled": false
+      }
+    })
+  });
+
+  new Highcharts.chart(CHART_CONTAINER, {
+    "chart": {
+      "id": "EI-bootstraps"
+    },
+    "title": {
+      "text": "Bootstrapped E-I Pairs",
+    },
+    "subtitle": {
+      "text": "Found " + totalBootstraps + " bootstrapped intersections with the TK03.GAD Field Model"
+    },
+    "exporting": {
+      "filename": "TK03-EI",
+      "sourceWidth": 1200,
+      "sourceHeight": 600,
+      "buttons": {
+        "contextButton": {
+          "symbolStroke": "#7798BF",
+          "align": "right"
+        }
+      }
+    },
+    "xAxis": {
+      "min": -90,
+      "max": 90,
+      "title": {
+        "text": "Inclination (°)"
+      }
+    },
+    "yAxis": {
+      "floor": 1,
+      "ceiling": 3,
+      "title": {
+        "text": "Elongation (τ2/τ3)"
+      },
+    },
+    "credits": {
+      "enabled": ENABLE_CREDITS,
+      "text": "Paleomagnetism.org [EI Module] - <i>after Tauxe et al., 2008 </i>",
+      "href": ""
+    },
+    "plotOptions": {
+      "series": {
+        "turboThreshold": 0,
+      }
+    },
+    "tooltip": {
+      "formatter": EIBootstrapTooltipFormatter
+    },
+    "series": mySeries
+  });
 
 }
 
@@ -321,18 +474,69 @@ function getAverageInclination(cdf) {
 
 }
 
-function EICDF(cdf, originalInclination, unflattenedInclination, plotBands) {
+function getConfidence(cdf) {
 
   /*
-   * Function EICDF
+   * Function getConfidence
+   * Returns the upper
+   */
+
+  var array = cdf.map(x => x.x);
+
+  var lower = array[parseInt(0.025 * array.length, 10)] || 0;
+  var upper = array[parseInt(0.975 * array.length, 10)] || 0;
+
+  return { lower, upper }
+
+}
+
+function plotEICDF(inclinations, originalInclination, unflattenedInclination) {
+
+  /*
+   * Function plotEICDF
    * Creates the CDF chart for the EI module
    */
 
-  function getVerticalLine(value) {
-    return [[value, 0], [value, 1]]
+  function tooltip() {
+  
+    /*
+     * Function plotEICDF::tooltip
+     * Handles tooltip for the EI CDF Chart
+     */
+
+    return [
+      "<b>Cumulative Distribution </b>",
+      "<b>Latitude: </b>" + this.x.toFixed(2),
+      "<b>CDF: </b>" + this.point.y.toFixed(3)
+    ].join("<br>");
+  
+  }
+
+  function getVerticalLine(x) {
+
+    /*
+     * Function plotEICDF::getVerticalLine
+     * Return a vertical line in a CDF chart from 0 -> 1 at position x 
+     */
+
+    return new Array([x, 0], [x, 1]);
+
   }
 
   const CHART_CONTAINER = "ei-cdf-container";
+
+  // Calculate the cumulative distribution
+  var cdf = getCDF(inclinations);
+
+  // Get the lower and upper 2.5%
+  var confidence = getConfidence(cdf);
+
+  // Add the confidence plot band
+  var plotBands = [{
+    "color": PLOTBAND_COLOR_BLUE,
+    "from": confidence.lower,
+    "to": confidence.upper
+  }];
 
   // Calculate the average inclination of all bootstraps
   var averageInclination = getAverageInclination(cdf);
@@ -342,7 +546,7 @@ function EICDF(cdf, originalInclination, unflattenedInclination, plotBands) {
     "name": "Cumulative Distribution", 
     "data": cdf, 
     "marker": {
-      'enabled': false
+      "enabled": false
     }
   }, {
     'name': "Average Bootstrapped Inclination",
@@ -357,7 +561,7 @@ function EICDF(cdf, originalInclination, unflattenedInclination, plotBands) {
     "name": 'Original Inclination',
     "type": 'line',
     "data": getVerticalLine(originalInclination),
-    "color": HIGHCHARTS_BLUE,
+    "color": HIGHCHARTS_PINK,
     "enableMouseTracking": false,
     "marker": {
       "enabled": false
@@ -378,7 +582,6 @@ function EICDF(cdf, originalInclination, unflattenedInclination, plotBands) {
     });
   }
 
-  //Specify chart options
   new Highcharts.chart(CHART_CONTAINER, {
     "title": {
       "text": "Cumulative Distribution of bootstrapped TK03.GAD intersections",
@@ -386,7 +589,7 @@ function EICDF(cdf, originalInclination, unflattenedInclination, plotBands) {
     "exporting": {
       "filename": "TK03_CDF",
       "sourceWidth": 1200,
-      "sourceHeight": 400,
+      "sourceHeight": 600,
       "buttons": {
         "contextButton": {
           "symbolStroke": "#7798BF",
@@ -415,6 +618,9 @@ function EICDF(cdf, originalInclination, unflattenedInclination, plotBands) {
       "text": "Paleomagnetism.org [EI Module] - <i>after Tauxe et al., 2008 </i>",
       "href": ""
     },
+    "tooltip": {
+      "formatter": tooltip
+    },
     "yAxis": {
       "min": 0,
       "max": 1,
@@ -435,96 +641,81 @@ function lastIndex(array) {
 
 function unflattenDirections(data) {
 
-  // Buckets for our data 
-  var elongations = new Array();
-  var inclinations = new Array();
-  var flatteningFactors = new Array();
-  
   // Get the tan of the observed inclinations (equivalent of tan(Io))
-  // The inclination is stored in the 2nd element of the data array
-  var tanInclinations = data.map(function(x) {
-    return Math.tan(x.inc * RADIANS);
-  });
+  var tanInclinations = data.map(x => Math.tan(x.inc * RADIANS));
+
+  var results = new Array();
 
   // Decrement over the flattening values f from 100 to 20
-  // We will find f with a resolution of 1/100th
+  // We will find f with a resolution of 1%
   for(var i = 100; i >= 20; i--) {
   
-    //Flattening factor (from 1 to 0.2)
+    // Flattening factor (from 1 to 0.2)
     var f = i / 100; 
     
     // Unflattening function after King, 1955
     // (tanIo = f tanIf) where tanIo is observed and tanIf is recorded.
     // Create unflattenedData containing (dec, inc) pair for a particular f
-    var unflattenedData = data.map(function(x, i) {
-      return new Direction(x.dec, Math.atan(tanInclinations[i] / f) / RADIANS);
+    var unflattenedData = tanInclinations.map(function(x, i) {
+      return new Direction(data[i].dec, Math.atan(x / f) / RADIANS);
     });
 
     // Calculate mean inclination for unflattenedData and get eigenvalues
     var meanInc = meanDirection(unflattenedData).inc;
     var eigenvalues = getEigenvalues(TMatrix(unflattenedData.map(x => x.toCartesian().toArray())));
+    var elongation = eigenvalues.t2 / eigenvalues.t3;
     
-    // Record the flattening factor, elongation (τ2/τ3), and mean inclination
-    flatteningFactors.push(f);
-    elongations.push(eigenvalues.t2 / eigenvalues.t3); //τ2/τ3
-    inclinations.push(meanInc);
+    results.push({
+      "flattening": f,
+      "elongation": elongation,
+      "inclination": meanInc
+    });
     
     // In case we initially start above the TK03.GAD Polynomial
     // For each point check if we are above the polynomial; if so pop the parameters and do not save them
     // This simple algorithm finds the line below the TK03.GAD polynomial
     // Compare expected elongation with elongation from data from TK03.GAD
     // Only do this is Epoly < Edata
-    if(polynomial(meanInc) <= elongations[elongations.length - 1]) {
-    
-      // Remember the latest unflattening factor
-      var unflatIndex = flatteningFactors[flatteningFactors.length-1]; 
-    
-      // Always pop the latest value
-      var poppedE = elongations.pop();
-      var poppedI = inclinations.pop();
-      var poppedF = flatteningFactors.pop();	
-    
-      // If there is more than 1 consecutive flattening factor in the array
-      // This means we have a line under the TK03.GAD Polynomial
-      // So we can return our parameters
-      if(flatteningFactors.length > 0) {
-      
-      	// Put the latest popped elements back in the arrays
-      	flatteningFactors.push(poppedF);
-      	inclinations.push(poppedI);
-      	elongations.push(poppedE);
-      
-      	return {
-      	  'flatteningFactors': flatteningFactors, 
-      	  'elongations': elongations, 
-      	  'inclinations': inclinations,
-      	  'len': flatteningFactors.length
-      	}
-    	
-      }	
+    // If there is more than 1 consecutive flattening factor in the array
+    // This means we have a line under the TK03.GAD Polynomial
+    // So we can return our parameters
+    if(TK03Polynomial(meanInc) <= elongation) {
+
+      if(results.length === 1) {
+        results.pop();
+        continue;
+      }
+
+      return results;
+
     }
+
   }
   
   // No intersection with TK03.GAD polynomial return zeros
   // this is filtered in the main routine and recorded as no-intersect
-  return {
-    'flatteningFactors': [0], 
-    'elongations': [0], 
-    'inclinations': [0],
-    'len': 0
-  }
+  return null;
   
 }
 
-function polynomial(inc) {
+function TK03Polynomial(inc) {
+
+  /*
+   * Function polynomial
+   * Plots the foldtest data
+   */
+
+  const COEFFICIENTS = new Array(
+    3.15976125e-06,
+    -3.52459817e-04,
+    -1.46641090e-02,
+    2.89538539e+00
+  );
 
   var inc = Math.abs(inc);
   
-  //Polynomial coefficients
-  var coeffs = [3.15976125e-06, -3.52459817e-04, -1.46641090e-02, 2.89538539e+00];
-  var elongation = (coeffs[0] * Math.pow(inc, 3)) + (coeffs[1] * Math.pow(inc, 2)) + (coeffs[2] * inc) + coeffs[3];
-  
-  return elongation;
+  // Polynomial coefficients
+  return COEFFICIENTS[0] * Math.pow(inc, 3) + COEFFICIENTS[1] * Math.pow(inc, 2) + COEFFICIENTS[2] * inc + COEFFICIENTS[3];
   
 }
 
@@ -609,8 +800,8 @@ function plotFoldtestCDF(untilt, savedBootstraps) {
     },
     "exporting": {
       "filename": "Foldtest",
-      "sourceWidth": 800,
-      "sourceHeight": 400,
+      "sourceWidth": 1200,
+      "sourceHeight": 600,
       "buttons": {
         "contextButton": {
           "symbolStroke": "#7798BF",
@@ -807,7 +998,7 @@ function getSelectedComponents() {
    * Gets all the components from all collections as if it was a single collection
    */
 
-  return new Array().concat(...getSelectedSites().map(x => x.components.map(y => y.inReferenceCoordinates())));
+  return new Array().concat(...getSelectedCollections().map(x => x.components.map(y => y.inReferenceCoordinates())));
 
 }
 
@@ -818,52 +1009,17 @@ function bootstrapCTMD() {
    * Does a bootstrap on the true data
    */
 
-  function doesMatch(xParams, yParams, zParams) {
-  
-    /*
-     * Function doesMatch
-     * Checks whether two bootstraps overlap
-     */
-
-    // Are the confidence regions overlapping?
-    if(xParams.one.upper > xParams.two.lower && xParams.one.lower < xParams.two.upper) {
-      if(yParams.one.upper > yParams.two.lower && yParams.one.lower < yParams.two.upper) {
-        if(zParams.one.upper > zParams.two.lower && zParams.one.lower < zParams.two.upper) {
-          return true;
-        }
-      }
-    }
-  
-    return false;
-  
-  }
-
-  function getMatchHTML(match) {
-
-    /*
-     * Function getMatchHTML
-     * Returns HTML showing whether the test was a match or not
-     */
-
-    if(match) {
-      return "<span class='text-success'><b><i class='fas fa-check'></i> Match!</b></span>";
-    } else {
-      return "<span class='text-danger'><b><i class='fas fa-times'></i> No Match!</b></span>";
-    }
-
-  }
-
   const NUMBER_OF_BOOTSTRAPS = 1000;
 
-  var sites = getSelectedSites();
+  var collections = getSelectedCollections();
 
-  if(sites.length !== 2) {
+  if(collections.length !== 2) {
     return notify("danger", "Select two sites to compare.");
   }
 
   // Get the site components in reference coordinates
-  cSites = sites.map(function(site) {
-    return doCutoff(site.components.map(x => x.inReferenceCoordinates()));
+  cSites = collections.map(function(collection) {
+    return doCutoff(collection.components.map(x => x.inReferenceCoordinates()));
   });
 
   // Buckets for the coordinates
@@ -900,14 +1056,14 @@ function bootstrapCTMD() {
   }
 
   var names = {
-    "one": sites[0].name,
-    "two": sites[1].name
+    "one": collections[0].name,
+    "two": collections[1].name
   }
 
   // Call plotting routine for each component
-  var xParams = CTMDXYZ("ctmd-container-x", xOne, xTwo, names, NUMBER_OF_BOOTSTRAPS);
-  var yParams = CTMDXYZ("ctmd-container-y", yOne, yTwo, names, NUMBER_OF_BOOTSTRAPS);
-  var zParams = CTMDXYZ("ctmd-container-z", zOne, zTwo, names, NUMBER_OF_BOOTSTRAPS);
+  var xParams = plotCartesianBootstrap("ctmd-container-x", xOne, xTwo, names, NUMBER_OF_BOOTSTRAPS);
+  var yParams = plotCartesianBootstrap("ctmd-container-y", yOne, yTwo, names, NUMBER_OF_BOOTSTRAPS);
+  var zParams = plotCartesianBootstrap("ctmd-container-z", zOne, zTwo, names, NUMBER_OF_BOOTSTRAPS);
 
   // Update the table
   updateCTMDTable(names, xParams, yParams, zParams);
@@ -920,6 +1076,41 @@ function updateCTMDTable(names, xParams, yParams, zParams) {
    * Function updateCTMDTable
    * Updates the CTMD table with the two collections and parameters
    */
+
+  function doesMatch(xParams, yParams, zParams) {
+ 
+    /*
+     * Function doesMatch
+     * Checks whether two bootstraps overlap
+     */
+
+    // Are the confidence regions overlapping?
+    if(xParams.one.upper > xParams.two.lower && xParams.one.lower < xParams.two.upper) {
+      if(yParams.one.upper > yParams.two.lower && yParams.one.lower < yParams.two.upper) {
+        if(zParams.one.upper > zParams.two.lower && zParams.one.lower < zParams.two.upper) {
+          return true;
+        }
+      }
+    }
+ 
+    return false;
+ 
+  }
+
+  function getMatchHTML(match) {
+
+    /*
+     * Function getMatchHTML
+     * Returns HTML showing whether the test was a match or not
+     */
+
+    if(match) {
+      return "<span class='text-success'><b><i class='fas fa-check'></i> Match!</b></span>";
+    } else {
+      return "<span class='text-danger'><b><i class='fas fa-times'></i> No Match!</b></span>";
+    }
+
+  }
 
   const PRECISION = 2;
 
@@ -979,23 +1170,28 @@ function getCDF(input) {
 
 }
 
-function CTMDTooltip() {
+function plotCartesianBootstrap(container, one, two, names, nBootstraps) {
 
   /*
-   * Function CTMDTooltip
-   * Returns the formatted CTMD tooltip
+   * Function plotCartesianBootstrap
+   * Plots a single cartesian bootstrap to a container
    */
 
-  return [
-    "<b>Cumulative Distribution </b>",
-    "<b>Collection: </b>" + this.series.name,
-    "<b>Coordinate: </b>" + this.x.toFixed(2),
-    "<b>CDF: </b>" + this.point.y.toFixed(3)
-  ].join("<br>");
-
-}
-
-function CTMDXYZ(container, one, two, names, nBootstraps) {
+  function CTMDTooltip() {
+  
+    /*
+     * Function CTMDTooltip
+     * Returns the formatted CTMD tooltip
+     */
+  
+    return [
+      "<b>Cumulative Distribution </b>",
+      "<b>Collection: </b>" + this.series.name,
+      "<b>Coordinate: </b>" + this.x.toFixed(2),
+      "<b>CDF: </b>" + this.point.y.toFixed(3)
+    ].join("<br>");
+  
+  }
 
   // Get the index of the upper and lower 5%
   var lower = parseInt(0.025 * nBootstraps, 10);
@@ -1101,7 +1297,14 @@ function drawBootstrap(data) {
    */
 
   function randomSample() {
+
+    /*
+     * Function drawBootstrap::randomSample
+     * Returns a random sample from an array
+     */
+
     return data[Math.floor(Math.random() * data.length)];
+
   }
 
   // Do not include rejected components
@@ -1110,6 +1313,11 @@ function drawBootstrap(data) {
 }
 
 function generateHemisphereTooltip() {
+
+  /*
+   * Function generateHemisphereTooltip
+   * Generates the appropriate tooltip for each series
+   */
 
   if(this.series.name === "ChRM Directions" || this.series.name === "Geomagnetic Directions") {
     return [
@@ -1139,115 +1347,12 @@ function generateHemisphereTooltip() {
 
 }
 
-document.getElementById("export-png").addEventListener("click", exportHandler);
-document.getElementById("export-pdf").addEventListener("click", exportHandler);
-document.getElementById("export-svg").addEventListener("click", exportHandler);
-
-document.getElementById("export-bootstrap-png").addEventListener("click", exportHandlerBootstrap);
-document.getElementById("export-bootstrap-pdf").addEventListener("click", exportHandlerBootstrap);
-document.getElementById("export-bootstrap-svg").addEventListener("click", exportHandlerBootstrap);
-
-function getMime(id) {
-
-  switch(id) {
-    case "export-svg":
-      return "image/svg+xml";
-    case "export-pdf":
-      return "application/pdf";
-    case "export-png":
-      return "image/png";
-  }
-
-}
-
-function exportHandlerBootstrap(event) {
-
-  Highcharts.exportCharts([
-    $("#ctmd-container-x").highcharts(),
-    $("#ctmd-container-y").highcharts(),
-    $("#ctmd-container-z").highcharts()
-  ], {
-    "type": getMime(event.target.id)
-  });
-
-}
-
-function exportHandler(event) {
-
-  Highcharts.exportCharts([
-    $("#direction-container").highcharts(),
-    $("#pole-container").highcharts()
-  ], {
-    "type": getMime(event.target.id)
-  });
-
-}
-
-Highcharts.getSVG = function(charts, options, callback) {
-
-  var svgArr = new Array();
-  var top = 0;
-  var width = 0;
-
-  function addSVG(svgres) {
-
-    // Grab width/height from exported chart
-    var svgWidth = Number(svgres.match(/^<svg[^>]*width\s*=\s*\"?(\d+)\"?[^>]*>/)[1]);
-    var svgHeight = Number(svgres.match(/^<svg[^>]*height\s*=\s*\"?(\d+)\"?[^>]*>/)[1]);
-
-    // Offset the position of this chart in the final SVG
-    var svg = svgres.replace('<svg', '<g transform="translate(' + width + ',' + 0 + ')" ').replace('</svg>', '</g>');
-
-    top = svgHeight;
-    width += svgWidth;
-
-    width = Math.max(width, svgWidth);
-
-    svgArr.push(svg);
-
-  }
-
-  function fail() {
-    notify("danger", "Could not export charts.");
-  }
-
-  function exportChart(i) {
-
-    if(i === charts.length) {
-      return callback('<svg height="' + top + '" width="' + width + '" version="1.1" xmlns="http://www.w3.org/2000/svg">' + svgArr.join('') + '</svg>');
-    }
-
-    charts[i].getSVGForLocalExport(options, {}, fail, function(svg) {
-      addSVG(svg);
-      return exportChart(i + 1);
-    });
-
-  }
-
-  exportChart(0);
-
-}
-
-Highcharts.exportCharts = function (charts, options) {
-
-    options = Highcharts.merge(Highcharts.getOptions().exporting, options);
-
-		// Get SVG asynchronously and then download the resulting SVG
-    Highcharts.getSVG(charts, options, function (svg) {
-        Highcharts.downloadSVGLocal(svg, options, function () {
-            console.log("Failed to export on client side");
-        });
-    });
-};
-
-// Set global default options for all charts
-Highcharts.setOptions({
-    exporting: {
-        fallbackToExportServer: false // Ensure the export happens on the client side or not at all
-    }
-});
-
 function eqAreaProjectionMean() {
+
+  /*
+   * Function eqAreaProjectionMean
+   * Plotting routine for collection means
+   */
 
   const CHART_CONTAINER = "mean-container";
   const A95_CONFIDENCE = true;
@@ -1256,7 +1361,7 @@ function eqAreaProjectionMean() {
   var dataSeries = new Array();
   var statisticsRows = new Array();
 
-  getSelectedSites().forEach(function(site) {
+  getSelectedCollections().forEach(function(site) {
 
     var cutofC = doCutoff(site.components.map(x => x.inReferenceCoordinates()));
     var statistics = getStatisticalParameters(cutofC.components);
@@ -1512,7 +1617,6 @@ function eqAreaProjection() {
     "  </tbody>",
   ].join("\n");
 
-
   const A95_CONFIDENCE = true;
 
   if(A95_CONFIDENCE) {
@@ -1549,6 +1653,7 @@ function eqAreaProjection() {
 
   var plotBands = eqAreaPlotBand(statistics.dir.mean.dec, statistics.butler.dDx);
 
+  // Delegate to plotting routines
   eqAreaChart(CHART_CONTAINER, directionSeries, plotBands);
   eqAreaChart(CHART_CONTAINER2, poleSeries);
 

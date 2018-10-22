@@ -1055,6 +1055,30 @@ function keyboardHandler(event) {
 
 }
 
+function saveLocalStorage(force) {
+
+  /*
+   * Function saveLocalStorage
+   * Saves sample object to local storage
+   */
+
+  if(!force && !document.getElementById("auto-save").checked) {
+    return;
+  }
+
+  if(!force && window.location.search) {
+    return;
+  }
+
+  // Attempt to set local storage
+  try {
+    localStorage.setItem("specimens", JSON.stringify(specimens));
+  } catch(exception) {
+    notify("danger", "Could not write to local storage. Export your data manually to save it.");
+  }
+
+}
+
 function deleteCurrentSpecimen() {
 
   /*

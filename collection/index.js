@@ -146,7 +146,7 @@ function createForkLink(pid) {
    * Creates link to fork data from a PID in paleomagnetism.org
    */
 
-  return " &nbsp; <small><a href='../interpretation/index.html?" + pid +"'><b><i class='fas fa-code-branch'></i> Fork on paleomagnetism.org</b></a>"
+  return " &nbsp; <small><a href='../interpretation/index.html?" + pid +"'><b><i class='fas fa-code-branch'></i> Fork in Interpretation Portal</b></a> or <a href='../statistics/index.html?" + pid +"'><b>View in Statistics Portal</b></small>"
 
 }
 

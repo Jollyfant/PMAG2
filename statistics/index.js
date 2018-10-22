@@ -1,11 +1,123 @@
-var sites = new Array();
+var collections = new Array();
+
+
+function getPublicationFromPID() {
+
+  /*
+   * Function getPublicationFromPID
+   * Returns the resource that belogns to the PID
+   */
+
+  // Get the publication from the URL
+  var SHA256 = location.search.substring(1);
+
+  HTTPRequest("publications.json", "GET", function(PUBLICATIONS) {
+
+    var pid = SHA256;
+    var publication = PUBLICATIONS.filter(x => x.pid === pid);
+
+    if(!publication.length) {
+      return notify("danger", "Data from this persistent identifier could not be found.");
+    }
+
+    // Request the persistent resource from disk
+    HTTPRequest("./publications/" + pid + ".pid", "GET", function(json) {
+      addData([{"data": json, "name": publication[0].filename}]);
+      __unlock__();
+    });
+
+  });
+
+}
 
 function __init__() {
 
+  // Check local storage
+  if(!window.localStorage) {
+    return notify("warning", "Local storage is not supported by your browser. Save your work manually by exporting your data.");
+  }
+
+  if(location.search) {
+    return getPublicationFromPID();
+  }
+
+  // Load the specimens from local storage
+  var item = localStorage.getItem("collections");
+
+  // Nothing returned from local storage
+  if(item === null) {
+    collections = new Array();
+  } else {
+
+    // Convert literals to components
+    collections = JSON.parse(item).map(function(x) {
+      x.components = x.components.map(function(y) {
+        return new Component(y, y.coordinates);
+      });
+      return x;
+    });
+
+  }
 
   notify("success", "Welcome to the statistics portal. Add data below from the <b>Paleomagnetism.org 2.0.0</b> format to get started.");
 
+  __unlock__();
+
+}
+
+function saveLocalStorage(force) {
+
+  /*
+   * Function saveLocalStorage
+   * Saves sample object to local storage
+   */
+
+  if(!force && !document.getElementById("auto-save").checked) {
+    return;
+  }
+
+  if(!force && window.location.search) {
+    return;
+  }
+
+  // Attempt to set local storage
+  try {
+    localStorage.setItem("collections", JSON.stringify(collections));
+  } catch(exception) {
+    notify("danger", "Could not write to local storage. Export your data manually to save it.");
+  }
+
+}
+
+function __unlock__() {
+
+  if(collections.length) {
+    notify("success", "Welcome back! Succesfully loaded <b>" + collections.length + "</b> collection(s).");
+    enable();
+  } else {
+    notify("success", "Welcome to <b>Paleomagnetism.org</b>! Import data from the <b>Paleomagnetism 2.0.0</b> format below to get started.");
+  }
+
   registerEventHandlers();
+
+}
+
+function enable() {
+
+  $(".selectpicker").selectpicker("show");
+  $(".selectpicker").selectpicker("val", "0");
+  $("#nav-profile-tab").removeClass("disabled");
+  $("#nav-fitting-tab").removeClass("disabled");
+  $("#nav-ctmd-tab").removeClass("disabled");
+  $("#nav-foldtest-tab").removeClass("disabled");
+  $("#nav-shallowing-tab").removeClass("disabled");
+
+  $("#nav-profile-tab").tab("show");
+
+  updateSpecimenSelect();
+
+  $(".selectpicker").selectpicker("val", "0");
+  redrawCharts();
 
 }
 
@@ -24,7 +136,7 @@ function keyboardHandler(event) {
     "ESCAPE_KEY": 27
   }
 
-  if(sites.length === 0) {
+  if(collections.length === 0) {
     return;
   }
 
@@ -115,7 +227,11 @@ function addData(files) {
 
   files.forEach(function(file) {
 
-    var json = JSON.parse(file.data);
+    if(file.data instanceof Object) {
+      var json = file.data;
+    } else {
+      var json = JSON.parse(file.data);
+    }
 
     var siteName = file.name;
     var reference = json.pid;
@@ -137,7 +253,7 @@ function addData(files) {
     });
 
     // Do the cutoff and accept/reject direction
-    sites.push({
+    collections.push({
       "name": siteName,
       "reference": reference,
       "components": components,
@@ -145,8 +261,6 @@ function addData(files) {
     });
 
   });
-
-  updateSpecimenSelect();
 
 }
 
@@ -175,7 +289,7 @@ function updateSpecimenSelect() {
 
   removeOptions(document.getElementById("specimen-select"));
 
-  sites.forEach(addPrototypeSelection);
+  collections.forEach(addPrototypeSelection);
 
   $('.selectpicker').selectpicker('refresh');
 
@@ -226,6 +340,11 @@ function getStatisticalParameters(directions) {
 }
 
 function getButlerParameters(confidence, lambda, inclination) {
+
+  /*
+   * Function getButlerParameters
+   * Returns butler parameters for a distribution
+   */
 
   // Convert to radians
   var A95 = confidence * RADIANS;
@@ -368,7 +487,7 @@ function sortSamples(type) {
   }
 
   // Sort the samples in place
-  sites.sort(getSortFunction(type));
+  collections.sort(getSortFunction(type));
 
   notify("success", "Succesfully sorted specimens by <b>" + type + "</b>.");
 
@@ -389,10 +508,10 @@ function fileSelectionHandler(event) {
 
     // Drop the samples if not appending
     if(!document.getElementById("append-input").checked) {
-      sites = new Array();
+      collections = new Array();
     }
 
-    var nSites = sites.length;
+    var nCollections = collections.length;
 
     // Try adding the demagnetization data
     try {
@@ -401,16 +520,10 @@ function fileSelectionHandler(event) {
       return notify("danger", exception);
     }
 
-    $(".selectpicker").selectpicker("show");
-    $(".selectpicker").selectpicker("val", "0");
-    $("#nav-profile-tab").removeClass("disabled");
-    $("#nav-fitting-tab").removeClass("disabled");
-    $("#nav-ctmd-tab").removeClass("disabled");
-    $("#nav-foldtest-tab").removeClass("disabled");
+    enable();
+    saveLocalStorage();
 
-    $("#nav-profile-tab").tab("show");
-
-    notify("success", "Succesfully added <b>" + (sites.length - nSites) + "</b> specimen(s) (" + cutoff + ").");
+    notify("success", "Succesfully added <b>" + (collections.length - nCollections) + "</b> specimen(s).");
 
   });
 
