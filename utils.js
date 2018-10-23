@@ -37,6 +37,12 @@ function getRotationMatrix(lambda, phi) {
 
 }
 
+function paleolatitude(inc) {
+
+  return Math.atan(Math.tan(inc * RADIANS) / 2) / RADIANS;
+
+}
+
 function meanDirection(vectors) {
 
   /*
@@ -181,6 +187,7 @@ function getPlaneData(direction, angle) {
 
 }
 
+var shallowingRunning, foldtestRunning;
 function switchCoordinateReference() {
 
   /*
@@ -219,7 +226,9 @@ function notify(type, text) {
    */
 
   // Jump to the top
-  window.scrollTo(0, 0);
+  if(type !== "info") {
+    window.scrollTo(0, 0);
+  }
 
   // Play sound if enabled
   if(document.getElementById("enable-sound") && document.getElementById("enable-sound").checked) {
@@ -245,18 +254,32 @@ function notify(type, text) {
 }
 
 
-function clearLocalStorage() {
+function clearLocalStorage(item) {
 
   /*
    * Function clearLocalStorage
    * Clears the local storage of the webpage
    */
 
+  function clearStorage(item) {
+
+    switch(item) {
+      case "interpretation":
+        return localStorage.removeItem("specimens");
+      case "statistics":
+        return localStorage.removeItem("collections");
+      default:
+        return localStorage.clear();
+    }
+
+  }
+
   if(!confirm("Are you sure you want to clear the local storage?")) {
     return;
   }
 
-  localStorage.clear();
+  // Clear the requested item
+  clearStorage(item);
 
   // Reload the page
   window.location.reload();

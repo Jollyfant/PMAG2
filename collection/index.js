@@ -192,7 +192,16 @@ function formatPublicationTable(collection) {
 }
 
 function downloadTableAsCSV() {
-  alert("Not implemented");
+
+  const MIME_TYPE = "data:application/json;charset=utf-8";
+  const FILENAME = "specimens.dir";
+
+  var pid = window.location.search.slice(1)
+
+  HTTPRequest("publications/" + pid + ".pid", "GET", function(json) {
+    downloadURIComponent(FILENAME, MIME_TYPE + "," + JSON.stringify(json));
+  });
+
 }
 
 function formatSampleRows(sample, i) {

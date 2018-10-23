@@ -844,7 +844,7 @@ function redrawCharts(hover) {
 
   // Save the current scroll position for later, otherwise the scroll position will
   // jump to the top when a Highcharts chart is drawn
-  var tempScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+  var tempScrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0
 
   var specimen = getSelectedSpecimen();
 
