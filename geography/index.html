@@ -45,8 +45,11 @@
           <li class="nav-item">
             <a class="nav-link" href="../interpretation/index.html">Interpretation</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../statistics/index.html">Statistics</a>
+          </li>
           <li class="nav-item active">
-            <a class="nav-link" href="#">Statistics</a>
+            <a class="nav-link" href="../geography/index.html">Geography</a>
           </li>
           <li class="nav-item">
             <span class="nav-link disabled" href="#">|</span></li>
@@ -55,6 +58,9 @@
           </li>
           <li class="nav-item">
             <a class="nav-link" href="../team/index.html">Team & Contact</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../library/index.html">Data Library</a>
           </li>
         </ul>
 
@@ -84,7 +90,7 @@
       <nav>
         <div class="nav nav-tabs nav-justified" id="nav-tab" role="tablist">
           <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Data Import</a>
-          <a class="nav-item nav-link" id="nav-apwp-tab" data-toggle="tab" href="#nav-apwp" role="tab" aria-controls="nav-apwp" aria-selected="false">Apparant Polar Wander Paths</a>
+          <a class="nav-item nav-link" id="nav-apwp-tab" data-toggle="tab" href="#nav-apwp" role="tab" aria-controls="nav-apwp" aria-selected="false">Map Overview & APWPs</a>
           <a class="nav-item nav-link" id="nav-settings-tab" data-toggle="tab" href="#nav-settings" role="tab" aria-controls="nav-settings" aria-selected="false">Settings</a>
 
         </div>
@@ -133,120 +139,148 @@
           <br>
 
           <div class="alert alert-light" role="alert">
-            <h5> Geography - Geomagnetic Directions </h5>
-            <p> Figures showing the selected collections and their geomagnetic directions & distribution of virtual geomagnetic poles. The table lists standard Fisher parameters for this set of directions. When multiple collections are selected, its components will be combined before a cutoff is applied. Press <b>8</b> to switch between coordinate frames.
+            <h5> Geography - Map Overview & APWPs </h5>
+            <p> This map overview illustrates vertical-axis rotations for the selected sites including confidence parachutes (ΔDx). Declinations, inclinations, paleolatitudes, and apparant polar wander paths can be plotted for major plates.
           </div>
 
-      <div class="input-group">
+	      <div id="wrapper">
+            <div id="location-information-wrapper">
+              <div id="accordion">
+                <div class="card">
+                  <div class="card-header" id="headingOne" style='padding: 0px'>
+                    <h5 class="mb-0">
+                    <button class="btn btn-link btn-sm" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                      Settings <small>(expand)</small>
+                    </button>
+                    </h5>
+                  </div>
+            
+                  <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+                    <div class="card-body" style='text-align: left;'>
+
+                      <div class="form-group">
+                        <div class="row">
+                          <div class="col">
+                            <div class="input-group mb-6">
+                              <input id='site-longitude-input' type="text" class="form-control input-sm" placeholder="Longitude">
+                              <div class="input-group-append">
+                                <div class="input-group-text">°E</div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col">
+                            <div class="input-group mb-6">
+                            <input id='site-latitude-input' type="text" class="form-control input-sm" placeholder="Latitude">
+                              <div class="input-group-append">
+                                <div class="input-group-text">°N</div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                          <figcaption class="figure-caption">This site location will be used in calculating predicted directions.</figcaption>
+
+                      </div>
+
+                      <hr>
+ 
+                      <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" checked>
+                        <label class="form-check-label" for="defaultCheck1">
+                          Enable grid
+                        </label>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="map" class="map" style="z-index: 1"></div>
+          </div>
+          <figcaption class="figure-caption text-right">Map showing mean declinations and confidence parachutes for the selected collections.</figcaption>
+          <br>
+          <h5> Predicted Directions <small class="text-muted"> Select a site on the map above </small> </h5>
+          <div class="input-group">
+
             <select class="selectpicker form-control text-center" data-actions-box="true" id="reference-select" title="<i class='far fa-hand-point-down'></i> Select one or multiple reference frames" multiple>
                 <option value="torsvik2012">Torsvik et al., 2012</option>
                 <option value="besse2002">Besse and Courtillot, 2002</option>
                 <option value="kent2010">Kent and Irving, 2010</option>
             </select>
+            &nbsp;
+            <button type="button" class="btn btn-info" id="calculate-reference">Calculate Predicted Directions</button>
+            &nbsp;
             <select data-size="100%" class="selectpicker form-control text-center" data-actions-box="true" id="plate-select" title="<i class='far fa-hand-point-down'></i> Select one or multiple plates" multiple>
-		<option value="AF">Africa</option>
-		<option value="AR">Arabia</option>
-		<option value="AU">Australia</option>
-		<option value="CA">Caribbean</option>
-		<option value="EA">East Antarctica</option>
-		<option value="EU">Eurasia</option>
-		<option value="GR">Greenland</option>
-		<option value="IB">Iberia</option>
-		<option value="IN">India</option>
-		<option value="MA">Madagascar</option>
-		<option value="NA">North America</option>
-		<option value="PA">Pacific</option>
-		<option value="SA">South America</option>
+		      <option value="AF">Africa</option>
+		      <option value="AR">Arabia</option>
+		      <option value="AU">Australia</option>
+		      <option value="CA">Caribbean</option>
+		      <option value="EA">East Antarctica</option>
+		      <option value="EU">Eurasia</option>
+		      <option value="GR">Greenland</option>
+		      <option value="IB">Iberia</option>
+		      <option value="IN">India</option>
+		      <option value="MA">Madagascar</option>
+		      <option value="NA">North America</option>
+		      <option value="PA">Pacific</option>
+		      <option value="SA">South America</option>
             </select>
-</div>
-<hr>
-	<div id="wrapper">
-            <div id="map" class="map" style="z-index: 1"></div>
 
-        <div id="location-information-wrapper">
-          <div id="location-information"></div>
-          <div id="accordion">
-            <div class="card">
-              <div class="card-header" id="headingOne" style='padding: 0px'>
-                <h5 class="mb-0">
-                <button class="btn btn-link btn-sm" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                  Settings <small>(expand)</small>
-                </button>
-                </h5>
-              </div>
+          </div>
+          <br>
 
-              <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
-                <div class="card-body" style='text-align: left;'>
-                  <br>Lati <input id="site-latitude-input"> Long:<input id="site-longitude-input">
-<div class="form-check">
-  <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-  <label class="form-check-label" for="defaultCheck1">
-    Enable grid
-  </label>
-</div>
+          <nav>
+            <div class="nav nav-tabs nav-justified" id="nav-predicted" role="tablist">
+              <a class="nav-item nav-link active" id="nav-declination-tab" data-toggle="tab" href="#nav-declination" role="tab" aria-controls="nav-declination" aria-selected="true">Declination</a>
+              <a class="nav-item nav-link" id="nav-inclination-tab" data-toggle="tab" href="#nav-inclination" role="tab" aria-controls="nav-inclination" aria-selected="false">Inclination</a>
+              <a class="nav-item nav-link" id="nav-paleolatitude-tab" data-toggle="tab" href="#nav-paleolatitude" role="tab" aria-controls="nav-paleolatitude" aria-selected="false">Paleolatitude</a>
+              <a class="nav-item nav-link" id="nav-poles-tab" data-toggle="tab" href="#nav-poles" role="tab" aria-controls="nav-poles" aria-selected="false">Poles</a>
+            </div>
+          </nav>
+
+          <div class="tab-content">
+            <div class="tab-pane fade show active" id="nav-declination" role="tabpanel" aria-labelledby="nav-declination-tab">
+          
+             <br>
+             <div class="row">
+               <div class="col-lg-12">
+                 <div id="declination-container"></div>
+                </div>
+             </div>
+             </div>
+          
+            <div class="tab-pane fade" id="nav-inclination" role="tabpanel" aria-labelledby="nav-inclination-tab">
+          
+             <br>
+             <div class="row">
+               <div class="col-lg-12">
+                 <div id="inclination-container"></div>
+                </div>
+             </div>
+             </div>
+          
+            <div class="tab-pane fade" id="nav-paleolatitude" role="tabpanel" aria-labelledby="nav-paleolatitude-tab">
+          
+              <br>
+              <div class="row">
+                <div class="col-lg-12">
+                  <div id="paleolatitude-container"></div>
                 </div>
               </div>
             </div>
+          
+            <div class="tab-pane fade" id="nav-poles" role="tabpanel" aria-labelledby="nav-poles-tab">
+             <br>
+             <div class="row">
+               <div class="col-lg-12">
+                 <div id="poles-container"></div>
+                </div>
+             </div>
+            </div>
+
           </div>
+          
         </div>
-
-        </div>
-            <figcaption class="figure-caption text-right">Map showing blablabla and something blablabla</figcaption>
-      <br>
-      <nav>
-        <div class="nav nav-tabs nav-justified" id="nav-predicted" role="tablist">
-          <a class="nav-item nav-link active" id="nav-declination-tab" data-toggle="tab" href="#nav-declination" role="tab" aria-controls="nav-declination" aria-selected="true">Declination</a>
-          <a class="nav-item nav-link" id="nav-inclination-tab" data-toggle="tab" href="#nav-inclination" role="tab" aria-controls="nav-inclination" aria-selected="false">Inclination</a>
-          <a class="nav-item nav-link" id="nav-paleolatitude-tab" data-toggle="tab" href="#nav-paleolatitude" role="tab" aria-controls="nav-paleolatitude" aria-selected="false">Paleolatitude</a>
-          <a class="nav-item nav-link" id="nav-poles-tab" data-toggle="tab" href="#nav-poles" role="tab" aria-controls="nav-poles" aria-selected="false">Poles</a>
-        </div>
-      </nav>
-
-
-      <div class="tab-content">
-        <div class="tab-pane fade show active" id="nav-declination" role="tabpanel" aria-labelledby="nav-declination-tab">
-
-         <br>
-         <div class="row">
-           <div class="col-lg-12">
-             <div id="declination-container"></div>
-            </div>
-         </div>
-         </div>
-
-        <div class="tab-pane fade" id="nav-inclination" role="tabpanel" aria-labelledby="nav-inclination-tab">
-
-         <br>
-         <div class="row">
-           <div class="col-lg-12">
-             <div id="inclination-container"></div>
-            </div>
-         </div>
-         </div>
-
-        <div class="tab-pane fade" id="nav-paleolatitude" role="tabpanel" aria-labelledby="nav-paleolatitude-tab">
-
-         <br>
-         <div class="row">
-           <div class="col-lg-12">
-             <div id="paleolatitude-container"></div>
-            </div>
-         </div>
-         </div>
-
-        <div class="tab-pane fade" id="nav-poles" role="tabpanel" aria-labelledby="nav-poles-tab">
-
-         <br>
-         <div class="row">
-           <div class="col-lg-12">
-             <div id="poles-container"></div>
-            </div>
-         </div>
-
-        </div>
-        </div>
-
-      </div>
 
         <!-- Tab for fitting great circles to directions -->
         <div class="tab-pane fade" id="nav-fitting" role="tabpanel" aria-labelledby="nav-settings-tab">

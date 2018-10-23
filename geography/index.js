@@ -1,4 +1,5 @@
 var collections = new Array();
+var mapMakers = new Array();
 
 function addMap() {
 
@@ -6,6 +7,7 @@ function addMap() {
   const TILE_LAYER = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
   const VIEWPORT = new L.latLng(35, 0);
 
+  // Reload the map when the tab is focussed on
   $("#nav-apwp-tab").on("shown.bs.tab", mapTabFocusHandler);
 
   // Set map options (bounds)
@@ -31,7 +33,8 @@ function addMap() {
         {"start": 2, "end": 3, "interval": 30},
         {"start": 4, "end": 4, "interval": 10},
         {"start": 5, "end": 7, "interval": 5},
-        {"start": 8, "end": 10, "interval": 1}
+        {"start": 8, "end": 10, "interval": 1},
+        {"start": 10, "end": 12, "interval": 0.25}
     ]
   }).addTo(map);
 
@@ -40,11 +43,9 @@ function addMap() {
 
 }
 
-document.getElementById("defaultCheck1").addEventListener("change", toggle);
-
 function toggle() {
 
-  if(map.hasLayer(window.gridLayer)) {
+  if(!document.getElementById("defaultCheck1").checked && map.hasLayer(window.gridLayer)) {
     map.removeLayer(window.gridLayer);
   } else {
     map.addLayer(window.gridLayer);
@@ -180,18 +181,11 @@ function __unlock__() {
 function enable() {
 
   $(".selectpicker").selectpicker("show");
-  $(".selectpicker").selectpicker("val", "0");
-  $("#nav-profile-tab").removeClass("disabled");
-  $("#nav-fitting-tab").removeClass("disabled");
-  $("#nav-ctmd-tab").removeClass("disabled");
-  $("#nav-foldtest-tab").removeClass("disabled");
-  $("#nav-shallowing-tab").removeClass("disabled");
-
-  $("#nav-profile-tab").tab("show");
+  $("#nav-apwp-tab").tab("show");
 
   updateSpecimenSelect();
-
   $(".selectpicker").selectpicker("val", "0");
+
   redrawCharts();
 
 }
@@ -245,6 +239,10 @@ function registerEventHandlers() {
   document.getElementById("cutoff-selection").addEventListener("change", redrawCharts);
   document.getElementById("polarity-selection").addEventListener("change", redrawCharts);
   document.addEventListener("keydown", keyboardHandler);
+  document.getElementById("defaultCheck1").addEventListener("change", toggle);
+
+  // Always set grid to false
+  document.getElementById("defaultCheck1").checked = true;
 
 }
 
@@ -267,7 +265,8 @@ function getSelectedItems(id) {
 
 }
 
-document.getElementById("plate-select").addEventListener("change", doThing);
+document.getElementById("calculate-reference").addEventListener("click", doThing);
+
 function doThing() {
 
   function mapPlateName(name) {
@@ -319,6 +318,14 @@ function doThing() {
 
   var plates = getSelectedItems("plate-select");
   var references = getSelectedItems("reference-select").map(x => APWPs[x]);
+
+  if(plates.length === 0) {
+    return notify("danger", "Select at least one plate on the right hand side.");
+  }
+
+  if(references.length === 0) {
+    return notify("danger", "Select at least one reference model on the left hand side.");
+  }
 
   plates.forEach(function(plate) {
 
@@ -454,11 +461,134 @@ function doThing() {
 
   plotPoles(dataSeriesPoles);
 
+  window.scrollTo(0,document.body.scrollHeight);
+
+}
+
+function showCollectionsOnMap() {
+
+  /*
+   * Function showCollectionsOnMap
+   * Shows the collection on a map
+   */
+
+  function resetMarkers() {
+
+    /*
+     * Function getSVGPath
+     * Returns an SVG path (parachute) based on an angle and error
+     */
+
+    mapMakers.forEach(x => map.removeLayer(x));
+    mapMakers = new Array();
+
+  }
+
+  function getSVGPath(angle, error) {
+
+    /*
+     * Function getSVGPath
+     * Returns an SVG path (parachute) based on an angle and error
+     */
+
+
+    var radError = error * RADIANS;
+    var radAngle = angle * RADIANS;
+
+    return [
+      "M 1 1",
+      "L", 1 + Math.sin(radAngle + radError), 1 + Math.cos(radAngle + radError),
+      "A 1 1 0 0 1", 1 + Math.sin(radAngle - radError), 1 + Math.cos(radAngle - radError),
+      "Z"
+    ].join(" ");
+
+  }
+
+  const MARKER_SIZE = 100;
+  const MARKER_OPACITY = 0.5;
+
+  var polarity = document.getElementById("polarity-selection").value || null;
+
+  // Drop references to old markers
+  resetMarkers();
+ 
+  getSelectedCollections().forEach(function(collection) {
+
+    // Cutoff and statistics
+    var cutofC = doCutoff(collection.components.map(x => x.inReferenceCoordinates()));
+    var statistics = getStatisticalParameters(cutofC.components);
+
+    // Get the average site location from all markers
+    var averageLocation = getAverageLocation(collection);
+
+    if(averageLocation === null) {
+      return;
+    }
+
+    if((polarity === "REVERSED" && statistics.dir.mean.inc > 0) || (polarity === "NORMAL" && statistics.dir.mean.inc < 0)) {
+      statistics.dir.mean.inc = -statistics.dir.mean.inc
+      statistics.dir.mean.dec = (statistics.dir.mean.dec + 180) % 360; 
+    }
+
+    var markerPath = getSVGPath((180 - statistics.dir.mean.dec), statistics.butler.dDx);
+    var achenSvgString = "<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2'><path d='" + markerPath + "' fill='" + HIGHCHARTS_BLACK +"'/></svg>"
+
+    var markerIcon = L.icon({
+       "iconUrl": encodeURI("data:image/svg+xml," + achenSvgString).replace("#", "%23"),
+       "opacity": MARKER_OPACITY,
+       "iconSize": MARKER_SIZE
+    });
+
+    var markerPopupContent = [
+      "<b>Collection " + collection.name.slice(0, 16) + "</b>",
+      "<b>Longitude: </b>" + averageLocation.lng.toFixed(5),
+      "<b>Latitude: </b>" + averageLocation.lat.toFixed(5),
+      "<b>Average Declination: </b>" + statistics.dir.mean.dec.toFixed(2) + " (" + statistics.butler.dDx.toFixed(2) + ")",
+      "<b>Average Inclination: </b>" + statistics.dir.mean.inc.toFixed(2),
+      "<b>Number of Specimens: </b>" + collection.components.length
+    ].join("<br>");
+
+    mapMakers.push(L.marker([averageLocation.lng, averageLocation.lat], {"icon": markerIcon}).bindPopup(markerPopupContent).addTo(map));
+
+  });
+
+
+}
+
+function getAverageLocation(site) {
+
+  /*
+   * Function getAverageLocation
+   * Returns the average specimen location of a collection
+   */
+
+  // We can use declination instead of poles.. doens't really matter
+  var locations = site.components.filter(x => x.location !== null).map(function(x) {
+    return new Direction(x.location.lng, x.location.lat);
+  });
+
+  if(locations.length === 0) {
+    return null;
+  }
+
+  var meanLocation = meanDirection(locations);
+
+  // Keep longitude within [-180, 180]
+  if(meanLocation.dec > 180) {
+    meanLocation.dec -= 360;
+  }
+
+  return {
+    "lng": meanLocation.dec,
+    "lat": meanLocation.inc
+  }
+
 }
 
 function plotPoles(dataSeries) {
 
   function tooltip() {
+
     /*
      * Function plotPoles::tooltip
      * Handles tooltip for the Poles chart
@@ -568,7 +698,7 @@ function plotExpected(container, dataSeries, site) {
   new Highcharts.chart(container, {
     "chart": {
       "id": "expectedLocation",
-      "height": 600,
+      "height": 500,
       "zoomType": "xy",
       "renderTo": container
     },
@@ -637,7 +767,8 @@ function redrawCharts() {
 
   var tempScrollTop = window.pageYOffset || document.scrollingElement.scrollTop || document.documentElement.scrollTop;
 
-  doThing();
+  showCollectionsOnMap();
+
   window.scrollTo(0, tempScrollTop);
 
 }
@@ -658,6 +789,7 @@ var Component = function(specimen, coordinates) {
   this.name = specimen.name
   this.rejected = false;
 
+  this.location = specimen.location;
   this.coreAzimuth = specimen.coreAzimuth
   this.coreDip = specimen.coreDip
   this.beddingStrike = specimen.beddingStrike

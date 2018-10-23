@@ -172,6 +172,29 @@ function getConfidenceEllipse(angle) {
 
 }
 
+function getSelectedCollections() {
+
+  /*
+   * Function getSelectedCollections
+   * Returns a reference to the sites that were selected
+   */
+
+  function isSelected(option) {
+    return option.selected; 
+  }
+
+  function mapIndexToSite(index) {
+    return collections[index];
+  }
+
+  function getIndex(option) {
+    return Number(option.value);
+  }
+
+  return Array.from(document.getElementById("specimen-select").options).filter(isSelected).map(getIndex).map(mapIndexToSite);
+
+}
+
 function getPlaneData(direction, angle) {
 
   /*

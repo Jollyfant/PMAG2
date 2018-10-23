@@ -1,29 +1,6 @@
 const PLOTBAND_COLOR_BLUE = "rgba(119, 152, 191, 0.25)";
 const PLOTBAND_COLOR_RED = "rgba(191, 119, 152, 0.25)";
 
-function getSelectedCollections() {
-
-  /*
-   * Function getSelectedCollections
-   * Returns a reference to the sites that were selected
-   */
-
-  function isSelected(option) {
-    return option.selected; 
-  }
-
-  function mapIndexToSite(index) {
-    return collections[index];
-  }
-
-  function getIndex(option) {
-    return Number(option.value);
-  }
-
-  return Array.from(document.getElementById("specimen-select").options).filter(isSelected).map(getIndex).map(mapIndexToSite);
-
-}
-
 function showExtremes(geographic, tectonic) {
 
   /*
@@ -491,8 +468,8 @@ function getConfidence(cdf) {
 
   var array = cdf.map(x => x.x);
 
-  var lower = array[parseInt(0.025 * array.length, 10)] || 0;
-  var upper = array[parseInt(0.975 * array.length, 10)] || 0;
+  var lower = array[parseInt(0.025 * array.length, 10)] || -90;
+  var upper = array[parseInt(0.975 * array.length, 10)] || 90;
 
   return { lower, upper }
 
