@@ -145,6 +145,7 @@
           </div>
 
 	      <div id="wrapper">
+
             <div id="location-information-wrapper">
               <div id="accordion">
                 <div class="card">
@@ -189,15 +190,20 @@
                         <label class="form-check-label" for="defaultCheck1">
                           Enable grid
                         </label>
+                        &nbsp;
+                        &nbsp;
+                        <input class="form-check-input" type="checkbox" value="" id="geology-layer-toggle" checked>
+                        <label class="form-check-label" for="geology-layer-toggle">
+                          Enable Geology
+                        </label>
                       </div>
-<!--
+
                       <hr>
                       <div class="custom-file">
                         <input type="file" class="custom-file-input" id="euler-upload">
                         <label class="custom-file-label" for="euler-upload">Custom Euler Rotations</label>
-                        <figcaption class="figure-caption">Select <i>.csv</i> of Euler poles relative to <b>701</b> (SAC).</figcaption>
+                        <figcaption class="figure-caption">Select <i>.csv</i> of Euler poles relative to <b>701</b> (GPlates).</figcaption>
                       </div>
--->
 
                     </div>
                   </div>
@@ -207,7 +213,9 @@
             <div id="map" class="map" style="z-index: 1"></div>
           </div>
           <figcaption class="figure-caption text-right">Map showing mean declinations and confidence parachutes for the selected collections.</figcaption>
+
           <br>
+
           <h5> Predicted Directions <small class="text-muted"> Select a site on the map above </small> </h5>
           <div class="input-group">
 
@@ -295,184 +303,6 @@
                 <button class="btn btn-sm btn-light" id="export-predicted-pdf"><i class="far fa-file-image"></i> PDF</button>
             </div>
           
-        </div>
-
-        <!-- Tab for fitting great circles to directions -->
-        <div class="tab-pane fade" id="nav-fitting" role="tabpanel" aria-labelledby="nav-settings-tab">
-
-          <br>
-
-          <div class="alert alert-light" role="alert">
-            <h5> Statistics - Mean Geomagnetic Directions </h5>
-            <p> Figures showing the mean direction of the mean of all selected collections seperately. Press <b>8</b> to switch between coordinate frames. The selected cutoff is applied to each collection.
-          </div>
-
-          <div class="container">
-            <div class="row justify-content-md-center">
-
-              <div class="table-responsive">
-                <table class='table table-sm text-center table-striped' id="mean-table"></table>
-              </div>
-
-              <!-- ChRM Directions -->
-	          <div class="col-lg-6">
-                <div id="mean-container"></div>
-	          </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
-        <!-- Tab for fitting great circles to directions -->
-        <div class="tab-pane fade" id="nav-ctmd" role="tabpanel" aria-labelledby="nav-settings-tab">
-
-          <br>
-
-          <div class="alert alert-light" role="alert">
-
-            <h5> Statistics - Common True Mean Directions </h5>
-            <p> Figures showing <b>1000</b> bootstrapped mean coordinates for the selected collections following the approach of <a href='../references/index.html'>Tauxe et al., 2014</a>. Select two collections and click <b>initialize</b> to begin the bootstrap. Overlapping distributions indicidate that two collections are the same within confidence limits.
-
-              <p> <button onclick="bootstrapCTMD()" type="button" class="btn btn-sm pull-right btn-primary"><i class="fas fa-play"></i> <b>Initialize</b></button>
-
-          </div>
-
-          <div class="container">
-            <div class="row justify-content-md-center">
-
-              <div class="table-responsive">
-                <table class='table table-sm text-center table-striped' id="bootstrap-table"></table>
-              </div>
-
-              <!-- ChRM Directions -->
-	          <div class="col-lg-4">
-                <div id="ctmd-container-x"></div>
-	          </div>
-	          <div class="col-lg-4">
-                <div id="ctmd-container-y"></div>
-	          </div>
-	          <div class="col-lg-4">
-                <div id="ctmd-container-z"></div>
-	          </div>
-
-            </div>
-
-            <br>
-
-
-            <div class="text-right">
-	        <button class="btn btn-sm btn-light" id="export-bootstrap-png"><i class="far fa-file-image"></i> PNG</button>
-	        <button class="btn btn-sm btn-light" id="export-bootstrap-svg"><i class="far fa-file-image"></i> SVG</button>
-	        <button class="btn btn-sm btn-light" id="export-bootstrap-pdf"><i class="far fa-file-image"></i> PDF</button>
-            </div>
-
-          </div>
-
-        </div>
-
-        <!-- Tab for fitting great circles to directions -->
-        <div class="tab-pane fade" id="nav-foldtest" role="tabpanel" aria-labelledby="nav-settings-tab">
-
-          <br>
-
-          <div class="alert alert-light" role="alert">
-            <h5> Statistics - Foldtest </h5>
-            <p> This module allows the user to do a classical foldtest (<a href="../references/index.html">Tauxe & Watson, 1994</a>) on one or multiple collections. <b>No cutoff will be applied</b>. Select any number of collections and click <b>initialize</b> to start. 
-
-            <div class="input-group mb-3">
-              <div class="btn-group-toggle" data-toggle="buttons">
-                <label class="btn btn-sm btn-success active">
-                  <input id="foldtest-bootstrap-checkbox" type="checkbox" checked autocomplete="off"><i class="fas fa-dice"></i>
-                </label>
-              </div>
-&nbsp;
-              <p> <button onclick="bootstrapFoldtest()" type="button" class="btn btn-sm pull-right btn-primary"><i class="fas fa-play"></i> <b>Initialize</b></button>
-
-          </div>
-
-            <div class="progress">
-              <div id="foldtest-progress" class="progress-bar progress-bar-striped progress-bar-animated" style="width: 0%; transition: none;"></div>
-            </div> 
-          </div>
-
-          <div class="container">
-
-            <div class="row">
-
-              <!-- In geographic coordinates -->
-	          <div class="col-lg-6">
-                <div id="foldtest-geographic-container"></div>
-	          </div>
-
-              <!-- In tectonic coordinates -->
-	          <div class="col-lg-6">
-                <div id="foldtest-tectonic-container"></div>
-	          </div>
-
-            </div>
-
-            <!-- Container for the foldtest itself -->
-            <div class="row">
-	          <div class="col-lg-12">
-                <div id="foldtest-full-container"></div>
-	          </div>
-            </div>
-
-          </div>
-
-            <div class="text-right">
-                  <button class="btn btn-sm btn-light" id="export-foldtest-png"><i class="far fa-file-image"></i> PNG</button>
-                  <button class="btn btn-sm btn-light" id="export-foldtest-svg"><i class="far fa-file-image"></i> SVG</button>
-                  <button class="btn btn-sm btn-light" id="export-foldtest-pdf"><i class="far fa-file-image"></i> PDF</button>
-            </div>
-
-        </div>
-
-        <!-- Tab for fitting great circles to directions -->
-        <div class="tab-pane fade" id="nav-shallowing" role="tabpanel" aria-labelledby="nav-settings-tab">
-
-          <br>
-
-          <div class="alert alert-light" role="alert">
-            <h5> Statistics - Shallowing </h5>
-            <p>  The inclination shallowing module unflattens observed inclinations in sediments to fit with the TK03.GAD Field Model (<a href="../references/index.html">Tauxe et al., 2008</a>) based on the relationship between the expected elongation (E) (τ2/τ3) and inclination. The flattening function of (King, 1955) is applied. A single collection can be selected and a cutoff will be applied. <b>A minimum of 80 directions are required</b>. The procedure can be bootstrapped <b>2500</b> times to find its confidence limits.
-
-            <div class="input-group mb-3">
-              <div class="btn-group-toggle" data-toggle="buttons">
-                <label class="btn btn-sm btn-success active">
-                  <input id="shallowing-bootstrap-checkbox" type="checkbox" checked autocomplete="off"><i class="fas fa-dice"></i>
-                </label>
-              </div>
-&nbsp;
-              <p> <button onclick="bootstrapShallowing()" type="button" class="btn btn-sm pull-right btn-primary"><i class="fas fa-play"></i> <b>Initialize</b></button>
-
-          </div>
-
-            <div class="progress">
-              <div id="shallowing-progress" class="progress-bar progress-bar-striped progress-bar-animated" style="width: 0%; transition: none;"></div>
-            </div> 
-        </div>
-
-         <div class="row">
-           <div class="col-lg-12">
-             <div id="ei-bootstrap-container"></div>
-            </div>
-         </div>
-
-         <div class="row">
-	   <div class="col-lg-12">
-             <div id="ei-cdf-container"></div>
-	    </div>
-         </div>
-
-            <div class="text-right">
-                  <button class="btn btn-sm btn-light" id="export-shallowing-png"><i class="far fa-file-image"></i> PNG</button>
-                  <button class="btn btn-sm btn-light" id="export-shallowing-svg"><i class="far fa-file-image"></i> SVG</button>
-                  <button class="btn btn-sm btn-light" id="export-shallowing-pdf"><i class="far fa-file-image"></i> PDF</button>
-            </div>
-
         </div>
 
         <!-- Tab for settings & preferences --> 
@@ -565,24 +395,24 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.2/js/bootstrap-select.min.js"></script>
   <!-- Include leaflet -->
+
    <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"
      integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA=="
      crossorigin=""></script>
 
-    <script src="../utils.js"></script>
+   <script src="../utils.js"></script>
 
-    <script src="../Exception.js"></script>
-    <script src="./L.Grid.js"></script>
-    <script src="../Direction.js"></script>
-    <script src="../Pole.js"></script>
-    <script src="../Location.js"></script>
-    <script src="../Coordinates.js"></script>
-    <script src="../Site.js"></script>
-    <script src="../Distribution.js"></script>
-    <script src="../interpretation/numeric.js"></script>
-    <script src="./apwp.js"></script>
-    <script src="./Euler.js"></script>
-    <script src="./index.js"></script>
-    <script src="./exporting.js"></script>
+   <script src="../Exception.js"></script>
+   <script src="./grid.js"></script>
+   <script src="../Direction.js"></script>
+   <script src="../Pole.js"></script>
+   <script src="../Location.js"></script>
+   <script src="../Coordinates.js"></script>
+   <script src="../Site.js"></script>
+   <script src="./apwp.js"></script>
+   <script src="../Distribution.js"></script>
+   <script src="./Euler.js"></script>
+   <script src="./index.js"></script>
+   <script src="./exporting.js"></script>
 
 </html>

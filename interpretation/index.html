@@ -83,8 +83,8 @@
         <div class="nav nav-tabs nav-justified" id="nav-tab" role="tablist">
           <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Data Import</a>
           <a class="nav-item nav-link disabled" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Interpretation</a>
-          <a class="nav-item nav-link disabled" id="nav-fitting-tab" data-toggle="tab" href="#nav-fitting" role="tab" aria-controls="nav-profile" aria-selected="false">Components and Fitting</a>
-          <a class="nav-item nav-link" id="nav-settings-tab" data-toggle="tab" href="#nav-settings" role="tab" aria-controls="nav-settings" aria-selected="false">Settings and Export</a>
+          <a class="nav-item nav-link disabled" id="nav-fitting-tab" data-toggle="tab" href="#nav-fitting" role="tab" aria-controls="nav-profile" aria-selected="false">Fitting & Export</a>
+          <a class="nav-item nav-link" id="nav-settings-tab" data-toggle="tab" href="#nav-settings" role="tab" aria-controls="nav-settings" aria-selected="false">Settings</a>
         </div>
       </nav>
 
@@ -245,6 +245,7 @@
             <div class="col-md-6 ">
               <div class='text-center'>
                 <button class="btn btn-sm btn-success" onclick="downloadInterpretations()" type="button" class="btn btn-primary"><i class="fas fa-file-download"></i>&nbsp; Download Interpretations</button>
+                <button class="btn btn-sm btn-success" onclick="downloadInterpretationsCSV()" type="button" class="btn btn-primary"><i class="fas fa-file-download"></i>&nbsp; Download Interpretations (CSV)</button>
               </div>
             </div>
           </div>
@@ -253,12 +254,6 @@
 
         <!-- Tab for settings & preferences --> 
         <div class="tab-pane fade" id="nav-settings" role="tabpanel" aria-labelledby="nav-settings-tab">
-          <br>
-          <h5> Saving Data </h5>
-          <p> Data from the application can be exported in the <b>Paleomagnetism.org 2.0.0</b> format to a <b>collection</b>. All specimens that are available in this session will be included in a new collection.
-          <p>
-          <button onclick="exportApplicationSave()" type="button" class="btn btn-sm btn-success"><i class="fas fa-file-download"></i>&nbsp; Download application save</button>
-          <hr>
 
           <!-- Options for sorting -->
           <h5> Sorting Options </h5>

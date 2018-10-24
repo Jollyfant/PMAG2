@@ -1518,6 +1518,38 @@ function downloadInterpretations() {
    * Downloads all interpretations
    */
 
+  const MIME_TYPE = "data:application/json;charset=utf-8";
+  const FILENAME = "specimens.dir";
+
+  // No samples are loaded
+  if(specimens.length === 0) {
+    return notify("danger", new Exception("No interpretations available to export."));
+  }
+
+  if(IS_FITTED) {
+    try {
+      var samples = getFittedGreatCircles();
+    } catch(exception) {
+      return notify("danger", exception);
+    }
+  } else {
+    var samples = specimens;
+  }
+
+  // Create the payload with some additional metadata
+  var payload = encodeURIComponent(JSON.stringify({
+    "pid": forge_sha256(JSON.stringify(samples)),
+    "specimens": specimens,
+    "version": __VERSION__,
+    "created": new Date().toISOString()
+  }));
+
+  downloadURIComponent(FILENAME, MIME_TYPE + "," + payload);
+
+}
+
+function downloadInterpretationsCSV() {
+
   const FILENAME = "interpretations.csv";
   const ITEM_DELIMITER = ",";
 

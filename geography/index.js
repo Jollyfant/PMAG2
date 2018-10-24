@@ -5,6 +5,8 @@ function addMap() {
 
   const MAP_CONTAINER = "map";
   const TILE_LAYER = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+  const GEOLOGY_LAYER = "https://mrdata.usgs.gov/services/worldgeol?";
+
   const VIEWPORT = new L.latLng(35, 0);
 
   // Reload the map when the tab is focussed on
@@ -21,6 +23,7 @@ function addMap() {
   // Create the map and tile layer
   map = L.map(MAP_CONTAINER, mapOptions).setView(VIEWPORT, 1);
   L.tileLayer(TILE_LAYER).addTo(map);
+  window.geologyLayer = L.tileLayer.wms(GEOLOGY_LAYER, {"layers": "geology", "opacity": 0.5}).addTo(map);
 
   // Add a lovely grid layer: good job guy who did this
   window.gridLayer = L.latlngGraticule({
@@ -49,6 +52,16 @@ function toggle() {
     map.removeLayer(window.gridLayer);
   } else {
     map.addLayer(window.gridLayer);
+  }
+
+}
+
+function toggleGeology() {
+
+  if(!document.getElementById("geology-layer-toggle").checked && map.hasLayer(window.geologyLayer)) {
+    map.removeLayer(window.geologyLayer);
+  } else {
+    map.addLayer(window.geologyLayer);
   }
 
 }
@@ -180,15 +193,15 @@ function __unlock__() {
 
 function enable() {
 
-  $(".selectpicker").selectpicker("show");
   $("#nav-apwp-tab").tab("show");
 
   updateSpecimenSelect();
-  $(".selectpicker").selectpicker("val", "0");
 
   redrawCharts();
 
 }
+
+  $(".selectpicker").selectpicker("show");
 
 var COORDINATES_COUNTER = 0;
 var COORDINATES = "specimen";
@@ -234,16 +247,18 @@ function registerEventHandlers() {
    */
 
   // Simple listeners
-  //document.getElementById("euler-upload").addEventListener("change", eulerSelectionHandler);
+  document.getElementById("euler-upload").addEventListener("change", eulerSelectionHandler);
   document.getElementById("customFile").addEventListener("change", fileSelectionHandler);
   document.getElementById("specimen-select").addEventListener("change", siteSelectionHandler);
   document.getElementById("cutoff-selection").addEventListener("change", redrawCharts);
   document.getElementById("polarity-selection").addEventListener("change", redrawCharts);
   document.addEventListener("keydown", keyboardHandler);
   document.getElementById("defaultCheck1").addEventListener("change", toggle);
+  document.getElementById("geology-layer-toggle").addEventListener("change", toggleGeology);
 
   // Always set grid to false
   document.getElementById("defaultCheck1").checked = true;
+  document.getElementById("geology-layer-toggle").checked = true;
 
 }
 
@@ -617,7 +632,7 @@ function plotPoles(dataSeries) {
     // Cutoff and statistics
     var cutofC = doCutoff(collection.components.map(x => x.inReferenceCoordinates()));
 
-    convertedComps = cutofC.components.map(function(x) {
+    convertedComps = cutofC.components.filter(x => x.location !== null).map(function(x) {
       var s = new Site(x.location);
       return new Component(x, s.poleFrom(literalToCoordinates(x.coordinates).toVector(Direction)).toCartesian());
     });
@@ -659,7 +674,7 @@ function plotPoles(dataSeries) {
         "inc": projectInclination(statistics.dir.mean.inc),
         "age": 0
       }],
-      "lineWidth": 2,
+      "lineWidth": 1,
       "color": HIGHCHARTS_ORANGE,
       "marker": {
         "symbol": "circle"
@@ -668,7 +683,7 @@ function plotPoles(dataSeries) {
       "data": getPlaneData({"dec": statistics.dir.mean.dec, "inc": statistics.dir.mean.inc}, statistics.pole.confidence),
       "type": "line",
       "color": HIGHCHARTS_ORANGE,
-      "lineWidth": 2,
+      "lineWidth": 1,
       "dashStyle": "ShortDash",
       "enableMouseTracking": false,
       "linkedTo": ":previous",
@@ -785,7 +800,7 @@ function plotExpected(container, dataSeries, site) {
   function tooltip() {
 
     /*
-     * Function plotPoles::tooltip
+     * Function plotExpected::tooltip
      * Handles tooltip for the Poles chart
      */
 
@@ -807,7 +822,7 @@ function plotExpected(container, dataSeries, site) {
     var cutofC = doCutoff(collection.components.map(x => x.inReferenceCoordinates()));
 
     // Convert each direction to a pole and get the direction at the reference point
-    var convertedComps = cutofC.components.map(function(x) {
+    var convertedComps = cutofC.components.filter(x => x.location !== null).map(function(x) {
       var realPole = new Site(x.location).poleFrom(literalToCoordinates(x.coordinates).toVector(Direction));
       return new Component(x, site.directionFrom(realPole).toCartesian());
     });
@@ -974,7 +989,7 @@ function plotExpected(container, dataSeries, site) {
       "text": title
     },
     "subtitle": {
-      "text": "<b> At site (latitude: </b>" + site.lat + "<b> longitude: </b>" + site.lng + ")"
+      "text": "At site: (<b>latitude: </b>" + site.lat + "<b> longitude: </b>" + site.lng + ")"
     },
     "xAxis": {
       "reversed": true,
@@ -1152,8 +1167,6 @@ function updateSpecimenSelect() {
 
   collections.forEach(addPrototypeSelection);
 
-  $('.selectpicker').selectpicker('refresh');
-
 }
 
 function removeOptions(selectbox) {
@@ -1228,8 +1241,6 @@ function getButlerParameters(confidence, lambda, inclination) {
   });
 
 }
-
-$('.selectpicker').selectpicker('hide');
 
 function doCutoff(directions) {
 
@@ -1469,7 +1480,8 @@ function eulerSelectionHandler(event) {
     var file = files.pop();
 
     var plates = new Object();
-    var lines = file.data.split("\n").slice(1, -1);
+
+    var lines = file.data.split(/\r?\n/).slice(1, -1);
 
     lines.forEach(function(line) {
 
@@ -1507,7 +1519,7 @@ function eulerSelectionHandler(event) {
       if(plate.id === "1001") {
         return;
       }
-
+	
       var option = document.createElement("option");
 
       option.text = plate.name || plate.id;
@@ -1517,7 +1529,8 @@ function eulerSelectionHandler(event) {
 
     });
 
-    $(".selectpicker").selectpicker("refresh");
+    $("#plate-select").selectpicker("refresh");
+    notify("success", "Succesfully added new Euler poles for <b>" + Object.keys(plates).length + "</b> plates.");
 
   });
 
@@ -1550,7 +1563,7 @@ function fileSelectionHandler(event) {
 
     enable();
     saveLocalStorage();
-
+    $("#specimen-select").selectpicker("refresh");
     notify("success", "Succesfully added <b>" + (collections.length - nCollections) + "</b> specimen(s).");
 
   });
