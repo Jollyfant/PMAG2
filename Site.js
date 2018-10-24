@@ -7,8 +7,8 @@ var Site = function({lng, lat}, age) {
    * Container class for site locations
    */
 
-  this.lat = lat;
   this.lng = lng;
+  this.lat = lat;
 
   this.age = 10;
 

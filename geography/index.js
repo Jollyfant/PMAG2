@@ -234,6 +234,7 @@ function registerEventHandlers() {
    */
 
   // Simple listeners
+  document.getElementById("euler-upload").addEventListener("change", eulerSelectionHandler);
   document.getElementById("customFile").addEventListener("change", fileSelectionHandler);
   document.getElementById("specimen-select").addEventListener("change", siteSelectionHandler);
   document.getElementById("cutoff-selection").addEventListener("change", redrawCharts);
@@ -495,12 +496,12 @@ function showCollectionsOnMap() {
     var radError = error * RADIANS;
     var radAngle = angle * RADIANS;
 
-    return [
+    return new Array( 
       "M 1 1",
       "L", 1 + Math.sin(radAngle + radError), 1 + Math.cos(radAngle + radError),
       "A 1 1 0 0 1", 1 + Math.sin(radAngle - radError), 1 + Math.cos(radAngle - radError),
       "Z"
-    ].join(" ");
+    ).join(" ");
 
   }
 
@@ -548,7 +549,7 @@ function showCollectionsOnMap() {
       "<b>Number of Specimens: </b>" + collection.components.length
     ].join("<br>");
 
-    mapMakers.push(L.marker([averageLocation.lng, averageLocation.lat], {"icon": markerIcon}).bindPopup(markerPopupContent).addTo(map));
+    mapMakers.push(L.marker([averageLocation.lat, averageLocation.lng], {"icon": markerIcon}).bindPopup(markerPopupContent).addTo(map));
 
   });
 
@@ -602,6 +603,41 @@ function plotPoles(dataSeries) {
     ].join("<br>");
 
   }
+
+  // Add collection data
+  getSelectedCollections().forEach(function(collection) {
+
+    // Cutoff and statistics
+    var cutofC = doCutoff(collection.components.map(x => x.inReferenceCoordinates()));
+    var statistics = getStatisticalParameters(cutofC.components);
+
+    dataSeries.push({
+      "name": collection.name,
+      "data": [{
+        "x": statistics.pole.mean.lng,
+        "y": projectInclination(statistics.pole.mean.lat),
+        "inc": projectInclination(statistics.pole.mean.lat),
+        "age": 0
+      }],
+      "lineWidth": 2,
+      "color": HIGHCHARTS_ORANGE,
+      "marker": {
+        "symbol": "circle"
+      }
+    }, {
+      "data": getPlaneData({"dec": statistics.pole.mean.lng, "inc": statistics.pole.mean.lat}, statistics.pole.confidence),
+      "type": "line",
+      "color": HIGHCHARTS_ORANGE,
+      "lineWidth": 2,
+      "dashStyle": "ShortDash",
+      "enableMouseTracking": false,
+      "linkedTo": ":previous",
+      "marker": {
+        "enabled": false
+      }
+    });
+
+  });
 
   const CHART_CONTAINER = "poles-container";
 
@@ -670,6 +706,26 @@ function plotPoles(dataSeries) {
 
 }
 
+function getAverageAge(collection) {
+
+  var age = 0;
+  var min = -Number.MAX_SAFE_INTEGER;
+  var max = Number.MAX_SAFE_INTEGER;
+
+  collection.components.forEach(function(component) {
+    min = Math.max(min, component.age.min);
+    max = Math.min(max, component.age.max);
+    age += component.age.value;
+  });
+  
+  return {
+    "value": age / collection.components.length,
+    "min": min,
+    "max": max
+  }
+
+}
+
 function plotExpected(container, dataSeries, site) {
 
   var title;
@@ -695,6 +751,140 @@ function plotExpected(container, dataSeries, site) {
 
   }
 
+  // Add collection data
+  getSelectedCollections().forEach(function(collection) {
+
+    // Cutoff and statistics
+    var cutofC = doCutoff(collection.components.map(x => x.inReferenceCoordinates()));
+
+    // Convert each direction to a pole and get the direction at the reference point
+    var convertedComps = cutofC.components.map(function(x) {
+      var realPole = new Site(x.location).poleFrom(literalToCoordinates(x.coordinates).toVector(Direction));
+      return new Component(x, site.directionFrom(realPole).toCartesian());
+    });
+
+    var statistics = getStatisticalParameters(convertedComps);
+    var avAge = getAverageAge(collection);
+
+    if(statistics.dir.mean.dec > 180) {
+      statistics.dir.mean.dec -= 360;
+    }
+    
+    if(container === "declination-container") {
+
+      dataSeries.push({
+        "name": collection.name,
+        "color": HIGHCHARTS_ORANGE,
+        "data": [{
+          "x": avAge.value,
+          "y": statistics.dir.mean.dec
+        }]
+      }, {
+        "name": "Confidence",
+        "type": "line",
+        "linkedTo": ":previous",
+        "enableMouseTracking": false,
+        "lineWidth": 1,
+        "color": HIGHCHARTS_ORANGE,
+        "marker": {
+          "enabled": false
+        },
+        "data": [{
+          "x": Number(avAge.min),
+          "y": statistics.dir.mean.dec
+        }, {
+          "x": Number(avAge.max),
+          "y": statistics.dir.mean.dec
+        }, {
+          "x": null,
+          "y": null
+        }, {
+          "x": Number(avAge.value),
+          "y": statistics.dir.mean.dec + statistics.butler.dDx
+        }, {
+          "x": Number(avAge.value),
+          "y": statistics.dir.mean.dec - statistics.butler.dDx
+        }]
+      });
+
+    } else if(container === "inclination-container") {
+
+      dataSeries.push({
+        "name": collection.name,
+        "color": HIGHCHARTS_ORANGE,
+        "data": [{
+          "x": avAge.value,
+          "y": statistics.dir.mean.inc
+        }]
+      }, {
+        "name": "Confidence",
+        "type": "line",
+        "linkedTo": ":previous",
+        "enableMouseTracking": false,
+        "lineWidth": 1,
+        "color": HIGHCHARTS_ORANGE,
+        "marker": {
+          "enabled": false
+        },
+        "data": [{
+          "x": Number(avAge.min),
+          "y": statistics.dir.mean.inc
+        }, {
+          "x": Number(avAge.max),
+          "y": statistics.dir.mean.inc
+        }, {
+          "x": null,
+          "y": null
+        }, {
+          "x": Number(avAge.value),
+          "y": statistics.dir.mean.inc + statistics.butler.dIx
+        }, {
+          "x": Number(avAge.value),
+          "y": statistics.dir.mean.inc - statistics.butler.dIx
+        }]
+      });
+
+    } else if(container === "paleolatitude-container") {
+
+      dataSeries.push({
+        "name": collection.name,
+        "color": HIGHCHARTS_ORANGE,
+        "data": [{
+          "x": avAge.value,
+          "y": statistics.dir.lambda
+        }]
+      }, {
+        "name": "Confidence",
+        "type": "line",
+        "linkedTo": ":previous",
+        "enableMouseTracking": false,
+        "lineWidth": 1,
+        "color": HIGHCHARTS_ORANGE,
+        "marker": {
+          "enabled": false
+        },
+        "data": [{
+          "x": Number(avAge.min),
+          "y": statistics.dir.lambda
+        }, {
+          "x": Number(avAge.max),
+          "y": statistics.dir.lambda
+        }, {
+          "x": null,
+          "y": null
+        }, {
+          "x": Number(avAge.value),
+          "y": paleolatitude(statistics.dir.mean.inc + statistics.butler.dIx)
+        }, {
+          "x": Number(avAge.value),
+          "y": paleolatitude(statistics.dir.mean.inc - statistics.butler.dIx)
+        }]
+      });
+
+    }
+
+  });
+
   new Highcharts.chart(container, {
     "chart": {
       "id": "expectedLocation",
@@ -706,7 +896,7 @@ function plotExpected(container, dataSeries, site) {
       "text": title
     },
     "subtitle": {
-      "text": "<b> Latitude: </b>" + site.lat + "<b> Longitude: </b>" + site.lng
+      "text": "<b> At site (latitude: </b>" + site.lat + "<b> longitude: </b>" + site.lng + ")"
     },
     "xAxis": {
       "reversed": true,
@@ -725,7 +915,7 @@ function plotExpected(container, dataSeries, site) {
         "fillOpacity": 0.3,
       },
       "line": {
-                "turboThreshold": 0,
+        "turboThreshold": 0,
         "marker": {
           "symbol": "circle"
         }
@@ -768,6 +958,7 @@ function redrawCharts() {
   var tempScrollTop = window.pageYOffset || document.scrollingElement.scrollTop || document.documentElement.scrollTop;
 
   showCollectionsOnMap();
+  doThing();
 
   window.scrollTo(0, tempScrollTop);
 
@@ -790,6 +981,8 @@ var Component = function(specimen, coordinates) {
   this.rejected = false;
 
   this.location = specimen.location;
+  this.age = specimen.age;
+
   this.coreAzimuth = specimen.coreAzimuth
   this.coreDip = specimen.coreDip
   this.beddingStrike = specimen.beddingStrike
@@ -1078,6 +1271,174 @@ function sortSamples(type) {
   notify("success", "Succesfully sorted specimens by <b>" + type + "</b>.");
 
   updateSpecimenSelect();
+
+}
+
+function mapPlate(id) {
+
+  const plateNames = {
+    "101": "North America",
+    "102": "Greenland",
+    "103": "North Alaska",
+    "104": "Mexican blocks (north Mexico)",
+    "105": "Baja California",
+    "113": "Northwind Ridge",
+    "119": "Amerasia Basin",
+    "199": "Alleghanian North America",
+    "201": "South America",
+    "202": "Parana Basin",
+    "205": "Yucatan",
+    "276": "Sandwich Plate",
+    "277": "North Scotia Plate",
+    "291": "Colorado-San Jorge subplate",
+    "301": "Baltica",
+    "304": "Iberia",
+    "315": "Eurasia",
+    "317": "Porcupine Plate",
+    "387": "Riveria Plate",
+    "401": "Siberia",
+    "409": "Northeast Siberia",
+    "430": "Tarim",
+    "453": "Greater Amuria",
+    "501": "India",
+    "503": "Arabia",
+    "508": "Sinai, Africa",
+    "511": "Capricorn Plate",
+    "514": "Elan Bank Plate",
+    "601": "North China",
+    "602": "South China",
+    "608": "South Philippine Sea Plate",
+    "610": "East Parece Vela Plate",
+    "611": "West Parece Vela Plate",
+    "653": "North Caroline Sea Plate",
+    "688": "South Caroline Plate",
+    "699": "Marianas forearc",
+    "701": "South Africa",
+    "702": "Madagascar",
+    "704": "Seychelles",
+    "709": "Somalia plate",
+    "710": "Danakil plate",
+    "712": "North Mozambique, Africa",
+    "714": "NW Africa",
+    "715": "Africa",
+    "801": "Australia",
+    "802": "East Antarctica",
+    "804": "West Antarctica",
+    "820": "South Scotia Plate",
+    "833": "Lord Howe Rise",
+    "901": "Pacific Plate",
+    "903": "Juan de Fuca Plate",
+    "904": "Phoenix Plate",
+    "907": "Jan Mayen",
+    "909": "Cocos Plate",
+    "911": "Nazca Plate",
+    "927": "North Philippine Sea Plate",
+    "1001": "mobile belt (unconstrained)",
+    "2007": "Caribbean plate",
+    "2022": "Cuba segment",
+    "2030": "Maracaibo Block",
+    "2031": "Greater Panama",
+    "2035": "Chortis Block",
+    "2039": "Siuna terrane",
+    "2047": "North Nicaraguan rise",
+    "3089": "Adria",
+    "3546": "Eastern Meseta south of Tell Belt",
+    "3547": "Western Meseta"
+  }
+
+  if(!plateNames.hasOwnProperty(id)) {
+    return {
+      "name": null, "id": id
+    }
+  }
+
+  return {
+    "name": plateNames[id], "id": id
+  }
+
+}
+
+function eulerSelectionHandler(event) {
+
+  function parseLine(line) {
+
+    var values = line.split(",");
+
+    return {
+      "id": values[0],
+      "age": Number(values[1]),
+      "lat": Number(values[2]),
+      "lng": Number(values[3]),
+      "rot": Number(values[4]),
+      "rel": values[5]
+    }
+
+  }
+
+  function byName(a, b) {
+
+    if(a.name < b.name) return -1;
+    if(a.name > b.name) return 1;
+    return 0;
+
+  }
+
+  readMultipleFiles(Array.from(event.target.files), function(files) {
+
+    var file = files.pop();
+
+    var plates = new Object();
+    var lines = file.data.split("\n").slice(1, -1);
+
+    lines.forEach(function(line) {
+
+      var entry = parseLine(line);
+
+      // Skip anything not relative to South American Craton
+      if(entry.rel !== "701") {
+        return;
+      }
+
+      if(!plates.hasOwnProperty(entry.id)) {
+        plates[entry.id] = new Array();
+      }
+
+      plates[entry.id].push({
+        "age": entry.age,
+        "lat": entry.lat,
+        "lng": entry.lng,
+        "rot": entry.rot
+      });
+
+      APWPs["torsvik2012"]["poles"].forEach(function(x) {
+        if(x.age === entry.age) {
+          x.euler[entry.id] = {"lat": entry.lat, "lng": entry.lng, "rot": entry.rot}
+        }
+      })
+
+    });
+
+    removeOptions(document.getElementById("plate-select"));
+
+    // Add the plates
+    Object.keys(plates).map(mapPlate).sort(byName).forEach(function(plate) {
+
+      if(plate.id === "1001") {
+        return;
+      }
+
+      var option = document.createElement("option");
+
+      option.text = plate.name || plate.id;
+      option.value = plate.id;
+
+      document.getElementById("plate-select").add(option);
+
+    });
+
+    $(".selectpicker").selectpicker("refresh");
+
+  });
 
 }
 
