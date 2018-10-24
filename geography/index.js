@@ -234,7 +234,7 @@ function registerEventHandlers() {
    */
 
   // Simple listeners
-  document.getElementById("euler-upload").addEventListener("change", eulerSelectionHandler);
+  //document.getElementById("euler-upload").addEventListener("change", eulerSelectionHandler);
   document.getElementById("customFile").addEventListener("change", fileSelectionHandler);
   document.getElementById("specimen-select").addEventListener("change", siteSelectionHandler);
   document.getElementById("cutoff-selection").addEventListener("change", redrawCharts);
@@ -588,6 +588,11 @@ function getAverageLocation(site) {
 
 function plotPoles(dataSeries) {
 
+  /*
+   * Function plotPoles
+   * Plotting function for APWPs
+   */
+
   function tooltip() {
 
     /*
@@ -604,19 +609,54 @@ function plotPoles(dataSeries) {
 
   }
 
+  const PLOT_POLES = true;
+
   // Add collection data
   getSelectedCollections().forEach(function(collection) {
 
     // Cutoff and statistics
     var cutofC = doCutoff(collection.components.map(x => x.inReferenceCoordinates()));
-    var statistics = getStatisticalParameters(cutofC.components);
+
+    convertedComps = cutofC.components.map(function(x) {
+      var s = new Site(x.location);
+      return new Component(x, s.poleFrom(literalToCoordinates(x.coordinates).toVector(Direction)).toCartesian());
+    });
+
+    var statistics = getStatisticalParameters(convertedComps);
+
+    // Plot individual specimens
+    if(PLOT_POLES) {
+
+      var data = convertedComps.map(function(x) {
+
+        var pole = x.coordinates.toVector(Pole);
+
+        return {
+          "x": pole.lng,
+          "y": projectInclination(pole.lat),
+          "inc": pole.lat,
+          "age": x.age.value,
+          "marker": {
+            "symbol": "circle"
+          }
+        }
+
+      });
+
+      dataSeries.push({
+        "name": "Poles",
+        "type": "scatter",
+        "data": data
+      });
+
+    }
 
     dataSeries.push({
       "name": collection.name,
       "data": [{
-        "x": statistics.pole.mean.lng,
-        "y": projectInclination(statistics.pole.mean.lat),
-        "inc": projectInclination(statistics.pole.mean.lat),
+        "x": statistics.dir.mean.dec,
+        "y": projectInclination(statistics.dir.mean.inc),
+        "inc": projectInclination(statistics.dir.mean.inc),
         "age": 0
       }],
       "lineWidth": 2,
@@ -625,7 +665,7 @@ function plotPoles(dataSeries) {
         "symbol": "circle"
       }
     }, {
-      "data": getPlaneData({"dec": statistics.pole.mean.lng, "inc": statistics.pole.mean.lat}, statistics.pole.confidence),
+      "data": getPlaneData({"dec": statistics.dir.mean.dec, "inc": statistics.dir.mean.inc}, statistics.pole.confidence),
       "type": "line",
       "color": HIGHCHARTS_ORANGE,
       "lineWidth": 2,
@@ -645,8 +685,7 @@ function plotPoles(dataSeries) {
     "chart": {
       "polar": true,
       "animation": false,
-      "height": 1200,
-      "width": 1200
+      "height": 800,
     },
     "exporting": {
       "filename": "hemisphere-projection",
@@ -726,6 +765,12 @@ function getAverageAge(collection) {
 
 }
 
+function randomIntFromInterval(min,max) {
+
+  return Math.floor(Math.random()*(max-min+1)+min);
+
+}
+
 function plotExpected(container, dataSeries, site) {
 
   var title;
@@ -738,6 +783,7 @@ function plotExpected(container, dataSeries, site) {
   }
 
   function tooltip() {
+
     /*
      * Function plotPoles::tooltip
      * Handles tooltip for the Poles chart
@@ -751,6 +797,9 @@ function plotExpected(container, dataSeries, site) {
 
   }
 
+  const PLOT_SPECIMENS = true;
+  const AGE_SCATTER = true;
+
   // Add collection data
   getSelectedCollections().forEach(function(collection) {
 
@@ -762,6 +811,36 @@ function plotExpected(container, dataSeries, site) {
       var realPole = new Site(x.location).poleFrom(literalToCoordinates(x.coordinates).toVector(Direction));
       return new Component(x, site.directionFrom(realPole).toCartesian());
     });
+
+    // Plot individual specimens
+    if(PLOT_SPECIMENS) {
+
+      var data = convertedComps.map(function(x) {
+
+        var direction = x.coordinates.toVector(Direction);
+        if(direction.dec > 180) {
+          direction.dec -= 360;
+        }
+
+        return {
+          "x": AGE_SCATTER ? randomIntFromInterval(x.age.min, x.age.max) : x.age.value,
+          "y": direction.dec
+        }
+
+      });
+
+      dataSeries.push({
+        "name": "Specimens",
+        "type": "scatter",
+        "data": data,
+        "marker": {
+          "symbol": "circle"
+        }
+      });
+
+      return;
+
+    }
 
     var statistics = getStatisticalParameters(convertedComps);
     var avAge = getAverageAge(collection);
@@ -887,9 +966,8 @@ function plotExpected(container, dataSeries, site) {
 
   new Highcharts.chart(container, {
     "chart": {
-      "id": "expectedLocation",
-      "height": 500,
       "zoomType": "xy",
+      "animation": false,
       "renderTo": container
     },
     "title": {
@@ -910,6 +988,9 @@ function plotExpected(container, dataSeries, site) {
       }
     },
     "plotOptions": {
+      "series": {
+        "animation": false
+      },
       "arearange": {
         "enableMouseTracking": false,
         "fillOpacity": 0.3,
@@ -922,12 +1003,12 @@ function plotExpected(container, dataSeries, site) {
       }
     },
     "exporting": {
-      "filename": "expected_" + title,
-      "sourceWidth": 800,
+      "filename": "expected-" + title,
+      "sourceWidth": 1200,
       "sourceHeight": 600,
       "buttons": {
         "contextButton": {
-          "symbolStroke": "#7798BF",
+          "symbolStroke": HIGHCHARTS_BLUE,
           "align": "right"
         }
       }

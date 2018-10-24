@@ -45,17 +45,21 @@
         case "direction-container":
         case "ei-bootstrap-container":
         case "ctmd-container-x":
+        case "declination-container":
           return {"width": 0, "top": 0}
         case "foldtest-tectonic-container":
         case "pole-container":
           return {"width": 600, "top": 0}
         case "foldtest-full-container":
         case "ei-cdf-container":
+        case "inclination-container":
           return {"width": 0, "top": 600}
         case "ctmd-container-y":
           return {"width": 400, "top": 0}
         case "ctmd-container-z":
           return {"width": 800, "top": 0}
+        case "paleolatitude-container":
+          return {"width": 0, "top": 1200}
       }
   
     }
@@ -76,6 +80,8 @@
           return {"top": 600, "width": 1200}
         case "shallowing":
           return {"top": 1200, "width": 1200}
+        case "predicted":
+          return {"top": 1800, "width": 1200}
       }
   
     }
@@ -118,12 +124,12 @@
 
 })(Highcharts);
 
-function exportHandlerFoldtest(event) {
+function exportHandlerPredicted(event) {
 
   var charts = new Array(
-    $("#foldtest-geographic-container").highcharts(),
-    $("#foldtest-tectonic-container").highcharts(),
-    $("#foldtest-full-container").highcharts()
+    $("#declination-container").highcharts(),
+    $("#inclination-container").highcharts(),
+    $("#paleolatitude-container").highcharts()
   );
 
   if(charts.includes(undefined)) {
@@ -131,7 +137,7 @@ function exportHandlerFoldtest(event) {
   }
 
   Highcharts.exportCharts({
-    "id": "foldtest",
+    "id": "predicted",
     "charts": charts
   }, {
     "type": getMime(event.target.id)
@@ -139,82 +145,9 @@ function exportHandlerFoldtest(event) {
 
 }
 
-function exportHandlerBootstrap(event) {
-
-  var charts = new Array(
-    $("#ctmd-container-x").highcharts(),
-    $("#ctmd-container-y").highcharts(),
-    $("#ctmd-container-z").highcharts()
-  );
-
-  if(charts.includes(undefined)) {
-    return notify("danger", "Can not export charts. Not rendered");
-  }
-
-  Highcharts.exportCharts({
-    "id": "coordinate-bootstrap",
-    "charts": charts
-  }, {
-    "type": getMime(event.target.id)
-  });
-
-}
-
-function exportHandlerShallowing(event) {
-
-  var charts = new Array(
-    $("#ei-bootstrap-container").highcharts(),
-    $("#ei-cdf-container").highcharts()
-  );
-
-  if(charts.includes(undefined)) {
-    return notify("danger", "Can not export charts. Not rendered");
-  }
-
-  Highcharts.exportCharts({
-    "id": "shallowing",
-    "charts": charts
-  }, {
-    "type": getMime(event.target.id)
-  });
-
-}
-
-function exportHandler(event) {
-
-  var charts = new Array(
-    $("#direction-container").highcharts(),
-    $("#pole-container").highcharts()
-  );
-
-  if(charts.includes(undefined)) {
-    return notify("danger", "Can not export charts. Not rendered");
-  }
-
-  Highcharts.exportCharts({
-    "id": "geomagnetic-directions",
-    "charts": charts
-  }, {
-    "type": getMime(event.target.id)
-  });
-
-}
-
-document.getElementById("export-png").addEventListener("click", exportHandler);
-document.getElementById("export-pdf").addEventListener("click", exportHandler);
-document.getElementById("export-svg").addEventListener("click", exportHandler);
-
-document.getElementById("export-bootstrap-png").addEventListener("click", exportHandlerBootstrap);
-document.getElementById("export-bootstrap-pdf").addEventListener("click", exportHandlerBootstrap);
-document.getElementById("export-bootstrap-svg").addEventListener("click", exportHandlerBootstrap);
-
-document.getElementById("export-foldtest-png").addEventListener("click", exportHandlerFoldtest);
-document.getElementById("export-foldtest-pdf").addEventListener("click", exportHandlerFoldtest);
-document.getElementById("export-foldtest-svg").addEventListener("click", exportHandlerFoldtest);
-
-document.getElementById("export-shallowing-png").addEventListener("click", exportHandlerShallowing);
-document.getElementById("export-shallowing-pdf").addEventListener("click", exportHandlerShallowing);
-document.getElementById("export-shallowing-svg").addEventListener("click", exportHandlerShallowing);
+document.getElementById("export-predicted-png").addEventListener("click", exportHandlerPredicted);
+document.getElementById("export-predicted-pdf").addEventListener("click", exportHandlerPredicted);
+document.getElementById("export-predicted-svg").addEventListener("click", exportHandlerPredicted);
 
 function getMime(id) {
 

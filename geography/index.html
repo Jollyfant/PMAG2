@@ -189,12 +189,14 @@
                           Enable grid
                         </label>
                       </div>
+<!--
                       <hr>
                       <div class="custom-file">
                         <input type="file" class="custom-file-input" id="euler-upload">
                         <label class="custom-file-label" for="euler-upload">Custom Euler Rotations</label>
                         <figcaption class="figure-caption">Select <i>.csv</i> of Euler poles relative to <b>701</b> (SAC).</figcaption>
                       </div>
+-->
 
                     </div>
                   </div>
@@ -285,6 +287,12 @@
             </div>
 
           </div>
+
+            <div class="text-right">
+                <button class="btn btn-sm btn-light" id="export-predicted-png"><i class="far fa-file-image"></i> PNG</button>
+                <button class="btn btn-sm btn-light" id="export-predicted-svg"><i class="far fa-file-image"></i> SVG</button>
+                <button class="btn btn-sm btn-light" id="export-predicted-pdf"><i class="far fa-file-image"></i> PDF</button>
+            </div>
           
         </div>
 
@@ -354,10 +362,9 @@
 
 
             <div class="text-right">
-
-	          <button class="btn btn-sm btn-light" id="export-bootstrap-png"><i class="far fa-file-image"></i> PNG</button>
-	          <button class="btn btn-sm btn-light" id="export-bootstrap-svg"><i class="far fa-file-image"></i> SVG</button>
-	          <button class="btn btn-sm btn-light" id="export-bootstrap-pdf"><i class="far fa-file-image"></i> PDF</button>
+	        <button class="btn btn-sm btn-light" id="export-bootstrap-png"><i class="far fa-file-image"></i> PNG</button>
+	        <button class="btn btn-sm btn-light" id="export-bootstrap-svg"><i class="far fa-file-image"></i> SVG</button>
+	        <button class="btn btn-sm btn-light" id="export-bootstrap-pdf"><i class="far fa-file-image"></i> PDF</button>
             </div>
 
           </div>
@@ -575,5 +582,6 @@
     <script src="./apwp.js"></script>
     <script src="./Euler.js"></script>
     <script src="./index.js"></script>
+    <script src="./exporting.js"></script>
 
 </html>
