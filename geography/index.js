@@ -198,6 +198,7 @@ function enable() {
   updateSpecimenSelect();
 
   redrawCharts();
+  $("#specimen-select").selectpicker("refresh");
 
 }
 
@@ -382,16 +383,18 @@ function doThing() {
 
         var dIx = A95 * (2 / (1 + 3 * Math.pow(Math.cos((90 - palat) * RADIANS), 2))) / RADIANS;
         var dDx = Math.asin(Math.sin(A95) / Math.cos(palat * RADIANS)) / RADIANS;
+        var minPaleolatitude = paleolatitude(directions.inc - dIx);
+        var maxPaleolatitude = paleolatitude(directions.inc + dIx);
 
         // Data series
-        dataDeclination.push({"x": pole.age, "y": directions.dec});
-        dataInclination.push({"x": pole.age, "y": directions.inc});
-        dataPaleolatitude.push({"x": pole.age, "y": palat});
+        dataDeclination.push({"x": pole.age, "y": directions.dec, "lower": dDx, "upper": dDx});
+        dataInclination.push({"x": pole.age, "y": directions.inc, "lower": dIx, "upper": dIx});
+        dataPaleolatitude.push({"x": pole.age, "y": palat, "lower": minPaleolatitude, "upper": maxPaleolatitude});
 
         // Confidence ranges
         dataDeclinationRange.push({"x": pole.age, "low": directions.dec - dDx, "high": directions.dec + dDx});
         dataInclinationRange.push({"x": pole.age, "low": directions.inc - dIx, "high": directions.inc + dIx});
-        dataPaleolatitudeRange.push({"x": pole.age, "low": paleolatitude(directions.inc - dIx), "high": paleolatitude(directions.inc + dIx)});
+        dataPaleolatitudeRange.push({"x": pole.age, "low": minPaleolatitude, "high": maxPaleolatitude});
 
         poleSeries.push({"x": rPole.lng, "y": projectInclination(rPole.lat), "inc": rPole.lat, "age": pole.age});
         poleSeriesConfidence = poleSeriesConfidence.concat(getPlaneData({"dec": rPole.lng, "inc": rPole.lat}, A95 / RADIANS));
@@ -511,6 +514,7 @@ function showCollectionsOnMap() {
     var radError = error * RADIANS;
     var radAngle = angle * RADIANS;
 
+    // SVG path for the marker (2px by 2px size)
     return new Array( 
       "M 1 1",
       "L", 1 + Math.sin(radAngle + radError), 1 + Math.cos(radAngle + radError),
@@ -541,13 +545,15 @@ function showCollectionsOnMap() {
       return;
     }
 
+    // Flip polarity if requested
     if((polarity === "REVERSED" && statistics.dir.mean.inc > 0) || (polarity === "NORMAL" && statistics.dir.mean.inc < 0)) {
       statistics.dir.mean.inc = -statistics.dir.mean.inc
       statistics.dir.mean.dec = (statistics.dir.mean.dec + 180) % 360; 
     }
 
+    var color = (statistics.dir.mean.inc < 0 ? HIGHCHARTS_WHITE : HIGHCHARTS_BLACK);
     var markerPath = getSVGPath((180 - statistics.dir.mean.dec), statistics.butler.dDx);
-    var achenSvgString = "<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2'><path d='" + markerPath + "' fill='" + HIGHCHARTS_BLACK +"'/></svg>"
+    var achenSvgString = "<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2'><path d='" + markerPath + "' stroke-width='0.025' stroke='black' fill='" + color + "'/></svg>"
 
     var markerIcon = L.icon({
        "iconUrl": encodeURI("data:image/svg+xml," + achenSvgString).replace("#", "%23"),
@@ -650,7 +656,7 @@ function plotPoles(dataSeries) {
           "x": pole.lng,
           "y": projectInclination(pole.lat),
           "inc": pole.lat,
-          "age": x.age.value,
+          "age": x.age ? x.age.value : 0,
           "marker": {
             "symbol": "circle"
           }
@@ -806,8 +812,9 @@ function plotExpected(container, dataSeries, site) {
 
     return [
       "<b>" + this.series.name + "</b>",
-      "<b>Age: </b>" + this.point.x + "Ma",
-      "<b>" + title +": </b>" + this.point.y.toFixed(2)
+      "<b>Age: </b>" + this.x + "Ma",
+      "<b>" + title +": </b>" + this.y.toFixed(2),
+      "<b>Interval: </b> " + (this.y - this.point.lower).toFixed(2) + ", " + (this.y + this.point.upper).toFixed(2)
     ].join("<br>");
 
   }
@@ -831,6 +838,10 @@ function plotExpected(container, dataSeries, site) {
     if(PLOT_SPECIMENS) {
 
       var data = convertedComps.map(function(x) {
+
+        if(!x.age) {
+          return;
+        }
 
         var direction = x.coordinates.toVector(Direction);
         if(direction.dec > 180) {
@@ -871,7 +882,9 @@ function plotExpected(container, dataSeries, site) {
         "color": HIGHCHARTS_ORANGE,
         "data": [{
           "x": avAge.value,
-          "y": statistics.dir.mean.dec
+          "y": statistics.dir.mean.dec,
+          "lower": statistics.butler.dDx,
+          "upper": statistics.butler.dDx
         }]
       }, {
         "name": "Confidence",
@@ -908,7 +921,9 @@ function plotExpected(container, dataSeries, site) {
         "color": HIGHCHARTS_ORANGE,
         "data": [{
           "x": avAge.value,
-          "y": statistics.dir.mean.inc
+          "y": statistics.dir.mean.inc,
+          "lower": statistics.butler.dIx,
+          "upper": statistics.butler.dIx
         }]
       }, {
         "name": "Confidence",
@@ -940,12 +955,18 @@ function plotExpected(container, dataSeries, site) {
 
     } else if(container === "paleolatitude-container") {
 
+      // Paleolatitude confidence is assymetrical
+      var minPaleolatitude = paleolatitude(statistics.dir.mean.inc - statistics.butler.dIx);
+      var maxPaleolatitude = paleolatitude(statistics.dir.mean.inc + statistics.butler.dIx);
+
       dataSeries.push({
         "name": collection.name,
         "color": HIGHCHARTS_ORANGE,
         "data": [{
           "x": avAge.value,
-          "y": statistics.dir.lambda
+          "y": statistics.dir.lambda,
+          "lower": minPaleolatitude,
+          "upper": maxPaleolatitude
         }]
       }, {
         "name": "Confidence",
@@ -968,10 +989,10 @@ function plotExpected(container, dataSeries, site) {
           "y": null
         }, {
           "x": Number(avAge.value),
-          "y": paleolatitude(statistics.dir.mean.inc + statistics.butler.dIx)
+          "y": minPaleolatitude
         }, {
           "x": Number(avAge.value),
-          "y": paleolatitude(statistics.dir.mean.inc - statistics.butler.dIx)
+          "y": maxPaleolatitude
         }]
       });
 
@@ -989,7 +1010,7 @@ function plotExpected(container, dataSeries, site) {
       "text": title
     },
     "subtitle": {
-      "text": "At site: (<b>latitude: </b>" + site.lat + "<b> longitude: </b>" + site.lng + ")"
+      "text": "At site <b>" + site.lat + "</b>°N, <b>" + site.lng + "</b>°E"
     },
     "xAxis": {
       "reversed": true,

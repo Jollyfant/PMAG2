@@ -796,6 +796,7 @@ function createIntensityDiagram(hover, series) {
      */
 
     return [
+      "<b>" + this.series.name + "</b>",
       "<b>Demagnetization Step: </b>" + this.x,
       "<b>Intensity </b>" + this.y.toFixed(2)
     ].join("<br>");
@@ -984,7 +985,6 @@ function eqAreaProjection(hover) {
       return;
     }
 
-    // 
     if(stepSelector._selectedStep === i) {
       hoverIndex = dataSeries.length;
     }
@@ -1180,11 +1180,34 @@ function getZijderveldCSV(series) {
     "z"
   );
 
-  var rows = new Array(HEADER.join(ITEM_DELIMITER));
-
-  series[0].data.forEach(function(x, i) {
-    rows.push(new Array(x.step, x.x, x.y, series[2].data[i].y).join(ITEM_DELIMITER));
+  var rows = series[2].data.map(function(x, i) {
+    return new Array(x.step, x.x, x.y, series[3].data[i].y).join(ITEM_DELIMITER);
   });
+
+  rows.unshift(HEADER.join(ITEM_DELIMITER));
+
+  return rows.join(LINE_DELIMITER);
+
+}
+
+function getHemisphereCSV(series) {
+
+  /*
+   * Function getHemisphereCSV
+   * Returns CSV representation of Hemisphere chart
+   */
+
+  const HEADER = new Array(
+    "step",
+    "declination",
+    "inclination"
+  );
+
+  var rows = series[1].data.map(function(x) {
+    return new Array(x.step, x.x.toFixed(2), x.inc.toFixed(2)).join(ITEM_DELIMITER);
+  });
+
+  rows.unshift(HEADER.join(ITEM_DELIMITER));
 
   return rows.join(LINE_DELIMITER);
 
@@ -1192,6 +1215,9 @@ function getZijderveldCSV(series) {
 
 (function (H) {
 
+  const EXPORT_BUTTON_TEXT = "Download CSV";
+
+  // Crossing at 0, 0
   H.wrap(H.Axis.prototype, "render", function(proceed) {
 
     var chart = this.chart, otherAxis;
@@ -1209,19 +1235,23 @@ function getZijderveldCSV(series) {
   // Add data download button
   H.Chart.prototype.generateCSV = function () {
 
-    // Zijderveld Diagram
-    if(this.userOptions.chart.id === "zijderveld-container") {
-      return downloadAsCSV("zijderveld.csv", getZijderveldCSV(this.series));
-    } else if(this.userOptions.chart.id === "intensity-container") {
-      return downloadAsCSV("intensity.csv", getIntensityCSV(this.series));
+    switch(this.renderTo.id) {
+      case "zijderveld-container":
+        return downloadAsCSV("zijderveld.csv", getZijderveldCSV(this.series));
+      case "intensity-container":
+        return downloadAsCSV("intensity.csv", getIntensityCSV(this.series));
+      case "hemisphere-container":
+        return downloadAsCSV("hemisphere.csv", getHemisphereCSV(this.series));
+      default:
+        notify("danger", "Data export for this chart has not been implemented.");
     }
 		
-  };  
+  }
 	
   H.getOptions().exporting.buttons.contextButton.menuItems.push({
-    "text": "Download Data",
+    "text": EXPORT_BUTTON_TEXT,
     "onclick": function() {
-      this.generateCSV();
+      this.generateCSV()
     }
   });
 

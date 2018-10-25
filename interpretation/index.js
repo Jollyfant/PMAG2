@@ -972,16 +972,12 @@ function keyboardHandler(event) {
     return;
   }
 
-  if(document.activeElement === document.getElementById("search-bar")) {
-    return;
-  }
-
   // Block all key commands if the interpretation tab is not open
   if(!interpretationTabOpen() && !fittingTabOpen()) {
     return;
   }
 
-  const CODES = {
+  const CODES = new Object({
     "ARROW_RIGHT": 39,
     "ARROW_LEFT": 37,
     "ARROW_UP": 38,
@@ -1005,7 +1001,7 @@ function keyboardHandler(event) {
     "KEYPAD_EIGHT": 56,
     "KEYPAD_NINE": 57,
     "ESCAPE_KEY": 27
-  }
+  });
 
   if(specimens.length === 0) {
     return;
@@ -1079,11 +1075,7 @@ function saveLocalStorage(force) {
    * Saves sample object to local storage
    */
 
-  if(!force && !document.getElementById("auto-save").checked) {
-    return;
-  }
-
-  if(!force && window.location.search) {
+  if(!force && (!document.getElementById("auto-save").checked || window.location.search)) {
     return;
   }
 
@@ -1927,6 +1919,10 @@ function sortSamples(type) {
       return Math.random() < 0.5;
     }
 
+    function ageSorter(x, y) {
+      return (x.age ? x.age.value : 0) - (y.age ? y.age.value : 0);
+    }
+
     function stratigraphySorter(x, y) {
       return x.level - y.level;
     }
@@ -1940,6 +1936,10 @@ function sortSamples(type) {
         return stratigraphySorter;
       case "lithology":
         return lithologySorter;
+      case "age":
+        return ageSorter;
+      default:
+        notify("danger", "Could not sort samples.");
     }
 
   }
