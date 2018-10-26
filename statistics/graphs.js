@@ -190,7 +190,7 @@ function bootstrapShallowing() {
 
   }
 
-  const NUMBER_OF_BOOTSTRAPS = 2500;
+  const NUMBER_OF_BOOTSTRAPS = 1000;
   const NUMBER_OF_BOOTSTRAPS_SAVED = 25;
   const NUMBER_OF_COMPONENTS_REQUIRED = 80;
 
@@ -484,7 +484,7 @@ function getConfidence(cdf) {
 function getVerticalLine(x) {
 
   /*
-   * Function plotEICDF::getVerticalLine
+   * Function getVerticalLine
    * Return a vertical line in a CDF chart from 0 -> 1 at position x 
    */
 
@@ -516,8 +516,8 @@ function plotEICDF(inclinations, originalInclination, unflattenedInclination) {
 
   const CHART_CONTAINER = "ei-cdf-container";
 
-  // Calculate the cumulative distribution
-  var cdf = getCDF(inclinations);
+  // Calculate the cumulative distribution (round to full degrees)
+  var cdf = getCDF(inclinations.map(x => Math.round(x)));
 
   // Get the lower and upper 2.5%
   var confidence = getConfidence(cdf);
@@ -536,6 +536,7 @@ function plotEICDF(inclinations, originalInclination, unflattenedInclination) {
   var mySeries = [{
     "name": "Cumulative Distribution", 
     "data": cdf, 
+    "step": true,
     "marker": {
       "enabled": false
     }
@@ -589,7 +590,7 @@ function plotEICDF(inclinations, originalInclination, unflattenedInclination) {
       }
     },
     "subtitle": {
-      "text": "<b>Original Inclination</b>: " + originalInclination.toFixed(2) + " <b>Unflattened Inclination</b>: " + unflattenedInclination.toFixed(2) + " <b>Bootstrapped Confidence</b>: " + confidence.lower + " to " + confidence.upper + " (" + COORDINATES + " coordinates)"
+      "text": "<b>Original Inclination</b>: " + originalInclination.toFixed(2) + " <b>Unflattened Inclination</b>: " + unflattenedInclination.toFixed(2) + " <b>Bootstrapped Confidence</b>: " + confidence.lower.toFixed(2) + " to " + confidence.upper.toFixed(2) + " (" + COORDINATES + " coordinates)"
     },
     "xAxis": {
       "min": -90,
@@ -1244,6 +1245,7 @@ function plotCartesianBootstrap(container, one, two, names, nBootstraps) {
   var coordinateSeries = [{
     "name": names.one, 
     "data": cdfOne,
+    "step": true,
     "color": HIGHCHARTS_BLUE,
     "marker": {
       "enabled": false
@@ -1251,6 +1253,7 @@ function plotCartesianBootstrap(container, one, two, names, nBootstraps) {
   }, {
     "name": names.two,
     "color": HIGHCHARTS_RED,
+    "step": true,
     "data": cdfTwo, 
     "marker": {
       "enabled": false
