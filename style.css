@@ -6,7 +6,6 @@ body {
   position: relative;
 }
 
-
 #location-information-wrapper {
   top:2px;
   border-radius: 2px;
@@ -21,7 +20,6 @@ body {
   z-index: 10;
 }
 
-
 .leaflet-popup-close-button {
   display: none;
 }
@@ -32,17 +30,20 @@ body {
 }
 
 select {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    text-indent: 1px;
-    text-overflow: '';
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  text-indent: 1px;
+  text-overflow: '';
 }
+
 img:hover {
   opacity: 0.75;
 }
+
 select::-ms-expand {
     display: none;
 }
+
 .map {
   height: 400px;
   width: 100%;
@@ -61,9 +62,9 @@ select {
 }
 
 .card-img-top {
-min-width: 100%;
-width: auto;
-height: auto;
+  min-width: 100%;
+  width: auto;
+  height: auto;
 }
 
 #notification-container {

@@ -1,6 +1,5 @@
 var collections = new Array();
 
-
 function getPublicationFromPID() {
 
   /*
@@ -32,11 +31,17 @@ function getPublicationFromPID() {
 
 function __init__() {
 
+  /*
+   * Function __init__
+   * Initializes the Paleomagnetism 2.0.0 statistics portal
+   */
+
   // Check local storage
   if(!window.localStorage) {
     return notify("warning", "Local storage is not supported by your browser. Save your work manually by exporting your data.");
   }
 
+  // A persistent identifier was passed in the URL
   if(location.search) {
     return getPublicationFromPID();
   }
@@ -45,11 +50,9 @@ function __init__() {
   var item = localStorage.getItem("collections");
 
   // Nothing returned from local storage
-  if(item === null) {
-    collections = new Array();
-  } else {
+  if(item !== null) {
 
-    // Convert literals to components
+    // Convert the saved literals to components
     collections = JSON.parse(item).map(function(x) {
       x.components = x.components.map(function(y) {
         return new Component(y, y.coordinates);
@@ -58,8 +61,6 @@ function __init__() {
     });
 
   }
-
-  notify("success", "Welcome to the statistics portal. Add data below from the <b>Paleomagnetism.org 2.0.0</b> format to get started.");
 
   __unlock__();
 
@@ -91,6 +92,11 @@ function saveLocalStorage(force) {
 
 function __unlock__() {
 
+  /*
+   * Function __unlock__
+   * Unlocks the application for usage
+   */
+
   if(collections.length) {
     notify("success", "Welcome back! Succesfully loaded <b>" + collections.length + "</b> collection(s).");
     enable();
@@ -98,25 +104,34 @@ function __unlock__() {
     notify("success", "Welcome to <b>Paleomagnetism.org</b>! Import data from the <b>Paleomagnetism 2.0.0</b> format below to get started.");
   }
 
+  // Register all handlers
   registerEventHandlers();
 
 }
 
 function enable() {
 
-  $(".selectpicker").selectpicker("show");
-  $(".selectpicker").selectpicker("val", "0");
+  /*
+   * Function enable
+   * Enables the tabs
+   */
+
+  // Update with new collections
+  updateSpecimenSelect();
+
+  // Remove disabled classes
   $("#nav-profile-tab").removeClass("disabled");
   $("#nav-fitting-tab").removeClass("disabled");
   $("#nav-ctmd-tab").removeClass("disabled");
   $("#nav-foldtest-tab").removeClass("disabled");
   $("#nav-shallowing-tab").removeClass("disabled");
 
+  // Auto-select the first collection
+  $(".selectpicker").selectpicker("val", "0");
+  $(".selectpicker").selectpicker("show");
   $("#nav-profile-tab").tab("show");
 
-  updateSpecimenSelect();
-
-  $(".selectpicker").selectpicker("val", "0");
+  // Draw initial charts
   redrawCharts();
 
 }
@@ -164,11 +179,13 @@ function registerEventHandlers() {
    * Registers DOM event listeners and handler
    */
 
-  // Simple listeners
+  // Simple button listeners
   document.getElementById("customFile").addEventListener("change", fileSelectionHandler);
   document.getElementById("specimen-select").addEventListener("change", siteSelectionHandler);
   document.getElementById("cutoff-selection").addEventListener("change", redrawCharts);
   document.getElementById("polarity-selection").addEventListener("change", redrawCharts);
+
+  // The keyboard handler
   document.addEventListener("keydown", keyboardHandler);
 
 }
@@ -182,6 +199,8 @@ function redrawCharts() {
 
   var tempScrollTop = window.pageYOffset || document.scrollingElement.scrollTop || document.documentElement.scrollTop;
 
+  // Redraw the hemisphere projections
+  // Other modules are triggered with dedicated buttons
   eqAreaProjection();
   eqAreaProjectionMean();
 
@@ -206,6 +225,11 @@ function siteSelectionHandler() {
 
 var Component = function(specimen, coordinates) {
 
+  /*
+   * Class Component
+   * Container for a direction
+   */
+
   this.name = specimen.name
   this.rejected = false;
 
@@ -220,6 +244,11 @@ var Component = function(specimen, coordinates) {
 
 Component.prototype.inReferenceCoordinates = function(coordinates) {
 
+  /*
+   * Function Component.inReferenceCoordinates
+   * Returns a component in the requested reference coordinates
+   */
+
   if(coordinates === undefined) {
     coordinates = COORDINATES;
   }
@@ -231,8 +260,14 @@ Component.prototype.inReferenceCoordinates = function(coordinates) {
 
 function addData(files) {
 
+  /*
+   * Function addData
+   * Adds data from the Paleomagnetism 2.0.0 format to the application
+   */
+
   files.forEach(function(file) {
 
+    // Could be a string or object (when loaded from PID)
     if(file.data instanceof Object) {
       var json = file.data;
     } else {
@@ -258,7 +293,6 @@ function addData(files) {
 
     });
 
-    // Do the cutoff and accept/reject direction
     collections.push({
       "name": siteName,
       "reference": reference,
@@ -293,11 +327,12 @@ function updateSpecimenSelect() {
    * Updates the specimenSelector with new samples
    */
 
+  // Clear previous options and add the new ones
   removeOptions(document.getElementById("specimen-select"));
 
   collections.forEach(addPrototypeSelection);
 
-  $('.selectpicker').selectpicker('refresh');
+  $(".selectpicker").selectpicker('refresh');
 
 }
 
@@ -308,13 +343,16 @@ function removeOptions(selectbox) {
    * Removes options from a select box
    */
 
-  Array.from(selectbox.options).forEach(function(x) {
-    selectbox.remove(x);
-  });
+  Array.from(selectbox.options).forEach(x => selectbox.remove(x));
 
 }
 
 function getCutoffAngle(type) {
+
+  /*
+   * Function getCutoffAngle
+   * Returns the cut off angle based on the requested type
+   */
 
   switch(type) {
     case "CUTOFF45":
@@ -386,7 +424,7 @@ function doCutoff(directions) {
   // Get the cutoff type from the DOM
   var cutoffType = document.getElementById("cutoff-selection").value || null;
 
-  // Create a fake site at 0, 0
+  // Create a fake site at 0, 0: we use this for getting the VGP distribution
   var site = new Site({"lng": 0, "lat": 0});
 
   // Create a copy in memory
@@ -430,33 +468,31 @@ function doCutoff(directions) {
     var ASD = Math.sqrt(deltaSum / (poles.length - 1));
     var A = 1.8 * ASD + 5;
 
+    // No cutoff: accept everything
     if(cutoffType === null) {
       break;
     }
 
     // Vandamme cutoff
-    if(cutoffType === "VANDAMME") {
-      if(cutoffValue < A) {
-        break;
-      }
+    if(cutoffType === "VANDAMME" && cutoffValue < A) {
+      break;
     }
 
     // 45 Cutoff
-    if(cutoffType === "CUTOFF45") {
-       if(cutoffValue <= getCutoffAngle("CUTOFF45")) {
-        break;
-      }   
+    if(cutoffType === "CUTOFF45" && cutoffValue <= getCutoffAngle("CUTOFF45")) {
+      break;
     }
 
+    // Set this direction to rejected
     iterateDirections[index].rejected = true;
 
   }
 
-  return {
+  return new Object({
     "components": iterateDirections,
     "cutoff": cutoffValue,
     "scatter": ASD
-  }
+  });
 
 }
 
@@ -507,11 +543,9 @@ function fileSelectionHandler(event) {
    * Callback fired when input files are selected
    */
 
-  const cutoff = document.getElementById("cutoff-selection").value;
-
   readMultipleFiles(Array.from(event.target.files), function(files) {
 
-    // Drop the samples if not appending
+    // Drop the existing collections if not appending
     if(!document.getElementById("append-input").checked) {
       collections = new Array();
     }
@@ -528,11 +562,10 @@ function fileSelectionHandler(event) {
     enable();
     saveLocalStorage();
 
-    notify("success", "Succesfully added <b>" + (collections.length - nCollections) + "</b> specimen(s).");
+    notify("success", "Succesfully added <b>" + (collections.length - nCollections) + "</b> collection(s).");
 
   });
 
 }
-
 
 __init__();

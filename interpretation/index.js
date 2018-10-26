@@ -39,27 +39,6 @@ var Measurement = function(step, coordinates, error) {
 }
 
 
-var Measurement = function(step, coordinates, error) {
-
-  /*
-   * Class Measurement
-   * Container for a single demagnetization step
-   */
-
-  this.step = step;
-
-  this.x = Number(coordinates.x);
-  this.y = Number(coordinates.y);
-  this.z = Number(coordinates.z);
-
-  this.error = Number(error);
-
-  this.visible = true;
-  this.selected = false;
-
-}
-
-
 function addDegmagnetizationFiles(format, files) {
 
   /*
@@ -188,7 +167,7 @@ function updateInterpretationTable(specimen) {
     // Get the interpretation in the right reference frame
     var component = interpretation[COORDINATES];
 
-    var direction = new Coordinates(component.coordinates.x, component.coordinates.y, component.coordinates.z).toVector(Direction);
+    var direction = literalToCoordinates(component.coordinates).toVector(Direction);
 
     // Handle comments on interpretations
     if(interpretation.comment === null) {
@@ -197,11 +176,13 @@ function updateInterpretationTable(specimen) {
       comment = interpretation.comment;
     }
 
+    // Mad angle (if forced this is unreliable)
     var mad = interpretation.MAD.toFixed(2);
     if(interpretation.anchored) {
       mad = "<span class='text-danger' title='The MAD for anchored components is unreliable.'>" + mad + "</span>";
     }
 
+    // Intensity (also unreliable when forced)
     var intensity = interpretation.intensity.toFixed(2);
     if(interpretation.anchored) {
       intensity = "<span class='text-danger' title='The intensity for anchored components is unreliable.'>" + intensity + "</span>";
@@ -344,7 +325,7 @@ function redrawInterpretationGraph(fit) {
     "marker": {
       "symbol": "circle",
       "radius": MARKER_RADIUS_SELECTED,
-      "fillColor": mean.inc < 0 ? HIGHCHARTS_WHITE : HIGHCHARTS_GREEN,
+      "fillColor": (mean.inc < 0 ? HIGHCHARTS_WHITE : HIGHCHARTS_GREEN),
       "lineWidth": 1,
       "lineColor": HIGHCHARTS_GREEN
     }
@@ -436,6 +417,7 @@ function handleLocationSave(event) {
 
   } else {
 
+    // Just the referenced specimen
     specimen.location = specimenLocation;
     specimen.lithology = lithology;
     specimen.level = level;
@@ -809,7 +791,12 @@ function getFittedGreatCircles() {
 
 function updateInterpretationMeanTable(direction, N) {
 
-  var meanTable = [
+  /*
+   * Function updateInterpretationMeanTable
+   * Updates the mean table for all components
+   */
+
+  var meanTable = new Array(
     "  <caption>Mean Component Statistics</caption>",
     "  <thead>",
     "    <tr>",
@@ -829,7 +816,7 @@ function updateInterpretationMeanTable(direction, N) {
     "      <td>" + (IS_FITTED ? "<i class='fas fa-check text-success'></i>" : "<i class='fas fa-times text-danger'></i>") + "</td>",
     "    </tr>",
     "  </tbody>"
-  ].join("\n");
+  ).join("\n");
 
   document.getElementById("fitted-table-container").innerHTML = meanTable;
 
@@ -865,15 +852,22 @@ function redrawCharts(hover) {
 
 function interpretationTableClickHandler(event) {
 
+  /*
+   * Function interpretationTableClickHandler
+   * Handlers a click on the interpreted component table
+   */
+
   var specimen = getSelectedSpecimen();
 
   var columnIndex = event.target.cellIndex;
   var rowIndex = event.target.parentElement.rowIndex;
 
+  // Delete all was selected
   if(rowIndex === 0 && columnIndex === 11 && confirm("Are you sure you wish to delete all interpretations?")) {
     specimen.interpretations = new Array();
   }
 
+  // A specific component was referenced
   if(rowIndex > 0) {
 
     if(columnIndex === 8) {
@@ -925,8 +919,6 @@ function __unlock__(json) {
     });
   }
 
-  registerEventHandlers();
-  
   if(json.length) {
 
     if(window.location.search) {
@@ -943,6 +935,7 @@ function __unlock__(json) {
 
   specimens = json;
 
+  registerEventHandlers();
   updateSpecimenSelect();
   stepSelector.reset();
 
@@ -1294,28 +1287,28 @@ StepSelector.prototype.render = function(hover) {
   // Add each steps
   specimen.steps.forEach(function(step, i) {
 
-      var listStep = document.createElement("tr");
-      listStep.value = i;
+    var listStep = document.createElement("tr");
+    listStep.value = i;
 
-      // Attach some extra classes
-      if(step.selected) {
-        listStep.className = "selected";
-      }
+    // Attach some extra classes
+    if(step.selected) {
+      listStep.className = "selected";
+    }
 
-      // Highlight the current step
-      if(this._selectedStep === i) {
-        listStep.className += " current";
-      }
+    // Highlight the current step
+    if(this._selectedStep === i) {
+      listStep.className += " current";
+    }
 
-      // Steps may be hidden
-      if(step.visible) {
-        listStep.appendChild(document.createTextNode(step.step));
-      } else {
-        listStep.appendChild(document.createTextNode(HIDDEN_STEP_SYMBOL));
-        listStep.className += " text-muted";
-      }
+    // Steps may be hidden
+    if(step.visible) {
+      listStep.appendChild(document.createTextNode(step.step));
+    } else {
+      listStep.appendChild(document.createTextNode(HIDDEN_STEP_SYMBOL));
+      listStep.className += " text-muted";
+    }
 
-      listSteps.appendChild(listStep);
+    listSteps.appendChild(listStep);
 
   }, this);
 
@@ -1542,6 +1535,11 @@ function downloadInterpretations() {
 
 function downloadInterpretationsCSV() {
 
+  /*
+   * Function downloadInterpretationsCSV
+   * Downloads all interpreted components to a CSV
+   */
+
   const FILENAME = "interpretations.csv";
   const ITEM_DELIMITER = ",";
 
@@ -1576,27 +1574,21 @@ function downloadInterpretationsCSV() {
 
     specimen.interpretations.forEach(function(interpretation) {
 
-      var direction = new Coordinates(interpretation.specimen.coordinates.x, interpretation.specimen.coordinates.y, interpretation.specimen.coordinates.z).toVector(Direction);
-
-      // Make sure location exists
-      if(specimen.location === null) {
-        var specimenLocation = {"lng": null, "lat": null}
-      } else {
-        var specimenLocation = {"lng": specimen.location.lng, "lat": specimen.location.lat}
-      }
+      // Get the samples in the right frame
+      var direction = inReferenceCoordinates(COORDINATES, specimen, literalToCoordinates(interpretation.specimen.coordinates)).toVector(Direction)
 
       rows.push(new Array(
         specimen.name,
         direction.dec,
         direction.inc,
-        "specimen",
+        COORDINATES,
         specimen.coreAzimuth,
         specimen.coreDip,
         specimen.beddingStrike,
         specimen.beddingDip,
         specimen.level,
-        specimenLocation.lng,
-        specimenLocation.lat,
+        specimen.location ? specimen.location.lng : null,
+        specimen.location ? specimen.location.lat : null,
         interpretation.MAD,
         interpretation.anchored,
         interpretation.type,
@@ -2038,6 +2030,11 @@ function exportApplicationSave() {
 }
 
 function __init__() {
+
+  /*
+   * Function __init__
+   * Initializes the Paleomagnetism 2.0.0 interpretation portal
+   */
 
   // Check local storage
   if(!window.localStorage) {

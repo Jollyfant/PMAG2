@@ -197,7 +197,6 @@ function enable() {
 
   updateSpecimenSelect();
 
-  redrawCharts();
   $("#specimen-select").selectpicker("refresh");
 
 }
@@ -282,9 +281,9 @@ function getSelectedItems(id) {
 
 }
 
-document.getElementById("calculate-reference").addEventListener("click", doThing);
+document.getElementById("calculate-reference").addEventListener("click", plotPredictedDirections);
 
-function doThing() {
+function plotPredictedDirections() {
 
   function mapPlateName(name) {
 
@@ -630,7 +629,7 @@ function plotPoles(dataSeries) {
 
   }
 
-  const PLOT_POLES = true;
+  var PLOT_POLES = !document.getElementById("group-collection").checked;
 
   // Add collection data
   getSelectedCollections().forEach(function(collection) {
@@ -819,8 +818,9 @@ function plotExpected(container, dataSeries, site) {
 
   }
 
-  const PLOT_SPECIMENS = true;
-  const AGE_SCATTER = true;
+  // Plotting options
+  var PLOT_SPECIMENS = !document.getElementById("group-collection").checked;
+  var AGE_SCATTER = document.getElementById("age-scatter").checked;
 
   // Add collection data
   getSelectedCollections().forEach(function(collection) {
@@ -871,6 +871,7 @@ function plotExpected(container, dataSeries, site) {
     var statistics = getStatisticalParameters(convertedComps);
     var avAge = getAverageAge(collection);
 
+    // Bind the declination between -180 and 180
     if(statistics.dir.mean.dec > 180) {
       statistics.dir.mean.dec -= 360;
     }
@@ -1075,7 +1076,7 @@ function redrawCharts() {
   var tempScrollTop = window.pageYOffset || document.scrollingElement.scrollTop || document.documentElement.scrollTop;
 
   showCollectionsOnMap();
-  doThing();
+  plotPredictedDirections();
 
   window.scrollTo(0, tempScrollTop);
 

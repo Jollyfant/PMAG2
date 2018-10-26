@@ -17,6 +17,8 @@ const HIGHCHARTS_YELLOW = "#E4D354";
 const HIGHCHARTS_TURQUOISE = "#2B908F";
 const HIGHCHARTS_RED = "#F45B5B";
 const HIGHCHARTS_WHITE = "#FFFFFF";
+const PLOTBAND_COLOR_BLUE = "rgba(119, 152, 191, 0.25)";
+const PLOTBAND_COLOR_RED = "rgba(191, 119, 152, 0.25)";
 
 const ENABLE_CREDITS = false;
 
@@ -39,6 +41,11 @@ function getRotationMatrix(lambda, phi) {
 
 function paleolatitude(inc) {
 
+  /*
+   * Function paleolatitude
+   * Calculates the paleolatitude from an inclination
+   */
+
   return Math.atan(Math.tan(inc * RADIANS) / 2) / RADIANS;
 
 }
@@ -46,23 +53,17 @@ function paleolatitude(inc) {
 function meanDirection(vectors) {
 
   /*
-   * Function Distribution.meanDirection
+   * Function meanDirection
    * Calculates the mean vector from a set of directions
    */
 
-  var xSum = 0;
-  var ySum = 0
-  var zSum = 0;
+  var sumVector = new Coordinates(0, 0, 0);
 
   vectors.map(vector => vector.toCartesian()).forEach(function(coordinates) {
-
-    xSum += coordinates.x;
-    ySum += coordinates.y;
-    zSum += coordinates.z;
-
+    sumVector = sumVector.add(coordinates);
   });
 
-  return new Coordinates(xSum, ySum, zSum).toVector(Direction);
+  return sumVector.toVector(Direction);
 
 }
 
@@ -202,15 +203,27 @@ function getPlaneData(direction, angle) {
    * Returns plane data
    */
 
+  function rotateEllipse(x) {
+
+    /*
+     * Function getPlaneData::rotateEllipse
+     * Rotates each point on an ellipse (plane) to the correct direction
+     */
+
+    return x.toCartesian().rotateTo(direction.dec, direction.inc).toVector(Direction).highchartsData();
+
+  }
+
   if(angle === undefined) {
     angle = 90;
   }
 
-  return getConfidenceEllipse(angle).map(x => x.toCartesian()).map(x => x.rotateTo(direction.dec, direction.inc)).map(x => x.toVector(Direction)).map(x => x.highchartsData());
+  return getConfidenceEllipse(angle).map(rotateEllipse);
 
 }
 
 var shallowingRunning, foldtestRunning;
+
 function switchCoordinateReference() {
 
   /*
@@ -224,6 +237,7 @@ function switchCoordinateReference() {
     "tectonic"
   );
 
+  // Block when a module is running
   if(shallowingRunning || foldtestRunning) {
     return notify("danger", "Cannot change coordinate system while a module is running.");
   }
@@ -284,19 +298,28 @@ function clearLocalStorage(item) {
    * Clears the local storage of the webpage
    */
 
+  const COLLECTION_STORAGE_ITEM = "collections";
+  const SPECIMEN_STORAGE_ITEM = "specimens";
+
   function clearStorage(item) {
+
+    /*
+     * Function clearStorage
+     * Clears a particular item or full storage
+     */
 
     switch(item) {
       case "interpretation":
-        return localStorage.removeItem("specimens");
+        return localStorage.removeItem(SPECIMEN_STORAGE_ITEM);
       case "statistics":
-        return localStorage.removeItem("collections");
+        return localStorage.removeItem(COLLECTION_STORAGE_ITEM);
       default:
         return localStorage.clear();
     }
 
   }
 
+  // Ask for user confirmation
   if(!confirm("Are you sure you want to clear the local storage?")) {
     return;
   }
@@ -359,6 +382,11 @@ function downloadAsCSV(filename, csv) {
 
 
 function memcpy(object) {
+
+  /*
+   * Function memcpy
+   * Uses a JSON (de-)serialization to create a copy of an object in memory
+   */
 
   return JSON.parse(JSON.stringify(object));
 
@@ -499,7 +527,14 @@ function getDemagnetizationTypeLabel(type) {
 }
 
 function numericSort(a, b) {
+
+  /*
+   * Function numericSort
+   * Sort function to sort an array numerically
+   */
+
   return a > b ? 1 : a < b ? -1 : 0;
+
 }
 
 function addFooter() {
@@ -508,7 +543,7 @@ function addFooter() {
    * Function addFooter
    * Adds footer to all HTML pages
    */
-console.log(window.location);
+
   document.getElementById("footer-container").innerHTML = new Array(
     "<hr>",
     "<b>Paleomagnetism<span class='text-danger'>.org</span></b> &copy; " + new Date().getFullYear() + ". All Rights Reserved.",

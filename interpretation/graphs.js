@@ -1166,6 +1166,33 @@ function getIntensityCSV(series) {
 
 }
 
+function getFittedCSV(series) {
+
+  const HEADER = new Array(
+    "step",
+    "declination",
+    "inclination",
+    "fitted"
+  );
+
+  // TAU1 components
+  var rows = series[0].data.map(function(x) {
+    return new Array(x.name, x.x.toFixed(2), x.inc.toFixed(2), false).join(ITEM_DELIMITER);
+  });
+
+  // Add the fitted components
+  if(IS_FITTED) {
+    rows = rows.concat(series[2].data.map(function(x) {
+      return new Array(x.name, x.x.toFixed(2), x.inc.toFixed(2), true).join(ITEM_DELIMITER);
+    }));
+  }
+
+  rows.unshift(HEADER.join(ITEM_DELIMITER));
+
+  return rows.join(LINE_DELIMITER);
+
+}
+
 function getZijderveldCSV(series) {
 
   /*
@@ -1242,6 +1269,8 @@ function getHemisphereCSV(series) {
         return downloadAsCSV("intensity.csv", getIntensityCSV(this.series));
       case "hemisphere-container":
         return downloadAsCSV("hemisphere.csv", getHemisphereCSV(this.series));
+      case "fitting-container":
+        return downloadAsCSV("components.csv", getFittedCSV(this.series));
       default:
         notify("danger", "Data export for this chart has not been implemented.");
     }

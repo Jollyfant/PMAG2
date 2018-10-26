@@ -1,10 +1,7 @@
-const PLOTBAND_COLOR_BLUE = "rgba(119, 152, 191, 0.25)";
-const PLOTBAND_COLOR_RED = "rgba(191, 119, 152, 0.25)";
-
-function showExtremes(geographic, tectonic) {
+function showGeographicAndTectonicPlot(geographic, tectonic) {
 
   /*
-   * Function showExtremes
+   * Function showGeographicAndTectonicPlot
    * Shows the extreme (geoographic & tectonic) coordinates for the Foltest module
    */
 
@@ -14,10 +11,11 @@ function showExtremes(geographic, tectonic) {
   var dataSeriesGeographic = new Array();
   var dataSeriesTectonic = new Array();
 
-  geographic.forEach(function(collection) {
+  geographic.forEach(function(components) {
 
-    collection.components.forEach(function(component) {
+    components.forEach(function(component) {
 
+      // Skip rejected components
       if(component.rejected) {
         return;
       }
@@ -36,10 +34,11 @@ function showExtremes(geographic, tectonic) {
 
   });
 
-  tectonic.forEach(function(collection) {
+  tectonic.forEach(function(components) {
 
-    collection.components.forEach(function(component) {
+    components.forEach(function(component) {
 
+      // Skip rejected components
       if(component.rejected) {
         return;
       }
@@ -83,6 +82,7 @@ function bootstrapFoldtest() {
    */
 
   const NUMBER_OF_BOOTSTRAPS = 1000;
+  const NUMBER_OF_BOOTSTRAPS_SAVED = 50;
   const progressBarElement = $("#foldtest-progress");
 
   // Get a list of the selected sites
@@ -98,17 +98,21 @@ function bootstrapFoldtest() {
 
   foldtestRunning = true;
 
-  // We are required to apply the cutoff for each collection seperately
+  // Get the components for each site (no cutoff)
   var cutoffCollectionsG = collections.map(function(collection) {
-    return {"components": collection.components.map(x => x.inReferenceCoordinates("geographic"))}
+    return collection.components.map(x => x.inReferenceCoordinates("geographic"));
   });
 
  // The same for tectonic coordinates
   var cutoffCollectionsT = collections.map(function(collection) {
-    return {"components": collection.components.map(x => x.inReferenceCoordinates("tectonic"))}
+    return collection.components.map(x => x.inReferenceCoordinates("tectonic"));
   });
 
-  var vectors = new Array().concat(...cutoffCollectionsG.map(x => x.components)).filter(x => x !== x.rejected);
+  // Show the extremes
+  showGeographicAndTectonicPlot(cutoffCollectionsG,  cutoffCollectionsT); 
+
+  // Combine all geographic components to a single array
+  var vectors = new Array().concat(...cutoffCollectionsG.map(x => x.components));
 
   // Fake data for testing
   var AHHH = FAKE.data[1].data.map(function(x) {
@@ -119,28 +123,25 @@ function bootstrapFoldtest() {
     }
   });
 
-  // Show the extremes
-  showExtremes(cutoffCollectionsG,  cutoffCollectionsT); 
-
   var untilts = new Array();
   var savedBootstraps = new Array();
 
   // Save the unfolding of actual data
   savedBootstraps.push(unfold(AHHH, 0).taus);
 
+  // No bootstrap, only unfold the data
+  if(!document.getElementById("foldtest-bootstrap-checkbox").checked) {
+    return plotFoldtestCDF(untilts, savedBootstraps);
+  }
+
   var result, next;
   var iteration = 0;
-
-  if(!document.getElementById("foldtest-bootstrap-checkbox").checked) {
-    return plotFoldtestCDF(new Array() , savedBootstraps);
-  }
 
   // Asynchronous bootstrapping
   (next = function() {
 
     // Number of bootstraps were completed
     if(++iteration > NUMBER_OF_BOOTSTRAPS) {
-      progressBarElement.css("width", "0%");
       return plotFoldtestCDF(untilts, savedBootstraps);     
     }
 
@@ -149,14 +150,15 @@ function bootstrapFoldtest() {
     // Save the index of maximum untilting
     untilts.push(result.index);
 
-    // Save the first 24 bootstraps
-    if(iteration < 24) {
+    // Save the first N bootstraps
+    if(iteration < NUMBER_OF_BOOTSTRAPS_SAVED) {
       savedBootstraps.push(result.taus);
     }
 
+    // Update the DOM progress bar with the percentage completion
     progressBarElement.css("width", 100 * (iteration / NUMBER_OF_BOOTSTRAPS) + "%");
 
-    // Queue for next bootstrap
+    // Queue for next bootstrap but release UI thread
     setTimeout(next, 0);
 
   })();
@@ -190,6 +192,7 @@ function bootstrapShallowing() {
 
   const NUMBER_OF_BOOTSTRAPS = 2500;
   const NUMBER_OF_BOOTSTRAPS_SAVED = 25;
+  const NUMBER_OF_COMPONENTS_REQUIRED = 80;
 
   const progressBarElement = $("#shallowing-progress");
 
@@ -222,8 +225,8 @@ function bootstrapShallowing() {
     return new Direction(x[0], x[1])
   });
 
-  if(dirs.length < 80) {
-    return notify("danger", "A minimum of 80 components is recommended.");
+  if(dirs.length < NUMBER_OF_COMPONENTS_REQUIRED) {
+    return notify("danger", "A minimum of " + NUMBER_OF_COMPONENTS_REQUIRED + " components is recommended.");
   }
 
   var originalInclination = meanDirection(dirs).inc;
@@ -242,7 +245,7 @@ function bootstrapShallowing() {
 
   // No bootstrap requested
   if(!document.getElementById("shallowing-bootstrap-checkbox").checked) {
-    return EICompletionCallback(new Array(), originalInclination, unflattenedInclination, savedBootstraps);
+    return EICompletionCallback(inclinations, originalInclination, unflattenedInclination, savedBootstraps);
   }
 
   var next;
@@ -258,7 +261,7 @@ function bootstrapShallowing() {
 
     var result = unflattenDirections(drawBootstrap(dirs));
 
-    // No intersection with TK03.GAD: next bootstrap
+    // No intersection with TK03.GAD: proceed immediately next bootstrap
     if(result === null) {
       return setTimeout(next, 0);
     }
@@ -291,7 +294,7 @@ function EICompletionCallback(inclinations, originalInclination, unflattenedIncl
   shallowingRunning = false;
   $("#shallowing-progress").css("width", "0%");
 
-  // Initialize the charts
+  // Initialize the two charts
   plotEIBootstraps(bootstraps, inclinations.length);
   plotEICDF(inclinations, originalInclination, unflattenedInclination);
 
@@ -315,7 +318,7 @@ function EIBootstrapTooltipFormatter() {
     return [
       "<b>TK03.GAD Expected Elongation</b>",
       "<b>Inclination: </b>" + this.x,
-      "<br><b>Elongation </b>" + this.y.toFixed(3)
+      "<b>Elongation: </b>" + this.y.toFixed(3)
     ].join("<br>");
   }
 
@@ -328,9 +331,12 @@ function getPolynomialSeries(min, max) {
    * Gets the TK03.GAD Polynomial as a Highcharts data array from min to max
    */
 
+  const MINIMUM_LATITUDE = -90;
+  const MAXIMUM_LATITUDE = 90;
+
   var TK03Poly = new Array();
 
-  for(var i = min; i <= max; i++) {
+  for(var i = MINIMUM_LATITUDE; i <= MAXIMUM_LATITUDE; i++) {
     TK03Poly.push({
       "x": i,
       "y": TK03Polynomial(i)
@@ -353,7 +359,7 @@ function plotEIBootstraps(bootstraps, totalBootstraps) {
   // Define the initial series (TK03.GAD Polynomial) and the unflattening of the actual non-bootstrapped data (kept in data[0])
   var mySeries = [{
     "name": "TK03.GAD Polynomial", 
-    "data": getPolynomialSeries(-90, 90),
+    "data": getPolynomialSeries(),
     "dashStyle": "ShortDash",
     "lineWidth": 3,
     "zIndex": 100,
@@ -475,6 +481,17 @@ function getConfidence(cdf) {
 
 }
 
+function getVerticalLine(x) {
+
+  /*
+   * Function plotEICDF::getVerticalLine
+   * Return a vertical line in a CDF chart from 0 -> 1 at position x 
+   */
+
+  return new Array([x, 0], [x, 1]);
+
+}
+
 function plotEICDF(inclinations, originalInclination, unflattenedInclination) {
 
   /*
@@ -495,17 +512,6 @@ function plotEICDF(inclinations, originalInclination, unflattenedInclination) {
       "<b>CDF: </b>" + this.point.y.toFixed(3)
     ].join("<br>");
   
-  }
-
-  function getVerticalLine(x) {
-
-    /*
-     * Function plotEICDF::getVerticalLine
-     * Return a vertical line in a CDF chart from 0 -> 1 at position x 
-     */
-
-    return new Array([x, 0], [x, 1]);
-
   }
 
   const CHART_CONTAINER = "ei-cdf-container";
@@ -583,7 +589,7 @@ function plotEICDF(inclinations, originalInclination, unflattenedInclination) {
       }
     },
     "subtitle": {
-      "text": "EI"
+      "text": "<b>Original Inclination</b>: " + originalInclination.toFixed(2) + " <b>Unflattened Inclination</b>: " + unflattenedInclination.toFixed(2) + " <b>Bootstrapped Confidence</b>: " + confidence.lower + " to " + confidence.upper + " (" + COORDINATES + " coordinates)"
     },
     "xAxis": {
       "min": -90,
@@ -625,6 +631,11 @@ function lastIndex(array) {
 }
 
 function unflattenDirections(data) {
+
+  /*
+   * Function unflattenDirections
+   * Unflatted a list of directions towards the TK03.GAD polynomial
+   */
 
   // Get the tan of the observed inclinations (equivalent of tan(Io))
   var tanInclinations = data.map(x => Math.tan(x.inc * RADIANS));
@@ -677,8 +688,7 @@ function unflattenDirections(data) {
 
   }
   
-  // No intersection with TK03.GAD polynomial return zeros
-  // this is filtered in the main routine and recorded as no-intersect
+  // No intersection with TK03.GAD polynomial
   return null;
   
 }
@@ -697,6 +707,7 @@ function TK03Polynomial(inc) {
     2.89538539e+00
   );
 
+  // Symmetrical
   var inc = Math.abs(inc);
   
   // Polynomial coefficients
@@ -712,15 +723,15 @@ function plotFoldtestCDF(untilt, savedBootstraps) {
    */
 
   foldtestRunning = false;
+  $("#foldtest-progress").css("width", "0%");
 
   const CHART_CONTAINER = "foldtest-full-container";
-  const NUMBER_OF_BOOTSTRAPS = 1000;
   const UNFOLDING_MIN = -50;
   const UNFOLDING_MAX = 150;
 
   var cdf = getCDF(untilt);
-  var lower = untilt[parseInt(0.025 * NUMBER_OF_BOOTSTRAPS, 10)] || UNFOLDING_MIN;
-  var upper = untilt[parseInt(0.975 * NUMBER_OF_BOOTSTRAPS, 10)] || UNFOLDING_MAX;
+  var lower = untilt[parseInt(0.025 * cdf.length, 10)] || UNFOLDING_MIN;
+  var upper = untilt[parseInt(0.975 * cdf.length, 10)] || UNFOLDING_MAX;
 
   // Create plotband for 95% bootstrapped confidence interval
   var plotBands =  [{
@@ -730,17 +741,19 @@ function plotFoldtestCDF(untilt, savedBootstraps) {
   }];
 
   var mySeries = [{
-    'name': 'CDF', 
-    'data': cdf, 
-    'marker': {
-      'enabled': false
+    "name": "CDF", 
+    "type": "line",
+    "step": true,
+    "data": cdf, 
+    "marker": {
+      "enabled": false
     }
   }, {
     "name": "Bootstraps",
     "type": "spline",
+    "data": savedBootstraps.shift(),
     "id": "bootstraps",
     "color": "red",
-    "data": savedBootstraps.shift(),
     "zIndex": 10
   }]
 
@@ -748,7 +761,7 @@ function plotFoldtestCDF(untilt, savedBootstraps) {
     "name": "Geographic Coordinates",
     "type": "line",
     "color": HIGHCHARTS_GREEN,
-    "data": [[0, 0], [0, 1]],
+    "data": getVerticalLine(0),
     "enableMouseTracking": false,
     "marker": {
       "enabled": false
@@ -756,7 +769,7 @@ function plotFoldtestCDF(untilt, savedBootstraps) {
   }, {
     "name": "Tectonic Coordinates",
     "type": "line",
-    "data": [[100, 0], [100, 1]],
+    "data": getVerticalLine(100),
     "color": HIGHCHARTS_ORANGE,
     "enableMouseTracking": false,
     "marker": {
