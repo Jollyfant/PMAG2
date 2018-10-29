@@ -1,17 +1,18 @@
 (function(Highcharts) {
 
+  // Highcharts patching
   Highcharts.seriesTypes.line.prototype.requireSorting = false;
   Highcharts.exportCharts = function(charts, options) {
   
     options = Highcharts.merge(Highcharts.getOptions().exporting, options);
   
     Highcharts.getSVG(charts, options, function(svg) { 
-        Highcharts.downloadSVGLocal(svg, options, function() { 
-            notify("danger", "Failured to export figure.");
-        });
+      Highcharts.downloadSVGLocal(svg, options, function() { 
+        notify("danger", "Failured to export figure.");
+      });
     });
   
-  };
+  }
   
   // Set global default options for all charts
   Highcharts.setOptions({
@@ -120,14 +121,19 @@
 
 function exportHandlerFoldtest(event) {
 
-  var charts = new Array(
+  /*
+   * Function exportHandlerFoldtest
+   * Export handler for the foldtest module
+   */
+
+  var charts = [
     $("#foldtest-geographic-container").highcharts(),
     $("#foldtest-tectonic-container").highcharts(),
     $("#foldtest-full-container").highcharts()
-  );
+  ];
 
   if(charts.includes(undefined)) {
-    return notify("danger", "Can not export charts. Not rendered");
+    return notify("danger", "Could not export unrendered charts.");
   }
 
   Highcharts.exportCharts({
@@ -141,14 +147,19 @@ function exportHandlerFoldtest(event) {
 
 function exportHandlerBootstrap(event) {
 
-  var charts = new Array(
+  /*
+   * Function exportHandlerShallowing
+   * Export handler for the CTMD module
+   */
+
+  var charts = [
     $("#ctmd-container-x").highcharts(),
     $("#ctmd-container-y").highcharts(),
     $("#ctmd-container-z").highcharts()
-  );
+  ];
 
   if(charts.includes(undefined)) {
-    return notify("danger", "Can not export charts. Not rendered");
+    return notify("danger", "Could not export unrendered charts.");
   }
 
   Highcharts.exportCharts({
@@ -162,13 +173,18 @@ function exportHandlerBootstrap(event) {
 
 function exportHandlerShallowing(event) {
 
-  var charts = new Array(
+  /*
+   * Function exportHandlerShallowing
+   * Export handler EI shallowing module
+   */
+
+  var charts = [
     $("#ei-bootstrap-container").highcharts(),
     $("#ei-cdf-container").highcharts()
-  );
+  ];
 
   if(charts.includes(undefined)) {
-    return notify("danger", "Can not export charts. Not rendered");
+    return notify("danger", "Could not export unrendered charts.");
   }
 
   Highcharts.exportCharts({
@@ -182,13 +198,18 @@ function exportHandlerShallowing(event) {
 
 function exportHandler(event) {
 
-  var charts = new Array(
+  /*
+   * Function exportHandler
+   * Export handler for geomagnetic directions & poles
+   */
+
+  var charts = [
     $("#direction-container").highcharts(),
     $("#pole-container").highcharts()
-  );
+  ];
 
   if(charts.includes(undefined)) {
-    return notify("danger", "Can not export charts. Not rendered");
+    return notify("danger", "Could not export unrendered charts.");
   }
 
   Highcharts.exportCharts({
@@ -216,9 +237,14 @@ document.getElementById("export-shallowing-png").addEventListener("click", expor
 document.getElementById("export-shallowing-pdf").addEventListener("click", exportHandlerShallowing);
 document.getElementById("export-shallowing-svg").addEventListener("click", exportHandlerShallowing);
 
-function getMime(id) {
+function getMime(type) {
 
-  switch(id) {
+  /*
+   * Function getMime
+   * Returns appropriate mime type
+   */
+
+  switch(type) {
     case "export-svg":
       return "image/svg+xml";
     case "export-pdf":

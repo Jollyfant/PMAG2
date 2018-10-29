@@ -1,4 +1,6 @@
 var collections = new Array();
+var COORDINATES_COUNTER = 0;
+var COORDINATES = "specimen";
 
 function getPublicationFromPID() {
 
@@ -73,11 +75,7 @@ function saveLocalStorage(force) {
    * Saves sample object to local storage
    */
 
-  if(!force && !document.getElementById("auto-save").checked) {
-    return;
-  }
-
-  if(!force && window.location.search) {
+  if(!force && (!document.getElementById("auto-save").checked || window.location.search)) {
     return;
   }
 
@@ -136,9 +134,6 @@ function enable() {
 
 }
 
-var COORDINATES_COUNTER = 0;
-var COORDINATES = "specimen";
-
 function keyboardHandler(event) {
 
   /*
@@ -147,6 +142,7 @@ function keyboardHandler(event) {
    */
 
   const CODES = {
+    "KEYPAD_FIVE": 53,
     "KEYPAD_EIGHT": 56,
     "ESCAPE_KEY": 27
   }
@@ -168,6 +164,8 @@ function keyboardHandler(event) {
       return switchCoordinateReference();
     case CODES.ESCAPE_KEY:
       return document.getElementById("notification-container").innerHTML = "";
+    case CODES.KEYPAD_FIVE:
+      return redrawCharts();
   }
 
 }
@@ -182,8 +180,11 @@ function registerEventHandlers() {
   // Simple button listeners
   document.getElementById("customFile").addEventListener("change", fileSelectionHandler);
   document.getElementById("specimen-select").addEventListener("change", siteSelectionHandler);
+
+  // Settings
   document.getElementById("cutoff-selection").addEventListener("change", redrawCharts);
   document.getElementById("polarity-selection").addEventListener("change", redrawCharts);
+  document.getElementById("enable-deenen").addEventListener("change", redrawCharts);
 
   // The keyboard handler
   document.addEventListener("keydown", keyboardHandler);
@@ -197,6 +198,7 @@ function redrawCharts() {
    * Functions that handles logic of which charts to redraw
    */
 
+  // Save the scroll position: Highcharts (hijacks) the offset when a new chart is drawn
   var tempScrollTop = window.pageYOffset || document.scrollingElement.scrollTop || document.documentElement.scrollTop;
 
   // Redraw the hemisphere projections
@@ -204,6 +206,7 @@ function redrawCharts() {
   eqAreaProjection();
   eqAreaProjectionMean();
 
+  // Reset to the original position
   window.scrollTo(0, tempScrollTop);
 
 }
@@ -215,11 +218,11 @@ function siteSelectionHandler() {
    * Handler fired when the collection selector changes
    */
 
-  if(getSelectedCollections().length === 0) {
-    return notify("danger", "No collections selected.");
-  }
-
   redrawCharts();
+
+  if(getSelectedCollections().length === 0) {
+    return notify("warning", "No collections selected.");
+  }	
 
 }
 
@@ -227,7 +230,7 @@ var Component = function(specimen, coordinates) {
 
   /*
    * Class Component
-   * Container for a direction
+   * Container for a single direction
    */
 
   this.name = specimen.name
@@ -274,6 +277,7 @@ function addData(files) {
       var json = JSON.parse(file.data);
     }
 
+    // Collect some metadata from the file
     var siteName = file.name;
     var reference = json.pid;
     var components = new Array();
@@ -282,7 +286,7 @@ function addData(files) {
 
        specimen.interpretations.forEach(function(interpretation) {
 
-         // Skip components that are great circles
+         // Skip components that are great circles: these can be fitted in the interpretation portal
          if(interpretation.type === "TAU3") {
            return;
          }
@@ -363,62 +367,11 @@ function getCutoffAngle(type) {
 
 }
 
-function getStatisticalParameters(directions) {
-
-  var site = new Site({"lng": 0, "lat": 0});
-
-  var poles = directions.filter(x => !x.rejected).map(x => site.poleFrom(literalToCoordinates(x.coordinates).toVector(Direction)));
-  var dirs = directions.filter(x => !x.rejected).map(x => literalToCoordinates(x.coordinates).toVector(Direction));
-
-  var p = new PoleDistribution(poles);
-  var d = new DirectionDistribution(dirs);
-
-  var butler = getButlerParameters(p.confidence, d.lambda, d.mean.inc);
-
-  return {
-    "dir": d,
-    "pole": p,
-    "butler": butler
-  }
-
-}
-
-function getButlerParameters(confidence, lambda, inclination) {
-
-  /*
-   * Function getButlerParameters
-   * Returns butler parameters for a distribution
-   */
-
-  // Convert to radians
-  var A95 = confidence * RADIANS;
-  var palat = lambda * RADIANS;
-  var inc = inclination * RADIANS;
-
-  // The errors are functions of paleolatitude
-  var dDx = Math.asin(Math.sin(A95) / Math.cos(palat));
-  var dIx = 2 * A95 / (1 + 3 * Math.pow(Math.sin(palat), 2));
-
-  // Calculate the minimum and maximum Paleolatitude from the error on the inclination
-  var palatMax = Math.atan(0.5 * Math.tan(inc + dIx));
-  var palatMin = Math.atan(0.5 * Math.tan(inc - dIx));
-
-  return new Object({
-    "dDx": dDx / RADIANS,
-    "dIx": dIx / RADIANS,
-    "palatMin": palatMin / RADIANS,
-    "palatMax": palatMax / RADIANS
-  });
-
-}
-
-$('.selectpicker').selectpicker('hide');
-
 function doCutoff(directions) {
 
   /*
    * Function doCutoff
-   * Does the Vandamme or 45-cutoff
+   * Does no, the Vandamme or 45-cutoff
    */
 
   // Get the cutoff type from the DOM
@@ -437,20 +390,17 @@ function doCutoff(directions) {
     var cutoffValue = getCutoffAngle(cutoffType);
 
     // Calculate the poles & mean pole from the accepted group
-    var poles = iterateDirections.filter(x => !x.rejected).map(x => site.poleFrom(literalToCoordinates(x.coordinates).toVector(Direction)));
-    var poleDistribution = new PoleDistribution(poles);
+    var poleDistribution = getStatisticalParameters(iterateDirections).pole;
 
     // Go over all all poles
-    iterateDirections.forEach(function(component, i) {
+    poleDistribution.vectors.forEach(function(pole, i) {
 
-      // Do not incude directions that were already rejected
-      if(component.rejected) {
+      // Skip directions that were previously rejected
+      if(iterateDirections[i].rejected) {
         return;
       }
 
-      var pole = site.poleFrom(literalToCoordinates(component.coordinates).toVector(Direction));
-
-      // Find the angle between the mean VGP (mLon, mLat) and the particular VGPj.
+      // Find the angle between the mean VGP (mLon, mLat) and the particular VGP
       var angleToMean = poleDistribution.mean.toCartesian().angle(pole.toCartesian());
 
       // Capture the maximum angle from the mean and save its index
@@ -459,13 +409,13 @@ function doCutoff(directions) {
         index = i;
       }
 
-      // Add to t he sum of angles
+      // Add to the sum of angles
       deltaSum += Math.pow(angleToMean, 2);
 
     });
 
     // Calculate ASD (scatter) and optimum cutoff angle (A) (Vandamme, 1994)
-    var ASD = Math.sqrt(deltaSum / (poles.length - 1));
+    var ASD = Math.sqrt(deltaSum / (poleDistribution.N - 1));
     var A = 1.8 * ASD + 5;
 
     // No cutoff: accept everything
@@ -483,16 +433,22 @@ function doCutoff(directions) {
       break;
     }
 
+    // Cutoff is decided pretty randomly
+    if(cutoffType === "KRIJGSMAN" && Math.random() < 0.25) {
+      break;
+    }
+
     // Set this direction to rejected
     iterateDirections[index].rejected = true;
 
   }
 
-  return new Object({
+  return {
     "components": iterateDirections,
     "cutoff": cutoffValue,
-    "scatter": ASD
-  });
+    "scatter": ASD,
+    "optimum": A
+  }
 
 }
 

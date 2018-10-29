@@ -317,7 +317,7 @@
 
           <div class="alert alert-light" role="alert">
             <h5> Statistics - Shallowing </h5>
-            <p>  The inclination shallowing module unflattens observed inclinations in sediments to fit with the TK03.GAD Field Model (<a href="../references/index.html">Tauxe et al., 2008</a>) based on the relationship between the expected elongation (E) (τ2/τ3) and inclination. The flattening function of (King, 1955) is applied. A single collection can be selected and a cutoff will be applied. <b>A minimum of 80 directions are required</b>. The procedure can be bootstrapped <b>2500</b> times to find its confidence limits.
+            <p>  The inclination shallowing module unflattens observed inclinations in sediments to fit with the TK03.GAD Field Model (<a href="../references/index.html">Tauxe et al., 2008</a>) based on the relationship between the expected elongation (E) (τ2/τ3) and inclination. The flattening function of (King, 1955) is applied. A single collection can be selected and a cutoff will be applied. <b>A minimum of 80 directions are required</b>. The procedure can be bootstrapped <b>1000</b> times to find its confidence limits.
 
             <div class="input-group mb-3">
               <div class="btn-group-toggle" data-toggle="buttons">
@@ -375,6 +375,7 @@
               </optgroup>
               <optgroup label="Other Cutoffs">
                 <option value="VANDAMME">Vandamme</option>
+                <option value="KRIJGSMAN">Krijgsman</option>
                 <option value="">None</option>
               </optgroup>
             </select>
@@ -384,9 +385,11 @@
             </div>
 
             <select class="custom-select" id="polarity-selection">
+              <optgroup label="Normalize to">
+                <option value="NORMAL">Normal Polarity</option>
+                <option value="REVERSED">Reversed Polarity</option>
+              </optgroup>
                 <option value="">None</option>
-                <option value="NORMAL">Normal</option>
-                <option value="REVERSED">Reversed</option>
             </select>
 
           </div>
@@ -411,6 +414,10 @@
             &nbsp;
             <input class="form-check-input" type="checkbox" id="enable-sound" value="option1" checked>
             <label class="form-check-label" for="enable-sound"> Sound </label>
+            &nbsp;
+            &nbsp;
+            <input class="form-check-input" type="checkbox" id="enable-deenen" value="option1" checked>
+            <label class="form-check-label" for="enable-deenen"> Show Deenen Criteria </label>
           </div>
           <br>
           <br>
@@ -430,6 +437,27 @@
     <footer id="footer-container" class="container text-muted"></footer>
 
     <br>
+
+  <div class="modal fade" id="map-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modal-title"></h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+
+          <div class="modal-body">
+            <div id="modal-container"></div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
   </body>
 

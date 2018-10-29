@@ -1215,55 +1215,6 @@ function getCutoffAngle(type) {
 
 }
 
-function getStatisticalParameters(directions) {
-
-  var site = new Site({"lng": 0, "lat": 0});
-
-  var poles = directions.filter(x => !x.rejected).map(x => site.poleFrom(literalToCoordinates(x.coordinates).toVector(Direction)));
-  var dirs = directions.filter(x => !x.rejected).map(x => literalToCoordinates(x.coordinates).toVector(Direction));
-
-  var p = new PoleDistribution(poles);
-  var d = new DirectionDistribution(dirs);
-
-  var butler = getButlerParameters(p.confidence, d.lambda, d.mean.inc);
-
-  return {
-    "dir": d,
-    "pole": p,
-    "butler": butler
-  }
-
-}
-
-function getButlerParameters(confidence, lambda, inclination) {
-
-  /*
-   * Function getButlerParameters
-   * Returns butler parameters for a distribution
-   */
-
-  // Convert to radians
-  var A95 = confidence * RADIANS;
-  var palat = lambda * RADIANS;
-  var inc = inclination * RADIANS;
-
-  // The errors are functions of paleolatitude
-  var dDx = Math.asin(Math.sin(A95) / Math.cos(palat));
-  var dIx = 2 * A95 / (1 + 3 * Math.pow(Math.sin(palat), 2));
-
-  // Calculate the minimum and maximum Paleolatitude from the error on the inclination
-  var palatMax = Math.atan(0.5 * Math.tan(inc + dIx));
-  var palatMin = Math.atan(0.5 * Math.tan(inc - dIx));
-
-  return new Object({
-    "dDx": dDx / RADIANS,
-    "dIx": dIx / RADIANS,
-    "palatMin": palatMin / RADIANS,
-    "palatMax": palatMax / RADIANS
-  });
-
-}
-
 function doCutoff(directions) {
 
   /*

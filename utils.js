@@ -39,6 +39,63 @@ function getRotationMatrix(lambda, phi) {
 
 }
 
+function getStatisticalParameters(components) {
+
+  /*
+   * Function getStatisticalParameters
+   * Returns statistical parameters based on on a directional distirbution
+   */
+
+  // Create a fake site at 0, 0 since we only look at the distritbuion of VGPs and not the actual positions
+  var site = new Site({"lng": 0, "lat": 0});
+
+  // Get the directions and pole for each vector
+  var directions = components.filter(x => !x.rejected).map(x => literalToCoordinates(x.coordinates).toVector(Direction));
+  var poles = directions.map(x => site.poleFrom(x));
+
+  var directionDistribution = new DirectionDistribution(directions);
+  var poleDistribution = new PoleDistribution(poles);
+
+  // Butler parameters are a function of A95, the inclination (paleolatitude)
+  var butler = getButlerParameters(poleDistribution.confidence, directionDistribution.mean.inc);
+
+  return {
+    "dir": directionDistribution,
+    "pole": poleDistribution,
+    "butler": butler
+  }
+
+}
+
+function getButlerParameters(confidence, inclination) {
+
+  /*
+   * Function getButlerParameters
+   * Returns butler parameters for a distribution
+   */
+
+  // Convert to radians
+  var A95 = confidence * RADIANS;
+  var palat = paleolatitude(inclination) * RADIANS;
+  var inc = inclination * RADIANS;
+
+  // The errors are functions of paleolatitude
+  var dDx = Math.asin(Math.sin(A95) / Math.cos(palat));
+  var dIx = 2 * A95 / (1 + 3 * Math.pow(Math.sin(palat), 2));
+
+  // Calculate the minimum and maximum Paleolatitude from the error on the inclination
+  var palatMax = Math.atan(0.5 * Math.tan(inc + dIx));
+  var palatMin = Math.atan(0.5 * Math.tan(inc - dIx));
+
+  return new Object({
+    "dDx": dDx / RADIANS,
+    "dIx": dIx / RADIANS,
+    "palatMin": palatMin / RADIANS,
+    "palatMax": palatMax / RADIANS
+  });
+
+}
+
 function paleolatitude(inc) {
 
   /*

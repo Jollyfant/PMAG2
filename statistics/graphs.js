@@ -112,7 +112,7 @@ function bootstrapFoldtest() {
   showGeographicAndTectonicPlot(cutoffCollectionsG,  cutoffCollectionsT); 
 
   // Combine all geographic components to a single array
-  var vectors = new Array().concat(...cutoffCollectionsG.map(x => x.components));
+  var vectors = new Array().concat(...cutoffCollectionsG);
 
   // Fake data for testing
   var AHHH = FAKE.data[1].data.map(function(x) {
@@ -202,6 +202,7 @@ function bootstrapShallowing() {
   if(collections.length === 0) {
     return notify("danger", "No collections are selected.");
   }
+
   if(collections.length > 1) {
     return notify("danger", "Only one collection may be selected.");
   }
@@ -332,7 +333,7 @@ function getPolynomialSeries(min, max) {
    */
 
   const MINIMUM_LATITUDE = -90;
-  const MAXIMUM_LATITUDE = 90;
+  const MAXIMUM_LATITUDE = +90;
 
   var TK03Poly = new Array();
 
@@ -438,6 +439,11 @@ function plotEIBootstraps(bootstraps, totalBootstraps) {
     "plotOptions": {
       "series": {
         "turboThreshold": 0,
+        "point": {
+          "events": {
+            "click": plotUnflattenedData
+          }
+        }
       }
     },
     "tooltip": {
@@ -445,6 +451,196 @@ function plotEIBootstraps(bootstraps, totalBootstraps) {
     },
     "series": mySeries
   });
+
+}
+
+
+function plotUnfoldedData() {
+
+  const CHART_CONTAINER = "modal-container";
+
+  if(this.series.name !== "Bootstraps") {
+    return;
+  }
+
+  var unfolding = this.x;
+
+  // Get the single selected site
+  var collections = getSelectedCollections();
+
+  // Get the components for each site (no cutoff)
+  var cutoffCollectionsG = collections.map(function(collection) {
+    return collection.components.map(x => x.inReferenceCoordinates("geographic"));
+  });
+
+  // Combine all geographic components to a single array
+  var dirs = new Array().concat(...cutoffCollectionsG);
+
+  // Also check in the original data for plotting
+  var originalData = dirs.map(function(component) {
+
+    var direction = literalToCoordinates(component.coordinates).toVector(Direction);
+
+    return {
+      "x": direction.dec,
+      "y": projectInclination(direction.inc),
+      "inc": direction.inc,
+      "name": component.name
+    }
+
+  });
+
+  // Apply the King, 1966 flattening factor
+  var unfoldedData = dirs.map(function(component) {
+
+    var direction = literalToCoordinates(component.coordinates).correctBedding(component.beddingStrike, 1E-2 * unfolding * component.beddingDip).toVector(Direction);
+
+    return {
+      "x": direction.dec,
+      "y": projectInclination(direction.inc),
+      "inc": direction.inc,
+      "name": component.name
+    }
+
+  });
+
+  var plotData = [{
+    "name": "Original Directions",
+    "type": "scatter",
+    "data": originalData,
+    "enableMouseTracking": false,
+    "color": "lightgrey"
+  }, {
+    "linkedTo": ":previous",
+    "type": "line",
+    "data": createConnectingLine(originalData, unfoldedData),
+    "color": "lightgrey",
+    "marker": {
+      "enabled": false
+    },
+    "enableMouseTracking": false,
+  }, {
+    "name": "Unflattened Directions",
+    "data": unfoldedData,
+    "type": "scatter",
+    "marker": {
+      "symbol": "circle"
+    }
+  }];
+
+
+  // Update the chart title
+  document.getElementById("modal-title").innerHTML = "Geomagnetic Directions at <b>" + unfolding + "</b>% unfolding.";
+  eqAreaChart(CHART_CONTAINER, plotData);
+
+  // Show the modal
+  $("#map-modal").modal("show");
+
+}
+
+function plotUnflattenedData() {
+
+  /*
+   * Function plotUnflattenedData
+   * Plots unflattened data at a given flattening factor
+   */
+
+  const CHART_CONTAINER = "modal-container";
+
+  if(this.series.name !== "Bootstraps") {
+    return;
+  }
+
+  var flattening = this.f;
+
+  // Get the single selected site
+  var collections = getSelectedCollections();
+
+  // Get the vector in the reference coordinates
+  var dirs = doCutoff(collections[0].components.map(x => x.inReferenceCoordinates())).components;
+
+  // Apply the King, 1966 flattening factor
+  var unflattenData = dirs.map(function(component) {
+
+    var direction = literalToCoordinates(component.coordinates).toVector(Direction);
+
+    // Unflatten inclination at the requested flattening factor
+    var uInclination = Math.atan(Math.tan(direction.inc * RADIANS) / flattening) / RADIANS;
+
+    return {
+      "x": direction.dec,
+      "y": projectInclination(uInclination),
+      "inc": uInclination,
+      "name": component.name
+    }
+
+  });
+
+  // Also check in the original data for plotting
+  var originalData = dirs.map(function(component) {
+
+    var direction = literalToCoordinates(component.coordinates).toVector(Direction);
+
+    return {
+      "x": direction.dec,
+      "y": projectInclination(direction.inc),
+      "inc": direction.inc,
+      "name": component.name
+    }
+
+  });
+
+  var plotData = [{
+    "name": "Original Directions",
+    "type": "scatter",
+    "data": originalData,
+    "enableMouseTracking": false,
+    "color": "lightgrey"
+  }, {
+    "linkedTo": ":previous",
+    "type": "line",
+    "data": createConnectingLine(originalData, unflattenData),
+    "color": "lightgrey",
+    "marker": {
+      "enabled": false
+    },
+    "enableMouseTracking": false,
+  }, {
+    "name": "Unflattened Directions",
+    "data": unflattenData,
+    "type": "scatter",
+    "marker": {
+      "symbol": "circle"
+    }
+  }];
+
+  // Update the chart title
+  document.getElementById("modal-title").innerHTML = "Unflattened Directions with factor <b>" + flattening + "</b>.";
+  eqAreaChart(CHART_CONTAINER, plotData);
+
+  // Show the modal
+  $("#map-modal").modal("show");
+
+}
+
+function createConnectingLine(one, two) {
+
+  var lines = new Array();
+
+  one.forEach(function(x, i) {
+    lines.push({
+      "x": one[i].x,
+      "y": one[i].y
+    }, {
+      "x": two[i].x,
+      "y": two[i].y
+    }, {
+      "x": null,
+      "y": null
+    });
+  });
+
+  return lines;
 
 }
 
@@ -475,7 +671,7 @@ function getConfidence(cdf) {
   var array = cdf.map(x => x.x);
 
   var lower = array[parseInt(0.025 * array.length, 10)] || -90;
-  var upper = array[parseInt(0.975 * array.length, 10)] || 90;
+  var upper = array[parseInt(0.975 * array.length, 10)] || +90;
 
   return { lower, upper }
 
@@ -516,7 +712,8 @@ function plotEICDF(inclinations, originalInclination, unflattenedInclination) {
 
   const CHART_CONTAINER = "ei-cdf-container";
 
-  // Calculate the cumulative distribution (round to full degrees)
+  // Calculate the cumulative distribution
+  // And round to full degrees to get a nicer step function
   var cdf = getCDF(inclinations.map(x => Math.round(x)));
 
   // Get the lower and upper 2.5%
@@ -529,27 +726,7 @@ function plotEICDF(inclinations, originalInclination, unflattenedInclination) {
     "to": confidence.upper
   }];
 
-  // Calculate the average inclination of all bootstraps
-  var averageInclination = getAverageInclination(cdf);
-      
-  //Define the cumulative distribution function
   var mySeries = [{
-    "name": "Cumulative Distribution", 
-    "data": cdf, 
-    "step": true,
-    "marker": {
-      "enabled": false
-    }
-  }, {
-    'name': "Average Bootstrapped Inclination",
-    'type': "line",
-    'data': getVerticalLine(averageInclination),
-    'color': HIGHCHARTS_ORANGE,
-    'enableMouseTracking': false,
-    'marker': {
-      'enabled': false
-    },
-  }, {
     "name": 'Original Inclination',
     "type": 'line',
     "data": getVerticalLine(originalInclination),
@@ -560,8 +737,35 @@ function plotEICDF(inclinations, originalInclination, unflattenedInclination) {
     }
   }];
 
+  //Define the cumulative distribution function
+  if(cdf.length) {
+
+    // Calculate the average inclination of all bootstraps
+    var averageInclination = getAverageInclination(cdf);
+
+    mySeries.push({
+      "name": "Cumulative Distribution", 
+      "data": cdf, 
+      "step": true,
+      "marker": {
+        "enabled": false
+      }
+    }, {
+      "name": "Average Bootstrapped Inclination",
+      "type": "line",
+      "data": getVerticalLine(averageInclination),
+      "color": HIGHCHARTS_ORANGE,
+      "enableMouseTracking": false,
+      "marker": {
+        "enabled": false
+      }
+    });
+
+  }
+
   // If the original data intersected with TK03.GAD
   if(unflattenedInclination !== null) {
+
     mySeries.push({
       "name": "Unflattened Inclination",
       "type": "line",
@@ -572,6 +776,7 @@ function plotEICDF(inclinations, originalInclination, unflattenedInclination) {
         "enabled": false
       }
     });
+
   }
 
   new Highcharts.chart(CHART_CONTAINER, {
@@ -625,12 +830,6 @@ function plotEICDF(inclinations, originalInclination, unflattenedInclination) {
 
 }
 
-function lastIndex(array) {
-
-  return array[array.length - 1];
-
-}
-
 function unflattenDirections(data) {
 
   /*
@@ -659,7 +858,7 @@ function unflattenDirections(data) {
 
     // Calculate mean inclination for unflattenedData and get eigenvalues
     var meanInc = meanDirection(unflattenedData).inc;
-    var eigenvalues = getEigenvalues(TMatrix(unflattenedData.map(x => x.toCartesian().toArray())));
+    var eigenvalues = getEigenvaluesFast(TMatrix(unflattenedData.map(x => x.toCartesian().toArray())));
     var elongation = eigenvalues.t2 / eigenvalues.t3;
     
     results.push({
@@ -694,22 +893,22 @@ function unflattenDirections(data) {
   
 }
 
-function TK03Polynomial(inc) {
+function TK03Polynomial(inclination) {
 
   /*
    * Function polynomial
-   * Plots the foldtest data
+   * Plots the foldtest data (coefficients taken from Pmag.py (Lisa Tauxe))
    */
 
-  const COEFFICIENTS = new Array(
-    3.15976125e-06,
-    -3.52459817e-04,
-    -1.46641090e-02,
-    2.89538539e+00
-  );
+  const COEFFICIENTS = [
+    +3.15976125E-06,
+    -3.52459817E-04,
+    -1.46641090E-02,
+    +2.89538539E+00
+  ];
 
   // Symmetrical
-  var inc = Math.abs(inc);
+  var inc = Math.abs(inclination);
   
   // Polynomial coefficients
   return COEFFICIENTS[0] * Math.pow(inc, 3) + COEFFICIENTS[1] * Math.pow(inc, 2) + COEFFICIENTS[2] * inc + COEFFICIENTS[3];
@@ -723,6 +922,25 @@ function plotFoldtestCDF(untilt, savedBootstraps) {
    * Plots the foldtest data
    */
 
+  function tooltip() {
+
+    if(this.series.name === "Bootstraps") {
+      return [
+        "<b>Original Data</b>",
+        "<b>Unfolding Percentage</b>: " + this.x + "%",
+        "<b>Maximum Eigenvalue</b>: " + this.y.toFixed(3)
+      ].join("<br>");
+    } else if(this.series.name === "CDF") {
+      return [
+        "<b>Cumulative Probability</b>",
+        "<b>Unfolding Percentage</b>: " + this.x + "%",
+        "<b>Probability</b>: " + this.y.toFixed(3)
+      ].join("<br>");
+    }
+
+  }
+
+  // Release the test
   foldtestRunning = false;
   $("#foldtest-progress").css("width", "0%");
 
@@ -834,13 +1052,20 @@ function plotFoldtestCDF(untilt, savedBootstraps) {
     },
     "tooltip": {
       "enabled": true,
+      "formatter": tooltip
     },
     "plotOptions": {
       "spline": {
         "marker": {
           "enabled": false
+        },
+        "point": {
+          "events": {
+            "click": plotUnfoldedData
+          }
         }
       }
+
     },
     "series": mySeries
   });
@@ -867,7 +1092,7 @@ function unfold(vectors, iteration) {
     });
 
     // Return the eigen values of a real, symmetrical matrix
-    return getEigenvalues(TMatrix(tilts.map(x => x.toArray())));
+    return getEigenvaluesFast(TMatrix(tilts.map(x => x.toArray())));
 
   }
 
@@ -930,10 +1155,10 @@ function unfold(vectors, iteration) {
 
 }
 
-var getEigenvalues = function(T) {
+function getEigenvaluesFast(T) {
 
   /*
-   * Function getEigenvalues
+   * Function getEigenvaluesFast
    * Algorithm to find eigenvalues of a symmetric, real matrix.
    * We need to compute the eigenvalues for many (> 100.000) real, symmetric matrices (Orientation Matrix T).
    * Calling available libraries (Numeric.js) is much slower so we implement this algorithm instead.
@@ -1001,27 +1226,27 @@ function getSelectedComponents() {
 
   var components = new Array();
 
-  // Get the requested polarity
+  // Get the requested polarity from the DOM
   var polarity = document.getElementById("polarity-selection").value || null;
 
   getSelectedCollections().forEach(function(collection) {
 
     // Get the components in the correct coordinate system
-    var comp = collection.components.map(x => x.inReferenceCoordinates());
+    var collectionComponents = collection.components.map(x => x.inReferenceCoordinates());
 
     // Nothing to do
     if(polarity === null) {
-      return components = components.concat(comp);
+      return components = components.concat(collectionComponents);
     }
 
-    // Nothing to do
-    var sign = Math.sign(getStatisticalParameters(comp).dir.mean.inc);
+    // Check sign of the mean inclination: nothing to do
+    var sign = Math.sign(getStatisticalParameters(collectionComponents).dir.mean.inc);
     if((sign === 1 && polarity === "NORMAL") || (sign === -1 && polarity === "REVERSED")) {
-      return components = components.concat(comp);
+      return components = components.concat(collectionComponents);
     }
 
-    // Reflect the coordinates
-    comp.forEach(function(x) {
+    // Otherwise reflect the individual component
+    collectionComponents.forEach(function(x) {
       components.push(new Component(x, x.coordinates.reflect()));
     });
 
@@ -1039,11 +1264,14 @@ function bootstrapCTMD() {
    */
 
   const NUMBER_OF_BOOTSTRAPS = 1000;
+  const CONTAINER_X = "ctmd-container-x";
+  const CONTAINER_Y = "ctmd-container-y";
+  const CONTAINER_Z = "ctmd-container-z";
 
   var collections = getSelectedCollections();
 
   if(collections.length !== 2) {
-    return notify("danger", "Select two sites to compare.");
+    return notify("danger", "Select two collections to compare.");
   }
 
   // Get the site components in reference coordinates
@@ -1090,9 +1318,9 @@ function bootstrapCTMD() {
   }
 
   // Call plotting routine for each component
-  var xParams = plotCartesianBootstrap("ctmd-container-x", xOne, xTwo, names, NUMBER_OF_BOOTSTRAPS);
-  var yParams = plotCartesianBootstrap("ctmd-container-y", yOne, yTwo, names, NUMBER_OF_BOOTSTRAPS);
-  var zParams = plotCartesianBootstrap("ctmd-container-z", zOne, zTwo, names, NUMBER_OF_BOOTSTRAPS);
+  var xParams = plotCartesianBootstrap(CONTAINER_X, xOne, xTwo, names, NUMBER_OF_BOOTSTRAPS);
+  var yParams = plotCartesianBootstrap(CONTAINER_Y, yOne, yTwo, names, NUMBER_OF_BOOTSTRAPS);
+  var zParams = plotCartesianBootstrap(CONTAINER_Z, zOne, zTwo, names, NUMBER_OF_BOOTSTRAPS);
 
   // Update the table
   updateCTMDTable(names, xParams, yParams, zParams);
@@ -1142,10 +1370,11 @@ function updateCTMDTable(names, xParams, yParams, zParams) {
   }
 
   const PRECISION = 2;
+  const TABLE_CONTAINER = "bootstrap-table";
 
   var match = doesMatch(xParams, yParams, zParams);
 
-  document.getElementById("bootstrap-table").innerHTML = [
+  document.getElementById(TABLE_CONTAINER).innerHTML = [
     "  <caption>1000 bootstrapped Cartesian coordinates for the collections at 95% confidence. " + getMatchHTML(match) + "</caption>",
     "  <thead>",
     "  <tr>",
@@ -1307,6 +1536,7 @@ function plotCartesianBootstrap(container, one, two, names, nBootstraps) {
     "series": coordinateSeries
   });
 
+  // Return the confidence bounds for the table
   return {
     "one": {
       "lower": cdfOne[lower].x,
@@ -1350,29 +1580,31 @@ function generateHemisphereTooltip() {
    * Generates the appropriate tooltip for each series
    */
 
-  if(this.series.name === "ChRM Directions" || this.series.name === "Geomagnetic Directions") {
+  const PRECISION = 1;
+
+  if(this.series.name === "ChRM Directions" || this.series.name === "Geomagnetic Directions" || this.series.name === "Unflattened Directions") {
     return [
       "<b>Sample: </b>" + this.point.name,
-      "<b>Declination: </b>" + this.x.toFixed(1),
-      "<b>Inclination </b>" + this.point.inc.toFixed(1)
+      "<b>Declination: </b>" + this.x.toFixed(PRECISION),
+      "<b>Inclination </b>" + this.point.inc.toFixed(PRECISION)
     ].join("<br>");
   } else if(this.series.name === "VGPs") {
     return [
       "<b>Sample: </b>" + this.point.name,
-      "<b>Longitude: </b>" + this.x.toFixed(1),
-      "<br><b>Latitude: </b>" + this.point.inc.toFixed(1)
+      "<b>Longitude: </b>" + this.x.toFixed(PRECISION),
+      "<br><b>Latitude: </b>" + this.point.inc.toFixed(PRECISION)
     ].join("<br>");
   } else if(this.series.name.startsWith("Mean Direction")) {
     return [
       "<b>Mean Direction</b>",
-      "<b>Declination: </b>" + this.x.toFixed(1),
-      "<br><b>Inclination: </b>" + this.point.inc.toFixed(1)
+      "<b>Declination: </b>" + this.x.toFixed(PRECISION),
+      "<br><b>Inclination: </b>" + this.point.inc.toFixed(PRECISION)
     ].join("<br>");
   } else if(this.series.name === "Mean VGP") {
     return [
       "<b>Mean VGP</b>",
-      "<b>Longitude: </b>" + this.x.toFixed(1),
-      "<br><b>Latitude: </b>" + this.point.inc.toFixed(1)
+      "<b>Longitude: </b>" + this.x.toFixed(PRECISION),
+      "<br><b>Latitude: </b>" + this.point.inc.toFixed(PRECISION)
     ].join("<br>");
   }
 
@@ -1386,13 +1618,22 @@ function eqAreaProjectionMean() {
    */
 
   const CHART_CONTAINER = "mean-container";
+  const TABLE_CONTAINER = "mean-table";
+
   const A95_CONFIDENCE = true;
   const PRECISION = 2;
 
   var dataSeries = new Array();
   var statisticsRows = new Array();
 
-  getSelectedCollections().forEach(function(site) {
+  var selectedCollections = getSelectedCollections();
+
+  // Clear the charts
+  if(selectedCollections.length === 0) {
+    return document.getElementById(CHART_CONTAINER).innerHTML = document.getElementById(TABLE_CONTAINER).innerHTML = "";
+  }
+
+  selectedCollections.forEach(function(site) {
 
     var cutofC = doCutoff(site.components.map(x => x.inReferenceCoordinates()));
     var statistics = getStatisticalParameters(cutofC.components);
@@ -1463,9 +1704,7 @@ function eqAreaProjectionMean() {
 
   });
 
-  eqAreaChart(CHART_CONTAINER, dataSeries);
-
-  document.getElementById("mean-table").innerHTML = [
+  document.getElementById(TABLE_CONTAINER).innerHTML = [
     "  <caption>Statistical parameters for the selected collections.</caption>",
     "  <thead>",
     "  <tr>",
@@ -1491,6 +1730,9 @@ function eqAreaProjectionMean() {
     "  <tbody>",
   ].concat(statisticsRows).join("\n");
 
+  // Create the chart
+  eqAreaChart(CHART_CONTAINER, dataSeries);
+
 }
 
 function eqAreaProjection() {
@@ -1502,6 +1744,13 @@ function eqAreaProjection() {
 
   const CHART_CONTAINER = "direction-container";
   const CHART_CONTAINER2 = "pole-container";
+  const TABLE_CONTAINER = "direction-table";
+
+  // Clear if nothing is selected
+  var selectedCollections = getSelectedCollections();
+  if(selectedCollections.length === 0) {
+    return document.getElementById(CHART_CONTAINER).innerHTML = document.getElementById(CHART_CONTAINER2).innerHTML = document.getElementById(TABLE_CONTAINER).innerHTML = "";
+  }
 
   // Get a list of the selected sites
   var allComponents = doCutoff(getSelectedComponents());
@@ -1588,9 +1837,7 @@ function eqAreaProjection() {
     }
   }];
 
-  const ENABLE_DEENEN = true;
-
-  if(ENABLE_DEENEN) {
+  if(document.getElementById("enable-deenen").checked) {
 
     poleSeries.push({
       "name": "Deenen Criteria",
@@ -1618,7 +1865,7 @@ function eqAreaProjection() {
 
   const PRECISION = 2;
 
-  document.getElementById("direction-table").innerHTML = [
+  document.getElementById(TABLE_CONTAINER).innerHTML = [
     "  <caption>Statistical parameters for this distribution</caption>",
     "  <thead>",
     "  <tr>",
@@ -1792,12 +2039,16 @@ function eqAreaChart(container, dataSeries, plotBands) {
    * Creates an equal area chart
    */
 
+  function addDegree() {
+    return this.value + "\u00B0";
+  }
+
   const ENABLE_45_CUTOFF = true;
 
   var title;
   if(container === "pole-container") {
     title = "VGP Distribution";
-  } else if(container === "direction-container") {
+  } else if(container === "direction-container" || container === "modal-container") {
     title = "ChRM Distribution";
   } else if(container === "mean-container") {
     title = "Mean Directions";
@@ -1821,7 +2072,6 @@ function eqAreaChart(container, dataSeries, plotBands) {
       "polar": true,
       "animation": false,
       "height": 600,
-      "width": 600
     },
     "exporting": {
       "filename": "hemisphere-projection",
@@ -1869,7 +2119,10 @@ function eqAreaChart(container, dataSeries, plotBands) {
       "minorTickInterval": 10,
       "minorTickLength": 5,
       "minorTickWidth": 1,
-      "plotBands": plotBands
+      "plotBands": plotBands,
+      "labels": {
+        "formatter": addDegree
+      }
     },
     "tooltip": {
       "formatter": generateHemisphereTooltip
