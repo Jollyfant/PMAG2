@@ -67,6 +67,10 @@ function addDegmagnetizationFiles(format, files) {
       return files.forEach(importPaleoMac);
     case "OXFORD":
       return files.forEach(importOxford);
+    case "BEIJING":
+      return files.forEach(importBCN2G);
+    case "CENIEH":
+      return files.forEach(importCenieh);
     default:
       throw(new Exception("Unknown importing format requested."));
   }

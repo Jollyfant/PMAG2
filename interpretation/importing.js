@@ -176,7 +176,6 @@ function importNGU(file) {
       var sampleName = parameters[0];
 
       // Different convention for core orientation than Utrecht
-      // Munich measures the hade angle
       var coreAzimuth = Number(parameters[1]);
       var coreDip = 90 - Number(parameters[2]);
 
@@ -217,6 +216,71 @@ function importNGU(file) {
     "coreAzimuth": Number(coreAzimuth),
     "coreDip": Number(coreDip),
     "interpretations": new Array()
+  });
+
+}
+
+function importCenieh(file) {
+
+  /*
+   * Function importCenieh
+   * Imports files from the Cenieh format (no core, bedding parameters available)
+   */
+  
+  // Cenieh samples need to be sorted
+  var ceniehSpecimens = new Object();
+
+  var lines = file.data.split(/\r?\n/).filter(Boolean);
+ 
+  // Skip the header
+  lines.slice(1).forEach(function(line) {
+
+	var parameters = line.split(/\s+/);
+	var level = parameters[13];
+
+    // Add the level to the sample name
+	var sampleName = parameters[0] + "." + level;
+
+    // Add a sample to the has map
+	if(!ceniehSpecimens.hasOwnProperty(sampleName)) {
+
+	  ceniehSpecimens[sampleName] = {
+        "demagnetizationType": null,
+        "coordinates": "specimen",
+        "format": "CENIEH",
+        "version": __VERSION__,
+        "created": new Date().toISOString(),
+        "steps": new Array(),
+        "name": sampleName,
+        "volume": null,
+        "level": level,
+        "location": null,
+        "age": null,
+        "lithology": null,
+        "beddingStrike": 270,
+        "beddingDip": 0,
+        "coreAzimuth": 0,
+        "coreDip": 90,
+        "interpretations": new Array()
+	  }
+
+    }
+
+    // Extract the measurement parameters
+	var step = parameters[1];
+	var intensity = Number(parameters[2]);	
+	var declination = Number(parameters[3]);
+	var inclination = Number(parameters[4]);
+	
+    var cartesianCoordinates = new Direction(declination, inclination, intensity * 1E6).toCartesian();
+	
+	ceniehSpecimens[sampleName].steps.push(new Measurement(step, cartesianCoordinates, null));
+	
+  });
+
+  // Add all specimens in the hashmap to the application
+  ceniehSpecimens.forEach(function(specimen) {
+    specimens.push(specimen);
   });
 
 }
@@ -297,8 +361,6 @@ function importBCN2G(file) {
    * Function importBCN2G
    * Imports binary University of Barcelona 2G format
    */
-
-  //TODO: handle declination correction
 
   // Split by characters
   var text = file.data.split(/[\u0002\u0003]/).slice(1);
