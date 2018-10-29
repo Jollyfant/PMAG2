@@ -359,24 +359,24 @@ function importBCN2G(file) {
 
   /*
    * Function importBCN2G
-   * Imports binary University of Barcelona 2G format
+   * Imports binary BCN2G format (Barcelona & PGL Beijing)
    */
 
-  // Split by characters
-  var text = file.data.split(/[\u0002\u0003]/).slice(1);
+  // Split by start/end characters
+  var lines = file.data.split(/[\u0002\u0003]/).slice(1);
 
   // Read at byte positions
-  var sampleName = text[2].slice(5, 12);
-  var sampleVolume = Number(text[2].slice(14, 16));
+  var sampleName = lines[2].slice(5, 12).replace(/\0/g, "");
+  var sampleVolume = Number(lines[2].slice(14, 16));
 
   // Core and bedding parameters
-  var coreAzimuth = Number(text[2].slice(101, 104).replace(/\0/g, ""));
-  var coreDip = Number(text[2].slice(106,108).replace(/\0/g, ""));
-  var beddingStrike = (Number(text[2].slice(110, 113).replace(/\0/g, "")) + 270) % 360;
-  var beddingDip = Number(text[2].slice(115, 117).replace(/\0/g, ""));
+  var coreAzimuth = Number(lines[2].slice(101, 104).replace(/\0/g, ""));
+  var coreDip = Number(lines[2].slice(106,108).replace(/\0/g, ""));
+  var beddingStrike = (Number(lines[2].slice(110, 113).replace(/\0/g, "")) + 270) % 360;
+  var beddingDip = Number(lines[2].slice(115, 117).replace(/\0/g, ""));
 
   // This value indicates the declination correction that needs to be applied
-  var declinationCorrection = Number(text[2].slice(132, 136).replace(/\0/, ""))
+  var declinationCorrection = Number(lines[2].slice(132, 136).replace(/\0/, ""))
 
   // TODO confirm with Elizabeth
   if(declinationCorrection) {
@@ -384,12 +384,12 @@ function importBCN2G(file) {
   }
 
   // Overturned bit flag is set: subtract 180 from the dip
-  if(text[2].charCodeAt(119) === 1) {
+  if(lines[2].charCodeAt(119) === 1) {
     beddingDip = beddingDip - 180;
   }
 
   // For each demagnetization step
-  var steps = text.slice(3).map(function(line) {
+  var steps = lines.slice(3).map(function(line) {
 
     // Each parameter is delimited by at least one NULL byte
     var parameters = line.split(/\u0000+/);
