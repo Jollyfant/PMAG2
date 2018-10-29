@@ -150,7 +150,6 @@ function updateInterpretationTable(specimen) {
     "<table class='table table-sm table-striped'>",
     "  <caption>Interpreted Components</caption>",
     "  <tr>",
-    "    <td></td>",
     "    <td>Declination</td>",
     "    <td>Inclination</td>",
     "    <td>Intensity</td>",
@@ -194,7 +193,6 @@ function updateInterpretationTable(specimen) {
 
     return [
       "  </tr>",
-      "    <td><b>#" + i + "</b></td>",
       "    <td>" + direction.dec.toFixed(2) + "</td>",
       "    <td>" + direction.inc.toFixed(2) + "</td>",
       "    <td>" + intensity + "</td>",
@@ -867,25 +865,25 @@ function interpretationTableClickHandler(event) {
   var rowIndex = event.target.parentElement.rowIndex;
 
   // Delete all was selected
-  if(rowIndex === 0 && columnIndex === 11 && confirm("Are you sure you wish to delete all interpretations?")) {
+  if(rowIndex === 0 && columnIndex === 10 && confirm("Are you sure you wish to delete all interpretations?")) {
     specimen.interpretations = new Array();
   }
 
   // A specific component was referenced
   if(rowIndex > 0) {
 
-    if(columnIndex === 8) {
+    if(columnIndex === 7) {
       var comment = prompt("Enter the new group for this interpretation.");
       if(comment === null) return;
       if(comment === "") comment = "DEFAULT";
       specimen.interpretations[rowIndex - 1].group = comment;
     }
 
-    if(columnIndex === 9) {
+    if(columnIndex === 8) {
       var comment = prompt("Enter a comment for this interpretation.");
       if(comment === null) return;
       specimen.interpretations[rowIndex - 1].comment = comment;
-    } else if(columnIndex === 11) {
+    } else if(columnIndex === 10) {
       specimen.interpretations.splice(rowIndex - 1, 1);
     }
 
