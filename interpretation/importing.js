@@ -1,3 +1,235 @@
+function importMagic(file) {
+
+  /*
+   * Function importMagic
+   * Imports demagnetization data from the MagIC format
+   * Assume tab delimited
+   */
+
+  const MAGIC_TABLE_DELIMITER = ">>>>>>>>>>";
+
+  var tables = file.data.split(MAGIC_TABLE_DELIMITER);
+
+  var magicSpecimens = new Object();
+  var magicSamples = new Object();
+
+  // Get a list of the available tables
+  var availableTables = tables.map(function(section) {
+    return section.split(/\r?\n/).filter(Boolean)[0].split(/\t/)[1];
+  });
+
+  // Check if all required measurements are available
+  if(!availableTables.includes("samples")) {
+    throw(new Exception("MagIC file does not included samples and cannot be shown."));
+  }
+
+  if(!availableTables.includes("specimens")) {
+    throw(new Exception("MagIC file does not included specimens and cannot be shown."));
+  }
+
+  if(!availableTables.includes("measurements")) {
+    throw(new Exception("MagIC file does not included measurements and cannot be shown."));
+  }
+
+  // Go over each table
+  tables.forEach(function(section) {
+
+    var lines = section.split(/\r?\n/).filter(Boolean);
+    var sectionHeader = lines[0].split(/\t/);
+    var header = lines[1].split(/\t/);
+
+    var tableName = sectionHeader[1]
+
+    switch(tableName) {
+      case "locations":
+        return;
+      case "sites":
+
+        return lines.slice(2).forEach(function(x) {
+          var site = parseSite(header, x);
+        });
+
+      case "samples":
+
+        return lines.slice(2).forEach(function(x) {
+        
+          var entry = parseSample(header, x);
+        
+          magicSamples[entry.name] = {
+            "azimuth": entry.azimuth,
+            "dip": entry.dip,
+            "lat": entry.lat,
+            "lng": entry.lng
+          }
+        
+        });
+
+      case "specimens":
+
+        return lines.slice(2).forEach(function(x) {
+        
+          var specimen = parseSpecimen(header, x);
+        
+          if(!magicSamples.hasOwnProperty(specimen.sample)) {
+            return;
+          }
+        
+          var sample = magicSamples[specimen.sample];
+        
+          magicSpecimens[specimen.name] = {
+            "demagnetizationType": null,
+            "coordinates": "specimen",
+            "format": "MAGIC",
+            "version": __VERSION__,
+            "created": new Date().toISOString(),
+            "steps": new Array(),
+            "level": 0,
+            "location": {
+              "lat": sample.lat,
+              "lng": sample.lng,
+            },
+            "age": null,
+            "lithology": null,
+            "name": specimen.name,
+            "volume": 10,
+            "beddingStrike": Number(0),
+            "beddingDip": Number(0),
+            "coreAzimuth": sample.azimuth,
+            "coreDip": sample.dip,
+            "interpretations": new Array()
+          }
+        
+        });
+
+      case "measurements":
+
+        return lines.slice(2).forEach(function(x) {
+        
+          var measurement = parseMeasurement(header, x);
+        
+          if(measurement === null) {
+            return;
+          }
+        
+          if(!magicSpecimens.hasOwnProperty(measurement.specimen)) {
+            throw("Stop!")
+          }
+        
+          magicSpecimens[measurement.specimen].steps.push(new Measurement(measurement.step, measurement.coordinates, 0));
+        
+        });
+
+    }
+
+  });
+
+  // Add all specimens read from the MagIC file to the application
+  Object.values(magicSpecimens).forEach(function(specimen) {
+
+    // Somehow we could not extract steps
+    if(specimen.steps.length === 0) {
+      return;
+    }
+
+    specimens.push(specimen);
+
+  });
+
+}
+
+function parseEntry(header, x) {
+
+  /*
+   * Function parseEntry
+   * Parses tab delimited table with a header to an object
+   */
+
+  var object = new Object();
+  var parameters = x.split(/\t/);
+
+  parameters.forEach(function(parameter, i) {
+    object[header[i]] = parameters[i];
+  });
+
+  return object;
+
+}
+
+function parseSite(header, x) {
+
+  var object = parseEntry(header, x);
+
+  return {
+    "name": object.site
+  }
+
+}
+
+function parseSample(header, x) {
+
+  var object = parseEntry(header, x);
+
+  var longitude = Number(object.lon);
+  if(longitude > 180) {
+    longitude -= 360;
+  }
+
+  var latitude = Number(object.lat);
+  if(latitude > 90) {
+    latitude -= 180;
+  }
+
+  return {
+    "name": object.sample,
+    "azimuth": Number(object.azimuth),
+    "dip": Number(object.dip),
+    "lat": latitude,
+    "lng": longitude
+  }
+
+}
+
+function parseSpecimen(header, x) {
+
+  var object = parseEntry(header, x);
+
+  return {
+    "name": object.specimen,
+    "sample": object.sample
+  }
+
+}
+
+function parseMeasurement(header, x) {
+
+  var object = parseEntry(header, x);
+
+  var specimen = object.specimen;
+  var types = object["method_codes"].split(":");
+  var coordinates = new Direction(object["dir_dec"], object["dir_inc"], 1E9 * object["magn_moment"]).toCartesian();
+
+  // Step wise field demagnetization
+  if(types.includes("LP-DIR-AF")) {
+    return {
+      "specimen": specimen,
+      "step": object["treat_ac_field"],
+      "coordinates": coordinates
+    }
+  }
+
+  // Thermal (in K)
+  if(types.includes("LP-DIR-T")) {
+    return {
+      "specimen": specimen,
+      "step": (Number(object["treat_temp"]) - 273).toString(),
+      "coordinates": coordinates
+    }
+  }
+
+  return null;
+
+}
+
 function importPaleoMac(file) {
 
   /*

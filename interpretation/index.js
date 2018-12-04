@@ -71,6 +71,8 @@ function addDegmagnetizationFiles(format, files) {
       return files.forEach(importBCN2G);
     case "CENIEH":
       return files.forEach(importCenieh);
+    case "MAGIC":
+      return files.forEach(importMagic);
     default:
       throw(new Exception("Unknown importing format requested."));
   }
