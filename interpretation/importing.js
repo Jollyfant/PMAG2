@@ -12,6 +12,7 @@ function importMagic(file) {
 
   var magicSpecimens = new Object();
   var magicSamples = new Object();
+  var magicSites = new Object();
 
   // Get a list of the available tables
   var availableTables = tables.map(function(section) {
@@ -41,12 +42,29 @@ function importMagic(file) {
     var tableName = sectionHeader[1]
 
     switch(tableName) {
+
+      case "contribution":
+        return lines.slice(2).forEach(function(x) {
+
+          var contribution = CSV2Object(header, x);
+
+          // Check the data model version
+          if(contribution["data_model_version"] !== "3.0") {
+            throw(new Exception("MagIC data model is not supported.")); 
+          }
+
+        });  
+
       case "locations":
         return;
+
       case "sites":
 
         return lines.slice(2).forEach(function(x) {
           var site = parseSite(header, x);
+
+          magicSites[site.name] = site;
+
         });
 
       case "samples":
@@ -57,9 +75,13 @@ function importMagic(file) {
         
           magicSamples[entry.name] = {
             "azimuth": entry.azimuth,
+            "level": entry.height,
+            "site": entry.site,
             "dip": entry.dip,
             "lat": entry.lat,
-            "lng": entry.lng
+            "lng": entry.lng,
+            "beddingDip": entry.beddingDip,
+            "beddingStrike": entry.beddingDipDirection - 90
           }
         
         });
@@ -76,6 +98,12 @@ function importMagic(file) {
         
           var sample = magicSamples[specimen.sample];
         
+          if(!magicSites.hasOwnProperty(sample.site)) {
+            return;
+          }
+
+          var site = magicSites[sample.site];
+
           magicSpecimens[specimen.name] = {
             "demagnetizationType": null,
             "coordinates": "specimen",
@@ -83,17 +111,21 @@ function importMagic(file) {
             "version": __VERSION__,
             "created": new Date().toISOString(),
             "steps": new Array(),
-            "level": 0,
+            "level": sample.level,
             "location": {
               "lat": sample.lat,
               "lng": sample.lng,
             },
-            "age": null,
+            "age": {
+              "value": site.age,
+              "min": site.ageMin,
+              "max": site.ageMax
+            },
             "lithology": null,
             "name": specimen.name,
-            "volume": 10,
-            "beddingStrike": Number(0),
-            "beddingDip": Number(0),
+            "volume": specimen.volume,
+            "beddingStrike": sample.beddingStrike,
+            "beddingDip": sample.beddingDip,
             "coreAzimuth": sample.azimuth,
             "coreDip": sample.dip,
             "interpretations": new Array()
@@ -112,10 +144,14 @@ function importMagic(file) {
           }
         
           if(!magicSpecimens.hasOwnProperty(measurement.specimen)) {
-            throw("Stop!")
+            throw("Fatal error..")
           }
         
+          // Set the demagnetization measurements
           magicSpecimens[measurement.specimen].steps.push(new Measurement(measurement.step, measurement.coordinates, 0));
+
+          // Set the demagnetization type
+          magicSpecimens[measurement.specimen].demagnetizationType = measurement.demagnetizationType;
         
         });
 
@@ -137,10 +173,10 @@ function importMagic(file) {
 
 }
 
-function parseEntry(header, x) {
+function CSV2Object(header, x) {
 
   /*
-   * Function parseEntry
+   * Function CSV2Object
    * Parses tab delimited table with a header to an object
    */
 
@@ -157,17 +193,26 @@ function parseEntry(header, x) {
 
 function parseSite(header, x) {
 
-  var object = parseEntry(header, x);
+  var object = CSV2Object(header, x);
+
+  var age = Number(object["age"]);
+  var ageLow = Number(object["age_low"]);
+  var ageHigh = Number(object["age_high"]);
+  var sigma = Number(object["age_sigma"]);
+  var ageUnit = object["age_unit"];
 
   return {
-    "name": object.site
+    "name": object.site,
+    "age": age,
+    "ageMin": ageLow || (age - sigma),
+    "ageMax": ageHigh || (age + sigma)
   }
 
 }
 
 function parseSample(header, x) {
 
-  var object = parseEntry(header, x);
+  var object = CSV2Object(header, x);
 
   var longitude = Number(object.lon);
   if(longitude > 180) {
@@ -181,9 +226,13 @@ function parseSample(header, x) {
 
   return {
     "name": object.sample,
+    "site": object.site,
     "azimuth": Number(object.azimuth),
     "dip": Number(object.dip),
+    "beddingDip": Number(object["bed_dip"]) || 0,
+    "beddingDipDirection": Number(object["bed_dip_direction"]) || 90,
     "lat": latitude,
+    "height": Number(object.height),
     "lng": longitude
   }
 
@@ -191,29 +240,41 @@ function parseSample(header, x) {
 
 function parseSpecimen(header, x) {
 
-  var object = parseEntry(header, x);
+  var object = CSV2Object(header, x);
 
   return {
     "name": object.specimen,
-    "sample": object.sample
+    "sample": object.sample,
+    "volume": (1E6 * object.volume) || null
   }
 
 }
 
 function parseMeasurement(header, x) {
 
-  var object = parseEntry(header, x);
+  /*
+   * Function parseMeasurement
+   * Parses MagIC measurement table entry
+   */
+
+  // Extract CSV to object
+  var object = CSV2Object(header, x);
 
   var specimen = object.specimen;
   var types = object["method_codes"].split(":");
-  var coordinates = new Direction(object["dir_dec"], object["dir_inc"], 1E9 * object["magn_moment"]).toCartesian();
+
+  // Default to a sample volume of 10CC
+  var intensity = object["magn_volume"] || (object["magn_moment"] / 1E-6)
+
+  var coordinates = new Direction(object["dir_dec"], object["dir_inc"], intensity).toCartesian();
 
   // Step wise field demagnetization
   if(types.includes("LP-DIR-AF")) {
     return {
       "specimen": specimen,
       "step": object["treat_ac_field"],
-      "coordinates": coordinates
+      "coordinates": coordinates,
+      "demagnetizationType": "alternating"
     }
   }
 
@@ -221,9 +282,16 @@ function parseMeasurement(header, x) {
   if(types.includes("LP-DIR-T")) {
     return {
       "specimen": specimen,
-      "step": (Number(object["treat_temp"]) - 273).toString(),
-      "coordinates": coordinates
+      "step": object["treat_temp"],
+      "coordinates": coordinates,
+      "demagnetizationType": "thermal"
     }
+  }
+
+  if(types.includes("DE-BFP-G")) {
+    var type = "TAU3";
+  } else {
+    var type = "TAU1";
   }
 
   return null;

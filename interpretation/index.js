@@ -1855,7 +1855,6 @@ function makeInterpretation(specimen, options) {
     "steps": stepValues,
     "anchored": options.anchored,
     "type": options.type,
-    "anchored": options.anchored,
     "created": new Date().toISOString(),
     "group": GROUP,
     "MAD": PCA.MAD,
