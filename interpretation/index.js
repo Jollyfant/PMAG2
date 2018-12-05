@@ -25,7 +25,7 @@ var Measurement = function(step, coordinates, error) {
    * Container for a single demagnetization step
    */
 
-  this.step = step;
+  this.step = step.trim();
 
   this.x = Number(coordinates.x);
   this.y = Number(coordinates.y);
