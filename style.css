@@ -5,6 +5,9 @@ body {
 #wrapper {
   position: relative;
 }
+.popover {
+  min-width: 25%;
+}
 
 #location-information-wrapper {
   top:2px;

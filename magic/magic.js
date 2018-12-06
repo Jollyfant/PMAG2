@@ -3,26 +3,49 @@ document.getElementById("download-magic-button").disabled = true;
 
 const DEMAGNETIZATION_THERMAL = "LP-DIR-T";
 const DEMAGNETIZATION_ALTERNATING = "LP-DIR-AF";
+var data = null;
 
-function DO() {
+function collectCitation() {
 
-  doiLookup(document.getElementById("citation-input").value, function(citation) {
+  /*
+   * Function collectCitation
+   * Collects a citation from Crossref based on a submitted DOI
+   */
+
+  const DOI_DISPOSE_TIMEOUT_MS = 3000;
+
+  var submittedDOI = document.getElementById("citation-input").value;
+
+  if(submittedDOI === "") {
+    return;
+  }
+
+  // Confirm that the DOI is valid
+  if(!submittedDOI.startsWith("10") || !submittedDOI.includes("/")) {
+    return notify("warning", new Exception("The submitted DOI is not valid."));
+  }
+
+  doiLookup(submittedDOI, function(citation) {
 
     if(citation === null) {
       return;
     }
 
-    $('#citation-input').popover({"html": true, "title": "<i class='fas fa-book'></i> Found Citation", "content": citation});
-    $('#citation-input').popover('show');
+    
+    $("#citation-input").popover({
+      "html": true,
+      "title": "<i class='fas fa-book'></i> Found Citation",
+      "content": citation
+    }).popover("show");
 
+    // Disepose of the popover after a timeout
     setTimeout(function() {
-      $('#citation-input').popover('dispose');
-    }, 3000);
+      $("#citation-input").popover("dispose");
+    }, DOI_DISPOSE_TIMEOUT_MS);
 
   });
 }
 
-var data = null;
 
 function fileSelectionHandler(event) {
 
@@ -31,6 +54,8 @@ function fileSelectionHandler(event) {
    * Callback fired when input files are selected
    */
 
+  document.getElementById("download-magic-button").disabled = true;
+
   readMultipleFiles(Array.from(event.target.files), function(files) {
 
     data = files;
@@ -38,13 +63,14 @@ function fileSelectionHandler(event) {
     var tables = new Array();
     var mayDownload = true;
 
+    // Go over each file (a single collection)
     files.forEach(function(file) {
 
       var data = JSON.parse(file.data);
       var exception = isComplete(data.specimens);
       var isOk = exception === true;
 
-      // Validation error
+      // Validation error occurred
       if(exception instanceof Error) {
         mayDownload = false;
       }
@@ -72,14 +98,13 @@ function fileSelectionHandler(event) {
 
       var rows = new Array();
       var tableHeader = new Array(
-        "<small><table style='width: 100%;'>",
-        "  <caption>Available Collections & Specimens in " + file.name + " </caption>",
+        "<table style='width: 100%;'>",
+        "  <caption>Available specimens in collection " + file.name + " </caption>",
         "  <thead>",
         "    <tr>",
         "      <td>Specimen</td>",
         "      <td>Demagnetization Type</td>",
-        "      <td>Latitude</td>",
-        "      <td>Longitude</td>",
+        "      <td>Location</td>",
         "      <td>Lithology</td>",
         "      <td>Bedding Strike</td>",
         "      <td>Bedding Dip</td>",
@@ -99,8 +124,7 @@ function fileSelectionHandler(event) {
           "  <tr>",
           "    <td>" + specimen.name + "</td>",
           "    <td>" + getDemagnetizationTypeLabel(specimen.demagnetizationType) + "</td>",
-          "    <td>" + specimen.latitude + "</td>",
-          "    <td>" + specimen.longitude + "</td>",
+          "    <td>" + specimen.longitude + "°E, " + specimen.latitude + "°N</td>",
           "    <td>" + specimen.lithology + "</td>",
           "    <td>" + specimen.beddingStrike + "</td>",
           "    <td>" + specimen.beddingDip + "</td>",

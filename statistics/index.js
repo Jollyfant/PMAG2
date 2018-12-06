@@ -378,7 +378,7 @@ function doCutoff(directions) {
   var cutoffType = document.getElementById("cutoff-selection").value || null;
 
   // Create a fake site at 0, 0: we use this for getting the VGP distribution
-  var site = new Site({"lng": 0, "lat": 0});
+  var site = new Site(0, 0);
 
   // Create a copy in memory
   var iterateDirections = memcpy(directions);

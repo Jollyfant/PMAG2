@@ -1,6 +1,6 @@
 "use strict";
 
-var Site = function({lng, lat}, age) {
+var Site = function(lng, lat) {
 
   /*
    * Class Site
@@ -9,8 +9,6 @@ var Site = function({lng, lat}, age) {
 
   this.lng = lng;
   this.lat = lat;
-
-  this.age = 10;
 
 }
 

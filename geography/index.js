@@ -320,10 +320,10 @@ function plotPredictedDirections() {
 
   }
 
-  var site = new Site({
-    "lat": Number(document.getElementById("site-latitude-input").value),
-    "lng": Number(document.getElementById("site-longitude-input").value)
-  });
+  var site = new Site(
+    Number(document.getElementById("site-latitude-input").value),
+    Number(document.getElementById("site-longitude-input").value)
+  );
 
   var dataSeriesDeclination = new Array();
   var dataSeriesInclination = new Array();
@@ -584,8 +584,8 @@ function getAverageLocation(site) {
    */
 
   // We can use declination instead of poles.. doens't really matter
-  var locations = site.components.filter(x => x.location !== null).map(function(x) {
-    return new Direction(x.location.lng, x.location.lat);
+  var locations = site.components.filter(x => x.latitude !== null && x.longitude !== null).map(function(x) {
+    return new Direction(x.longitude, x.latitude);
   });
 
   if(locations.length === 0) {
@@ -629,23 +629,21 @@ function plotPoles(dataSeries) {
 
   }
 
-  var PLOT_POLES = !document.getElementById("group-collection").checked;
-
   // Add collection data
   getSelectedCollections().forEach(function(collection) {
 
     // Cutoff and statistics
     var cutofC = doCutoff(collection.components.map(x => x.inReferenceCoordinates()));
 
-    convertedComps = cutofC.components.filter(x => x.location !== null).map(function(x) {
-      var s = new Site(x.location);
-      return new Component(x, s.poleFrom(literalToCoordinates(x.coordinates).toVector(Direction)).toCartesian());
+    convertedComps = cutofC.components.filter(x => x.latitude !== null && x.longitude !== null).map(function(x) {
+      var site = new Site(x.longitude, x.latitude);
+      return new Component(x, site.poleFrom(literalToCoordinates(x.coordinates).toVector(Direction)).toCartesian());
     });
 
     var statistics = getStatisticalParameters(convertedComps);
 
     // Plot individual specimens
-    if(PLOT_POLES) {
+    if(!document.getElementById("group-collection").checked) {
 
       var data = convertedComps.map(function(x) {
 
@@ -772,9 +770,9 @@ function getAverageAge(collection) {
   var max = Number.MAX_SAFE_INTEGER;
 
   collection.components.forEach(function(component) {
-    min = Math.max(min, component.age.min);
-    max = Math.min(max, component.age.max);
-    age += component.age.value;
+    min = Math.max(min, component.ageMin);
+    max = Math.min(max, component.ageMax);
+    age += component.age;
   });
   
   return {
@@ -813,7 +811,7 @@ function plotExpected(container, dataSeries, site) {
       "<b>" + this.series.name + "</b>",
       "<b>Age: </b>" + this.x + "Ma",
       "<b>" + title +": </b>" + this.y.toFixed(2),
-      "<b>Interval: </b> " + (this.y - this.point.lower).toFixed(2) + ", " + (this.y + this.point.upper).toFixed(2)
+      (this.point.lower && this.point.upper) ? "<b>Interval: </b> " + (this.y - this.point.lower).toFixed(2) + ", " + (this.y + this.point.upper).toFixed(2) : ""
     ].join("<br>");
 
   }
@@ -829,8 +827,8 @@ function plotExpected(container, dataSeries, site) {
     var cutofC = doCutoff(collection.components.map(x => x.inReferenceCoordinates()));
 
     // Convert each direction to a pole and get the direction at the reference point
-    var convertedComps = cutofC.components.filter(x => x.location !== null).map(function(x) {
-      var realPole = new Site(x.location).poleFrom(literalToCoordinates(x.coordinates).toVector(Direction));
+    var convertedComps = cutofC.components.filter(x => x.latitude !== null && x.longitude !== null).map(function(x) {
+      var realPole = new Site(x.longitude, x.latitude, x.age).poleFrom(literalToCoordinates(x.coordinates).toVector(Direction));
       return new Component(x, site.directionFrom(realPole).toCartesian());
     });
 
@@ -848,8 +846,9 @@ function plotExpected(container, dataSeries, site) {
           direction.dec -= 360;
         }
 
+        // When age scatter is requested pick a random value between min & max
         return {
-          "x": AGE_SCATTER ? randomIntFromInterval(x.age.min, x.age.max) : x.age.value,
+          "x": AGE_SCATTER ? randomIntFromInterval(x.ageMin, x.ageMax) : x.age,
           "y": direction.dec
         }
 
@@ -875,7 +874,7 @@ function plotExpected(container, dataSeries, site) {
     if(statistics.dir.mean.dec > 180) {
       statistics.dir.mean.dec -= 360;
     }
-    
+
     if(container === "declination-container") {
 
       dataSeries.push({
@@ -1098,8 +1097,11 @@ var Component = function(specimen, coordinates) {
   this.name = specimen.name
   this.rejected = false;
 
-  this.location = specimen.location;
+  this.latitude = specimen.latitude;
+  this.longitude = specimen.longitude;
   this.age = specimen.age;
+  this.ageMin = specimen.ageMin;
+  this.ageMax = specimen.ageMax;
 
   this.coreAzimuth = specimen.coreAzimuth
   this.coreDip = specimen.coreDip
@@ -1226,7 +1228,7 @@ function doCutoff(directions) {
   var cutoffType = document.getElementById("cutoff-selection").value || null;
 
   // Create a fake site at 0, 0
-  var site = new Site({"lng": 0, "lat": 0});
+  var site = new Site(0, 0);
 
   // Create a copy in memory
   var iterateDirections = memcpy(directions);

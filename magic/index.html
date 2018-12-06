@@ -77,6 +77,7 @@
           <p> The following interface can be used to convert Paleomagentism.org 2.0.0 data to the <a href="https://earthref.org/MagIC">MagIC</a> format. Multiple files can be selected and each will be associated with a unique location and all specimens are mapped as individual sites. Some additional contributor metadata is required.
           <p> MagIC Data Model Version: <b>3.0</b>
         </div>
+
         <br>
         <div class="text-center">
           <button id="download-magic-button" class="btn btn-lg btn-success" onclick="downloadMagIC()" type="button" class="btn btn-primary">
@@ -90,21 +91,24 @@
         <div class="form-group">
           <div class="row">
             <div class="col">
-              <div class="input-group mb-4">
+              <div class="input-group mb-6">
                 <div class="input-group-prepend">
-                  <div class="input-group-text">Author</div>
+                  <div class="input-group-text">Contributer</div>
                 </div>
                 <input id='contributor-input' type="text" class="form-control input-sm" placeholder="Author" required>
               </div>
             </div>
             <div class="col">
-              <div class="input-group mb-4">
+              <div class="input-group mb-6">
                 <div class="input-group-prepend">
-                  <div class="input-group-text">DOI</div>
+                  <div class="input-group-text">Citation</div>
                 </div>
-                <input data-toggle="popover" data-placement="bottom" onblur='DO()' id='citation-input' type="text" class="form-control input-sm" placeholder="Citation">
+                <input data-trigger="focus" data-toggle="popover" data-placement="bottom" onblur='collectCitation()' id='citation-input' type="text" class="form-control input-sm" placeholder="DOI">
               </div>
             </div>
+          </div>
+          <br>
+          <div class="row">
             <div class="col">
               <div class="input-group mb-4">
                 <div class="input-group-prepend">
@@ -117,7 +121,7 @@
         </div>
 
         <h5> Select Data </h5>
-        <p> Select Paleomagnetism.org 2.0.0 files to be added to your MagIC file. If the file does not pass validation, return to the <a href="../interpretation/index.html"> Interpretation Portal </a> to fill in all required specimen attributes. After checking all specimens you can click <b>Download MagIC file</b> to download your database file.
+        <p> Select Paleomagnetism.org 2.0.0 files to be added to your MagIC file. If the file does not pass validation, return to the <a href="../interpretation/index.html">Interpretation Portal</a> to fill in all required specimen attributes. After checking all specimens you can click <b>Download MagIC file</b> to download your database file.
 
         <!-- File input -->
         <div class="custom-file">
@@ -128,7 +132,7 @@
         <br>
         <br>
 
-            <div class='table-sm text-center table-striped' id="fitted-table-container"></div>
+        <div class='table-sm text-center table-striped' id="fitted-table-container"></div>
 
     </div>
 

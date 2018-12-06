@@ -7,6 +7,11 @@ function importMagic(file) {
 
   function NaNTo(value, to) {
 
+    /*
+     * Function importMagic::NaNTo
+     * Casts value to "to" when value is NaN
+     */
+
     if(isNaN(value)) {
       return to;
     }
@@ -603,10 +608,23 @@ function importMunich(file) {
       parsedData.push(new Measurement(parameters[0], coordinates, Number(parameters[2])));
 
     }
+
+  }
+
+  var demagnetizationType = null;
+
+  // Probably thermal
+  if(Number(parsedData[parsedData.length - 1].step) > 300) {
+    demagnetizationType = "thermal";    
+  }
+
+  // Probably AF (mT)
+  if(Number(parsedData[parsedData.length - 1].step) < 200) {
+    demagnetizationType = "alternating";
   }
 	
   specimens.push({
-    "demagnetizationType": null,
+    "demagnetizationType": demagnetizationType,
     "coordinates": "specimen",
     "format": "MUNICH",
     "version": __VERSION__,
@@ -652,7 +670,7 @@ function importBCN2G(file) {
   // This value indicates the declination correction that needs to be applied
   var declinationCorrection = Number(lines[2].slice(132, 136).replace(/\0/, ""))
 
-  // TODO confirm with Elizabeth
+  // Add declination correction (magnetic) to the sample azimuth (confirm with Elizabeth)
   if(declinationCorrection) {
     coreAzimuth += declinationCorrection;
   }
