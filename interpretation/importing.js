@@ -184,16 +184,12 @@ function importMagic(file) {
             "created": new Date().toISOString(),
             "steps": new Array(),
             "level": level,
-            "location": {
-              "lat": latitude,
-              "lng": longitude
-            },
-            "age": {
-              "value": age,
-              "min": ageLow,
-              "max": ageHigh
-            },
-            "lithology": null,
+            "longitude": longitude,
+            "latitude": latitude,
+            "age": age,
+            "ageMin": ageLow,
+            "ageMax": ageHigh,
+            "lithology": lithology,
             "name": object.specimen,
             "volume": 1E6 * volume,
             "beddingStrike": Number(sample["bed_dip_direction"]) - 90 || 0,
@@ -330,9 +326,12 @@ function importPaleoMac(file) {
     "version": __VERSION__,
     "created": new Date().toISOString(),
     "steps": steps,
-    "level": 0,
-    "location": null,
+    "level": level,
+    "longitude": null,
+    "latitude": null,
     "age": null,
+    "ageMin": null,
+    "ageMax": null,
     "lithology": null,
     "name": sampleName,
     "volume": 1E6 * sampleVolume,
@@ -403,9 +402,12 @@ function importOxford(file) {
     "version": __VERSION__,
     "created": new Date().toISOString(),
     "steps": steps,
-    "level": 0,
-    "location": null,
+    "level": level,
+    "longitude": null,
+    "latitude": null,
     "age": null,
+    "ageMin": null,
+    "ageMax": null,
     "lithology": null,
     "name": sampleName,
     "volume": Number(sampleVolume),
@@ -473,10 +475,11 @@ function importNGU(file) {
     "created": new Date().toISOString(),
     "steps": parsedData,
     "name": sampleName,
-    "volume": null,
-    "level": 0,
-    "location": null,
+    "longitude": null,
+    "latitude": null,
     "age": null,
+    "ageMin": null,
+    "ageMax": null,
     "lithology": null,
     "beddingStrike": Number(beddingStrike),
     "beddingDip": Number(beddingDip),
@@ -502,16 +505,16 @@ function importCenieh(file) {
   // Skip the header
   lines.slice(1).forEach(function(line) {
 
-	var parameters = line.split(/\s+/);
-	var level = parameters[13];
+    var parameters = line.split(/\s+/);
+    var level = parameters[13];
 
     // Add the level to the sample name
-	var sampleName = parameters[0] + "." + level;
+    var sampleName = parameters[0] + "." + level;
 
     // Add a sample to the has map
-	if(!ceniehSpecimens.hasOwnProperty(sampleName)) {
+    if(!ceniehSpecimens.hasOwnProperty(sampleName)) {
 
-	  ceniehSpecimens[sampleName] = {
+      ceniehSpecimens[sampleName] = {
         "demagnetizationType": null,
         "coordinates": "specimen",
         "format": "CENIEH",
@@ -520,28 +523,30 @@ function importCenieh(file) {
         "steps": new Array(),
         "name": sampleName,
         "volume": null,
-        "level": level,
-        "location": null,
+        "longitude": null,
+        "latitude": null,
         "age": null,
+        "ageMin": null,
+        "ageMax": null,
         "lithology": null,
         "beddingStrike": 270,
         "beddingDip": 0,
         "coreAzimuth": 0,
         "coreDip": 90,
         "interpretations": new Array()
-	  }
+      }
 
     }
 
     // Extract the measurement parameters
-	var step = parameters[1];
-	var intensity = Number(parameters[2]);	
-	var declination = Number(parameters[3]);
-	var inclination = Number(parameters[4]);
+    var step = parameters[1];
+    var intensity = Number(parameters[2]);	
+    var declination = Number(parameters[3]);
+    var inclination = Number(parameters[4]);
 	
     var cartesianCoordinates = new Direction(declination, inclination, intensity * 1E6).toCartesian();
 	
-	ceniehSpecimens[sampleName].steps.push(new Measurement(step, cartesianCoordinates, null));
+    ceniehSpecimens[sampleName].steps.push(new Measurement(step, cartesianCoordinates, null));
 	
   });
 
@@ -609,9 +614,11 @@ function importMunich(file) {
     "steps": parsedData,
     "name": sampleName,
     "volume": null,
-    "level": 0,
-    "location": null,
+    "longitude": null,
+    "latitude": null,
     "age": null,
+    "ageMin": null,
+    "ageMax": null,
     "lithology": null,
     "beddingStrike": Number(beddingStrike),
     "beddingDip": Number(beddingDip),
@@ -680,8 +687,11 @@ function importBCN2G(file) {
     "version": __VERSION__,
     "created": new Date().toISOString(),
     "steps": steps,
-    "level": 0,
-    "location": null,
+    "longitude": null,
+    "latitude": null,
+    "age": null,
+    "ageMin": null,
+    "ageMax": null,
     "lithology": null,
     "name": sampleName,
     "volume": Number(sampleVolume),
@@ -746,9 +756,12 @@ function importCaltech(file) {
     "version": __VERSION__,
     "created": new Date().toISOString(),
     "steps": steps,
-    "level": 0,
-    "location": null,
+    "level": null,
+    "longitude": null,
+    "latitude": null,
     "age": null,
+    "ageMin": null,
+    "ageMax": null,
     "lithology": null,
     "name": sampleName,
     "volume": Number(sampleVolume),
@@ -793,9 +806,12 @@ function importApplicationSaveOld(file) {
       "version": __VERSION__,
       "created": specimen.exported,
       "steps": steps,
-      "level": 0,
-      "location": null,
+      "level": null,
+      "longitude": null,
+      "latitude": null,
       "age": null,
+      "ageMin": null,
+      "ageMax": null,
       "lithology": null,
       "name": specimen.name,
       "volume": null,
@@ -876,12 +892,34 @@ function importUtrecht(file) {
    * Treats buffer as being Utrecht Format
    */
 
+  function inferDemagnetizationType(filename) {
+
+    /*
+     * Function importUtrecht::inferDemagnetizationType
+     * Attempts to cleverly infer the demagnetization type from the file extension
+     */
+
+    var extension = filename.split(".").pop().toUpperCase();
+
+    switch(extension) {
+      case "TH":
+        return "thermal";
+      case "AF":
+        return "alternating";
+      default:
+        return null;
+    }
+
+  }
+
   // Split by 9999 (Utecht specimen delimiter)
   var blocks = file.data.split(/9999\r?\n/);
 
   if(blocks.length === 1 || blocks[blocks.length - 1] !== "END") {
     throw(new Exception("Invalid Utrecht format."));
   }
+
+  var demagnetizationType = inferDemagnetizationType(file.name);
 
   // We can skip the latest block
   blocks.slice(0, -1).forEach(function(specimen, i) {
@@ -912,15 +950,18 @@ function importUtrecht(file) {
     });
 
     specimens.push({
-      "demagnetizationType": null,
+      "demagnetizationType": demagnetizationType,
       "coordinates": "specimen",
       "format": "UTRECHT",
       "version": __VERSION__,
       "created": new Date().toISOString(),
       "steps": steps,
-      "level": 0,
-      "location": null,
+      "level": null,
+      "longitude": null,
+      "latitude": null,
       "age": null,
+      "ageMin": null,
+      "ageMax": null,
       "lithology": null,
       "name": sampleName,
       "volume": Number(sampleVolume),
@@ -981,9 +1022,12 @@ function importHelsinki(file) {
     "version": __VERSION__,
     "created": new Date().toISOString(),
     "steps": steps,
-    "level": 0,
-    "location": null,
+    "level": null,
+    "longitude": null,
+    "latitude": null,
     "age": null,
+    "ageMin": null,
+    "ageMax": null,
     "lithology": null,
     "name": sampleName,
     "volume": Number(sampleVolume),

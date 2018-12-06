@@ -51,10 +51,10 @@
             <a class="nav-link" href="../references/index.html">References</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" href="../team/index.html">Team & Contact</a>
+            <a class="nav-link" href="../team/index.html">Team & Contact</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="../library/index.html">Data Library</a>
+          <li class="nav-item active">
+            <a class="nav-link" href="../magic/index.html">MagIC Interface</a>
           </li>
         </ul>
 
@@ -74,19 +74,19 @@
 
         <div class="alert alert-light" role="alert">
           <h5> Paleomagnetism.org 2 - MagIC Interface </h5>
-          <p> The following interface can be used to convert Paleomagentism.org 2.0.0 data to the MagIC format. Multiple files can be selected and each will be associated with a unique location. Some additional contributor metadata is required.
+          <p> The following interface can be used to convert Paleomagentism.org 2.0.0 data to the <a href="https://earthref.org/MagIC">MagIC</a> format. Multiple files can be selected and each will be associated with a unique location and all specimens are mapped as individual sites. Some additional contributor metadata is required.
           <p> MagIC Data Model Version: <b>3.0</b>
         </div>
-
+        <br>
         <div class="text-center">
           <button id="download-magic-button" class="btn btn-lg btn-success" onclick="downloadMagIC()" type="button" class="btn btn-primary">
-            <i class="fas fa-file-download"></i>&nbsp; Download MagIC file
+            <i class="fas fa-file-download"></i>&nbsp; Download <b>MagIC</b> file
           </button>
           <br>
         </div>
 
         <h5> Contribution Metadata </h5>
-        <p> Metadata that describes the contributor of the MagIC file.
+        <p> Metadata that describes the contributor of the MagIC file. You may include an optional DOI if this data is related to a publication.
         <div class="form-group">
           <div class="row">
             <div class="col">
@@ -102,7 +102,7 @@
                 <div class="input-group-prepend">
                   <div class="input-group-text">DOI</div>
                 </div>
-                <input id='citation-input' type="text" class="form-control input-sm" placeholder="Citation">
+                <input data-toggle="popover" data-placement="bottom" onblur='DO()' id='citation-input' type="text" class="form-control input-sm" placeholder="Citation">
               </div>
             </div>
             <div class="col">
@@ -116,8 +116,8 @@
           </div>
         </div>
 
-        <h5> MagIC Data </h5>
-        <p> Select Paleomagnetism.org 2.0.0 files to be added to your MagIC file. If the file does not pass validation return to the <a href="../interpretation/index.html"> Interpretation Portal </a> to fill in all required attributes.
+        <h5> Select Data </h5>
+        <p> Select Paleomagnetism.org 2.0.0 files to be added to your MagIC file. If the file does not pass validation, return to the <a href="../interpretation/index.html"> Interpretation Portal </a> to fill in all required specimen attributes. After checking all specimens you can click <b>Download MagIC file</b> to download your database file.
 
         <!-- File input -->
         <div class="custom-file">

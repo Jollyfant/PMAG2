@@ -494,7 +494,12 @@ function HTTPRequest(url, type, callback) {
     }
 
     // Check the content type
-    return callback(JSON.parse(xhr.response));
+    switch(this.getResponseHeader("Content-Type")) {
+      case "text/plain":
+        return callback(xhr.response);
+      default:
+        return callback(JSON.parse(xhr.response));
+    }
 
   }
 

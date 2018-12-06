@@ -1,6 +1,27 @@
 document.getElementById("customFile").addEventListener("change", fileSelectionHandler);
 document.getElementById("download-magic-button").disabled = true;
 
+const DEMAGNETIZATION_THERMAL = "LP-DIR-T";
+const DEMAGNETIZATION_ALTERNATING = "LP-DIR-AF";
+
+function DO() {
+
+  doiLookup(document.getElementById("citation-input").value, function(citation) {
+
+    if(citation === null) {
+      return;
+    }
+
+    $('#citation-input').popover({"html": true, "title": "<i class='fas fa-book'></i> Found Citation", "content": citation});
+    $('#citation-input').popover('show');
+
+    setTimeout(function() {
+      $('#citation-input').popover('dispose');
+    }, 3000);
+
+  });
+}
+
 var data = null;
 
 function fileSelectionHandler(event) {
@@ -32,16 +53,16 @@ function fileSelectionHandler(event) {
         "<table class='alert alert-" + (isOk ? "success" : "danger") + "' style='width: 100%;'>",
         "  <thead>",
         "  <tr>",
-        "    <td><b>Complete</b></td>",
         "    <td><b>Collection</b></td>",
+        "    <td><b>Complete</b></td>",
         "    <td><b>Number of Specimens</b></td>",
         "    <td><b>Validation</b></td>",
         "  </tr>",
         "  </thead>",
         "  <tbody>",
         "  <tr>",
+        "    <td>" + file.name.split(".").shift() + "</td>",
         "    <td>" + getSuccesfulLabel(isOk) + "</td>",
-        "    <td>" + file.name + "</td>",
         "    <td>" + data.specimens.length + "</td>",
         "    <td>" + (exception === true ? "Validated" : exception) + "</td>",
         "  </tr>",
@@ -64,8 +85,8 @@ function fileSelectionHandler(event) {
         "      <td>Bedding Dip</td>",
         "      <td>Core Azimuth</td>",
         "      <td>Core Dip</td>",
-        "      <td>Age</td>",
-        "      <td>Number of Steps</td>",
+        "      <td>Age (Ma)</td>",
+        "      <td>Measurements</td>",
         "    </tr>",
         "  </thead>"
       ).join("\n");
@@ -78,14 +99,14 @@ function fileSelectionHandler(event) {
           "  <tr>",
           "    <td>" + specimen.name + "</td>",
           "    <td>" + getDemagnetizationTypeLabel(specimen.demagnetizationType) + "</td>",
-          "    <td>" + 0 + "</td>",
-          "    <td>" + 0 + "</td>",
-          "    <td>" + specimen.type + "</td>",
+          "    <td>" + specimen.latitude + "</td>",
+          "    <td>" + specimen.longitude + "</td>",
+          "    <td>" + specimen.lithology + "</td>",
           "    <td>" + specimen.beddingStrike + "</td>",
           "    <td>" + specimen.beddingDip + "</td>",
           "    <td>" + specimen.coreAzimuth + "</td>",
           "    <td>" + specimen.coreDip + "</td>",
-          "    <td>" + 0 + "</td>",
+          "    <td>" + specimen.age + " (" + specimen.ageMin + " ~ " + specimen.ageMax + ")</td>",
           "    <td>" + specimen.steps.length + "</td>",
           "  </tr>"
         ].join("\n"));
@@ -137,8 +158,24 @@ function checkSpecimen(specimen) {
       throw("Demagnetization type is not set.");
     }
 
-    if(specimen.location === null) {
-      throw("Location is not set.");
+    if(specimen.age === null) {
+      throw("Age is not set.");
+    }
+
+    if(specimen.ageMax === null) {
+      throw("Maximum age is not set.");
+    }
+
+    if(specimen.ageMin === null) {
+      throw("Minimum age is not set.");
+    }
+
+    if(specimen.latitude === null) {
+      throw("Latitude is not set.");
+    }
+
+    if(specimen.longitude === null) {
+      throw("Longitude is not set.");
     }
 
     if(specimen.lithology === null) {
@@ -168,7 +205,7 @@ function downloadMagIC() {
     "version": MAGIC_DATA_MODEL_VERSION,
     "timestamp": new Date().toISOString(),
     "contributor": document.getElementById("contributor-input").value,
-    "reference": document.getElementById("citation-input").value,
+    "reference": document.getElementById("citation-input").value || "This study",
     "description": document.getElementById("description-input").value
   }
 
@@ -176,11 +213,11 @@ function downloadMagIC() {
 
     // Contributor and description are required
     if(metadata.contributor === "") {
-      throw(new Exception("Fill in a contributor."));
+      throw(new Exception("The contributor field is required and cannot be empty."));
     }
 
     if(metadata.description === "") {
-      throw(new Exception("Fill in a description."));
+      throw(new Exception("The description field is required and cannot be empty."));
     } 
 
   } catch(exception) {
@@ -257,7 +294,7 @@ function exportMagIC(metadata) {
     // Measurement Parameters
     "meas_step_min",
     "meas_step_max",
-    "meas_step_unit"
+    "meas_step_unit",
     // Orientation
     "azimuth",
     "dip"
@@ -279,7 +316,7 @@ function exportMagIC(metadata) {
     // Raw Measurement
     "magn_x",
     "magn_y",
-    "magn_z"
+    "magn_z",
     // Measurements
     "dir_dec",
     "dir_inc",
@@ -304,6 +341,7 @@ function exportMagIC(metadata) {
     "lat",
     "lon",
     // Age
+    "age",
     "age_low",
     "age_high"
   );
@@ -345,9 +383,6 @@ function exportMagIC(metadata) {
   var magicMeasurements = new Array();
   var magicLocations = new Array();
 
-  const DEMAGNETIZATION_THERMAL = "LP-DIR-T";
-  const DEMAGNETIZATION_ALTERNATING = "LP-DIR-AF";
-
   data.forEach(function(file, i) {
 
     var specimens = JSON.parse(file.data).specimens;
@@ -374,12 +409,12 @@ function exportMagIC(metadata) {
         //throw(new Exception("Could not determine demagnetization type for specimen " + specimen.name));
       }
 
-      latitudes.push(specimen.location.lat);
-      longitudes.push(specimen.location.lng);
+      latitudes.push(specimen.latitude);
+      longitudes.push(specimen.longitude);
       levels.push(specimen.level);
 
       // Save the minimum and maximum ages
-      ages.push(specimen.age.min, specimen.age.max);
+      ages.push(specimen.ageMin, specimen.ageMax);
 
       demagnetizationTypes.add(demagnetizationType);
       lithologies.add(specimen.lithology);
@@ -387,31 +422,44 @@ function exportMagIC(metadata) {
       // TODO handling of ages/locations
       magicSites.push([
         specimen.name,
-        "location-1",
-        1 || specimen.location.lat,
-        1 || specimen.location.lng,
-        1 || specimen.age.value,
-        1 || specimen.age.max,
-        1 || specimen.age.min
+        "location-" + i,
+        "s",
+        "g",
+        demagnetizationType,
+        metadata.reference,
+        "whatever",
+        "whatever",
+        specimen.lithology,
+        specimen.latitude,
+        specimen.longitude,
+        specimen.age,
+        specimen.ageMin,
+        specimen.ageMax
       ].join("\t"));
 
       magicSamples.push([
         specimen.name,
         specimen.name,
+        "s",
+        "g",
         demagnetizationType,
+        metadata.reference,
         specimen.coreAzimuth,
         specimen.coreDip,
-        1 || specimen.location.lat,
-        1 || specimen.location.lng
+        specimen.latitude,
+        specimen.longitude
       ].join("\t"));
 
       magicSpecimens.push([
         specimen.name,
         specimen.name,
+        "g",
         demagnetizationType,
         specimen.steps[0].step,
         specimen.steps[specimen.steps.length - 1].step,
-        specimen.steps.length
+        getStepUnit(demagnetizationType),
+        specimen.coreAzimuth,
+        specimen.coreDip
       ].join("\t"));
 
       // Add all measurement steps
@@ -430,13 +478,14 @@ function exportMagIC(metadata) {
           demagnetizationType,
           metadata.reference,
           (demagnetizationType === DEMAGNETIZATION_ALTERNATING ? toTesla(step.step) : 0),
-          (demagnetizationType === DEMAGNETIZATION_THERMAL ? toKelvin(step.step) : 273),
+          (demagnetizationType === DEMAGNETIZATION_THERMAL ? toKelvin(step.step) : 293),
           direction.length,
           step.x,
           step.y,
           step.z,
           direction.dec,
-          direction.inc
+          direction.inc,
+          direction.length
         ].join("\t"));
 
       });
@@ -451,7 +500,7 @@ function exportMagIC(metadata) {
     magicLocations.push([
       "location-" + i,
       determineLocationType(latitudes, longitudes, levels),
-      "Sediment",
+      "whatever",
       Array.from(lithologies.values()).join(":"),
       latitudes[0],
       latitudes[latitudes.length - 1],
@@ -475,6 +524,17 @@ function exportMagIC(metadata) {
   );
 
   downloadMagICTXT(lines.join("\n"));
+
+}
+
+function getStepUnit(demagnetizationType) {
+
+  switch(demagnetizationType) {
+    case DEMAGNETIZATION_ALTERNATING:
+      return "T";
+    case DEMAGNETIZATION_THERMAL:
+      return "K";
+  }
 
 }
 
@@ -536,3 +596,22 @@ function downloadMagICTXT(payload) {
   downloadURIComponent(FILENAME, MIME_TYPE + "," + encodeURIComponent(payload));
 
 }
+
+function doiLookup(doi, callback) {
+
+  /*
+   * Function doiLookup
+   * Looks up DOI from a registration and returns the citation
+   */
+
+  const DOI_REGISTRATION_URL = "https://crosscite.org/format?" + [
+    "doi=" + doi,
+    "style=apa",
+    "lang=en-US"
+  ].join("&");
+
+  HTTPRequest(DOI_REGISTRATION_URL, "GET", callback);
+
+}
+
+
