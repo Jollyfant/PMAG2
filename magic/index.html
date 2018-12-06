@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+  <head>
+
+    <!-- Required metadata tags -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Paleomagnetism.org 2 - An online environment for paleomagnetic analysis">
+    <meta name="keywords" content="paleomagnetism, interpretation, zijderveld, pca">
+
+    <meta name="author" content="Mathijs Koymans">
+
+    <link rel="stylesheet" href="../style.css">
+
+    <!-- Bootstrap & Font Awesome CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css"
+          integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz"
+          crossorigin="anonymous">
+
+  </head>
+
+  <body>
+
+    <!-- Header -->
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+
+      <a class="navbar-brand" href="http://www.paleomagnetism.org">Paleomagnetism<span class="text-danger">.org</span></a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="../interpretation/index.html">Interpretation</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../statistics/index.html">Statistics</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../geography/index.html">Geography</a>
+          </li>
+          <li class="nav-item">
+            <span class="nav-link disabled" href="#">|</span></li>
+          <li class="nav-item">
+            <a class="nav-link" href="../references/index.html">References</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../team/index.html">Team & Contact</a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="../magic/index.html">MagIC Interface</a>
+          </li>
+        </ul>
+
+        <form class="form-inline my-2 my-lg-0">
+          <a href="../library/index.html" class="btn btn-sm btn-primary my-2 my-sm-0"><i class="fas fa-book-open"></i> <b>Data Library</b></a>
+        </form>
+
+      </div>
+
+    </nav>
+
+    <!-- Main body -->
+    <div class="container">
+
+      <!-- Container for user notifications -->
+      <div id="notification-container"></div>
+
+        <div class="alert alert-light" role="alert">
+          <h5> Paleomagnetism.org 2 - MagIC Interface </h5>
+          <p> The following interface can be used to convert Paleomagentism.org 2.0.0 data to the <a href="https://earthref.org/MagIC">MagIC</a> format. Multiple files can be selected and each will be associated with a unique location and all specimens are mapped as individual sites. Some additional contributor metadata is required.
+          <p> MagIC Data Model Version: <b>3.0</b>
+        </div>
+
+        <br>
+        <div class="text-center">
+          <button id="download-magic-button" class="btn btn-lg btn-success" onclick="downloadMagIC()" type="button" class="btn btn-primary">
+            <i class="fas fa-file-download"></i>&nbsp; Download <b>MagIC</b> file
+          </button>
+          <br>
+        </div>
+
+        <h5> Contribution Metadata </h5>
+        <p> Metadata that describes the contributor of the MagIC file. You may include an optional DOI if this data is related to a publication.
+        <div class="form-group">
+          <div class="row">
+            <div class="col">
+              <div class="input-group mb-6">
+                <div class="input-group-prepend">
+                  <div class="input-group-text">Contributer</div>
+                </div>
+                <input id='contributor-input' type="text" class="form-control input-sm" placeholder="Author" required>
+              </div>
+            </div>
+            <div class="col">
+              <div class="input-group mb-6">
+                <div class="input-group-prepend">
+                  <div class="input-group-text">Citation</div>
+                </div>
+                <input data-trigger="focus" data-toggle="popover" data-placement="bottom" onblur='collectCitation()' id='citation-input' type="text" class="form-control input-sm" placeholder="DOI">
+              </div>
+            </div>
+          </div>
+          <br>
+          <div class="row">
+            <div class="col">
+              <div class="input-group mb-4">
+                <div class="input-group-prepend">
+                  <div class="input-group-text">Description</div>
+                </div>
+                <input id='description-input' type="text" class="form-control input-sm" placeholder="Description" required>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h5> Select Data </h5>
+        <p> Select Paleomagnetism.org 2.0.0 files to be added to your MagIC file. If the file does not pass validation, return to the <a href="../interpretation/index.html">Interpretation Portal</a> to fill in all required specimen attributes. After checking all specimens you can click <b>Download MagIC file</b> to download your database file.
+
+        <!-- File input -->
+        <div class="custom-file">
+          <input type="file" class="custom-file-input" id="customFile" multiple>
+          <label class="custom-file-label" for="customFile"><i class="fas fa-search"></i> Select files </label>
+        </div>
+
+        <br>
+        <br>
+
+        <div class='table-sm text-center table-striped' id="fitted-table-container"></div>
+
+    </div>
+
+
+    <footer id="footer-container" class="container text-muted"></footer>
+
+    <br> 
+
+  </body>
+
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+  <script src="../utils.js"></script>
+  <script src="./magic.js"></script>
+  <script src="../Coordinates.js"></script>
+  <script src="../Direction.js"></script>
+  <script src="../Exception.js"></script>
+
+</html>

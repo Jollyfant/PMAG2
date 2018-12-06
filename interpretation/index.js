@@ -25,7 +25,7 @@ var Measurement = function(step, coordinates, error) {
    * Container for a single demagnetization step
    */
 
-  this.step = step;
+  this.step = step.trim();
 
   this.x = Number(coordinates.x);
   this.y = Number(coordinates.y);
@@ -71,6 +71,8 @@ function addDegmagnetizationFiles(format, files) {
       return files.forEach(importBCN2G);
     case "CENIEH":
       return files.forEach(importCenieh);
+    case "MAGIC":
+      return files.forEach(importMagic);
     default:
       throw(new Exception("Unknown importing format requested."));
   }
@@ -372,63 +374,59 @@ function handleLocationSave(event) {
    * Handler when the location and some additional metadata are saved
    */
 
-  var specimen = getSelectedSpecimen();
+  function setMetadata(specimen) {
 
-  var longitude = Number(document.getElementById("specimen-longitude-input").value);
-  var latitude = Number(document.getElementById("specimen-latitude-input").value);
+    /*
+     * Function handleLocationSave
+     * Handler when the location and some additional metadata are saved
+     */
 
-  var lithology = document.getElementById("specimen-lithology-input").value;
-  if(lithology === "") {
-    lithology = null;
-  }
-
-  var level = document.getElementById("specimen-level-input").value;
-  if(level === "") {
-    level = 0;
-  }
-
-  if(longitude === 0 || latitude === 0) {
-    var specimenLocation = null;
-  } else {
-    var specimenLocation = {"lng": longitude, "lat": latitude};
-  }
-
-  var ageMin = document.getElementById("age-min-input").value;
-  var ageMax = document.getElementById("age-max-input").value;
-  var ageValue = document.getElementById("age-input").value;
-  var ageName = document.getElementById("specimen-age-select").value;
-
-  // Get the age from the boxes
-  var age = {
-    "name": (ageName === "Unknown" ? null : ageName),
-    "value": (ageValue === "" ? null : Number(ageValue)),
-    "min": (ageMin === "" ? null : Number(ageMin)),
-    "max": (ageMax === "" ? null : Number(ageMax))
-  }
-
-  // If apply all has been checked
-  if(document.getElementById("location-apply-all").checked) {
-
-    // Update all samples
-    specimens.forEach(function(x) {
-      x.location = specimenLocation;
-      x.lithology = lithology;
-      x.level = level;
-      x.age = age;
-    });
-
-  } else {
-
-    // Just the referenced specimen
-    specimen.location = specimenLocation;
+    // Metadata parameters are within the function scope
+    specimen.latitude = latitude;
+    specimen.longitude = longitude;
     specimen.lithology = lithology;
     specimen.level = level;
     specimen.age = age;
+    specimen.ageMin = ageMin;
+    specimen.ageMax = ageMax;
 
   }
 
+  function nullOrNumber(value) {
+  
+    /*
+     * Function nullOrNumber
+     * Returns null (if empty string) or a number from a value
+     */
+
+    return (value === "") ? null : Number(value);
+  
+  }
+
+  var specimen = getSelectedSpecimen();
+
+  // Lithology is a semantic vocabulary
+  var lithology = document.getElementById("specimen-lithology-input").value;
+  if(lithology === "null") {
+    lithology = null;
+  }
+
+  var longitude = nullOrNumber(document.getElementById("specimen-longitude-input").value);
+  var latitude = nullOrNumber(document.getElementById("specimen-latitude-input").value);
+  var level = nullOrNumber(document.getElementById("specimen-level-input").value);
+  var ageMin = nullOrNumber(document.getElementById("age-min-input").value);
+  var ageMax = nullOrNumber(document.getElementById("age-max-input").value);
+  var age = nullOrNumber(document.getElementById("age-input").value);
+
+  // If apply all has been checked we apply to all specimens
+  if(document.getElementById("location-apply-all").checked) {
+    specimens.forEach(setMetadata);
+  } else {
+    setMetadata(specimen);
+  }
+
   // Success
-  notify("success", "Succesfully changed the specimen location to <b>" + longitude + "°E</b>, <b>" + latitude + "°N</b>.");
+  notify("success", "Succesfully changed metadata for specimen <b>" + specimen.name + "</b>.");
 
   $("#map-modal").modal("hide");
 
@@ -1151,32 +1149,56 @@ function modalOpenHandler() {
   var specimen = getSelectedSpecimen();
 
   // Update title to show the specimen
-  document.getElementById("exampleModalLabel").innerHTML = "<i class='fas fa-map-marker-alt'></i> &nbsp; Select Specimen location for " + specimen.name;
+  document.getElementById("exampleModalLabel").innerHTML = "<i class='fas fa-map-marker-alt'></i> &nbsp; Specimen metadata for " + specimen.name;
+
+  // Clear cached form entries
+  document.getElementById("specimen-age-select").value = null;
+  document.getElementById("specimen-lithology-input").value = null;
+  document.getElementById("age-input").value = "";
+  document.getElementById("age-min-input").value = "";
+  document.getElementById("age-max-input").value = "";
+  document.getElementById("specimen-latitude-input").value = "";
+  document.getElementById("specimen-longitude-input").value = "";
+  document.getElementById("specimen-level-input").value = "";
 
   // If this specimen is located, put on map
-  if(leafletMarker && specimen.location) {
-    leafletMarker.setLatLng(new L.LatLng(specimen.location.lat, specimen.location.lng));
+  if(leafletMarker && specimen.latitude !== null && specimen.longitude !== null) {
+    leafletMarker.setLatLng(new L.LatLng(specimen.latitude, specimen.longitude));
   }
 
-  if(specimen.location) {
-    document.getElementById("specimen-longitude-input").value = specimen.location.lng;
-    document.getElementById("specimen-latitude-input").value = specimen.location.lat;
+  // Set current specimen location
+  if(specimen.latitude !== null) {
+    document.getElementById("specimen-latitude-input").value = specimen.latitude;
+  }
+
+  if(specimen.longitude !== null) {
+    document.getElementById("specimen-longitude-input").value = specimen.longitude;
   }
 
   // Set the age
-  if(specimen.age) {
-    document.getElementById("age-min-input").value = specimen.age.min;
-    document.getElementById("age-max-input").value = specimen.age.max;
-    document.getElementById("age-input").value = specimen.age.value;
-    document.getElementById("specimen-age-select").value = specimen.age.name;
+  if(specimen.age !== null) {
+    document.getElementById("age-input").value = specimen.age;
+  }
+  if(specimen.ageMin !== null) {
+    document.getElementById("age-min-input").value = specimen.ageMin;
+  }
+  if(specimen.ageMax !== null) {
+    document.getElementById("age-max-input").value = specimen.ageMax;
+  }
+
+  // Set geologic timescale if required
+  if(specimen.ageMin !== null && specimen.ageMax !== null) {
+    setGeologicalTimescale(specimen);
   }
 
   // Set the existing lithology
-  if(specimen.lithology) {
+  if(specimen.lithology !== null) {
     document.getElementById("specimen-lithology-input").value = specimen.lithology;
   }
 
-  document.getElementById("specimen-level-input").value = specimen.level;
+  if(specimen.level !== null) {
+    document.getElementById("specimen-level-input").value = specimen.level;
+  }
 
   // Resize map to modal
   map.invalidateSize();
@@ -1334,7 +1356,11 @@ function formatStepTable() {
 
   var direction = inReferenceCoordinates(COORDINATES, specimen, new Coordinates(step.x, step.y, step.z)).toVector(Direction);
 
-  var specimenLocation = specimen.location === null ? "<span style='pointer-events: none;' class='text-muted'>Unknown</span>" : (specimen.location.lng.toFixed(3) + ", " + specimen.location.lat.toFixed(3));
+  if(specimen.latitude === null || specimen.longitude === null || specimen.age === null && specimen.ageMin === null || specimen.ageMax === null || specimen.lithology === null) {
+    var specimenLocation = "<span style='pointer-events: none;' class='text-muted'>" + getSuccesfulLabel(false) + " Edit</span>";
+  } else {
+    var specimenLocation = "<span style='pointer-events: none;' class='text-muted'>" + getSuccesfulLabel(true) + " Edit</span>";
+  }
 
   document.getElementById("table-container").innerHTML = [
     "  <caption>Specimen and Demagnetization Details</caption>",
@@ -1350,7 +1376,7 @@ function formatStepTable() {
     "      <td>Core Dip</td>",
     "      <td>Bedding Strike</td>",
     "      <td>Bedding Dip</td>",
-    "      <td class='text-success' title='Specimen location'><i class='fas fa-map-marker-alt'></i> Info</td>",
+    "      <td class='text-primary' title='Specimen location'><i class='fas fa-map-marker-alt'></i> Metadata</td>",
     "    </tr>",
     "  </thead>",
     "  <tbody>",
@@ -1589,8 +1615,8 @@ function downloadInterpretationsCSV() {
         specimen.beddingStrike,
         specimen.beddingDip,
         specimen.level,
-        specimen.location ? specimen.location.lng : null,
-        specimen.location ? specimen.location.lat : null,
+        specimen.longitude,
+        specimen.latitude,
         interpretation.MAD,
         interpretation.anchored,
         interpretation.type,
@@ -1853,7 +1879,6 @@ function makeInterpretation(specimen, options) {
     "steps": stepValues,
     "anchored": options.anchored,
     "type": options.type,
-    "anchored": options.anchored,
     "created": new Date().toISOString(),
     "group": GROUP,
     "MAD": PCA.MAD,

@@ -47,7 +47,7 @@ function getStatisticalParameters(components) {
    */
 
   // Create a fake site at 0, 0 since we only look at the distritbuion of VGPs and not the actual positions
-  var site = new Site({"lng": 0, "lat": 0});
+  var site = new Site(0, 0);
 
   // Get the directions and pole for each vector
   var directions = components.filter(x => !x.rejected).map(x => literalToCoordinates(x.coordinates).toVector(Direction));
@@ -494,7 +494,12 @@ function HTTPRequest(url, type, callback) {
     }
 
     // Check the content type
-    return callback(JSON.parse(xhr.response));
+    switch(this.getResponseHeader("Content-Type")) {
+      case "text/plain":
+        return callback(xhr.response);
+      default:
+        return callback(JSON.parse(xhr.response));
+    }
 
   }
 
@@ -562,6 +567,17 @@ function readMultipleFiles(files, callback) {
     }
 
   })();
+
+}
+
+function getSuccesfulLabel(bool) {
+
+  /*
+   * Function getSuccesfulLabel
+   * Maps TRUE to success and FALSE to error label
+   */
+
+  return (bool ? "<i class='fas fa-check text-success'></i>" : "<i class='fas fa-times text-danger'></i>");
 
 }
 

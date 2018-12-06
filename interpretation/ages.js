@@ -1,5 +1,5 @@
 const TIME_SCALE_AGES = {
-	"Unknown": {
+	"null": {
 		"min": "",
 		"max": "",
 		"level": 0
@@ -805,7 +805,7 @@ function addAges() {
     var option = document.createElement("option");
 
     // Indent the name based on its level
-    option.text = INDENTATION_CHARACTER.repeat(2 * TIME_SCALE_AGES[age].level) + age;
+    option.text = age === "null" ? "Unknown" : INDENTATION_CHARACTER.repeat(2 * TIME_SCALE_AGES[age].level) + age;
     option.value = age;
 
     document.getElementById("specimen-age-select").add(option);
@@ -818,6 +818,11 @@ document.getElementById("specimen-age-select").addEventListener("change", handle
 
 function handleAgeSelection(event) {
 
+  /*
+   * Function handleAgeSelection
+   * Handles event fired when an age is selected
+   */
+
   var value = event.target.value;
 
   var min = TIME_SCALE_AGES[value].min;
@@ -827,6 +832,25 @@ function handleAgeSelection(event) {
   document.getElementById("age-input").value = average;
   document.getElementById("age-min-input").value = min
   document.getElementById("age-max-input").value = max;
+
+}
+
+function setGeologicalTimescale(specimen) {
+
+  /*
+   * Function setGeologicalTimescale
+   * Checks minimun maximum age and sets the appropriate geological timescale
+   */
+
+  Object.keys(TIME_SCALE_AGES).forEach(function(key) {
+
+    var x = TIME_SCALE_AGES[key];
+
+    if(specimen.ageMin === x.min && specimen.ageMax === x.max) {
+      document.getElementById("specimen-age-select").value = key;
+    }
+
+  });
 
 }
 

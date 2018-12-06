@@ -1759,7 +1759,7 @@ function eqAreaProjection() {
   var dataSeries = new Array();
   var dataSeriesPole = new Array();
 
-  var baseSite = new Site({"lng": 0, "lat": 0});
+  var baseSite = new Site(0, 0);
 
   // Add each component
   allComponents.components.forEach(function(component) {
@@ -1962,10 +1962,7 @@ function transformEllipse(A95Ellipse, dir) {
    */
 
   // Create a fake site at the location of the expected paleolatitude
-  var site = new Site({
-    "lng": 0,
-    "lat": Math.abs(dir.lambda)
-  });
+  var site = new Site(0, Math.abs(dir.lambda));
 
   // Go over each point and transform VGP to direction at location
   var a95Ellipse = A95Ellipse.map(function(point) {
