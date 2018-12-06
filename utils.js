@@ -565,6 +565,17 @@ function readMultipleFiles(files, callback) {
 
 }
 
+function getSuccesfulLabel(bool) {
+
+  /*
+   * Function getSuccesfulLabel
+   * Maps TRUE to success and FALSE to error label
+   */
+
+  return (bool ? "<i class='fas fa-check text-success'></i>" : "<i class='fas fa-times text-danger'></i>");
+
+}
+
 function getDemagnetizationTypeLabel(type) {
 
   /*
