@@ -387,7 +387,7 @@ function plotZijderveldDiagram(hover) {
   });
 
   var graphScale = Math.max.apply(Math, graphScale) + 1;
-  var tickFlag = false;
+  var tickFlag = true;
   var enableLabels = false;
 
   var vHover;
@@ -443,7 +443,7 @@ function plotZijderveldDiagram(hover) {
    }
 
   // Create the chart
-  Highcharts.chart(CHART_CONTAINER, {
+  var chart = Highcharts.chart(CHART_CONTAINER, {
     "chart": {
     "animation": false,
     "id": "zijderveld-container",
@@ -479,8 +479,8 @@ function plotZijderveldDiagram(hover) {
       "min": -graphScale,
       "max": graphScale,
       "gridLineWidth": 0,
-      "startOnTick": true,
-      "endOnTick": true,
+      "startOnTick": false,
+      "endOnTick": false,
       "tickWidth": tickFlag ? 1 : 0,
       "lineWidth": 1,
       "opposite": true,
@@ -499,11 +499,11 @@ function plotZijderveldDiagram(hover) {
       "reversed": true,
       "gridLineWidth": 0,
       "lineWidth": 1,
-      "endOnTick": true,
+      "endOnTick": false,
       "tickWidth": tickFlag ? 1 : 0,
       "minRange": 10,
       "lineColor": "black",
-      "startOnTick": true,
+      "startOnTick": false,
       "crossing": 0,
       "min": -graphScale,
       "max": graphScale,
@@ -596,6 +596,31 @@ function plotZijderveldDiagram(hover) {
       }
     }].concat(formatInterpretationSeries(graphScale, specimen.interpretations))
   });
+
+  // Set ratio of axes for true angle
+  setZijderveldRatio(chart);
+
+}
+
+function setZijderveldRatio(chart) {
+
+  /*
+   * Function setZijderveldRatio
+   * Sets the correct ratio of the Zijderveld diagram (true angle)
+   */
+
+  var [xAxis, yAxis] = chart.axes;
+
+  // Determine the ratio between width/height
+  var ratio = (xAxis.width / yAxis.height);
+
+  if(xAxis.width === yAxis.height) {
+    return;
+  } else if(xAxis.width > yAxis.height) {
+    xAxis.setExtremes(xAxis.min * ratio, xAxis.max * ratio);
+  } else if(xAxis.width < yAxis.height) {
+    yAxis.setExtremes(yAxis.min / ratio, yAxis.max / ratio);
+  }
 
 }
 
