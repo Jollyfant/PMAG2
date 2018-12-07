@@ -60,23 +60,19 @@ function collectCitation() {
     return notify("warning", new Exception("The submitted DOI is not valid."));
   }
 
+  // Look up the DOI @ CrossRef
   doiLookup(submittedDOI, function(citation) {
 
     if(citation === null) {
       return;
     }
 
-    
-    $("#citation-input").popover({
-      "html": true,
-      "title": "<i class='fas fa-book'></i> Found Citation",
-      "content": citation
-    }).popover("show");
+    // Parse the string to make a link out of the returned DOI
+    var split = citation.split(" ");
+    var link = split.pop();
+    split.push(createLink(link, link))
 
-    // Disepose of the popover after a timeout
-    setTimeout(function() {
-      $("#citation-input").popover("dispose");
-    }, DOI_DISPOSE_TIMEOUT_MS);
+    notify("success", "<i class='fas fa-book'></i><b> Found citation: </b>" + split.join(" ")); 
 
   });
 
@@ -683,3 +679,5 @@ function doiLookup(doi, callback) {
   HTTPRequest(DOI_REGISTRATION_URL, "GET", callback);
 
 }
+
+addEventHandlers();

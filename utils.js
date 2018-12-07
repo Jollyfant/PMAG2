@@ -661,5 +661,11 @@ function addFooter() {
 
 }
 
+function createLink(href, text) {
+
+  return "<a href='" + href + "'>" + text + "</a>";
+
+}
+
 // Add the footer to every page
 addFooter();
