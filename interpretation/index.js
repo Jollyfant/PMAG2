@@ -1569,7 +1569,6 @@ function downloadInterpretationsCSV() {
    */
 
   const FILENAME = "interpretations.csv";
-  const ITEM_DELIMITER = ",";
 
   const CSV_HEADER = new Array(
     "name", "declination", "inclination",
@@ -1939,11 +1938,11 @@ function sortSamples(type) {
     }
 
     function ageSorter(x, y) {
-      return (x.age ? x.age.value : 0) - (y.age ? y.age.value : 0);
+      return numericSort(x.age, y.age);
     }
 
     function stratigraphySorter(x, y) {
-      return x.level - y.level;
+      return numericSort(x.level, x.level);
     }
 
     switch(type) {
@@ -1966,7 +1965,12 @@ function sortSamples(type) {
   // Sort the samples in place
   specimens.sort(getSortFunction(type));
 
-  notify("success", "Succesfully sorted specimens by <b>" + type + "</b>.");
+  // Better information handling
+  if(type === "bogo") {
+    notify("success", "Succesfully sorted specimens <b>randomly</b>.");
+  } else {
+    notify("success", "Succesfully sorted specimens by <b>" + type + "</b>.");
+  }
 
   updateSpecimenSelect();
 
@@ -1974,13 +1978,24 @@ function sortSamples(type) {
 
 function interpretationTabOpen() {
 
-  return Array.from($("#nav-tab a.active")).pop().id === "nav-profile-tab";
+  return isTabOpen("nav-profile-tab");
 
 }
 
 function fittingTabOpen() {
 
-  return Array.from($("#nav-tab a.active")).pop().id === "nav-fitting-tab";
+  return isTabOpen("nav-fitting-tab");
+
+}
+
+function isTabOpen(tab) {
+
+  /*
+   * Function isTabOpen
+   * returns TRUE when the tab with the passed identifier is open
+   */
+
+  return Array.from($("#nav-tab a.active")).pop().id === tab;
 
 }
 

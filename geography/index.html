@@ -152,13 +152,29 @@
                   <div class="card-header" id="headingOne" style='padding: 0px'>
                     <h5 class="mb-0">
                     <button class="btn btn-link btn-sm" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                      Settings <small>(expand)</small>
+                      Map Settings <small>(expand)</small>
                     </button>
                     </h5>
                   </div>
             
                   <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
                     <div class="card-body" style='text-align: left;'>
+
+                      <div class="form-check text-center">
+                        <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" checked>
+                        <label class="form-check-label" for="defaultCheck1">
+                          Enable grid
+                        </label>
+                        &nbsp;
+                        &nbsp;
+                        &nbsp;
+                        <input class="form-check-input" type="checkbox" value="" id="geology-layer-toggle" checked>
+                        <label class="form-check-label" for="geology-layer-toggle">
+                          Enable Geology
+                        </label>
+                      </div>
+
+                      <br>
 
                       <div class="form-group">
                         <div class="row">
@@ -179,30 +195,26 @@
                             </div>
                           </div>
                         </div>
-                          <figcaption class="figure-caption">Site location used in predicting directions.</figcaption>
 
                       </div>
 
                       <hr>
  
-                      <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" checked>
-                        <label class="form-check-label" for="defaultCheck1">
-                          Enable grid
-                        </label>
-                        &nbsp;
-                        &nbsp;
-                        <input class="form-check-input" type="checkbox" value="" id="geology-layer-toggle" checked>
-                        <label class="form-check-label" for="geology-layer-toggle">
-                          Enable Geology
-                        </label>
+                      <div class="input-group">
+                        <div class="input-group-prepend">
+                          <button onClick="removeKMLLayers()" id="kml-remove" class="btn btn-danger"><i class="fas fa-ban"></i></button>
+                        </div>
+                        <div class="custom-file">
+                          <input type="file" class="custom-file-input" id="kml-upload">
+                          <label class="custom-file-label" for="kml-upload">Custom KML Overlay</label>
+                        </div>
                       </div>
 
-                      <hr>
+                      <br>
+
                       <div class="custom-file">
                         <input type="file" class="custom-file-input" id="euler-upload">
                         <label class="custom-file-label" for="euler-upload">Custom Euler Rotations</label>
-                        <figcaption class="figure-caption">Select <i>.csv</i> of Euler poles relative to <b>701</b> (GPlates).</figcaption>
                       </div>
 
                     </div>
@@ -210,7 +222,7 @@
                 </div>
               </div>
             </div>
-            <div id="map" class="map" style="z-index: 1"></div>
+            <div id="map" class="map" style="z-index: 1; height: 400px;"></div>
           </div>
           <figcaption class="figure-caption text-right">Map showing mean declinations and confidence parachutes for the selected collections. Normal and reversed polarities are shown in black and white respectively.</figcaption>
 
@@ -404,23 +416,25 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.2/js/bootstrap-select.min.js"></script>
   <!-- Include leaflet -->
 
-   <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"
-     integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA=="
-     crossorigin=""></script>
+  <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"
+    integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA=="
+    crossorigin=""></script>
 
-   <script src="../utils.js"></script>
+  <script src="./togeojson.js"></script>
 
-   <script src="../Exception.js"></script>
-   <script src="./grid.js"></script>
-   <script src="../Direction.js"></script>
-   <script src="../Pole.js"></script>
-   <script src="../Location.js"></script>
-   <script src="../Coordinates.js"></script>
-   <script src="../Site.js"></script>
-   <script src="./apwp.js"></script>
-   <script src="../Distribution.js"></script>
-   <script src="./Euler.js"></script>
-   <script src="./index.js"></script>
-   <script src="./exporting.js"></script>
+  <script src="../utils.js"></script>
+
+  <script src="../Exception.js"></script>
+  <script src="./grid.js"></script>
+  <script src="../Direction.js"></script>
+  <script src="../Pole.js"></script>
+  <script src="../Location.js"></script>
+  <script src="../Coordinates.js"></script>
+  <script src="../Site.js"></script>
+  <script src="./apwp.js"></script>
+  <script src="../Distribution.js"></script>
+  <script src="./Euler.js"></script>
+  <script src="./index.js"></script>
+  <script src="./exporting.js"></script>
 
 </html>

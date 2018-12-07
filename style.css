@@ -2,6 +2,7 @@ body {
   padding-top: 5rem;
 }
 
+
 #wrapper {
   position: relative;
 }
@@ -65,9 +66,9 @@ select {
 }
 
 .card-img-top {
-  min-width: 100%;
-  width: auto;
-  height: auto;
+  padding: 20px;
+  border-radius: 50%;
+  border: 1px solid lightgrey;
 }
 
 #notification-container {

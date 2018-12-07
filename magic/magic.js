@@ -1,9 +1,38 @@
+/*
+ * File MagIC.js
+ * Handler for magic exporting
+ */
+
 document.getElementById("customFile").addEventListener("change", fileSelectionHandler);
 document.getElementById("download-magic-button").disabled = true;
+document.addEventListener("keydown", keyboardHandler);
 
 const DEMAGNETIZATION_THERMAL = "LP-DIR-T";
 const DEMAGNETIZATION_ALTERNATING = "LP-DIR-AF";
 var data = null;
+
+function keyboardHandler(event) {
+
+  /*
+   * Function keyboardHandler
+   * Handles keyboard events
+   */
+
+  const CODES = new Object({
+    "ESCAPE_KEY": 27
+  });
+
+  // Override the default handlers
+  if(!Object.values(CODES).includes(event.keyCode)) {
+    return;
+  }
+
+  switch(event.keyCode) {
+    case CODES.ESCAPE_KEY:
+      return document.getElementById("notification-container").innerHTML = ""; 
+  }
+
+}
 
 function collectCitation() {
 
@@ -16,6 +45,7 @@ function collectCitation() {
 
   var submittedDOI = document.getElementById("citation-input").value;
 
+  // Do nothing when empty
   if(submittedDOI === "") {
     return;
   }
@@ -44,6 +74,7 @@ function collectCitation() {
     }, DOI_DISPOSE_TIMEOUT_MS);
 
   });
+
 }
 
 
@@ -103,11 +134,11 @@ function fileSelectionHandler(event) {
         "  <thead>",
         "    <tr>",
         "      <td>Specimen</td>",
-        "      <td>Demagnetization Type</td>",
+        "      <td>Method</td>",
         "      <td>Location</td>",
         "      <td>Lithology</td>",
-        "      <td>Bedding Strike</td>",
-        "      <td>Bedding Dip</td>",
+        "      <td>Bed Strike</td>",
+        "      <td>Bed Dip</td>",
         "      <td>Core Azimuth</td>",
         "      <td>Core Dip</td>",
         "      <td>Age (Ma)</td>",
@@ -177,7 +208,8 @@ function checkSpecimen(specimen) {
    */
 
   try {
-
+  
+    // Check all the required metadata
     if(specimen.demagnetizationType === null) {
       throw("Demagnetization type is not set.");
     }
@@ -221,10 +253,12 @@ function downloadMagIC() {
 
   const MAGIC_DATA_MODEL_VERSION = "3.0";
 
+  // Block when no files loaded
   if(data === null) {
     return notify("danger", new Exception("No collections were loaded."));    
   }
 
+  // Construct metadata fields
   const metadata = {
     "version": MAGIC_DATA_MODEL_VERSION,
     "timestamp": new Date().toISOString(),
@@ -233,21 +267,23 @@ function downloadMagIC() {
     "description": document.getElementById("description-input").value
   }
 
+  // Metadata sanitization
   try {
 
     // Contributor and description are required
     if(metadata.contributor === "") {
-      throw(new Exception("The contributor field is required and cannot be empty."));
+      throw("The contributor field is required and cannot be empty.");
     }
 
     if(metadata.description === "") {
-      throw(new Exception("The description field is required and cannot be empty."));
+      throw("The description field is required and cannot be empty.");
     } 
 
   } catch(exception) {
-    return notify("danger", exception);
+    return notify("danger", new Exception(exception));
   }
 
+  // Call to create a MagIC file
   exportMagIC(metadata);
 
 }
@@ -271,8 +307,8 @@ function exportMagIC(metadata) {
   
     return new Array(
       "tab delimited\t" + name,
-      header.join("\t"),
-      body.join("\n"),
+      header.join(TAB_DELIMITER),
+      body.join(LINE_DELIMITER),
       MAGIC_TABLE_DELIMITER
     );
     
@@ -430,7 +466,7 @@ function exportMagIC(metadata) {
       } else if(specimen.demagnetizationType === "alternating") {
         demagnetizationType = DEMAGNETIZATION_ALTERNATING;
       } else {
-        //throw(new Exception("Could not determine demagnetization type for specimen " + specimen.name));
+        throw(new Exception("Could not determine demagnetization type for specimen " + specimen.name));
       }
 
       latitudes.push(specimen.latitude);
@@ -537,21 +573,26 @@ function exportMagIC(metadata) {
 
   });
 
-  // Concatenate information of all tables
+  // Concatenate information of all the MagIC tables
   var lines = new Array(
-    createTable("contribution", contributionHeader, magicContribution).join("\n"),
-    createTable("locations", locationHeader, magicLocations).join("\n"),
-    createTable("locations", siteHeader, magicSites).join("\n"),
-    createTable("samples", sampleHeader, magicSamples).join("\n"),
-    createTable("specimens", specimensHeader, magicSpecimens).join("\n"),
-    createTable("measurements", measurementHeader, magicMeasurements).join("\n")
-  );
+    createTable("contribution", contributionHeader, magicContribution),
+    createTable("locations", locationHeader, magicLocations),
+    createTable("locations", siteHeader, magicSites),
+    createTable("samples", sampleHeader, magicSamples),
+    createTable("specimens", specimensHeader, magicSpecimens),
+    createTable("measurements", measurementHeader, magicMeasurements)
+  ).map(table => table.join(LINE_DELIMITER)).join(LINE_DELIMITER);
 
-  downloadMagICTXT(lines.join("\n"));
+  downloadMagICTXT(lines);
 
 }
 
 function getStepUnit(demagnetizationType) {
+
+  /*
+   * Function getStepUnit
+   * Returns the step unit based ont he demagnetization type (Tesla T or Kelvin K)
+   */
 
   switch(demagnetizationType) {
     case DEMAGNETIZATION_ALTERNATING:
@@ -569,7 +610,7 @@ function toTesla(step) {
    * Converts a step to a value in Tesla (assumes mT)
    */
 
-  return 1E-3 * Number(step.replace(/[^0-9]/g, ""));
+  return 1E-3 * extractNumbers(step);
 
 }
 
@@ -580,7 +621,7 @@ function toKelvin(step) {
    * Converts a step to a value in Kelvin (assumes C)
    */
 
-  return Number(step.replace(/[^0-9]/g, ""));
+  return 273 + extractNumbers(step);
 
 }
 
@@ -615,7 +656,7 @@ function downloadMagICTXT(payload) {
    */
 
   const MIME_TYPE = "data:text/plain;charset=utf-8";
-  const FILENAME = "magic.txt";
+  const FILENAME = "MagIC.txt";
 
   downloadURIComponent(FILENAME, MIME_TYPE + "," + encodeURIComponent(payload));
 
@@ -628,14 +669,12 @@ function doiLookup(doi, callback) {
    * Looks up DOI from a registration and returns the citation
    */
 
-  const DOI_REGISTRATION_URL = "https://crosscite.org/format?" + [
+  const DOI_REGISTRATION_URL = "https://crosscite.org/format?" + new Array(
     "doi=" + doi,
     "style=apa",
     "lang=en-US"
-  ].join("&");
+  ).join("&");
 
   HTTPRequest(DOI_REGISTRATION_URL, "GET", callback);
 
 }
-
-

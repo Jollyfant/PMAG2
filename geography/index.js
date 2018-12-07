@@ -1,4 +1,5 @@
 var collections = new Array();
+var KMLLayers = new Array();
 var mapMakers = new Array();
 
 function addMap() {
@@ -248,6 +249,7 @@ function registerEventHandlers() {
 
   // Simple listeners
   document.getElementById("euler-upload").addEventListener("change", eulerSelectionHandler);
+  document.getElementById("kml-upload").addEventListener("change", kmlSelectionHandler);
   document.getElementById("customFile").addEventListener("change", fileSelectionHandler);
   document.getElementById("specimen-select").addEventListener("change", siteSelectionHandler);
   document.getElementById("cutoff-selection").addEventListener("change", redrawCharts);
@@ -1425,7 +1427,47 @@ function mapPlate(id) {
 
 }
 
+function removeKMLLayers() {
+
+  /*
+   * Function 
+   * Handles selection of KML file from disk
+   */
+
+  KMLLayers.forEach(x => map.removeLayer(x));
+  KMLLayers = new Array();
+
+}
+
+function kmlSelectionHandler(event) {
+
+  /*
+   * Function kmlSelectionHandler
+   * Handles selection of KML file from disk
+   */
+
+  function file2XMLDOM(file) {
+    return new DOMParser().parseFromString(file.data, "text/xml");
+  }
+
+  // Read all selected files from disk and add them to the map
+  readMultipleFiles(Array.from(event.target.files), function(files) {
+
+    // Some convertions to GeoJSON
+    files.map(file2XMLDOM).map(toGeoJSON.kml).map(L.geoJSON).forEach(function(layer) {
+      KMLLayers.push(layer.addTo(map));
+    });
+
+  });
+
+}
+
 function eulerSelectionHandler(event) {
+
+  /*
+   * Function eulerSelectionHandler
+   * Callback fired when the euler file selection is clicked
+   */
 
   function parseLine(line) {
 
