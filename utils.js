@@ -6,6 +6,7 @@ const PROJECTION_TYPE = "AREA";
 const warning = new Audio("sounds/error.mp3");
 const notification = new Audio("sounds/notification.mp3");
 
+// Color definitions
 const HIGHCHARTS_BLUE = "#7CB5EC";
 const HIGHCHARTS_BLACK = "#434348";
 const HIGHCHARTS_GREEN = "#90ED7D";
