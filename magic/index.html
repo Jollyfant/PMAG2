@@ -75,13 +75,13 @@
         <div class="alert alert-light" role="alert">
           <h5> Paleomagnetism.org 2 - MagIC Interface </h5>
           <p> The following interface can be used to convert Paleomagentism.org 2.0.0 data to the <a href="https://earthref.org/MagIC">MagIC</a> format. Multiple files can be selected and each will be associated with a unique location and all specimens are mapped as individual sites. Some additional contributor metadata is required.
-          <p> MagIC Data Model Version: <b>3.0</b>
+          <p> MagIC Data Model Version: <b>v3.0</b>
         </div>
 
         <br>
         <div class="text-center">
           <button id="download-magic-button" class="btn btn-lg btn-success" onclick="downloadMagIC()" type="button" class="btn btn-primary">
-            <i class="fas fa-file-download"></i>&nbsp; Download <b>MagIC</b> file
+            <i class="fas fa-magic"></i>&nbsp; Download <b>MagIC</b> file
           </button>
           <br>
         </div>
@@ -103,7 +103,7 @@
                 <div class="input-group-prepend">
                   <div class="input-group-text">Citation</div>
                 </div>
-                <input data-trigger="focus" data-toggle="popover" data-placement="bottom" onblur='collectCitation()' id='citation-input' type="text" class="form-control input-sm" placeholder="DOI">
+                <input onblur='collectCitation()' id='citation-input' type="text" class="form-control input-sm" placeholder="DOI">
               </div>
             </div>
           </div>

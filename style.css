@@ -40,11 +40,15 @@ select {
 }
 
 img:hover {
-  opacity: 0.75;
+  opacity: 0.8;
 }
 
 select::-ms-expand {
-    display: none;
+  display: none;
+}
+
+.card-deck .card {
+  border: 0px;
 }
 
 .map {
@@ -65,9 +69,8 @@ select {
 }
 
 .card-img-top {
-  min-width: 100%;
-  width: auto;
-  height: auto;
+  border-radius: 50%;
+  border: 1px solid lightgrey;
 }
 
 #notification-container {

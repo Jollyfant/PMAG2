@@ -1,4 +1,5 @@
 var collections = new Array();
+var KMLLayers = new Array();
 var mapMakers = new Array();
 
 function addMap() {
@@ -88,8 +89,6 @@ function mapTabFocusHandler() {
 
 }
 
-addMap();
-
 function getPublicationFromPID() {
 
   /*
@@ -147,6 +146,8 @@ function __init__() {
     });
 
   }
+
+  addMap();
 
   notify("success", "Welcome to the statistics portal. Add data below from the <b>Paleomagnetism.org 2.0.0</b> format to get started.");
 
@@ -247,7 +248,8 @@ function registerEventHandlers() {
    */
 
   // Simple listeners
-  document.getElementById("euler-upload").addEventListener("change", eulerSelectionHandler);
+  //document.getElementById("euler-upload").addEventListener("change", eulerSelectionHandler);
+  document.getElementById("kml-upload").addEventListener("change", kmlSelectionHandler);
   document.getElementById("customFile").addEventListener("change", fileSelectionHandler);
   document.getElementById("specimen-select").addEventListener("change", siteSelectionHandler);
   document.getElementById("cutoff-selection").addEventListener("change", redrawCharts);
@@ -1425,9 +1427,74 @@ function mapPlate(id) {
 
 }
 
+function removeKMLLayers() {
+
+  /*
+   * Function 
+   * Handles selection of KML file from disk
+   */
+
+  // Remove all layers
+  KMLLayers.forEach(x => map.removeLayer(x));
+  KMLLayers = new Array();
+
+}
+
+function kmlSelectionHandler(event) {
+
+  /*
+   * Function kmlSelectionHandler
+   * Handles selection of KML file from disk
+   */
+
+  function file2XMLDOM(file) {
+
+    /*
+     * Function kmlSelectionHandler::file2XMLDOM
+     * Converts file data to DOMParser object and throws during error
+     */
+
+    var XMLDocument = new DOMParser().parseFromString(file.data, "text/xml");
+
+    if(XMLDocument.getElementsByTagName("parsererror").length) {
+      throw(new Exception("Could not add overlay: invalid KML."));
+    }
+
+    return XMLDocument;
+
+  }
+
+  // Read all selected files from disk and add them to the map
+  readMultipleFiles(Array.from(event.target.files), function(files) {
+
+    // Some convertions to GeoJSON
+    try { 
+      var layers = files.map(file2XMLDOM).map(toGeoJSON.kml).map(L.geoJSON);
+    } catch(exception) {
+      return notify("danger", exception);
+    }
+
+    // Add all the layers
+    layers.forEach(x => KMLLayers.push(x.addTo(map)));
+    notify("success", "Succesfully added " + layers.length + " overlay(s) to map.");
+
+  });
+
+}
+
 function eulerSelectionHandler(event) {
 
+  /*
+   * Function eulerSelectionHandler
+   * Callback fired when the euler file selection is clicked
+   */
+
   function parseLine(line) {
+
+    /*
+     * Function eulerSelectionHandler::parseLine
+     * Parses a single line of the file
+     */
 
     var values = line.split(",");
 
@@ -1544,6 +1611,5 @@ function fileSelectionHandler(event) {
   });
 
 }
-
 
 __init__();

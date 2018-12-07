@@ -6,6 +6,7 @@ const PROJECTION_TYPE = "AREA";
 const warning = new Audio("sounds/error.mp3");
 const notification = new Audio("sounds/notification.mp3");
 
+// Color definitions
 const HIGHCHARTS_BLUE = "#7CB5EC";
 const HIGHCHARTS_BLACK = "#434348";
 const HIGHCHARTS_GREEN = "#90ED7D";
@@ -21,6 +22,11 @@ const PLOTBAND_COLOR_BLUE = "rgba(119, 152, 191, 0.25)";
 const PLOTBAND_COLOR_RED = "rgba(191, 119, 152, 0.25)";
 
 const ENABLE_CREDITS = false;
+
+// CSV delimiters
+const ITEM_DELIMITER = ",";
+const TAB_DELIMITER = "\t";
+const LINE_DELIMITER = "\n";
 
 document.title = "Paleomagnetism.org " + __VERSION__;
 
@@ -38,6 +44,18 @@ function getRotationMatrix(lambda, phi) {
   );
 
 }
+
+function extractNumbers(string) {
+
+  /*
+   * Function extractNumbers
+   * Extracts number from a string (e.g. 100C, 100mT will become 100)
+   */
+
+  return Number(string.replace(/[^0-9.]/g, ""));
+
+}
+
 
 function getStatisticalParameters(components) {
 
@@ -271,6 +289,7 @@ function getPlaneData(direction, angle) {
 
   }
 
+  // No angle is passed: assume a plane (angle = 90)
   if(angle === undefined) {
     angle = 90;
   }
@@ -503,6 +522,7 @@ function HTTPRequest(url, type, callback) {
 
   }
 
+  // Ingore errors
   xhr.onerror = function(error) {
     callback(null);
   }
@@ -606,6 +626,11 @@ function numericSort(a, b) {
    * Sort function to sort an array numerically
    */
 
+  // No sorting if one is null
+  if(a === null || b === null) {
+    return 0;
+  }
+
   return a > b ? 1 : a < b ? -1 : 0;
 
 }
@@ -629,7 +654,7 @@ function addFooter() {
     "  <div style='text-align: right; display: inline-block;'>",
     "    <a href='http://www.geo.uu.nl/~forth/'><img style='margin: 0px; height: 60px;' src='../images/UU.png'></a>",
     "    <a href='http://erc.europa.eu/'><img style='margin: 0px; height: 60px;' src='../images/ERC.png'></a>",
-	"     <a href='http://www.nwo.nl/'><img style='margin: 0px; height: 60px;' src='../images/NWO_logo_plain.png'></a>",
+    "    <a href='http://www.nwo.nl/'><img style='margin: 0px; height: 60px;' src='../images/NWO_logo_plain.png'></a>",
     "  </div>",
     "</div>",
     "<br>"
@@ -637,4 +662,11 @@ function addFooter() {
 
 }
 
+function createLink(href, text) {
+
+  return "<a href='" + href + "'>" + text + "</a>";
+
+}
+
+// Add the footer to every page
 addFooter();

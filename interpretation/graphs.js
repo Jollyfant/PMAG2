@@ -1,5 +1,9 @@
-"use strict";
+/*
+ * File graphs.js
+ * Plotting functions for the interpretation portal
+ */
 
+"use strict";
 
 const MARKER_RADIUS_SELECTED = 6;
 
@@ -78,15 +82,13 @@ function plotIntensityDiagram(hover) {
 
   /*
    * Function plotIntensityDiagram
-   *
+   * Call to create the intensity diagram at bottom of page
    */
 
   function normalize(intensities) {
 
-    const NORMALIZE_INTENSITIES = true;
-
     // Normalize the intensities to the maximum resultant intensity
-    if(NORMALIZE_INTENSITIES) {
+    if(document.getElementById("normalize-intensities").checked) {
       var normalizationFactor = Math.max.apply(null, intensities.map(x => x.y));
     } else {
       var normalizationFactor = 1;
@@ -121,7 +123,7 @@ function plotIntensityDiagram(hover) {
     }
 
     // Get the treatment step as a number
-    var treatmentStep = Number(step.step.replace(/[^0-9.]/g, ""));
+    var treatmentStep = extractNumbers(step.step);
 
     intensities.push({
       "x": treatmentStep,
@@ -386,7 +388,7 @@ function plotZijderveldDiagram(hover) {
 
   var graphScale = Math.max.apply(Math, graphScale) + 1;
   var tickFlag = false;
-  var enableLabels = false;
+  var enableLabels = document.getElementById("show-labels").checked;
 
   var vHover;
   var hHover;
@@ -441,7 +443,7 @@ function plotZijderveldDiagram(hover) {
    }
 
   // Create the chart
-  Highcharts.chart(CHART_CONTAINER, {
+  var chart = Highcharts.chart(CHART_CONTAINER, {
     "chart": {
     "animation": false,
     "id": "zijderveld-container",
@@ -477,8 +479,8 @@ function plotZijderveldDiagram(hover) {
       "min": -graphScale,
       "max": graphScale,
       "gridLineWidth": 0,
-      "startOnTick": true,
-      "endOnTick": true,
+      "startOnTick": false,
+      "endOnTick": false,
       "tickWidth": tickFlag ? 1 : 0,
       "lineWidth": 1,
       "opposite": true,
@@ -497,11 +499,11 @@ function plotZijderveldDiagram(hover) {
       "reversed": true,
       "gridLineWidth": 0,
       "lineWidth": 1,
-      "endOnTick": true,
+      "endOnTick": false,
       "tickWidth": tickFlag ? 1 : 0,
       "minRange": 10,
       "lineColor": "black",
-      "startOnTick": true,
+      "startOnTick": false,
       "crossing": 0,
       "min": -graphScale,
       "max": graphScale,
@@ -594,6 +596,31 @@ function plotZijderveldDiagram(hover) {
       }
     }].concat(formatInterpretationSeries(graphScale, specimen.interpretations))
   });
+
+  // Set ratio of axes for true angle
+  setZijderveldRatio(chart);
+
+}
+
+function setZijderveldRatio(chart) {
+
+  /*
+   * Function setZijderveldRatio
+   * Sets the correct ratio of the Zijderveld diagram (true angle)
+   */
+
+  var [xAxis, yAxis] = chart.axes;
+
+  // Determine the ratio between width/height
+  var ratio = (xAxis.width / yAxis.height);
+
+  if(xAxis.width === yAxis.height) {
+    return;
+  } else if(xAxis.width > yAxis.height) {
+    xAxis.setExtremes(xAxis.min * ratio, xAxis.max * ratio);
+  } else if(xAxis.width < yAxis.height) {
+    yAxis.setExtremes(yAxis.min / ratio, yAxis.max / ratio);
+  }
 
 }
 
@@ -1139,9 +1166,6 @@ function eqAreaProjection(hover) {
 
 }
 
-const ITEM_DELIMITER = ",";
-const LINE_DELIMITER = "\n";
-
 function getIntensityCSV(series) {
 
   /*
@@ -1159,7 +1183,12 @@ function getIntensityCSV(series) {
   var rows = new Array(HEADER.join(ITEM_DELIMITER));
 
   for(var i = 0; i < series[0].data.length; i++) {
-    rows.push(new Array(series[0].data[i].x, series[0].data[i].y, series[1].data[i].y, series[2].data[i].y).join(ITEM_DELIMITER));
+    rows.push(new Array(
+      series[0].data[i].x,
+      series[0].data[i].y,
+      series[1].data[i].y,
+      series[2].data[i].y
+    ).join(ITEM_DELIMITER));
   }
 		
   return rows.join(LINE_DELIMITER);
@@ -1260,7 +1289,7 @@ function getHemisphereCSV(series) {
   });
 
   // Add data download button
-  H.Chart.prototype.generateCSV = function () {
+  H.Chart.prototype.generateCSV = function() {
 
     switch(this.renderTo.id) {
       case "zijderveld-container":
@@ -1272,11 +1301,12 @@ function getHemisphereCSV(series) {
       case "fitting-container":
         return downloadAsCSV("components.csv", getFittedCSV(this.series));
       default:
-        notify("danger", "Data export for this chart has not been implemented.");
+        notify("danger", new Exception("Data export for this chart has not been implemented."));
     }
 		
   }
 	
+  // Add the button to the exporting menu
   H.getOptions().exporting.buttons.contextButton.menuItems.push({
     "text": EXPORT_BUTTON_TEXT,
     "onclick": function() {
