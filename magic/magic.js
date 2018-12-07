@@ -3,13 +3,18 @@
  * Handler for magic exporting
  */
 
-document.getElementById("customFile").addEventListener("change", fileSelectionHandler);
-document.getElementById("download-magic-button").disabled = true;
-document.addEventListener("keydown", keyboardHandler);
-
 const DEMAGNETIZATION_THERMAL = "LP-DIR-T";
 const DEMAGNETIZATION_ALTERNATING = "LP-DIR-AF";
+
 var data = null;
+
+function addEventHandlers() {
+
+  document.getElementById("customFile").addEventListener("change", fileSelectionHandler);
+  document.getElementById("download-magic-button").disabled = true;
+  document.addEventListener("keydown", keyboardHandler);
+
+}
 
 function keyboardHandler(event) {
 
