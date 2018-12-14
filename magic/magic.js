@@ -530,9 +530,9 @@ function exportMagIC(metadata) {
         var direction = new Coordinates(step.x, step.y, step.z).toVector(Direction);
 
         magicMeasurements.push([
-          i,
+          specimen.name + "_" + i,
+          "experiment-" + demagnetizationType,
           specimen.name,
-          "experiment",
           0,
           "s",
           "g",
@@ -578,7 +578,7 @@ function exportMagIC(metadata) {
   var lines = new Array(
     createTable("contribution", contributionHeader, magicContribution),
     createTable("locations", locationHeader, magicLocations),
-    createTable("locations", siteHeader, magicSites),
+    createTable("sites", siteHeader, magicSites),
     createTable("samples", sampleHeader, magicSamples),
     createTable("specimens", specimensHeader, magicSpecimens),
     createTable("measurements", measurementHeader, magicMeasurements)
