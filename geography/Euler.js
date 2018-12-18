@@ -19,35 +19,30 @@ function getEulerPole(R) {
   /*
    * Function getEulerPole
    * Converts a rotation matrix to an Euler pole
-   * Routine implemented after Bram Vaes @ UU (modified  matrix for opposite rotation sign because R is the transpose) 
+   * Routine implemented after Bram Vaes @ UU (some changes to fit with Paleomagnetism,org functions)
    * https://en.wikipedia.org/wiki/Rotation_matrix#Axis_and_angle
    */
 
-  var r = Math.sqrt(
-    Math.pow(R[2][1] - R[1][2], 2) +
-    Math.pow(R[0][2] - R[2][0], 2) +
-    Math.pow(R[1][0] - R[0][1], 2)
-  );
+  // Qzy - Qyz, Qxz - Qzx, Qyx - Qxy (x, y, z)
+  var coordinates = new Coordinates(R[1][2] - R[2][1], R[2][0] - R[0][2], R[0][1] - R[1][0]);
 
-  // Length is zero: return an empty pole
-  if(r === 0) {
+  // Check that coordinates are OK
+  if(coordinates.isNull()) {
     return new EulerPole(0, 0, 0);
   }
 
-  // Determine pole longitude, latitude
-  var latitude = Math.asin((R[0][1] - R[1][0]) / r);
-  var longitude = Math.atan2(R[2][0] - R[0][2], R[1][2] - R[2][1]);
-
-  // Trace of rotation matrix
+  // Trace of rotation matrix to get the angle
   var trace = R[0][0] + R[1][1] + R[2][2];
 
   // Calculate the angle
-  var angle = Math.atan2(r, trace - 1);
+  var angle = Math.atan2(coordinates.length, trace - 1);
 
-  // Return the new Euler pole
+  // Convert Coordinates to a pole and add the angle to create an Euler pole
+  var pole = coordinates.toVector(Pole);
+
   return new EulerPole(
-    longitude / RADIANS,
-    latitude / RADIANS,
+    pole.lng,
+    pole.lat,
     angle / RADIANS
   );
 
