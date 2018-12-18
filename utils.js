@@ -34,7 +34,9 @@ function getRotationMatrix(lambda, phi) {
 
   /*
    * Function getRotationMatrix
-   * Returns the rotation matrix
+   * Returns the rotation matrix (parameters are poorly named)
+   * but this function is re-used througouth the application. It may be azimuth, plunge
+   * or co-latitude, longitude of Euler pole
    */
 
   return new Array(
