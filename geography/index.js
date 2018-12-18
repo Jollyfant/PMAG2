@@ -323,6 +323,8 @@ function plotPredictedDirections() {
 
   }
 
+  const APWP_FIXED_PLATE_ID = "701";
+
   var site = new Site(
     Number(document.getElementById("site-latitude-input").value),
     Number(document.getElementById("site-longitude-input").value)
@@ -346,8 +348,10 @@ function plotPredictedDirections() {
     return notify("danger", "Select at least one reference model on the left hand side.");
   }
 
+  // Go over all plates
   plates.forEach(function(plate) {
 
+    // All references frames
     references.forEach(function(APWP) {
 
       var dataDeclination = new Array();
@@ -365,14 +369,18 @@ function plotPredictedDirections() {
       // Go over each pole
       APWP.poles.forEach(function(pole) {
 
-        if(!pole.euler.hasOwnProperty(plate)) {
+        // Check if the user has added euler poles
+        // Fixed plate must be 701 (SOUTH AFRICA)
+        if(eulerData.hasOwnProperty(plate)) {
+          var eulerPole = extractEulerPole(plate, APWP_FIXED_PLATE_ID, pole.age, pole.age, 1).pop().pole;
+        } else if(!pole.euler.hasOwnProperty(plate)) {
           return;
+        } else {
+          var eulerPole = new EulerPole(pole.euler[plate].lng, pole.euler[plate].lat, pole.euler[plate].rot);
         }
 
-        var pPole = new Pole(pole.lng, pole.lat);
-        var eulerPole = new EulerPole(pole.euler[plate].lng, pole.euler[plate].lat, pole.euler[plate].rot);
-
-        var rPole = getRotatedPole(eulerPole, pPole);
+        // The rotated pole
+        var rPole = getRotatedPole(eulerPole, new Pole(pole.lng, pole.lat));
         var directions = site.directionFrom(rPole);
 
         if(directions.dec > 180) {
@@ -1361,7 +1369,6 @@ function mapPlate(id) {
     "276": "Sandwich Plate",
     "277": "North Scotia Plate",
     "291": "Colorado-San Jorge subplate",
-    "301": "Baltica",
     "304": "Iberia",
     "315": "Eurasia",
     "317": "Porcupine Plate",
@@ -1546,14 +1553,40 @@ function parseGPlatesRotationFile(files) {
 
   });
 
+  function byName(a, b) {
+
+    if(a.name < b.name) return -1;
+    if(a.name > b.name) return 1;
+    return 0;
+
+  }
+
+  // Add Euler poles to plates
+  Object.keys(eulerData).map(mapPlate).sort(byName).forEach(function(plate) {
+
+    if(plate.id === "1001") {
+      return;
+    }
+
+    var option = document.createElement("option");
+
+    option.text = plate.name || plate.id;
+    option.value = plate.id;
+
+    document.getElementById("plate-select").add(option);
+
+  })
+
+  $("#plate-select").selectpicker("refresh");
+
   notify("success", "Succesfully added rotation information for <b>" + Object.keys(eulerData).length + "</b> plates.");
 
 }
 
-function getPolez(plate, fixed, min, max, increment) {
+function extractEulerPole(plate, fixed, min, max, increment) {
 
   /*
-   * Function getPolez
+   * Function extractEulerPole
    * Gets arbitrary rotation poles
    */
 
