@@ -14,6 +14,45 @@ var EulerPole = function(longitude, latitude, angle) {
 EulerPole.prototype = Object.create(Pole.prototype);
 EulerPole.prototype.constructor = EulerPole;
 
+function getEulerPole(R) {
+
+  /*
+   * Function getEulerPole
+   * Converts a rotation matrix to an Euler pole
+   * Routine implemented after Bram Vaes @ UU (modified  matrix for opposite rotation sign because R is the transpose) 
+   * https://en.wikipedia.org/wiki/Rotation_matrix#Axis_and_angle
+   */
+
+  var r = Math.sqrt(
+    Math.pow(R[2][1] - R[1][2], 2) +
+    Math.pow(R[0][2] - R[2][0], 2) +
+    Math.pow(R[1][0] - R[0][1], 2)
+  );
+
+  // Length is zero: return an empty pole
+  if(r === 0) {
+    return new EulerPole(0, 0, 0);
+  }
+
+  // Determine pole longitude, latitude
+  var latitude = Math.asin((R[0][1] - R[1][0]) / r);
+  var longitude = Math.atan2(R[2][0] - R[0][2], R[1][2] - R[2][1]);
+
+  // Trace of rotation matrix
+  var trace = R[0][0] + R[1][1] + R[2][2];
+
+  // Calculate the angle
+  var angle = Math.atan2(r, trace - 1);
+
+  // Return the new Euler pole
+  return new EulerPole(
+    longitude / RADIANS,
+    latitude / RADIANS,
+    angle / RADIANS
+  );
+
+}
+
 function getRotationMatrix(phi, lambda) {
 
   /*
@@ -29,6 +68,32 @@ function getRotationMatrix(phi, lambda) {
 
 }
 
+function nullMatrix() {
+  
+  /*
+   * Function nullMatrix
+   * Returns an empty 2D matrix
+   */
+  
+  return new Array(
+    nullVector(),
+    nullVector(),
+    nullVector()
+  );
+
+}
+
+function nullVector() {
+  
+  /*
+   * Function nullVector
+   * Returns an empty 1D vector
+   */
+
+  return new Array(0, 0, 0);
+
+}
+
 function getRotatedPole(eulerPole, pole) {
 
   /*
@@ -39,32 +104,6 @@ function getRotatedPole(eulerPole, pole) {
    * @ https://doi.org/10.1371/journal.pone.0126946.s005
    * 
    */
-
-  function nullMatrix() {
-
-    /*
-     * Function nullMatrix
-     * Returns an empty 2D matrix
-     */
-
-    return new Array(
-      nullVector(),
-      nullVector(),
-      nullVector()
-    );
-
-  }
-
-  function nullVector() {
-
-    /*
-     * Function nullVector
-     * Returns an empty 1D vector
-     */
-
-    return new Array(0, 0, 0);
-
-  }
 
   // Convert to radians
   var phiEuler = eulerPole.lng * RADIANS;
@@ -99,7 +138,7 @@ function getRotatedPole(eulerPole, pole) {
       }
     }
   }
-  
+
   //Multiply [M] with [Lt] to [B]
   for(var i = 0; i < 3; i++) {
     for(var j = 0; j < 3; j++) {
@@ -109,8 +148,66 @@ function getRotatedPole(eulerPole, pole) {
     }
   }
 
+  // No pole to rotate: return the rotation matrix
+  if(pole === undefined) {
+    return B;
+  }
+
   // Rotate the pole using the rotation matrix.
   // Always return a new Pole instance
   return pole.toCartesian().rotate(B).toVector(Pole);
+
+}
+
+function convolvePoles(poleOne, poleTwo) {
+
+  /*
+   * Function convolvePoles
+   * Converts two Euler poles to rotation matrices that are multiplied
+   * to get the combined Euler rotation
+   */
+
+  // Rotated poles have different signs
+  var R1 = getRotatedPole(poleOne);
+  var R2 = getRotatedPole(poleTwo);
+
+  var M = nullMatrix();
+
+  for(var i = 0; i < 3; i++) {
+    for(var j = 0; j < 3; j++) {
+      for(var k = 0; k < 3; k++) {
+        M[i][j] += R1[i][k] * R2[k][j];
+      }
+    }
+  }
+
+  return getEulerPole(M);
+
+}
+
+function getStagePole(poleOld, poleNew) {
+
+  /*
+   * Function getStagePole
+   * Returns the stage pole from two poles
+   */
+
+  var stagePole = new EulerPole(poleOld.lng, poleOld.lat, -poleOld.angle);
+
+  return convolvePoles(stagePole, poleNew);
+
+}
+
+function getInterPole(totalPole, stagePole, ageMax, age, inc) {
+
+  /*
+   * Function getInterPole
+   * Interpolates stage pole to a certain age fraction
+   */
+
+  var ageFraction = (ageMax - inc) / (ageMax - age);
+  var agePole = new EulerPole(stagePole.lng, stagePole.lat, stagePole.angle * ageFraction);
+
+  return convolvePoles(totalPole, agePole);
 
 }

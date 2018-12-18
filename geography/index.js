@@ -1,4 +1,5 @@
 var collections = new Array();
+var eulerData = new Object();
 var KMLLayers = new Array();
 var mapMakers = new Array();
 
@@ -248,7 +249,7 @@ function registerEventHandlers() {
    */
 
   // Simple listeners
-  //document.getElementById("euler-upload").addEventListener("change", eulerSelectionHandler);
+  document.getElementById("euler-upload").addEventListener("change", eulerSelectionHandler);
   document.getElementById("kml-upload").addEventListener("change", kmlSelectionHandler);
   document.getElementById("customFile").addEventListener("change", fileSelectionHandler);
   document.getElementById("specimen-select").addEventListener("change", siteSelectionHandler);
@@ -1486,7 +1487,27 @@ function eulerSelectionHandler(event) {
 
   /*
    * Function eulerSelectionHandler
-   * Callback fired when the euler file selection is clicked
+   * Callback fired when a euler file is selected (.rot)
+   */
+
+  readMultipleFiles(Array.from(event.target.files), function(files) {
+
+    // Create a hashmap for the plate ID
+    try { 
+      parseGPlatesRotationFile(files);
+    } catch(exception) {
+      notify("danger", exception.message);
+    }
+
+  });
+ 
+}
+
+function parseGPlatesRotationFile(files) {
+
+  /*
+   * Function parseGPlatesRotationFile
+   * Parses and loads a selected GPlates rotation file
    */
 
   function parseLine(line) {
@@ -1496,7 +1517,11 @@ function eulerSelectionHandler(event) {
      * Parses a single line of the file
      */
 
-    var values = line.split(",");
+    var values = line.split(/\s+/);
+
+    if(values.length < 6) {
+      throw(new Exception("Invalid GPlates rotation file."));
+    }
 
     return {
       "id": values[0],
@@ -1509,72 +1534,120 @@ function eulerSelectionHandler(event) {
 
   }
 
-  function byName(a, b) {
 
-    if(a.name < b.name) return -1;
-    if(a.name > b.name) return 1;
-    return 0;
+  // Create a hashmap for the plate ID
+  files.pop().data.split(/\r?\n/).slice(1, -1).map(parseLine).forEach(function(x) {
+
+    if(!eulerData.hasOwnProperty(x.id)) {
+      eulerData[x.id] = new Array();
+    }
+
+    eulerData[x.id].push(x);
+
+  });
+
+  notify("success", "Succesfully added rotation information for <b>" + Object.keys(eulerData).length + "</b> plates.");
+
+}
+
+function getPolez(plate, fixed, min, max, increment) {
+
+  /*
+   * Function getPolez
+   * Gets arbitrary rotation poles
+   */
+
+  if(Object.keys(eulerData).length === 0) {
+    return notify("danger", "No poles loaded.");
+  }
+
+  if(!eulerData.hasOwnProperty(plate)) {
+    return notify("danger", "Could not plate with id <b>" + plate + "</b>.");
+  }
+
+  // Check age ranges
+  if(Math.max.apply(null, eulerData[plate].map(x => x.age)) < max) {
+    return notify("danger", "Maximum age exceeded.");
+  }
+  if(Math.min.apply(null, eulerData[plate].map(x => x.age)) > min) {
+    return notify("danger", "Minimum age exceeded.");
+  }
+
+  var plate = plate.toString();
+  var fixed = fixed.toString();
+
+  var poles = new Array();
+
+  // Go over all requested ages
+  for(var age = min; age <= max; age += increment) {
+    
+    var a = getStagePoleAge(plate, age);
+    var b = getStagePoleAge(fixed, age);
+    var pole = getStagePole(b, a);
+
+    // Save this pole
+    poles.push({"pole": pole, "age": age});
 
   }
 
-  readMultipleFiles(Array.from(event.target.files), function(files) {
+  return poles;
 
-    var file = files.pop();
+}
 
-    var plates = new Object();
 
-    var lines = file.data.split(/\r?\n/).slice(1, -1);
+function getStagePoleAge(ID, age) {
 
-    lines.forEach(function(line) {
+  // Create an empty total reconstruction pole
+  var totalPole = new EulerPole(0, 0, 0);
 
-      var entry = parseLine(line);
+  // Uh.. nothing
+  if(age === 0) {
+    return totalPole;
+  }
 
-      // Skip anything not relative to South American Craton
-      if(entry.rel !== "701") {
-        return;
+  // Continue when we are referencing the fixed plate ID
+  while(ID !== "000") {
+
+    var plateData = eulerData[ID];
+
+    // Search input for matching plateID & age
+    for(var i = 0; i < plateData.length; i++) {
+      
+      if(i === plateData.length - 1) {
+        return totalPole;
       }
 
-      if(!plates.hasOwnProperty(entry.id)) {
-        plates[entry.id] = new Array();
+      // ENOTFOUND
+      if(plateData[i].id !== ID) {
+        continue;
       }
 
-      plates[entry.id].push({
-        "age": entry.age,
-        "lat": entry.lat,
-        "lng": entry.lng,
-        "rot": entry.rot
-      });
-
-      APWPs["torsvik2012"]["poles"].forEach(function(x) {
-        if(x.age === entry.age) {
-          x.euler[entry.id] = {"lat": entry.lat, "lng": entry.lng, "rot": entry.rot}
-        }
-      })
-
-    });
-
-    removeOptions(document.getElementById("plate-select"));
-
-    // Add the plates
-    Object.keys(plates).map(mapPlate).sort(byName).forEach(function(plate) {
-
-      if(plate.id === "1001") {
-        return;
+      if(plateData[i].age < age) {
+        continue;
       }
-	
-      var option = document.createElement("option");
 
-      option.text = plate.name || plate.id;
-      option.value = plate.id;
+      // Get the previous pole
+      var poleYoung = new EulerPole(plateData[i - 1].lng, plateData[i - 1].lat, plateData[i - 1].rot);
+      var poleOld = new EulerPole(plateData[i].lng, plateData[i].lat, plateData[i].rot);
 
-      document.getElementById("plate-select").add(option);
+      // Calculate the stage pole
+      var stagePole = getStagePole(poleOld, poleYoung);
 
-    });
+      // Interpolate the stage pole to a given age
+      var interPole = getInterPole(poleOld, stagePole, plateData[i].age, plateData[i - 1].age, age);
 
-    $("#plate-select").selectpicker("refresh");
-    notify("success", "Succesfully added new Euler poles for <b>" + Object.keys(plates).length + "</b> plates.");
+      // Add the interpolated pole to the total reconstruction pole
+      totalPole = convolvePoles(totalPole, interPole);
 
-  });
+      // Update the relative plate identifier and move up the GPlates tree
+      ID = plateData[i].rel;
+      break;
+
+    }
+
+  }
+
+  return totalPole;
 
 }
 
