@@ -53,21 +53,6 @@ function getEulerPole(R) {
 
 }
 
-function getRotationMatrix(phi, lambda) {
-
-  /*
-   * Function getRotationMatrix
-   * Returns the rotation matrix
-   */
-
-  return new Array(
-    new Array(Math.sin(lambda) * Math.cos(phi), -Math.sin(phi), Math.cos(lambda) * Math.cos(phi)),
-    new Array(Math.sin(lambda) * Math.sin(phi), Math.cos(phi), Math.sin(phi) * Math.cos(lambda)),
-    new Array(-Math.cos(lambda), 0, Math.sin(lambda))
-  );
-
-}
-
 function nullMatrix() {
   
   /*
