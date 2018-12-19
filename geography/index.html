@@ -212,14 +212,9 @@
 
                       <p>
 
-                      <div class="input-group">
-                        <div class="input-group-prepend">
-                          <button onClick="removeKMLLayers()" id="kml-remove" class="btn btn-danger"><i class="fas fa-ban"></i></button>
-                        </div>
-                        <div class="custom-file">
-                          <input type="file" class="custom-file-input" id="euler-upload">
-                          <label class="custom-file-label" for="euler-upload">Custom Euler Rotations</label>
-                        </div>
+                      <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="euler-upload">
+                        <label class="custom-file-label" for="euler-upload">Custom Euler Rotations</label>
                       </div>
 
                     </div>
@@ -245,19 +240,21 @@
             <button type="button" class="btn btn-info" id="calculate-reference">Calculate Predicted Directions</button>
             &nbsp;
             <select data-size="5" class="selectpicker form-control text-center" data-actions-box="true" id="plate-select" title="<i class='far fa-hand-point-down'></i> Select one or multiple plates" multiple>
-		      <option value="AF">Africa</option>
-		      <option value="AR">Arabia</option>
-		      <option value="AU">Australia</option>
-		      <option value="CA">Caribbean</option>
-		      <option value="EA">East Antarctica</option>
-		      <option value="EU">Eurasia</option>
-		      <option value="GR">Greenland</option>
-		      <option value="IB">Iberia</option>
-		      <option value="IN">India</option>
-		      <option value="MA">Madagascar</option>
-		      <option value="NA">North America</option>
-		      <option value="PA">Pacific</option>
-		      <option value="SA">South America</option>
+                      <optgroup label="Default Rotations">
+		        <option value="AF" data-type="default">Africa</option>
+		        <option value="AR" data-type="default">Arabia</option>
+		        <option value="AU" data-type="default">Australia</option>
+		        <option value="CA" data-type="default">Caribbean</option>
+		        <option value="EA" data-type="default">East Antarctica</option>
+		        <option value="EU" data-type="default">Eurasia</option>
+		        <option value="GR" data-type="default">Greenland</option>
+		        <option value="IB" data-type="default">Iberia</option>
+		        <option value="IN" data-type="default">India</option>
+		        <option value="MA" data-type="default">Madagascar</option>
+		        <option value="NA" data-type="default">North America</option>
+		        <option value="PA" data-type="default">Pacific</option>
+		        <option value="SA" data-type="default">South America</option>
+                      </optgroup>
             </select>
 
           </div>

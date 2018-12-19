@@ -87,13 +87,16 @@
           <h5 class="card-header"> Paleomagnetism.org 2.0.0 - Release <small class="text-muted">&nbsp; 2019-01-01</small></h5>
           <div class="card-body">
             <b> Summary </b>
-            <p> The release of Paleomagnetism 2.0.0 exists in parallel with the old application. The old version may have some additional features in the statistics portal that were removed in the new version. This version of Paleomagnetism.org focuses on raw demagnetization data and its provenance, and may therefore be more limited in what it allows. <b> For raw data interpretation this application is always recommended	</b>. 
+            <p> The release of Paleomagnetism 2.0.0 exists in parallel with the old application. The old version may have some additional features in the statistics portal that were removed in the new version. This version of Paleomagnetism.org focuses on raw demagnetization data and its provenance, and may therefore be more limited in what it allows. <b> For raw data interpretation this application is always recommended </b>. 
             <ul>
               <p> <b> Features </b>
               <li> General redesign and improvement of the application has been completed.
               <li> Export of .pmag files has been removed. The input for the statistics & geography portal are .dir files with interpreted components.
               <li> Metadata in the interpretation portal is now collected on the specimen level.
+              <li> Added MagIC portal where Paleomagnetism.org 2.0.0 files can be converted to MagIC files.
+              <li> Support for extended metadata (e.g. specimen location, lithology).
               <li> Map & APWP module from the statistics portal was moved to the geography portal.
+              <li> Added option to upload custom plate rotations from a GPlates .rot file.
               <li> Core and bedding parameters can now be changed within the application.
               <li> In the statistics portal coordinate frame can now be switched between using the key <b>8</b>.
               <li> Added option to view all data in the statistics portal in a single polarity.
@@ -103,6 +106,7 @@
               <hr>
               <p> <b> Fixes </b>
               <li> PGL Beijing importing is now handled by the same routine as University of Barcelona.
+              <li> Zijderveld diagram now shows true angle and axes are scaled by chart width/height ratio.
               <li> Declination correction for BCN2G format is now handled by adding the value to the core azimuth.
               <li> Fixed exporting of compiled figures with multiple charts.
               <hr>

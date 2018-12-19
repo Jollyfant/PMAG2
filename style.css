@@ -69,7 +69,6 @@ select {
 }
 
 .card-img-top {
-  border-radius: 50%;
   border: 1px solid lightgrey;
 }
 
