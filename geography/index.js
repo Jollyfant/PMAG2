@@ -111,7 +111,7 @@ function getPublicationFromPID() {
 
     // Request the persistent resource from disk
     HTTPRequest("./publications/" + pid + ".pid", "GET", function(json) {
-      addData([{"data": json, "name": publication[0].filename}]);
+      addData({"data": json, "name": publication[0].filename});
       __unlock__();
     });
 
@@ -1140,43 +1140,39 @@ Component.prototype.inReferenceCoordinates = function(coordinates) {
 
 }
 
-function addData(files) {
+function addData(file) {
 
-  files.forEach(function(file) {
+  if(file.data instanceof Object) {
+    var json = file.data;
+  } else {
+    var json = JSON.parse(file.data);
+  }
 
-    if(file.data instanceof Object) {
-      var json = file.data;
-    } else {
-      var json = JSON.parse(file.data);
-    }
+  var siteName = file.name;
+  var reference = json.pid;
+  var components = new Array();
 
-    var siteName = file.name;
-    var reference = json.pid;
-    var components = new Array();
+  json.specimens.forEach(function(specimen) {
 
-    json.specimens.forEach(function(specimen) {
+     specimen.interpretations.forEach(function(interpretation) {
 
-       specimen.interpretations.forEach(function(interpretation) {
+       // Skip components that are great circles
+       if(interpretation.type === "TAU3") {
+         return;
+       }
 
-         // Skip components that are great circles
-         if(interpretation.type === "TAU3") {
-           return;
-         }
+       components.push(new Component(specimen, interpretation.specimen.coordinates));
 
-         components.push(new Component(specimen, interpretation.specimen.coordinates));
+     });
 
-       });
+  });
 
-    });
-
-    // Do the cutoff and accept/reject direction
-    collections.push({
-      "name": siteName,
-      "reference": reference,
-      "components": components,
-      "created": new Date().toISOString()
-    });
-
+  // Do the cutoff and accept/reject direction
+  collections.push({
+    "name": siteName,
+    "reference": reference,
+    "components": components,
+    "created": new Date().toISOString()
   });
 
 }
@@ -2303,6 +2299,77 @@ function getStagePoleAge(ID, age) {
 
 }
 
+function addCollectionData(files, format) {
+
+  switch(format) {
+    case "DIR2":
+      return files.forEach(addData);
+    case "PMAG":
+      return files.forEach(importPmag);
+    default:
+      throw(new Exception("Unknown importing format requested."));
+  }
+
+}
+
+function importPmag(file) {
+
+  /*
+   * Function importPmag
+   * Imports deprecated Paleomagnetism.org 1.0.0 format to the application
+   */
+
+  var json = JSON.parse(file.data);
+
+  json.data.forEach(function(site) {
+
+    var metadata = site.metaData;
+    var components = site.data.map(function(x, i) {
+
+      var dec = x[0];
+      var inc = x[1];
+      var coords = new Direction(dec, inc).toCartesian().toLiteral();
+
+      if(x.length > 2) {
+        var strike = x[2];
+        var dip = x[3];
+      } else {
+        var strike = 0;
+        var dip = 0;
+      }
+
+      if(x.length > 4) {
+        var name = x[4];
+      } else {
+        var name = metadata.name + "." + i;
+      }
+
+      return new Component({
+        "name": name,
+        "latitude": metadata.latitude,
+        "longitude": metadata.longitude,
+        "age": Number(metadata.age),
+        "ageMin": Number(metadata.minAge),
+        "ageMax": Number(metadata.maxAge),
+        "coreAzimuth": 0,
+        "coreDip": 90,
+        "beddingStrike": strike,
+        "beddingDip": dip,
+      }, coords);
+
+    });
+
+    collections.push({
+      "name": metadata.name,
+      "reference": "specimen",
+      "components": components,
+      "created": json.dateExported
+    });
+
+  });
+
+}
+
 function fileSelectionHandler(event) {
 
   /*
@@ -2310,7 +2377,7 @@ function fileSelectionHandler(event) {
    * Callback fired when input files are selected
    */
 
-  const cutoff = document.getElementById("cutoff-selection").value;
+  const format = document.getElementById("format-selection").value;
 
   readMultipleFiles(Array.from(event.target.files), function(files) {
 
@@ -2323,7 +2390,7 @@ function fileSelectionHandler(event) {
 
     // Try adding the demagnetization data
     try {
-      addData(files);
+      addCollectionData(files, format);
     } catch(exception) {
       return notify("danger", exception);
     }

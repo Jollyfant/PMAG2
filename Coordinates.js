@@ -13,6 +13,16 @@ var Coordinates = function(x, y, z) {
 
 }
 
+Coordinates.prototype.toLiteral = function() {
+
+  return {
+    "x": this.x,
+    "y": this.y,
+    "z": this.z
+  }
+
+}
+
 Coordinates.prototype.isNull = function() {
   return this.x === 0 && this.y === 0 && this.z === 0;
 }
