@@ -369,6 +369,11 @@ function plotPredictedDirections() {
       // Go over each pole
       APWP.poles.forEach(function(pole) {
 
+        // Respect the age constraints
+        if(!withinAge(pole.age)) {
+          return;
+        }
+
         // Check if the user has added euler poles
         // Fixed plate must be 701 (SOUTH AFRICA)
         if(eulerData.hasOwnProperty(plate)) {
@@ -793,9 +798,9 @@ function getAverageAge(collection) {
   });
   
   return {
-    "value": age / collection.components.length,
-    "min": min,
-    "max": max
+    "value": Number(age / collection.components.length),
+    "min": Number(min),
+    "max": Number(max)
   }
 
 }
@@ -806,9 +811,36 @@ function randomIntFromInterval(min,max) {
 
 }
 
+function withinAge(age) {
+
+  if(typeof(age) === "number") {
+    age = {"min": age, "max": age}
+  }
+
+  var min = document.getElementById("site-age-min-input").value;
+  var max = document.getElementById("site-age-max-input").value;
+
+  if(min === "") {
+    min = 0;
+  }
+
+  if(max === "") {
+    max = Number.MAX_SAFE_INTEGER;
+  }
+
+  return age.min >= Number(min) && age.max <= Number(max);
+
+}
+
 function plotExpected(container, dataSeries, site) {
 
+  /*
+   * Function plotExpected
+   * Plots the sites or specimens on the APWP curves
+   */
+
   var title;
+
   if(container === "declination-container") {
     title = "Predicted Declination";
   } else if(container === "inclination-container") {
@@ -871,6 +903,11 @@ function plotExpected(container, dataSeries, site) {
 
       });
 
+      // Respect the age filters
+      data = data.filter(function(x) {
+        return withinAge(x.x);
+      });
+
       dataSeries.push({
         "name": "Specimens",
         "type": "scatter",
@@ -885,7 +922,14 @@ function plotExpected(container, dataSeries, site) {
     }
 
     var statistics = getStatisticalParameters(convertedComps);
+
+    // Determine an average age for the collection
     var avAge = getAverageAge(collection);
+
+    // Respect the age filter
+    if(!withinAge(avAge)) {
+      return;
+    }
 
     // Bind the declination between -180 and 180
     if(statistics.dir.mean.dec > 180) {
@@ -914,19 +958,19 @@ function plotExpected(container, dataSeries, site) {
           "enabled": false
         },
         "data": [{
-          "x": Number(avAge.min),
+          "x": avAge.min,
           "y": statistics.dir.mean.dec
         }, {
-          "x": Number(avAge.max),
+          "x": avAge.max,
           "y": statistics.dir.mean.dec
         }, {
           "x": null,
           "y": null
         }, {
-          "x": Number(avAge.value),
+          "x": avAge.value,
           "y": statistics.dir.mean.dec + statistics.butler.dDx
         }, {
-          "x": Number(avAge.value),
+          "x": avAge.value,
           "y": statistics.dir.mean.dec - statistics.butler.dDx
         }]
       });
@@ -2290,7 +2334,7 @@ function extractEulerPole(plate, fixed, min, max, increment) {
    */
 
   if(Object.keys(eulerData).length === 0) {
-    return notify("danger", "No poles loaded.");
+    return notify("danger", "No custom Euler poles are loaded.");
   }
 
   if(!eulerData.hasOwnProperty(plate)) {
