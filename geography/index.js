@@ -111,7 +111,7 @@ function getPublicationFromPID() {
 
     // Request the persistent resource from disk
     HTTPRequest("./publications/" + pid + ".pid", "GET", function(json) {
-      addData([{"data": json, "name": publication[0].filename}]);
+      addData({"data": json, "name": publication[0].filename});
       __unlock__();
     });
 
@@ -368,6 +368,11 @@ function plotPredictedDirections() {
 
       // Go over each pole
       APWP.poles.forEach(function(pole) {
+
+        // Respect the age constraints
+        if(!withinAge(pole.age)) {
+          return;
+        }
 
         // Check if the user has added euler poles
         // Fixed plate must be 701 (SOUTH AFRICA)
@@ -793,9 +798,9 @@ function getAverageAge(collection) {
   });
   
   return {
-    "value": age / collection.components.length,
-    "min": min,
-    "max": max
+    "value": Number(age / collection.components.length),
+    "min": Number(min),
+    "max": Number(max)
   }
 
 }
@@ -806,9 +811,36 @@ function randomIntFromInterval(min,max) {
 
 }
 
+function withinAge(age) {
+
+  if(typeof(age) === "number") {
+    age = {"min": age, "max": age}
+  }
+
+  var min = document.getElementById("site-age-min-input").value;
+  var max = document.getElementById("site-age-max-input").value;
+
+  if(min === "") {
+    min = 0;
+  }
+
+  if(max === "") {
+    max = Number.MAX_SAFE_INTEGER;
+  }
+
+  return age.min >= Number(min) && age.max <= Number(max);
+
+}
+
 function plotExpected(container, dataSeries, site) {
 
+  /*
+   * Function plotExpected
+   * Plots the sites or specimens on the APWP curves
+   */
+
   var title;
+
   if(container === "declination-container") {
     title = "Predicted Declination";
   } else if(container === "inclination-container") {
@@ -871,6 +903,11 @@ function plotExpected(container, dataSeries, site) {
 
       });
 
+      // Respect the age filters
+      data = data.filter(function(x) {
+        return withinAge(x.x);
+      });
+
       dataSeries.push({
         "name": "Specimens",
         "type": "scatter",
@@ -885,7 +922,14 @@ function plotExpected(container, dataSeries, site) {
     }
 
     var statistics = getStatisticalParameters(convertedComps);
+
+    // Determine an average age for the collection
     var avAge = getAverageAge(collection);
+
+    // Respect the age filter
+    if(!withinAge(avAge)) {
+      return;
+    }
 
     // Bind the declination between -180 and 180
     if(statistics.dir.mean.dec > 180) {
@@ -914,19 +958,19 @@ function plotExpected(container, dataSeries, site) {
           "enabled": false
         },
         "data": [{
-          "x": Number(avAge.min),
+          "x": avAge.min,
           "y": statistics.dir.mean.dec
         }, {
-          "x": Number(avAge.max),
+          "x": avAge.max,
           "y": statistics.dir.mean.dec
         }, {
           "x": null,
           "y": null
         }, {
-          "x": Number(avAge.value),
+          "x": avAge.value,
           "y": statistics.dir.mean.dec + statistics.butler.dDx
         }, {
-          "x": Number(avAge.value),
+          "x": avAge.value,
           "y": statistics.dir.mean.dec - statistics.butler.dDx
         }]
       });
@@ -1140,43 +1184,39 @@ Component.prototype.inReferenceCoordinates = function(coordinates) {
 
 }
 
-function addData(files) {
+function addData(file) {
 
-  files.forEach(function(file) {
+  if(file.data instanceof Object) {
+    var json = file.data;
+  } else {
+    var json = JSON.parse(file.data);
+  }
 
-    if(file.data instanceof Object) {
-      var json = file.data;
-    } else {
-      var json = JSON.parse(file.data);
-    }
+  var siteName = file.name;
+  var reference = json.pid;
+  var components = new Array();
 
-    var siteName = file.name;
-    var reference = json.pid;
-    var components = new Array();
+  json.specimens.forEach(function(specimen) {
 
-    json.specimens.forEach(function(specimen) {
+     specimen.interpretations.forEach(function(interpretation) {
 
-       specimen.interpretations.forEach(function(interpretation) {
+       // Skip components that are great circles
+       if(interpretation.type === "TAU3") {
+         return;
+       }
 
-         // Skip components that are great circles
-         if(interpretation.type === "TAU3") {
-           return;
-         }
+       components.push(new Component(specimen, interpretation.specimen.coordinates));
 
-         components.push(new Component(specimen, interpretation.specimen.coordinates));
+     });
 
-       });
+  });
 
-    });
-
-    // Do the cutoff and accept/reject direction
-    collections.push({
-      "name": siteName,
-      "reference": reference,
-      "components": components,
-      "created": new Date().toISOString()
-    });
-
+  // Do the cutoff and accept/reject direction
+  collections.push({
+    "name": siteName,
+    "reference": reference,
+    "components": components,
+    "created": new Date().toISOString()
   });
 
 }
@@ -2085,16 +2125,103 @@ function kmlSelectionHandler(event) {
   // Read all selected files from disk and add them to the map
   readMultipleFiles(Array.from(event.target.files), function(files) {
 
-    // Some convertions to GeoJSON
+    // Convert KML to DOM element
+    var domElements = files.map(file2XMLDOM);
+
+    // Convertions to GeoJSON
     try { 
-      var layers = files.map(file2XMLDOM).map(toGeoJSON.kml).map(L.geoJSON);
+      parseGroundOverlay(domElements);
+      var layers = domElements.map(toGeoJSON.kml).map(L.geoJSON);
     } catch(exception) {
       return notify("danger", exception);
     }
 
     // Add all the layers
     layers.forEach(x => KMLLayers.push(x.addTo(map)));
+
     notify("success", "Succesfully added " + layers.length + " overlay(s) to map.");
+
+  });
+
+}
+
+function parseGroundOverlay(documents) {
+
+  /*
+   * Function parseGroundOverlay
+   * Parses a groundOverlay child to image on map
+   */
+
+  function parseLatLonBox(element) {
+
+    /*
+     * Function parseLatLonBox
+     * Parses latitude, longitude KML LatLonBox to Leaflet bounds
+     */
+
+    var north, east, south, west;
+
+    Array.from(element.children).forEach(function(child) {
+
+      switch(child.nodeName) {
+        case "north":
+          return north = Number(child.innerHTML);
+        case "south":
+          return south = Number(child.innerHTML);
+        case "east":
+          return east = Number(child.innerHTML);
+        case "west":
+          return west = Number(child.innerHTML);
+        default:
+          return;
+      };
+
+    });
+
+    // Confirm all corners are present
+    if([north, east, south, west].some(x => x === undefined)) {
+      throw(new Exception("Could not determine groundOverlay bounding box."));
+    }
+
+    // Convert to Leaflet bounds
+    return L.latLngBounds([north, east], [south, west]);
+
+  }
+
+  // Go over each submitted document
+  documents.forEach(function(doc) {
+
+    Array.from(doc.firstChild.children).forEach(function(child) {
+    
+      // Skip anything that is not a groundOverlay
+      if(child.nodeName !== "GroundOverlay") {
+        return;
+      }
+
+      var url, box;
+
+      Array.from(child.children).forEach(function(x) {
+    
+        switch(x.nodeName) {
+          case "Icon":
+            return url = x.children[0].innerHTML;
+          case "LatLonBox":
+            return box = parseLatLonBox(x);
+          default:
+            return;
+        }
+    
+      });
+    
+      // Validate the URI
+      if(!url.startsWith("http")) {
+        throw(new Exception("The selected groundOverlay image must be a valid URL."));
+      }
+
+      // Save reference for deletion
+      KMLLayers.push(L.imageOverlay(url, box).addTo(map));
+    
+    });
 
   });
 
@@ -2207,7 +2334,7 @@ function extractEulerPole(plate, fixed, min, max, increment) {
    */
 
   if(Object.keys(eulerData).length === 0) {
-    return notify("danger", "No poles loaded.");
+    return notify("danger", "No custom Euler poles are loaded.");
   }
 
   if(!eulerData.hasOwnProperty(plate)) {
@@ -2303,6 +2430,77 @@ function getStagePoleAge(ID, age) {
 
 }
 
+function addCollectionData(files, format) {
+
+  switch(format) {
+    case "DIR2":
+      return files.forEach(addData);
+    case "PMAG":
+      return files.forEach(importPmag);
+    default:
+      throw(new Exception("Unknown importing format requested."));
+  }
+
+}
+
+function importPmag(file) {
+
+  /*
+   * Function importPmag
+   * Imports deprecated Paleomagnetism.org 1.0.0 format to the application
+   */
+
+  var json = JSON.parse(file.data);
+
+  json.data.forEach(function(site) {
+
+    var metadata = site.metaData;
+    var components = site.data.map(function(x, i) {
+
+      var dec = x[0];
+      var inc = x[1];
+      var coords = new Direction(dec, inc).toCartesian().toLiteral();
+
+      if(x.length > 2) {
+        var strike = x[2];
+        var dip = x[3];
+      } else {
+        var strike = 0;
+        var dip = 0;
+      }
+
+      if(x.length > 4) {
+        var name = x[4];
+      } else {
+        var name = metadata.name + "." + i;
+      }
+
+      return new Component({
+        "name": name,
+        "latitude": metadata.latitude,
+        "longitude": metadata.longitude,
+        "age": Number(metadata.age),
+        "ageMin": Number(metadata.minAge),
+        "ageMax": Number(metadata.maxAge),
+        "coreAzimuth": 0,
+        "coreDip": 90,
+        "beddingStrike": strike,
+        "beddingDip": dip,
+      }, coords);
+
+    });
+
+    collections.push({
+      "name": metadata.name,
+      "reference": "specimen",
+      "components": components,
+      "created": json.dateExported
+    });
+
+  });
+
+}
+
 function fileSelectionHandler(event) {
 
   /*
@@ -2310,7 +2508,7 @@ function fileSelectionHandler(event) {
    * Callback fired when input files are selected
    */
 
-  const cutoff = document.getElementById("cutoff-selection").value;
+  const format = document.getElementById("format-selection").value;
 
   readMultipleFiles(Array.from(event.target.files), function(files) {
 
@@ -2323,7 +2521,7 @@ function fileSelectionHandler(event) {
 
     // Try adding the demagnetization data
     try {
-      addData(files);
+      addCollectionData(files, format);
     } catch(exception) {
       return notify("danger", exception);
     }

@@ -116,8 +116,22 @@
             <div class="custom-file">
               <input type="file" class="custom-file-input" id="customFile" multiple>
               <label class="custom-file-label" for="customFile"><i class="fas fa-search"></i> Select files </label>
-
             </div>
+
+            &nbsp;
+
+            <!-- Format type selector -->
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="format-selection">Data Format &nbsp; <small><i class="fas fa-angle-right"></i></small></label>
+            </div>
+
+            <select class="custom-select" id="format-selection">
+              <optgroup label="Application Formats">
+                <option value="DIR2">Paleomagnetism.org (2.0.0 .dir)</option>
+                <option value="PMAG">Paleomagnetism.org (1.0.0 .pmag) </option>
+              </optgroup>
+            </select>
+
             <div class="input-group-append">
               <div class="input-group-text">
                 <input id='append-input' type="checkbox" aria-label="Checkbox for following text input">
@@ -195,7 +209,17 @@
                             </div>
                           </div>
                         </div>
+                      </div>
 
+                      <div class="input-group">
+                          <div class="input-group-prepend">
+                            <div class="input-group-text">Age Range</div>
+                          </div>
+                          <input id='site-age-min-input' type="text" class="form-control input-sm" placeholder="Minimum">
+                          <input id='site-age-max-input' type="text" class="form-control input-sm" placeholder="Maximum">
+                          <div class="input-group-append">
+                            <div class="input-group-text">Ma</div>
+                          </div>
                       </div>
 
                       <hr>
