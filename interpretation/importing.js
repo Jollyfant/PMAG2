@@ -933,7 +933,7 @@ function importUtrecht(file) {
   // Split by 9999 (Utecht specimen delimiter)
   var blocks = file.data.split(/9999\r?\n/);
 
-  if(blocks.length === 1 || blocks[blocks.length - 1] !== "END") {
+  if(blocks.length === 1 || blocks[blocks.length - 1].trim() !== "END") {
     throw(new Exception("Invalid Utrecht format."));
   }
 
