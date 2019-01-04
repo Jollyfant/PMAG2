@@ -92,6 +92,7 @@
         <div class="nav nav-tabs nav-justified" id="nav-tab" role="tablist">
           <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Data Import</a>
           <a class="nav-item nav-link" id="nav-apwp-tab" data-toggle="tab" href="#nav-apwp" role="tab" aria-controls="nav-apwp" aria-selected="false">Map Overview & APWPs</a>
+          <a class="nav-item nav-link" id="nav-magstrat-tab" data-toggle="tab" href="#nav-magstrat" role="tab" aria-controls="nav-magstrat" aria-selected="false">Magnetostratigraphy</a>
           <a class="nav-item nav-link" id="nav-settings-tab" data-toggle="tab" href="#nav-settings" role="tab" aria-controls="nav-settings" aria-selected="false">Settings</a>
 
         </div>
@@ -147,6 +148,36 @@
 
         </div>
 
+        <!-- Tab for magnetostratigraphy -->
+        <div class="tab-pane fade" id="nav-magstrat" role="tabpanel" aria-labelledby="nav-magstrat-tab">
+
+          <br>
+
+          <div class="alert alert-light" role="alert">
+            <h5> Paleomagnetism.org 2 - Magnetostratigraphy </h5>
+            <p> The Magnetostratigraphy tool will plot declination & inclination versus stratigraphic level. A polarity file can be added to show the interpreted polarity of the field (currently not implemented).
+            <p> <button onclick="plotStrat()" type="button" class="btn btn-sm pull-right btn-primary"><i class="fas fa-play"></i> <b>Initialize</b></button>
+          </div>
+
+          <div class="row justify-content-center">
+	        <div class="col-md-3">
+              <div id="magstrat-container-declination"></div>
+            </div>
+	        <div class="col-md-2">
+              <div id="magstrat-container-binary"></div>
+            </div>
+	        <div class="col-md-3">
+              <div id="magstrat-container-inclination"></div>
+            </div>
+          </div>
+
+          <div class="text-right">
+            <button class="btn btn-sm btn-light" id="export-magstrat-png"><i class="far fa-file-image"></i> PNG</button>
+            <button class="btn btn-sm btn-light" id="export-magstrat-svg"><i class="far fa-file-image"></i> SVG</button>
+            <button class="btn btn-sm btn-light" id="export-magstrat-pdf"><i class="far fa-file-image"></i> PDF</button>
+          </div>
+
+        </div>
 
         <!-- Tab for data interpretation -->
         <div class="tab-pane fade" id="nav-apwp" role="tabpanel" aria-labelledby="nav-profile-tab">
@@ -460,6 +491,7 @@
   <script src="./apwp.js"></script>
   <script src="../Distribution.js"></script>
   <script src="./Euler.js"></script>
+  <script src="./magstrat.js"></script>
   <script src="./index.js"></script>
   <script src="./exporting.js"></script>
 
