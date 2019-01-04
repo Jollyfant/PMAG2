@@ -2081,16 +2081,103 @@ function kmlSelectionHandler(event) {
   // Read all selected files from disk and add them to the map
   readMultipleFiles(Array.from(event.target.files), function(files) {
 
-    // Some convertions to GeoJSON
+    // Convert KML to DOM element
+    var domElements = files.map(file2XMLDOM);
+
+    // Convertions to GeoJSON
     try { 
-      var layers = files.map(file2XMLDOM).map(toGeoJSON.kml).map(L.geoJSON);
+      parseGroundOverlay(domElements);
+      var layers = domElements.map(toGeoJSON.kml).map(L.geoJSON);
     } catch(exception) {
       return notify("danger", exception);
     }
 
     // Add all the layers
     layers.forEach(x => KMLLayers.push(x.addTo(map)));
+
     notify("success", "Succesfully added " + layers.length + " overlay(s) to map.");
+
+  });
+
+}
+
+function parseGroundOverlay(documents) {
+
+  /*
+   * Function parseGroundOverlay
+   * Parses a groundOverlay child to image on map
+   */
+
+  function parseLatLonBox(element) {
+
+    /*
+     * Function parseLatLonBox
+     * Parses latitude, longitude KML LatLonBox to Leaflet bounds
+     */
+
+    var north, east, south, west;
+
+    Array.from(element.children).forEach(function(child) {
+
+      switch(child.nodeName) {
+        case "north":
+          return north = Number(child.innerHTML);
+        case "south":
+          return south = Number(child.innerHTML);
+        case "east":
+          return east = Number(child.innerHTML);
+        case "west":
+          return west = Number(child.innerHTML);
+        default:
+          return;
+      };
+
+    });
+
+    // Confirm all corners are present
+    if([north, east, south, west].some(x => x === undefined)) {
+      throw(new Exception("Could not determine groundOverlay bounding box."));
+    }
+
+    // Convert to Leaflet bounds
+    return L.latLngBounds([north, east], [south, west]);
+
+  }
+
+  // Go over each submitted document
+  documents.forEach(function(doc) {
+
+    Array.from(doc.firstChild.children).forEach(function(child) {
+    
+      // Skip anything that is not a groundOverlay
+      if(child.nodeName !== "GroundOverlay") {
+        return;
+      }
+
+      var url, box;
+
+      Array.from(child.children).forEach(function(x) {
+    
+        switch(x.nodeName) {
+          case "Icon":
+            return url = x.children[0].innerHTML;
+          case "LatLonBox":
+            return box = parseLatLonBox(x);
+          default:
+            return;
+        }
+    
+      });
+    
+      // Validate the URI
+      if(!url.startsWith("http")) {
+        throw(new Exception("The selected groundOverlay image must be a valid URL."));
+      }
+
+      // Save reference for deletion
+      KMLLayers.push(L.imageOverlay(url, box).addTo(map));
+    
+    });
 
   });
 
