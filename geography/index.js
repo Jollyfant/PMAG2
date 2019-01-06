@@ -598,6 +598,65 @@ function showCollectionsOnMap() {
 
 }
 
+function downloadAsKML() {
+
+  /*
+   * Function downloadAsKML
+   * Opens download for station metata in KML format
+   */
+
+  function generateKMLPlacemarks() {
+
+    /*
+     * Function downloadAsKML::generateKMLPlacemarks
+     * Generates KML string from station JSON for exporting
+     */
+
+    return mapMakers.map(function(marker, i) {
+
+      var iconURI = marker.options.icon.options.iconUrl;
+
+      return [
+        "<Style id='" + i + "'>",
+        "  <IconStyle>",
+        "    <scale>3</scale>",
+        "    <Icon>",
+        "      <href>" + iconURI + "</href>",
+        "    </Icon>",
+        "  </IconStyle>",
+        "</Style>",
+        "<Placemark>",
+        "  <Point>",
+        "    <styleUrl>#" + i + "</styleUrl>",
+        "    <coordinates>" + marker.getLatLng().lng + "," + marker.getLatLng().lat + "</coordinates>",
+        "  </Point>",
+        "</Placemark>"
+      ].join("\n");
+    }).join("\n");
+
+  }
+
+  if(mapMakers.length === 0) {
+    return notify("warning", "No collections are selected for exporting.");
+  }
+
+  const XML_VERSION = "1.0";
+  const XML_ENCODING = "UTF-8";
+  const KML_VERSION = "2.2";
+  const MIME_TYPE = "data:text/xml;charset=utf-8";
+
+  // Encode the payload for downloading
+  var payload = encodeURIComponent([
+    "<?xml version='" + XML_VERSION + "' encoding='" + XML_ENCODING + "'?>",
+    "<kml xmlns='http://earth.google.com/kml/" + KML_VERSION + "'>",
+    generateKMLPlacemarks(),
+    "</kml>"
+  ].join("\n"));
+
+  downloadURIComponent("collections.kml", MIME_TYPE + "," + payload);
+
+}
+
 function getAverageLocation(site) {
 
   /*

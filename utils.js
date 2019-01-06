@@ -445,6 +445,19 @@ function downloadURIComponent(name, string) {
 
 }
 
+function downloadAsGeoJSON(filename, json) {
+
+  /*
+   * Function downloadAsGeoJSON
+   * Downloads a particular GeoJSON object  as a BLOB
+   */
+
+  const MIME_TYPE = "data:application/json;charset=utf-8";
+
+  downloadURIComponent(filename, MIME_TYPE + "," + encodeURIComponent(JSON.stringify(json)));
+
+}
+
 function downloadAsCSV(filename, csv) {
 
   /*
