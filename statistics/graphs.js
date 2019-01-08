@@ -1256,23 +1256,128 @@ function getSelectedComponents() {
 
 }
 
-function CTMDPermutations(callback) {
+function RUN() {
+
+  var collections = getSelectedCollections();
+  var names = collections.map(x => x.name);
+
+  CTMDPermutations(collections, function(result) {
+
+    // Create heatmap data series
+    var success = new Array();
+    var fail = new Array();
+    var none = new Array();
+
+    result.forEach(function(x) {
+
+      // Push to the correct data series
+      if(x.match) {
+        success.push({"x": x.i, "y": x.j}, {"x": x.j, "y": x.i})
+      } else {
+        fail.push({"x": x.i, "y": x.j}, {"x": x.j, "y": x.i});
+      }
+
+    });
+
+    // Create the heat map
+    CTMDHeatmapChart(names, success, fail);
+
+  });
+
+}
+
+function CTMDHeatmapChart(names, match, noMatch) {
+
+  /*
+   * Function CTMDHeatmapChart
+   * Creates a heatmap of all selected collection pairs
+   */
+
+  // Put a black square on the diagonal
+  var empty = new Array();
+
+  for(var i = 0; i < Math.sqrt(match.length + noMatch.length); i++) {
+    empty.push({"x": i, "y": i});
+  }
+
+  new Highcharts.chart("permutation-table", {
+    "chart": {
+      "width": 600,
+      "height": 600,
+      "type": "heatmap",
+    },
+    "xAxis": {
+      "categories": names,
+      "tickInterval":  1,
+      "gridLineWidth": 2,
+      "tickLength": 0,
+      "lineWidth": 1,
+    },
+    "title": {
+      "text": "Common True Mean Directions",
+    },
+    "tooltip": {
+      "formatter": function() {
+        return [
+          "<b>Common True Mean Direction Results</b>",
+          "<b>Collection one:</b>" + this.series.yAxis.categories[this.point.y],
+          "<b>Collection two:</b>" + this.series.xAxis.categories[this.point.x]
+        ].join("<br>");
+      }
+    },
+    "subtitle": {
+      "text": "Showing " + (Math.pow(empty.length, 2) - empty.length) + " permutations"
+    },
+    "credits": {
+      "enabled": ENABLE_CREDITS
+    },
+    "yAxis": {
+      "categories": names,
+      "tickInterval":  1,
+      "gridLineWidth": 2,
+      "tickLength": 0,
+      "lineWidth": 1
+    },
+    "plotOptions": {
+      "heatmap": {
+        "pointPadding": 1
+      }
+    },
+    "series": [{
+      "name": "Match",
+      "data": match,
+      "color": HIGHCHARTS_GREEN,
+    }, {
+      "name": "No Match",
+      "data": noMatch,
+      "color": HIGHCHARTS_RED
+    }, {
+      "showInLegend": false,
+      "enableMouseTracking": false,
+      "data": empty,
+      "color": HIGHCHARTS_BLACK
+    }]
+  });
+
+}
+
+function CTMDPermutations(collections, callback) {
 
   /*
    * Function CTMDPermutations
    * Does CTMD test on all permutations of selected collections
    */
 
-  function getPairs() {
+  function getPairs(collections) {
 
     /*
      * function CTMDPermutations::getPairs
      * Returns permutation pairs for all selected collections
      */
 
-    var collections = getSelectedCollections();
     var pairs = new Array();
 
+    // All permutations: j starts after i
     for(var i = 0; i < collections.length; i++) {
       for(var j = i + 1; j < collections.length; j++) {
 
@@ -1280,7 +1385,9 @@ function CTMDPermutations(callback) {
         pairs.push({
           "i": i,
           "j": j,
-          "pair": new Array(collections[i].components, collections[j].components)
+          "pair": new Array(collections[i].components, collections[j].components).map(function(components) {
+            return doCutoff(components.map(x => x.inReferenceCoordinates())).components;
+          })
         });
 
       }
@@ -1291,10 +1398,11 @@ function CTMDPermutations(callback) {
   }
 
   // Create collection permutations
-  var pairs = getPairs();
+  var pairs = getPairs(collections);
+
   var results = new Array();
 
-  // Non-blocking
+  // Run through all permutations but non-blocking 
   (next = function() {
 
     // Iteration can be stopped
@@ -1304,7 +1412,7 @@ function CTMDPermutations(callback) {
 
     var permutation = pairs.pop();
 
-    // Simulate each pair
+    // Simulate the current pair
     var result = simulateCTMD(...permutation.pair);
 
     var x = {
@@ -1329,6 +1437,7 @@ function CTMDPermutations(callback) {
       "match": doesMatch(x, y, z)
     });
 
+    // Proceed
     setTimeout(next, 0);
 
   })();
@@ -1389,6 +1498,7 @@ function bootstrapCTMD() {
    */
 
   const NUMBER_OF_BOOTSTRAPS = 1000;
+
   const CONTAINER_X = "ctmd-container-x";
   const CONTAINER_Y = "ctmd-container-y";
   const CONTAINER_Z = "ctmd-container-z";
@@ -1403,14 +1513,6 @@ function bootstrapCTMD() {
   cSites = collections.map(function(collection) {
     return doCutoff(collection.components.map(x => x.inReferenceCoordinates()));
   });
-
-  // Buckets for the coordinates
-  var xOne = new Array();
-  var xTwo = new Array();
-  var yOne = new Array();
-  var yTwo = new Array();
-  var zOne = new Array();
-  var zTwo = new Array();
 
   var result = simulateCTMD(cSites[0].components, cSites[1].components);
 
@@ -1433,7 +1535,7 @@ function doesMatch(xParams, yParams, zParams) {
 
   /*
    * Function doesMatch
-   * Checks whether two bootstraps overlap
+   * Checks whether two CTMD bootstraps overlap and are statistically "equivalent"
    */
 
   // Are the confidence regions overlapping?
