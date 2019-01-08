@@ -665,13 +665,13 @@ function getConfidence(cdf) {
 
   /*
    * Function getConfidence
-   * Returns the upper
+   * Returns the upper and lower 2.5% of a cumulative distribution function
    */
 
   var array = cdf.map(x => x.x);
 
-  var lower = array[parseInt(0.025 * array.length, 10)] || -90;
-  var upper = array[parseInt(0.975 * array.length, 10)] || +90;
+  var lower = array[parseInt(0.025 * array.length, 10)];
+  var upper = array[parseInt(0.975 * array.length, 10)];
 
   return { lower, upper }
 
@@ -727,8 +727,8 @@ function plotEICDF(inclinations, originalInclination, unflattenedInclination) {
   }];
 
   var mySeries = [{
-    "name": 'Original Inclination',
-    "type": 'line',
+    "name": "Original Inclination",
+    "type": "line",
     "data": getVerticalLine(originalInclination),
     "color": HIGHCHARTS_PINK,
     "enableMouseTracking": false,
@@ -1256,6 +1256,131 @@ function getSelectedComponents() {
 
 }
 
+function CTMDPermutations(callback) {
+
+  /*
+   * Function CTMDPermutations
+   * Does CTMD test on all permutations of selected collections
+   */
+
+  function getPairs() {
+
+    /*
+     * function CTMDPermutations::getPairs
+     * Returns permutation pairs for all selected collections
+     */
+
+    var collections = getSelectedCollections();
+    var pairs = new Array();
+
+    for(var i = 0; i < collections.length; i++) {
+      for(var j = i + 1; j < collections.length; j++) {
+
+        // Create a permutation pair
+        pairs.push({
+          "i": i,
+          "j": j,
+          "pair": new Array(collections[i].components, collections[j].components)
+        });
+
+      }
+    }
+
+    return pairs;
+
+  }
+
+  // Create collection permutations
+  var pairs = getPairs();
+  var results = new Array();
+
+  // Non-blocking
+  (next = function() {
+
+    // Iteration can be stopped
+    if(pairs.length === 0) {
+      return callback(results);
+    }
+
+    var permutation = pairs.pop();
+
+    // Simulate each pair
+    var result = simulateCTMD(...permutation.pair);
+
+    var x = {
+      "one": getConfidence(getCDF(result.xOne)),
+      "two": getConfidence(getCDF(result.xTwo))
+    }
+
+    var y = {
+      "one": getConfidence(getCDF(result.yOne)),
+      "two": getConfidence(getCDF(result.yTwo))
+    }
+
+    var z = {
+      "one": getConfidence(getCDF(result.zOne)),
+      "two": getConfidence(getCDF(result.zTwo))
+    }
+
+    // Check whether the two collections are statistically "equivalent"
+    results.push({
+      "i": permutation.i,
+      "j": permutation.j,
+      "match": doesMatch(x, y, z)
+    });
+
+    setTimeout(next, 0);
+
+  })();
+
+}
+
+function simulateCTMD(one, two) {
+
+  /*
+   * Function simulateCTMD
+   * Does a single CTMD simulation
+   */
+
+  const NUMBER_OF_BOOTSTRAPS = 1000;
+
+  // Buckets for the coordinates
+  var xOne = new Array();
+  var xTwo = new Array();
+  var yOne = new Array();
+  var yTwo = new Array();
+  var zOne = new Array();
+  var zTwo = new Array();
+
+  // Complete N bootstraps
+  for(var i = 0; i < NUMBER_OF_BOOTSTRAPS; i++) {
+
+    // Draw a random selection from the site
+    var sampledOne = drawBootstrap(one);
+    var sampledTwo = drawBootstrap(two);
+
+    // Calculate the mean value
+    var statisticsOne = getStatisticalParameters(sampledOne);
+    var statisticsTwo = getStatisticalParameters(sampledTwo);
+
+    var coordinatesOne = statisticsOne.dir.mean.toCartesian();
+    var coordinatesTwo = statisticsTwo.dir.mean.toCartesian();
+
+    // Save the coordinates
+    xOne.push(coordinatesOne.x);
+    yOne.push(coordinatesOne.y);
+    zOne.push(coordinatesOne.z);
+
+    xTwo.push(coordinatesTwo.x);
+    yTwo.push(coordinatesTwo.y);
+    zTwo.push(coordinatesTwo.z);
+
+  }
+
+  return { xOne, xTwo, yOne, yTwo, zOne, zTwo }
+
+}
+
 function bootstrapCTMD() {
 
   /*
@@ -1287,30 +1412,7 @@ function bootstrapCTMD() {
   var zOne = new Array();
   var zTwo = new Array();
 
-  // Complete N bootstraps
-  for(var i = 0; i < NUMBER_OF_BOOTSTRAPS; i++) {
-
-    // Draw a random selection from the site
-    var sampledOne = drawBootstrap(cSites[0].components);
-    var sampledTwo = drawBootstrap(cSites[1].components);
-
-    // Calculate the mean value
-    var statisticsOne = getStatisticalParameters(sampledOne);
-    var statisticsTwo = getStatisticalParameters(sampledTwo);
-
-    var coordinatesOne = statisticsOne.dir.mean.toCartesian();
-    var coordinatesTwo = statisticsTwo.dir.mean.toCartesian();
-
-    // Save the coordinates
-    xOne.push(coordinatesOne.x);
-    yOne.push(coordinatesOne.y);
-    zOne.push(coordinatesOne.z);
-
-    xTwo.push(coordinatesTwo.x);
-    yTwo.push(coordinatesTwo.y);
-    zTwo.push(coordinatesTwo.z);
-
-  }
+  var result = simulateCTMD(cSites[0].components, cSites[1].components);
 
   var names = {
     "one": collections[0].name,
@@ -1318,12 +1420,32 @@ function bootstrapCTMD() {
   }
 
   // Call plotting routine for each component
-  var xParams = plotCartesianBootstrap(CONTAINER_X, xOne, xTwo, names, NUMBER_OF_BOOTSTRAPS);
-  var yParams = plotCartesianBootstrap(CONTAINER_Y, yOne, yTwo, names, NUMBER_OF_BOOTSTRAPS);
-  var zParams = plotCartesianBootstrap(CONTAINER_Z, zOne, zTwo, names, NUMBER_OF_BOOTSTRAPS);
+  var xParams = plotCartesianBootstrap(CONTAINER_X, getCDF(result.xOne), getCDF(result.xTwo), names, NUMBER_OF_BOOTSTRAPS);
+  var yParams = plotCartesianBootstrap(CONTAINER_Y, getCDF(result.yOne), getCDF(result.yTwo), names, NUMBER_OF_BOOTSTRAPS);
+  var zParams = plotCartesianBootstrap(CONTAINER_Z, getCDF(result.zOne), getCDF(result.zTwo), names, NUMBER_OF_BOOTSTRAPS);
 
   // Update the table
   updateCTMDTable(names, xParams, yParams, zParams);
+
+}
+
+function doesMatch(xParams, yParams, zParams) {
+
+  /*
+   * Function doesMatch
+   * Checks whether two bootstraps overlap
+   */
+
+  // Are the confidence regions overlapping?
+  if(xParams.one.upper > xParams.two.lower && xParams.one.lower < xParams.two.upper) {
+    if(yParams.one.upper > yParams.two.lower && yParams.one.lower < yParams.two.upper) {
+      if(zParams.one.upper > zParams.two.lower && zParams.one.lower < zParams.two.upper) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 
 }
 
@@ -1333,26 +1455,6 @@ function updateCTMDTable(names, xParams, yParams, zParams) {
    * Function updateCTMDTable
    * Updates the CTMD table with the two collections and parameters
    */
-
-  function doesMatch(xParams, yParams, zParams) {
- 
-    /*
-     * Function doesMatch
-     * Checks whether two bootstraps overlap
-     */
-
-    // Are the confidence regions overlapping?
-    if(xParams.one.upper > xParams.two.lower && xParams.one.lower < xParams.two.upper) {
-      if(yParams.one.upper > yParams.two.lower && yParams.one.lower < yParams.two.upper) {
-        if(zParams.one.upper > zParams.two.lower && zParams.one.lower < zParams.two.upper) {
-          return true;
-        }
-      }
-    }
- 
-    return false;
- 
-  }
 
   function getMatchHTML(match) {
 
@@ -1428,7 +1530,7 @@ function getCDF(input) {
 
 }
 
-function plotCartesianBootstrap(container, one, two, names, nBootstraps) {
+function plotCartesianBootstrap(container, cdfOne, cdfTwo, names, nBootstraps) {
 
   /*
    * Function plotCartesianBootstrap
@@ -1454,9 +1556,6 @@ function plotCartesianBootstrap(container, one, two, names, nBootstraps) {
   // Get the index of the upper and lower 5%
   var lower = parseInt(0.025 * nBootstraps, 10);
   var upper = parseInt(0.975 * nBootstraps, 10);
-
-  var cdfOne = getCDF(one);
-  var cdfTwo = getCDF(two);
 
   //Define plot bands to represent confidence envelopes
   var plotBands = [{
@@ -1538,14 +1637,8 @@ function plotCartesianBootstrap(container, one, two, names, nBootstraps) {
 
   // Return the confidence bounds for the table
   return {
-    "one": {
-      "lower": cdfOne[lower].x,
-      "upper": cdfOne[upper].x
-    },
-    "two": {
-      "lower": cdfTwo[lower].x,
-      "upper": cdfTwo[upper].x
-    }
+    "one": getConfidence(cdfOne),
+    "two": getConfidence(cdfTwo)
   }
   
 }
