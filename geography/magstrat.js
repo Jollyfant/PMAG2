@@ -15,9 +15,11 @@ function showStratigraphy(container, plotData) {
 
   }
 
+  const USE_POSITIVE_XAXIS = document.getElementById("magstrat-positive").checked;
+
   // Determine title and x-range
   if(container === "magstrat-container-declination") {
-    var range = {"min": -180, "max": 180}
+    var range = USE_POSITIVE_XAXIS ? {"min": 0, "max": 360} : {"min": -180, "max": 180}
     var title = "Declination";
   } else if(container === "magstrat-container-inclination") {
     var range = {"min": -90, "max": 90}
@@ -81,33 +83,19 @@ function showStratigraphy(container, plotData) {
 
 }
 
-function formatBinaryColumn(input) {
+function showBinaryColumn(polarityData) {
 
   /*
-   * Function formatBinaryColumn
-   * Converts series to a Highcharts arearange
+   * Function showBinaryColumn
+   * Creates the binary column with a given polarity
    */
-
-  var strat = new Array();
-
-  for(var i = 0; i < input.length; i++) {
-    strat.push({"x": 0, "low": input[i][0], "high": input[i][1]})
-    strat.push({"x": 1, "low": input[i][0], "high": input[i][1]})
-    strat.push(null);
-  }
-  
-  return strat;
-  
-}
-
-function showBinaryColumn(polarityData) {
 
   // Extract the ticks from the declination chart
   var ticks = $("#magstrat-container-declination").highcharts().yAxis[0].tickPositions;
 
   new Highcharts.chart("magstrat-container-binary", {
     "title": {
-      "text": "⊶",
+      "text": "Polarity",
     },
     "xAxis": {
       "min": 0,
@@ -119,6 +107,9 @@ function showBinaryColumn(polarityData) {
       },
       "lineColor": "white",
       "tickColor": "white"
+    },
+    "tooltip": {
+      "enabled": !false
     },
     "yAxis": [{
       "tickPositions": ticks,
@@ -155,9 +146,9 @@ function showBinaryColumn(polarityData) {
       "enabled": false
     },
     "series": [{
-      "enableMouseTracking": false,
       "type": "arearange",
       "name": "Polarity",
+      "enableMouseTracking": false,
       "marker": {
         "enabled": false
       },
@@ -219,6 +210,8 @@ function plotStrat() {
 
   }
 
+  const USE_POSITIVE_XAXIS = document.getElementById("magstrat-positive").checked;
+
   // Get the selected collections
   var collections = getSelectedCollections();
 
@@ -240,7 +233,7 @@ function plotStrat() {
     stratigraphicData.push({
       "dec": direction.dec,
       "inc": direction.inc,
-      "level": Math.floor(Math.random() * 50),
+      "level": Math.floor(Math.random() * 500),
       "name": component.name
     }); 
 
@@ -253,7 +246,7 @@ function plotStrat() {
 
     return {
       "sample": x.name,
-      "x": (x.dec > 180) ? x.dec - 360 : x.dec, 
+      "x": USE_POSITIVE_XAXIS ? ((x.dec < 0) ? x.dec + 360 : x.dec) : ((x.dec > 180) ? x.dec - 360 : x.dec), 
       "y": x.level,
       "marker": {
     	"fillColor": (x.inc < 0 ? "white" : HIGHCHARTS_BLUE),
@@ -282,11 +275,51 @@ function plotStrat() {
   // Create the plot for declination/inclination
   showStratigraphy("magstrat-container-declination", dataDec);
   showStratigraphy("magstrat-container-inclination", dataInc);
-  
-  // Plot the binary column in the middle (fake data for now)
-  var inp = [[0, 1], [2, 3], [6, 7], [10, 20]];
-  var bin = formatBinaryColumn(inp);
 
-  showBinaryColumn(bin);
+  // Attempt to determine the polarities
+  var polarity = determinePolarities(stratigraphicData);
+
+  // Plot the binary column in the middle
+  showBinaryColumn(polarity);
 
 }
+
+function determinePolarities(stratigraphicData) {
+
+  /*
+   * Function determinePolarities
+   * Determines specimen polarities for drawing
+   */
+
+  var polarity = new Array();
+
+  // Simple algorithm for determining the stratigraphy
+  for(var i = 0; i < stratigraphicData.length; i++) {
+
+    var inclination = stratigraphicData[i].inc;
+    var level = stratigraphicData[i].level;
+
+    if(i > 0) {
+      var levelPrev = stratigraphicData[i - 1].level;
+    } else {
+      var levelPrev = level;
+    }
+
+    if(i < stratigraphicData.length - 1) {
+      var levelNext = stratigraphicData[i + 1].level;
+    } else {
+      var levelNext = level;
+    }
+
+    if(inclination < 0) {
+      polarity.push({"x": 0, "low": 0.5 * (level + levelPrev), "high": 0.5 * (level + levelNext)})
+      polarity.push({"x": 1, "low": 0.5 * (level + levelPrev), "high": 0.5 * (level + levelNext)})
+      polarity.push(null);
+    }
+
+  }
+
+  return polarity;
+
+}
+

@@ -155,12 +155,12 @@
 
           <div class="alert alert-light" role="alert">
             <h5> Paleomagnetism.org 2 - Magnetostratigraphy </h5>
-            <p> The Magnetostratigraphy tool will plot declination & inclination versus stratigraphic level. A polarity file can be added to show the interpreted polarity of the field (currently not implemented).
+            <p> The Magnetostratigraphy tool will plot declination & inclination versus stratigraphic level. The polarity is determined by coloring reversed directions with a negative inclination black midway between two adjacent points.
             <p> <button onclick="plotStrat()" type="button" class="btn btn-sm pull-right btn-primary"><i class="fas fa-play"></i> <b>Initialize</b></button>
           </div>
 
           <div class="row justify-content-center">
-	        <div class="col-md-3">
+	     <div class="col-md-3">
               <div id="magstrat-container-declination"></div>
             </div>
 	        <div class="col-md-2">
@@ -443,6 +443,10 @@
             &nbsp;
             <input class="form-check-input" type="checkbox" id="age-scatter" value="option1" checked>
             <label class="form-check-label" for="age-scatter"> Age Scatter </label>
+            &nbsp;
+            &nbsp;
+            <input class="form-check-input" type="checkbox" id="magstrat-positive" value="option1" checked>
+            <label class="form-check-label" for="magstrat-positive"> Use Stratigraphy Axis (0 - 360) </label>
           </div>
           <br>
           <br>
