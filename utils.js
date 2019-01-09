@@ -250,6 +250,45 @@ function getConfidenceEllipse(angle) {
 
 }
 
+function getSelectedComponents() {
+
+  /*
+   * Function getSelectedComponents
+   * Gets all the components from all collections as if it was a single collection
+   */
+
+  var components = new Array();
+
+  // Get the requested polarity
+  var polarity = document.getElementById("polarity-selection").value || null;
+
+  getSelectedCollections().forEach(function(collection) {
+
+    // Get the components in the correct coordinate system
+    var comp = collection.components.map(x => x.inReferenceCoordinates());
+
+    // Nothing to do
+    if(polarity === null) {
+      return components = components.concat(comp);
+    }
+
+    // Nothing to do
+    var sign = Math.sign(getStatisticalParameters(comp).dir.mean.inc);
+    if((sign === 1 && polarity === "NORMAL") || (sign === -1 && polarity === "REVERSED")) {
+      return components = components.concat(comp);
+    }
+
+    // Reflect the coordinates
+    comp.forEach(function(x) {
+      components.push(new Component(x, x.coordinates.reflect()));
+    });
+
+  });
+
+  return components;
+
+}
+
 function getSelectedCollections() {
 
   /*

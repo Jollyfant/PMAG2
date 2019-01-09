@@ -29,7 +29,7 @@
        * Callback function fired when exporting fails
        */
   
-      notify("danger", "Could not export charts.");
+      notify("danger", "Could not export charts due to an unexpected error.");
   
     }
   
@@ -114,6 +114,7 @@
     // Must be handled asynchronously
     (next = function() {
   
+      // No more charts to add to the SVG
       if(charts.length === 0) {
         return callback('<svg height="' + size.top + '" width="' + size.width + '" version="1.1" xmlns="http://www.w3.org/2000/svg">' + svgArr.join('') + '</svg>');
       }
@@ -162,7 +163,7 @@ function exportHandlerPredicted(event) {
   );
 
   if(charts.includes(undefined)) {
-    return notify("danger", "Can not export charts. Not rendered");
+    return notify("danger", "Can not export charts that are not rendered.");
   }
 
   Highcharts.exportCharts({

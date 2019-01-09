@@ -9,9 +9,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="Paleomagnetism.org 2 - An online environment for paleomagnetic analysis">
     <meta name="keywords" content="paleomagnetism, interpretation, zijderveld, pca">
-
     <meta name="author" content="Mathijs Koymans">
 
+    <!-- Paleomagnetism.org 2.0.0 CSS -->
     <link rel="stylesheet" href="../style.css">
 
     <!-- Leaflet CSS -->
@@ -470,16 +470,18 @@
 
   </body>
 
-  <!-- Optional JavaScript -->
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+  <!-- Highcharts -->
   <script src="https://code.highcharts.com/highcharts.js"></script>
   <script src="https://code.highcharts.com/highcharts-more.js"></script>
   <script src="https://code.highcharts.com/modules/exporting.js"></script>
   <script src="https://code.highcharts.com/modules/offline-exporting.js"></script>
 
+  <!-- Library for multi select -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.2/js/bootstrap-select.min.js"></script>
 
   <!-- Include leaflet -->
@@ -487,22 +489,22 @@
     integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA=="
     crossorigin=""></script>
 
-  <script src="./togeojson.js"></script>
+  <script src="./lib/grid.js"></script>
 
   <script src="../utils.js"></script>
 
   <script src="../Exception.js"></script>
-  <script src="./grid.js"></script>
   <script src="../Direction.js"></script>
   <script src="../Pole.js"></script>
   <script src="../Location.js"></script>
   <script src="../Coordinates.js"></script>
   <script src="../Site.js"></script>
-  <script src="./apwp.js"></script>
   <script src="../Distribution.js"></script>
-  <script src="./Euler.js"></script>
-  <script src="./magstrat.js"></script>
+
   <script src="./index.js"></script>
+  <script src="./euler.js"></script>
+  <script src="./apwp.js"></script>
+  <script src="./magstrat.js"></script>
   <script src="./exporting.js"></script>
 
 </html>
