@@ -27,6 +27,9 @@ function showStratigraphy(container, plotData) {
   }
 
   new Highcharts.chart(container, {
+    "chart": {
+      "height": 800
+    },
     "title": {
       "text": title
     },
@@ -40,7 +43,7 @@ function showStratigraphy(container, plotData) {
     },
     "exporting": {
       "sourceWidth": 400,
-      "sourceHeight": 600,
+      "sourceHeight": 800,
       "enabled": false
     },
     "tooltip": {
@@ -94,6 +97,9 @@ function showBinaryColumn(polarityData) {
   var ticks = $("#magstrat-container-declination").highcharts().yAxis[0].tickPositions;
 
   new Highcharts.chart("magstrat-container-binary", {
+    "chart": {
+      "height": 800
+    },
     "title": {
       "text": "Polarity",
     },
@@ -142,7 +148,7 @@ function showBinaryColumn(polarityData) {
     },
     "exporting": {
       "sourceWidth": 200,
-      "sourceHeight": 600,
+      "sourceHeight": 800,
       "enabled": false
     },
     "series": [{

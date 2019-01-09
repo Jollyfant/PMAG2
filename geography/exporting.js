@@ -88,7 +88,7 @@
         case "predicted":
           return {"top": 1800, "width": 1200}
         case "magstrat":
-          return {"top": 600, "width": 1000}
+          return {"top": 800, "width": 1000}
       }
   
     }

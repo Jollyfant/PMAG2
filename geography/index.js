@@ -598,6 +598,49 @@ function showCollectionsOnMap() {
 
 }
 
+function downloadAsGeoJSON() {
+
+  /*
+   * Function downloadAsGeoJSON
+   * Opens download for station metata in KML format
+   */
+
+  function GeoJSONFeatures() {
+
+    return mapMakers.map(function(marker) {
+
+      var iconURI = marker.options.icon.options.iconUrl;
+
+      return {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [marker.getLatLng().lng, marker.getLatLng().lat]
+        },
+        "properties": {
+          "icon": iconURI
+        }
+      }
+
+    });
+
+  }
+
+  if(mapMakers.length === 0) {
+    return notify("warning", "No collections are selected for exporting.");
+  }
+
+  var payload = {
+    "type": "FeatureCollection",
+    "features": GeoJSONFeatures()
+  }
+
+  const MIME_TYPE = "data:application/vnd.geo+json;charset=utf-8";
+
+  downloadURIComponent("collections.json", MIME_TYPE + "," + JSON.stringify(payload));
+
+}
+
 function downloadAsKML() {
 
   /*
@@ -1662,7 +1705,7 @@ function mapPlate(id) {
     "321": "Western Europe",
     "322": "Calabria/Campania, Southern Europe",
     "323": "Northern Sicily, Southern Europe",
-    "324": "V\u00f6ring Plateau",
+    "324": "Vöring Plateau",
     "325": "Nazca-Cocos Ridge Segment",
     "326": "Nazca-Pacific Ridge Segment",
     "327": "Pelagonia (Greece)",
