@@ -250,6 +250,45 @@ function getConfidenceEllipse(angle) {
 
 }
 
+function getSelectedComponents() {
+
+  /*
+   * Function getSelectedComponents
+   * Gets all the components from all collections as if it was a single collection
+   */
+
+  var components = new Array();
+
+  // Get the requested polarity
+  var polarity = document.getElementById("polarity-selection").value || null;
+
+  getSelectedCollections().forEach(function(collection) {
+
+    // Get the components in the correct coordinate system
+    var comp = collection.components.map(x => x.inReferenceCoordinates());
+
+    // Nothing to do
+    if(polarity === null) {
+      return components = components.concat(comp);
+    }
+
+    // Nothing to do
+    var sign = Math.sign(getStatisticalParameters(comp).dir.mean.inc);
+    if((sign === 1 && polarity === "NORMAL") || (sign === -1 && polarity === "REVERSED")) {
+      return components = components.concat(comp);
+    }
+
+    // Reflect the coordinates
+    comp.forEach(function(x) {
+      components.push(new Component(x, x.coordinates.reflect()));
+    });
+
+  });
+
+  return components;
+
+}
+
 function getSelectedCollections() {
 
   /*
@@ -442,6 +481,19 @@ function downloadURIComponent(name, string) {
 
   // Clean up
   document.body.removeChild(downloadAnchorNode);
+
+}
+
+function downloadAsGeoJSON(filename, json) {
+
+  /*
+   * Function downloadAsGeoJSON
+   * Downloads a particular GeoJSON object  as a BLOB
+   */
+
+  const MIME_TYPE = "data:application/json;charset=utf-8";
+
+  downloadURIComponent(filename, MIME_TYPE + "," + encodeURIComponent(JSON.stringify(json)));
 
 }
 

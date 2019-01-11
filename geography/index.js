@@ -35,11 +35,11 @@ function addMap() {
     "font": "12px Helvetica",
     "showLabel": true,
     "zoomInterval": [
-        {"start": 2, "end": 3, "interval": 30},
-        {"start": 4, "end": 4, "interval": 10},
-        {"start": 5, "end": 7, "interval": 5},
-        {"start": 8, "end": 10, "interval": 1},
-        {"start": 10, "end": 12, "interval": 0.25}
+      {"start": 2, "end": 3, "interval": 30},
+      {"start": 4, "end": 4, "interval": 10},
+      {"start": 5, "end": 7, "interval": 5},
+      {"start": 8, "end": 10, "interval": 1},
+      {"start": 10, "end": 12, "interval": 0.25}
     ]
   }).addTo(map);
 
@@ -121,6 +121,8 @@ function getPublicationFromPID() {
 
 function __init__() {
 
+  document.title += " - Geography Portal";
+
   // Check local storage
   if(!window.localStorage) {
     return notify("warning", "Local storage is not supported by your browser. Save your work manually by exporting your data.");
@@ -149,8 +151,6 @@ function __init__() {
   }
 
   addMap();
-
-  notify("success", "Welcome to the statistics portal. Add data below from the <b>Paleomagnetism.org 2.0.0</b> format to get started.");
 
   __unlock__();
 
@@ -545,6 +545,12 @@ function showCollectionsOnMap() {
 
   }
 
+  function getFullSVG(path, color) {
+
+    return encodeURI("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2'><path d='" + path + "' stroke-width='0.025' stroke='black' fill='" + color + "'/></svg>").replace("#", "%23");
+
+  }
+
   const MARKER_SIZE = 100;
   const MARKER_OPACITY = 0.5;
 
@@ -553,6 +559,32 @@ function showCollectionsOnMap() {
   // Drop references to old markers
   resetMarkers();
  
+  var PLOT_SPECIMENS = !document.getElementById("group-collection").checked;
+
+  if(PLOT_SPECIMENS) {
+
+    const DEFAULT_ANGLE = 2.5;
+
+    getSelectedComponents().forEach(function(component) {
+
+      var direction = component.coordinates.toVector(Direction);
+      var color = (direction.inc < 0 ? HIGHCHARTS_WHITE : HIGHCHARTS_BLACK);
+      var markerPath = getSVGPath((180 - direction.dec), DEFAULT_ANGLE);
+
+      var markerIcon = L.icon({
+        "iconUrl": getFullSVG(markerPath, color),
+        "opacity": MARKER_OPACITY,
+        "iconSize": MARKER_SIZE
+      });
+
+      mapMakers.push(L.marker([component.latitude, component.longitude], {"icon": markerIcon}).addTo(map));
+
+    });
+
+    return;
+
+  }
+
   getSelectedCollections().forEach(function(collection) {
 
     // Cutoff and statistics
@@ -574,10 +606,11 @@ function showCollectionsOnMap() {
 
     var color = (statistics.dir.mean.inc < 0 ? HIGHCHARTS_WHITE : HIGHCHARTS_BLACK);
     var markerPath = getSVGPath((180 - statistics.dir.mean.dec), statistics.butler.dDx);
-    var achenSvgString = "<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2'><path d='" + markerPath + "' stroke-width='0.025' stroke='black' fill='" + color + "'/></svg>"
+
+    var achenSvgString = getFullSVG(markerPath, color);
 
     var markerIcon = L.icon({
-       "iconUrl": encodeURI("data:image/svg+xml," + achenSvgString).replace("#", "%23"),
+       "iconUrl": getFullSVG(markerPath, color),
        "opacity": MARKER_OPACITY,
        "iconSize": MARKER_SIZE
     });
@@ -595,6 +628,108 @@ function showCollectionsOnMap() {
 
   });
 
+
+}
+
+function downloadAsGeoJSON() {
+
+  /*
+   * Function downloadAsGeoJSON
+   * Opens download for station metata in KML format
+   */
+
+  function GeoJSONFeatures() {
+
+    return mapMakers.map(function(marker) {
+
+      var iconURI = marker.options.icon.options.iconUrl;
+
+      return {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [marker.getLatLng().lng, marker.getLatLng().lat]
+        },
+        "properties": {
+          "icon": iconURI
+        }
+      }
+
+    });
+
+  }
+
+  if(mapMakers.length === 0) {
+    return notify("warning", "No collections are selected for exporting.");
+  }
+
+  var payload = {
+    "type": "FeatureCollection",
+    "features": GeoJSONFeatures()
+  }
+
+  const MIME_TYPE = "data:application/vnd.geo+json;charset=utf-8";
+
+  downloadURIComponent("collections.json", MIME_TYPE + "," + JSON.stringify(payload));
+
+}
+
+function downloadAsKML() {
+
+  /*
+   * Function downloadAsKML
+   * Opens download for station metata in KML format
+   */
+
+  function generateKMLPlacemarks() {
+
+    /*
+     * Function downloadAsKML::generateKMLPlacemarks
+     * Generates KML string from station JSON for exporting
+     */
+
+    return mapMakers.map(function(marker, i) {
+
+      var iconURI = marker.options.icon.options.iconUrl;
+
+      return [
+        "<Style id='" + i + "'>",
+        "  <IconStyle>",
+        "    <scale>3</scale>",
+        "    <Icon>",
+        "      <href>" + iconURI + "</href>",
+        "    </Icon>",
+        "  </IconStyle>",
+        "</Style>",
+        "<Placemark>",
+        "  <Point>",
+        "    <styleUrl>#" + i + "</styleUrl>",
+        "    <coordinates>" + marker.getLatLng().lng + "," + marker.getLatLng().lat + "</coordinates>",
+        "  </Point>",
+        "</Placemark>"
+      ].join("\n");
+    }).join("\n");
+
+  }
+
+  if(mapMakers.length === 0) {
+    return notify("warning", "No collections are selected for exporting.");
+  }
+
+  const XML_VERSION = "1.0";
+  const XML_ENCODING = "UTF-8";
+  const KML_VERSION = "2.2";
+  const MIME_TYPE = "data:text/xml;charset=utf-8";
+
+  // Encode the payload for downloading
+  var payload = encodeURIComponent([
+    "<?xml version='" + XML_VERSION + "' encoding='" + XML_ENCODING + "'?>",
+    "<kml xmlns='http://earth.google.com/kml/" + KML_VERSION + "'>",
+    generateKMLPlacemarks(),
+    "</kml>"
+  ].join("\n"));
+
+  downloadURIComponent("collections.kml", MIME_TYPE + "," + payload);
 
 }
 
@@ -1603,7 +1738,7 @@ function mapPlate(id) {
     "321": "Western Europe",
     "322": "Calabria/Campania, Southern Europe",
     "323": "Northern Sicily, Southern Europe",
-    "324": "V\u00f6ring Plateau",
+    "324": "Vöring Plateau",
     "325": "Nazca-Cocos Ridge Segment",
     "326": "Nazca-Pacific Ridge Segment",
     "327": "Pelagonia (Greece)",

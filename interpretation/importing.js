@@ -862,9 +862,9 @@ function importApplicationSaveOld(file) {
 
       // Map the interpretation type (dir === TAU1, gc === TAU3)
       var type;
-      if(interpretation.type === "dir") {
+      if(interpretation.type.toLowerCase() === "dir") {
         type = "TAU1";
-      } else if(interpretation.type === "gc") {
+      } else if(interpretation.type.toLowerCase() === "gc") {
         type = "TAU3";
       } else {
         throw(new Exception("Could not determine the type of the PCA."));

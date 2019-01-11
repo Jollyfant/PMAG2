@@ -1942,7 +1942,7 @@ function sortSamples(type) {
     }
 
     function stratigraphySorter(x, y) {
-      return numericSort(x.level, x.level);
+      return numericSort(x.level, y.level);
     }
 
     switch(type) {

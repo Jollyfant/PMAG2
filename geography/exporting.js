@@ -29,7 +29,7 @@
        * Callback function fired when exporting fails
        */
   
-      notify("danger", "Could not export charts.");
+      notify("danger", "Could not export charts due to an unexpected error.");
   
     }
   
@@ -46,7 +46,12 @@
         case "ei-bootstrap-container":
         case "ctmd-container-x":
         case "declination-container":
+        case "magstrat-container-declination":
           return {"width": 0, "top": 0}
+        case "magstrat-container-binary":
+          return {"width": 400, "top": 0}
+        case "magstrat-container-inclination":
+          return {"width": 600, "top": 0}
         case "foldtest-tectonic-container":
         case "pole-container":
           return {"width": 600, "top": 0}
@@ -82,6 +87,8 @@
           return {"top": 1200, "width": 1200}
         case "predicted":
           return {"top": 1800, "width": 1200}
+        case "magstrat":
+          return {"top": 800, "width": 1000}
       }
   
     }
@@ -107,6 +114,7 @@
     // Must be handled asynchronously
     (next = function() {
   
+      // No more charts to add to the SVG
       if(charts.length === 0) {
         return callback('<svg height="' + size.top + '" width="' + size.width + '" version="1.1" xmlns="http://www.w3.org/2000/svg">' + svgArr.join('') + '</svg>');
       }
@@ -124,6 +132,28 @@
 
 })(Highcharts);
 
+function exportHandlerMagstrat(event) {
+
+  var charts = new Array(
+    $("#magstrat-container-declination").highcharts(),
+    $("#magstrat-container-binary").highcharts(),
+    $("#magstrat-container-inclination").highcharts()
+  );
+
+  if(charts.includes(undefined)) {
+    return notify("danger", "Can not export charts that are not rendered.");
+  }
+
+  Highcharts.exportCharts({
+    "id": "magstrat",
+    "charts": charts
+  }, {
+    "type": getMime(event.target.id)
+  });
+
+}
+
+
 function exportHandlerPredicted(event) {
 
   var charts = new Array(
@@ -133,7 +163,7 @@ function exportHandlerPredicted(event) {
   );
 
   if(charts.includes(undefined)) {
-    return notify("danger", "Can not export charts. Not rendered");
+    return notify("danger", "Can not export charts that are not rendered.");
   }
 
   Highcharts.exportCharts({
@@ -148,6 +178,10 @@ function exportHandlerPredicted(event) {
 document.getElementById("export-predicted-png").addEventListener("click", exportHandlerPredicted);
 document.getElementById("export-predicted-pdf").addEventListener("click", exportHandlerPredicted);
 document.getElementById("export-predicted-svg").addEventListener("click", exportHandlerPredicted);
+
+document.getElementById("export-magstrat-png").addEventListener("click", exportHandlerMagstrat);
+document.getElementById("export-magstrat-pdf").addEventListener("click", exportHandlerMagstrat);
+document.getElementById("export-magstrat-svg").addEventListener("click", exportHandlerMagstrat);
 
 function getMime(id) {
 
