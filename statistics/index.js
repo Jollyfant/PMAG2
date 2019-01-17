@@ -204,7 +204,7 @@ function redrawCharts() {
   // Redraw the hemisphere projections
   // Other modules are triggered with dedicated buttons
   eqAreaProjection();
-  eqAreaProjectionMean();
+  //eqAreaProjectionMean();
 
   // Reset to the original position
   window.scrollTo(0, tempScrollTop);
@@ -393,12 +393,14 @@ function doCutoff(directions) {
     var poleDistribution = getStatisticalParameters(iterateDirections).pole;
 
     // Go over all all poles
-    poleDistribution.vectors.forEach(function(pole, i) {
+    iterateDirections.forEach(function(component, i) {
 
       // Skip directions that were previously rejected
-      if(iterateDirections[i].rejected) {
+      if(component.rejected) {
         return;
       }
+
+      var pole = site.poleFrom(literalToCoordinates(component.coordinates).toVector(Direction));
 
       // Find the angle between the mean VGP (mLon, mLat) and the particular VGP
       var angleToMean = poleDistribution.mean.toCartesian().angle(pole.toCartesian());

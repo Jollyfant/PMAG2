@@ -73,6 +73,7 @@ function getStatisticalParameters(components) {
   var directions = components.filter(x => !x.rejected).map(x => literalToCoordinates(x.coordinates).toVector(Direction));
   var poles = directions.map(x => site.poleFrom(x));
 
+console.log(poles);
   var directionDistribution = new DirectionDistribution(directions);
   var poleDistribution = new PoleDistribution(poles);
 
@@ -702,15 +703,6 @@ function addFooter() {
     "<div style='float: right;' class='text-muted'><small>Version v" + __VERSION__ + "</small></div>",
     "&nbsp; <i class='fab fa-github'></i> <a href='https://github.com/Jollyfant'><b>Source Code</b></a>",
     "&nbsp; <i class='fas fa-balance-scale'></i> Licensed under <a href='https://github.com/Jollyfant'><b>MIT</b>.</a>",
-    "<br>",
-    "<br>",
-    "<div class='justify-content-md-center text-center'>",
-    "  <div style='text-align: right; display: inline-block;'>",
-    "    <a href='http://www.geo.uu.nl/~forth/'><img style='margin: 0px; height: 60px;' src='../images/UU.png'></a>",
-    "    <a href='http://erc.europa.eu/'><img style='margin: 0px; height: 60px;' src='../images/ERC.png'></a>",
-    "    <a href='http://www.nwo.nl/'><img style='margin: 0px; height: 60px;' src='../images/NWO_logo_plain.png'></a>",
-    "  </div>",
-    "</div>",
     "<br>"
   ).join("\n");
 

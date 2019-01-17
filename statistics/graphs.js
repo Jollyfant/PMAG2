@@ -1261,6 +1261,11 @@ function RUN() {
   var collections = getSelectedCollections();
   var names = collections.map(x => x.name);
 
+  if(collections.length < 2) {
+    return notify("Select two or more selections for the grid view.");
+  }
+
+  // Asynchronous call (using setTimeout)
   CTMDPermutations(collections, function(result) {
 
     // Create heatmap data series
