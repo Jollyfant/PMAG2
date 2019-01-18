@@ -73,7 +73,6 @@ function getStatisticalParameters(components) {
   var directions = components.filter(x => !x.rejected).map(x => literalToCoordinates(x.coordinates).toVector(Direction));
   var poles = directions.map(x => site.poleFrom(x));
 
-console.log(poles);
   var directionDistribution = new DirectionDistribution(directions);
   var poleDistribution = new PoleDistribution(poles);
 

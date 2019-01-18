@@ -441,23 +441,41 @@
 
     <br>
 
-  <div class="modal fade" id="map-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <!-- Modal for saving a site -->
+    <div class="modal fade" id="map-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="modal-title"></h5>
+            <h5 class="modal-title" id="modal-title">Save Collection</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
 
           <div class="modal-body">
-            <div id="modal-container"></div>
+            <div id="modal-container">
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="basic-addon1">Collection Name</span>
+                </div>
+                <input id="modal-name" type="text" class="form-control" placeholder="Collection Name" aria-label="Username" aria-describedby="basic-addon1">
+              </div>
+
+              <!-- Discard rejected component checkbox -->
+              <div class="form-check">
+                <input id="modal-discard-rejected" class="form-check-input" type="checkbox" value=""> 
+                <label class="form-check-label" for="modal-discard-rejected">
+                  Discard rejected
+                </label>
+              </div>
+
+            </div>
           </div>
 
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button id="modal-confirm" type="button" class="btn btn-success" data-dismiss="modal">Save Collection</button>
           </div>
+
         </div>
       </div>
     </div>

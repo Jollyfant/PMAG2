@@ -98,7 +98,7 @@ function importMagic(file) {
           var object = CSV2Object(header, x);
 
           if(magicSites.hasOwnProperty(object.site)) {
-            throw(new Exception("Site " + object.site + " is defined multiple times."));
+            //throw(new Exception("Site " + object.site + " is defined multiple times."));
           }
 
           magicSites[object.site] = object;
@@ -113,7 +113,7 @@ function importMagic(file) {
           var object = CSV2Object(header, x);
 
           if(magicSamples.hasOwnProperty(object.sample)) {
-            throw(new Exception("Sample " + object.sample + " is defined multiple times."));
+            //throw(new Exception("Sample " + object.sample + " is defined multiple times."));
           }
 
           magicSamples[object.sample] = object;
@@ -177,8 +177,10 @@ function importMagic(file) {
           var volume = NaNTo(object.volume, 1E-5);
 
           if(magicSpecimens.hasOwnProperty(object.specimen)) {
-            throw(new Exception("Specimen " + object.specimen + " is defined multiple times."));
+            //throw(new Exception("Specimen " + object.specimen + " is defined multiple times."));
           }
+
+          var methods = object["method_codes"].split(":");
 
           // Create a new specimen
           magicSpecimens[object.specimen] = {
@@ -186,6 +188,12 @@ function importMagic(file) {
             "coordinates": "specimen",
             "format": "MAGIC",
             "version": __VERSION__,
+            // Extra
+            "minStep": Number(object["meas_step_min"]),
+            "maxStep": Number(object["meas_step_max"]),
+            "anchored": methods.includes("DE-BFL-A"),
+            "type": ((methods.includes("DE-BFP") || methods.includes("DE-BFP-G")) ? "TAU3" : "TAU1"),
+            //
             "created": new Date().toISOString(),
             "steps": new Array(),
             "level": level,
@@ -194,7 +202,7 @@ function importMagic(file) {
             "age": age,
             "ageMin": ageLow,
             "ageMax": ageHigh,
-            "lithology": lithology,
+            "lithology": null,
             "name": object.specimen,
             "volume": 1E6 * volume,
             "beddingStrike": Number(sample["bed_dip_direction"]) - 90 || 0,
@@ -215,7 +223,7 @@ function importMagic(file) {
 
           // The measurement points to a specific specimen
           if(!magicSpecimens.hasOwnProperty(object.specimen)) {
-            throw("Referenced specimen " + object.specimen + " does not exist.")
+            throw("The referenced specimen " + object.specimen + " does not exist.");
           }
 
           var specimen = magicSpecimens[object.specimen];
@@ -231,17 +239,19 @@ function importMagic(file) {
 
           // Determine the demagnetization type
           if(types.includes("LP-DIR-AF")) {
-            step = object["treat_ac_field"];
+            step = Number(object["treat_ac_field"]);
+            step *= 1000
             demagnetizationType = "alternating";
           } else if(types.includes("LP-DIR-T")) {
-            step = object["treat_temp"];
+            step = Number(object["treat_temp"]);
+            step -= 273;
             demagnetizationType = "thermal";
           } else {
             return;
           }
         
           // Add the demagnetization measurements
-          specimen.steps.push(new Measurement(step, coordinates, 0));
+          specimen.steps.push(new Measurement(step.toString(), coordinates, 0));
 
           // Overwrite the demagnetization type
           specimen.demagnetizationType = demagnetizationType;
@@ -249,6 +259,36 @@ function importMagic(file) {
         });
 
     }
+
+  });
+
+
+  Object.values(magicSpecimens).forEach(function(specimen) {
+
+    if(specimen.minStep === null || specimen.maxStep === null) {
+      return;
+    }
+
+    // The interpretation includes a list of used steps
+    specimen.steps.forEach(function(step) {
+
+      // Was included: set to true for the coming PCA
+      if(specimen.minStep <= step.step && step.step <= specimen.maxStep) {
+        step.selected = true;
+      } else {
+        step.selected = false;
+      }
+
+    });
+
+
+    // Re-do the interpretation
+    makeInterpretation(specimen, {"type": specimen.type, "anchored": specimen.anchored, "refresh": false});
+
+    delete specimen.minStep;
+    delete specimen.maxStep;
+    delete specimen.type;
+    delete specimen.anchored;
 
   });
 

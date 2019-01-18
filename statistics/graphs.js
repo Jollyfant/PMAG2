@@ -1820,7 +1820,6 @@ function eqAreaProjectionMean() {
   const CHART_CONTAINER = "mean-container";
   const TABLE_CONTAINER = "mean-table";
 
-  const A95_CONFIDENCE = true;
   const PRECISION = 2;
 
   var dataSeries = new Array();
@@ -2037,10 +2036,14 @@ function eqAreaProjection() {
     }
   }];
 
+
   if(document.getElementById("enable-deenen").checked) {
 
+    // Determine whether the criteria was passed or not
+    var mark = (statistics.pole.confidenceMin < statistics.pole.confidence && statistics.pole.confidence < statistics.pole.confidenceMax) ? "✓" : "×";
+
     poleSeries.push({
-      "name": "Deenen Criteria",
+      "name": "Deenen Criteria " + mark,
       "data": getConfidenceEllipse(statistics.pole.confidenceMax).map(prepareDirectionData),
       "type": "line",
       "color": HIGHCHARTS_ORANGE,
@@ -2085,6 +2088,7 @@ function eqAreaProjection() {
     "    <td>ΔDx</td>",
     "    <td>ΔIx</td>",
     "    <td>λ</td>",
+    "    <td>Save</td>",
     "  </tr>",
     "  </thead>",
     "  <tbody>",
@@ -2105,11 +2109,10 @@ function eqAreaProjection() {
     "    <td>" + statistics.butler.dDx.toFixed(PRECISION) + "</td>",
     "    <td>" + statistics.butler.dIx.toFixed(PRECISION) + "</td>",
     "    <td>" + statistics.dir.lambda.toFixed(PRECISION) + "</td>",
+    "    <td onclick='saveCombinedCollection();' style='cursor: pointer;'><span class='text-success'><i class='fas fa-save'></i></span></td>",
     "  </tr>",
     "  </tbody>",
   ].join("\n");
-
-  const A95_CONFIDENCE = true;
 
   if(A95_CONFIDENCE) {
     var a95ellipse = transformEllipse(A95Ellipse, statistics.dir);
@@ -2152,6 +2155,58 @@ function eqAreaProjection() {
   eqAreaChart(CHART_CONTAINER, directionSeries, plotBands);
   eqAreaChart(CHART_CONTAINER2, poleSeries);
 
+}
+
+function saveCombinedCollection() {
+
+  /*
+   * function saveCombinedCollection
+   * Saves a combined collection
+   */
+
+  function modalConfirmCallback() {
+
+    /*
+     * function modalConfirmCallback
+     * Callback fired when modal confirm is clicked for saving
+     */
+
+    var name = document.getElementById("modal-name").value;
+    var discardRejected = document.getElementById("modal-discard-rejected").checked;
+
+    // Name was not properly filled in
+    if(name === "") {
+      return notify("danger", "Could not add collection with an empty name.");
+    }
+
+    var components = getSelectedComponents();
+
+    if(discardRejected) {
+      components = doCutoff(components).components.filter(x => !x.rejected);
+    }
+
+    // Make sure the coordinates are set back to specimen coordinates
+    // A user may complete a cutoff in a particular reference frame
+    components = components.map(x => new Component(x, fromReferenceCoordinates(COORDINATES, x, x.coordinates)));
+
+    collections.push({ 
+      "name": name,
+      "dirty": true,
+      "reference": null,
+      "components": components,
+      "created": new Date().toISOString()
+    });
+ 
+    notify("success", "Succesfully added collection <b>" + name + "</b> with <b>" + components.length + "</b> components in <b>" + COORDINATES + "</b> coordinates.");
+    updateSpecimenSelect();
+
+  }
+
+  // Attach callback to the click event
+  document.getElementById("modal-confirm").onclick = modalConfirmCallback;
+
+  $("#map-modal").modal("show");
+  
 }
 
 function transformEllipse(A95Ellipse, dir) {
