@@ -1820,7 +1820,6 @@ function eqAreaProjectionMean() {
   const CHART_CONTAINER = "mean-container";
   const TABLE_CONTAINER = "mean-table";
 
-  const A95_CONFIDENCE = true;
   const PRECISION = 2;
 
   var dataSeries = new Array();
@@ -2085,6 +2084,7 @@ function eqAreaProjection() {
     "    <td>ΔDx</td>",
     "    <td>ΔIx</td>",
     "    <td>λ</td>",
+    "    <td>Save</td>",
     "  </tr>",
     "  </thead>",
     "  <tbody>",
@@ -2105,11 +2105,10 @@ function eqAreaProjection() {
     "    <td>" + statistics.butler.dDx.toFixed(PRECISION) + "</td>",
     "    <td>" + statistics.butler.dIx.toFixed(PRECISION) + "</td>",
     "    <td>" + statistics.dir.lambda.toFixed(PRECISION) + "</td>",
+    "    <td onclick='saveCombinedCollection();' style='cursor: pointer;'><span class='text-success'><i class='fas fa-save'></i></span></td>",
     "  </tr>",
     "  </tbody>",
   ].join("\n");
-
-  const A95_CONFIDENCE = true;
 
   if(A95_CONFIDENCE) {
     var a95ellipse = transformEllipse(A95Ellipse, statistics.dir);
@@ -2152,6 +2151,48 @@ function eqAreaProjection() {
   eqAreaChart(CHART_CONTAINER, directionSeries, plotBands);
   eqAreaChart(CHART_CONTAINER2, poleSeries);
 
+}
+
+function saveCombinedCollection() {
+
+  /*
+   * function saveCombinedCollection
+   * Saves a combined collection
+   */
+
+  function callback() {
+
+    var name = document.getElementById("modal-name").value;
+    var discardRejected = document.getElementById("modal-discard-rejected").checked;
+
+    // Name was not properly filled in
+    if(name === "") {
+      return notify("danger", "Could not add collection with an empty name.");
+    }
+
+    var components = getSelectedComponents();
+
+    if(discardRejected) {
+      components = doCutoff(components).components.filter(x => !x.rejected);
+    }
+
+    collections.push({ 
+      "name": name,
+      "reference": null,
+      "components": components,
+      "created": new Date().toISOString()
+    });
+ 
+    notify("success", "Succesfully added collection <b>" + name + "</b> with <b>" + components.length + "</b> components.");
+    updateSpecimenSelect();
+
+  }
+
+  $("#map-modal").modal("show");
+
+  // Attach callback to the click event
+  document.getElementById("modal-confirm").onclick = callback;
+  
 }
 
 function transformEllipse(A95Ellipse, dir) {

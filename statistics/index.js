@@ -1,6 +1,7 @@
 var collections = new Array();
 var COORDINATES_COUNTER = 0;
 var COORDINATES = "specimen";
+var A95_CONFIDENCE = true;
 
 function getPublicationFromPID() {
 
@@ -165,6 +166,8 @@ function keyboardHandler(event) {
     case CODES.ESCAPE_KEY:
       return document.getElementById("notification-container").innerHTML = "";
     case CODES.KEYPAD_FIVE:
+      A95_CONFIDENCE = !A95_CONFIDENCE;
+      notify("success", "Switched to <b>" + (A95_CONFIDENCE ? "A95" : "a95") + "</b> confidence interval.");
       return redrawCharts();
   }
 
@@ -381,7 +384,7 @@ function doCutoff(directions) {
   var site = new Site(0, 0);
 
   // Create a copy in memory
-  var iterateDirections = memcpy(directions);
+  var iterateDirections = memcpy(directions).map(toComponent);
 
   while(true) {
 
@@ -451,6 +454,12 @@ function doCutoff(directions) {
     "scatter": ASD,
     "optimum": A
   }
+
+}
+
+function toComponent(component) {
+
+  return new Component(component, component.coordinates);
 
 }
 
