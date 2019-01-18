@@ -167,7 +167,7 @@ function keyboardHandler(event) {
       return document.getElementById("notification-container").innerHTML = "";
     case CODES.KEYPAD_FIVE:
       A95_CONFIDENCE = !A95_CONFIDENCE;
-      notify("success", "Switched to <b>" + (A95_CONFIDENCE ? "A95" : "a95") + "</b> confidence interval.");
+      notify("info", "Switched to <b>" + (A95_CONFIDENCE ? "A95" : "a95") + "</b> confidence interval.");
       return redrawCharts();
   }
 
@@ -339,7 +339,9 @@ function updateSpecimenSelect() {
 
   collections.forEach(addPrototypeSelection);
 
-  $(".selectpicker").selectpicker('refresh');
+  // Select the last option and refresh
+  $(".selectpicker").selectpicker("val", collections.length - 1);
+  $(".selectpicker").selectpicker("refresh");
 
 }
 

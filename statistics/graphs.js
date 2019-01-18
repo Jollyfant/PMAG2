@@ -2036,10 +2036,14 @@ function eqAreaProjection() {
     }
   }];
 
+
   if(document.getElementById("enable-deenen").checked) {
 
+    // Determine whether the criteria was passed or not
+    var mark = (statistics.pole.confidenceMin < statistics.pole.confidence && statistics.pole.confidence < statistics.pole.confidenceMax) ? "✓" : "×";
+
     poleSeries.push({
-      "name": "Deenen Criteria",
+      "name": "Deenen Criteria " + mark,
       "data": getConfidenceEllipse(statistics.pole.confidenceMax).map(prepareDirectionData),
       "type": "line",
       "color": HIGHCHARTS_ORANGE,
@@ -2160,7 +2164,12 @@ function saveCombinedCollection() {
    * Saves a combined collection
    */
 
-  function callback() {
+  function modalConfirmCallback() {
+
+    /*
+     * function modalConfirmCallback
+     * Callback fired when modal confirm is clicked for saving
+     */
 
     var name = document.getElementById("modal-name").value;
     var discardRejected = document.getElementById("modal-discard-rejected").checked;
@@ -2176,22 +2185,27 @@ function saveCombinedCollection() {
       components = doCutoff(components).components.filter(x => !x.rejected);
     }
 
+    // Make sure the coordinates are set back to specimen coordinates
+    // A user may complete a cutoff in a particular reference frame
+    components = components.map(x => new Component(x, fromReferenceCoordinates(COORDINATES, x, x.coordinates)));
+
     collections.push({ 
       "name": name,
+      "dirty": true,
       "reference": null,
       "components": components,
       "created": new Date().toISOString()
     });
  
-    notify("success", "Succesfully added collection <b>" + name + "</b> with <b>" + components.length + "</b> components.");
+    notify("success", "Succesfully added collection <b>" + name + "</b> with <b>" + components.length + "</b> components in <b>" + COORDINATES + "</b> coordinates.");
     updateSpecimenSelect();
 
   }
 
-  $("#map-modal").modal("show");
-
   // Attach callback to the click event
-  document.getElementById("modal-confirm").onclick = callback;
+  document.getElementById("modal-confirm").onclick = modalConfirmCallback;
+
+  $("#map-modal").modal("show");
   
 }
 
