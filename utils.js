@@ -301,6 +301,7 @@ function getSelectedCollections() {
   }
 
   function mapIndexToSite(index) {
+    collections[index].index = index;
     return collections[index];
   }
 
