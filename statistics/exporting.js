@@ -171,6 +171,59 @@ function exportHandlerBootstrap(event) {
 
 }
 
+
+function exportMeanCSV() {
+
+  const PRECISION = 2;
+
+  var selectedCollections = getSelectedCollections();
+  var statisticsRows = new Array(new Array("collection", "N", "Ns", "Cutoff", "S", "Dec", "Inc", "R", "k", "a95", "K", "A95", "A95Min", "A95Max", "ΔDx", "ΔIx", "λ").join(","));
+
+  if(selectedCollections.length === 0) {
+    return notify("failure", "No collections are selected for exporting.");
+  }
+
+  selectedCollections.forEach(function(site) {
+
+    var cutofC = doCutoff(site.components.map(x => x.inReferenceCoordinates()));
+    var statistics = getStatisticalParameters(cutofC.components);
+
+    // Check if a polarity switch is requested
+    if(statistics.dir.mean.inc < 0 && document.getElementById("polarity-selection").value === "NORMAL") {
+      statistics.dir.mean.inc = -statistics.dir.mean.inc;
+      statistics.dir.mean.dec = (statistics.dir.mean.dec + 180) % 360;
+    }
+    if(statistics.dir.mean.inc > 0 && document.getElementById("polarity-selection").value === "REVERSED") {
+      statistics.dir.mean.inc = -statistics.dir.mean.inc;
+      statistics.dir.mean.dec = (statistics.dir.mean.dec + 180) % 360;
+    }
+
+    statisticsRows.push([
+      site.name,
+      cutofC.components.filter(x => !x.rejected).length,
+      cutofC.components.length,
+      cutofC.cutoff.toFixed(PRECISION),
+      cutofC.scatter.toFixed(PRECISION),
+      statistics.dir.mean.dec.toFixed(PRECISION),
+      statistics.dir.mean.inc.toFixed(PRECISION),
+      statistics.dir.R.toFixed(PRECISION),
+      statistics.dir.dispersion.toFixed(PRECISION),
+      statistics.dir.confidence.toFixed(PRECISION),
+      statistics.pole.dispersion.toFixed(PRECISION),
+      statistics.pole.confidence.toFixed(PRECISION),
+      statistics.pole.confidenceMin.toFixed(PRECISION),
+      statistics.pole.confidenceMax.toFixed(PRECISION),
+      statistics.butler.dDx.toFixed(PRECISION),
+      statistics.butler.dIx.toFixed(PRECISION),
+      statistics.dir.lambda.toFixed(PRECISION)
+    ].join(","));
+
+  });
+
+  downloadAsCSV("collection-means", statisticsRows.join("\n"));
+
+}
+
 function exportHandlerShallowing(event) {
 
   /*

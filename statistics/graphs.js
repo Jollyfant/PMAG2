@@ -1810,6 +1810,10 @@ function generateHemisphereTooltip() {
 
 }
 
+function getMeanStatistics() {
+
+}
+
 function eqAreaProjectionMean() {
 
   /*
@@ -1904,7 +1908,11 @@ function eqAreaProjectionMean() {
   });
 
   document.getElementById(TABLE_CONTAINER).innerHTML = [
-    "  <caption>Statistical parameters for the selected collections.</caption>",
+    "  <caption>",
+    "    <div class='text-right'>",
+    "      <button class='btn btn-sm btn-light' onclick='exportMeanCSV()'><i class='far fa-file-image'></i> CSV</button>",
+    "    </div>",
+    "  </caption>",
     "  <thead>",
     "  <tr>",
     "    <td>Collection</td>",
@@ -2216,7 +2224,7 @@ function transformEllipse(A95Ellipse, dir) {
    * Transforms the A95 confidence ellipse to a direction
    */
 
-  // Create a fake site at the location of the expected paleolatitude
+  // Create a fake site at the location of the expected paleolatitude for the transfomration
   var site = new Site(0, Math.abs(dir.lambda));
 
   // Go over each point and transform VGP to direction at location

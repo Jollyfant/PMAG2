@@ -228,6 +228,17 @@ function getRotationMatrixR(lambda, phi) {
 
 }
 
+Number.prototype.clamp = function(min, max) {
+
+  /*
+   * Function Number.clamp
+   * Clamps a number between a minimum and a maximum
+   */
+
+   return Math.min(Math.max(this, min), max);
+
+}
+
 function getConfidenceEllipse(angle) {
 
   /*
