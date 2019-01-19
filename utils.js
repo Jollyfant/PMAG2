@@ -58,19 +58,20 @@ function extractNumbers(string) {
 
 }
 
-function getMime(type) {
+function getMime(id) {
 
   /*
    * Function getMime
    * Returns appropriate mime type
    */
 
-  switch(type) {
-    case "export-svg":
+  // Get the correct type
+  switch(id.split("-").pop()) {
+    case "svg":
       return "image/svg+xml";
-    case "export-pdf":
+    case "pdf":
       return "application/pdf";
-    case "export-png":
+    case "png":
       return "image/png";
   }
 
