@@ -221,7 +221,11 @@
                 <figcaption class="figure-caption">Figure showing the resultant magnetization, vector difference sum, and the unblocking spectrum.</figcaption>
 	       </div>
 	     </div>
-
+            <div class="text-right">
+	          <button class="btn btn-sm btn-light" id="export-png"><i class="far fa-file-image"></i> PNG</button>
+	          <button class="btn btn-sm btn-light" id="export-svg"><i class="far fa-file-image"></i> SVG</button>
+	          <button class="btn btn-sm btn-light" id="export-pdf"><i class="far fa-file-image"></i> PDF</button>
+            </div>
           </div>
         </div>
 
@@ -353,6 +357,7 @@
     </div>
 
     <footer id="footer-container" class="container text-muted"></footer>
+    <br>
 
     <!-- Leaflet Map Modal -->
     <div class="modal fade" id="map-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -450,6 +455,7 @@
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="https://code.highcharts.com/highcharts-more.js"></script>
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/offline-exporting.js"></script>
 
     <!-- Include leaflet -->
    <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"
