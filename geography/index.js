@@ -2,6 +2,7 @@ var collections = new Array();
 var eulerData = new Object();
 var KMLLayers = new Array();
 var mapMakers = new Array();
+var openedCollection;
 
 function addMap() {
 
@@ -25,7 +26,11 @@ function addMap() {
   // Create the map and tile layer
   map = L.map(MAP_CONTAINER, mapOptions).setView(VIEWPORT, 1);
   L.tileLayer(TILE_LAYER).addTo(map);
-  window.geologyLayer = L.tileLayer.wms(GEOLOGY_LAYER, {"layers": "geology", "opacity": 0.5}).addTo(map);
+  //window.geologyLayer = L.tileLayer.wms(GEOLOGY_LAYER, {"layers": "geology", "opacity": 0.5}).addTo(map);
+
+  map.on("popupopen", function(e) {
+    openedCollection = collections[e.popup._source.options.index];
+  });
 
   // Add a lovely grid layer: good job guy who did this
   window.gridLayer = L.latlngGraticule({
@@ -604,7 +609,12 @@ function showCollectionsOnMap() {
       statistics.dir.mean.dec = (statistics.dir.mean.dec + 180) % 360; 
     }
 
-    var color = (statistics.dir.mean.inc < 0 ? HIGHCHARTS_WHITE : HIGHCHARTS_BLACK);
+    if(collection.color) {
+      var color = collection.color;
+    } else {
+      var color = (statistics.dir.mean.inc < 0 ? HIGHCHARTS_WHITE : HIGHCHARTS_BLACK);
+    }
+
     var markerPath = getSVGPath((180 - statistics.dir.mean.dec), statistics.butler.dDx);
 
     var achenSvgString = getFullSVG(markerPath, color);
@@ -621,13 +631,62 @@ function showCollectionsOnMap() {
       "<b>Latitude: </b>" + averageLocation.lat.toFixed(5),
       "<b>Average Declination: </b>" + statistics.dir.mean.dec.toFixed(2) + " (" + statistics.butler.dDx.toFixed(2) + ")",
       "<b>Average Inclination: </b>" + statistics.dir.mean.inc.toFixed(2),
-      "<b>Number of Specimens: </b>" + collection.components.length
+      "<b>Number of Specimens: </b>" + collection.components.length,
+      "<div id='color-picker'>",
+        generateColorPalette(),
+      "</div>"
     ].join("<br>");
 
-    mapMakers.push(L.marker([averageLocation.lat, averageLocation.lng], {"icon": markerIcon}).bindPopup(markerPopupContent).addTo(map));
+    mapMakers.push(L.marker([averageLocation.lat, averageLocation.lng], {"icon": markerIcon, "index": collection.index}).bindPopup(markerPopupContent).addTo(map));
 
   });
 
+
+}
+
+function changeColor(color) {
+
+  /*
+   * Function changeColor
+   * Changes the color of the selected collection
+   */
+
+  // Set the new color
+  openedCollection.color = color;
+
+  // Overkill but redraw all markers
+  showCollectionsOnMap();
+
+}
+
+function generateColorPalette() {
+
+  /*
+   * Function generateColorPalette
+   * Generates the color palette for site color picking
+   */
+
+  function createColorItem(color) {
+
+    /*
+     * Function generateColorPalette::createColorItem
+     * Generates a div for a particular color that can be clicked
+     */
+
+    return "<div style='background-color: " + color + ";' class='color-item' onclick='changeColor(\"" + color + "\")'></div>";
+
+  }
+
+  // Choose from a nice saturated gradient
+  const COLOR_PALETTE = new Array(
+    "#F55", "#FA5", "#FF5",
+    "#AF5", "#5F5", "#5FA",
+    "#5FF", "#5AF", "#55F",
+    "#A5F", "#F5F", "#F5A"
+  );
+
+  // Create color bar
+  return COLOR_PALETTE.map(createColorItem).join("");
 
 }
 

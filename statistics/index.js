@@ -192,6 +192,9 @@ function registerEventHandlers() {
   // The keyboard handler
   document.addEventListener("keydown", keyboardHandler);
 
+  // Set the default selector to NULL
+  document.getElementById("polarity-selection").value = "";
+
 }
 
 function redrawCharts() {
@@ -207,7 +210,7 @@ function redrawCharts() {
   // Redraw the hemisphere projections
   // Other modules are triggered with dedicated buttons
   eqAreaProjection();
-  //eqAreaProjectionMean();
+  eqAreaProjectionMean();
 
   // Reset to the original position
   window.scrollTo(0, tempScrollTop);

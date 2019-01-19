@@ -1810,6 +1810,10 @@ function generateHemisphereTooltip() {
 
 }
 
+function getMeanStatistics() {
+
+}
+
 function eqAreaProjectionMean() {
 
   /*
@@ -1904,7 +1908,11 @@ function eqAreaProjectionMean() {
   });
 
   document.getElementById(TABLE_CONTAINER).innerHTML = [
-    "  <caption>Statistical parameters for the selected collections.</caption>",
+    "  <caption>",
+    "    <div class='text-right'>",
+    "      <button class='btn btn-sm btn-light' onclick='exportMeanCSV()'><i class='far fa-file-image'></i> CSV</button>",
+    "    </div>",
+    "  </caption>",
     "  <thead>",
     "  <tr>",
     "    <td>Collection</td>",
@@ -2216,7 +2224,7 @@ function transformEllipse(A95Ellipse, dir) {
    * Transforms the A95 confidence ellipse to a direction
    */
 
-  // Create a fake site at the location of the expected paleolatitude
+  // Create a fake site at the location of the expected paleolatitude for the transfomration
   var site = new Site(0, Math.abs(dir.lambda));
 
   // Go over each point and transform VGP to direction at location
@@ -2230,7 +2238,10 @@ function transformEllipse(A95Ellipse, dir) {
 
 function eqAreaPlotBand(mDec, decError) {
 
-  const PLOTBAND_COLOR = "rgba(119, 152, 191, 0.25)";
+  /*
+   * Function eqAreaPlotBand
+   * Creates a plot band around a declination, with a particular declination error
+   */
 
   var minError = mDec - decError;
   var maxError = mDec + decError;
@@ -2238,7 +2249,7 @@ function eqAreaPlotBand(mDec, decError) {
   var plotBands = [{
     "from": minError,
     "to": maxError,
-    "color": PLOTBAND_COLOR,
+    "color": PLOTBAND_COLOR_BLUE,
     "innerRadius": "0%",
     "thickness": "100%",
   }];
@@ -2246,23 +2257,27 @@ function eqAreaPlotBand(mDec, decError) {
   // Plotbands in polar charts cannot go below through North (e.g. 350 - 10)
   // so we go from (360 - 10) and (350 - 360) instead 
   if(minError < 0) {
+
     plotBands.push({
       "from": 360,
       "to": minError + 360,
-      "color": PLOTBAND_COLOR,
+      "color": PLOTBAND_COLOR_BLUE,
       "innerRadius": "0%",
       "thickness": "100%",
     });
+
   }
   
   if(maxError > 360) {
+
     plotBands.push({
       "from": 0,
       "to": maxError - 360,
-      "color": PLOTBAND_COLOR,
+      "color": PLOTBAND_COLOR_BLUE,
       "innerRadius": "0%",
       "thickness": "100%",
     });
+
   }
   
   return plotBands;

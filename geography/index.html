@@ -13,6 +13,7 @@
 
     <!-- Paleomagnetism.org 2.0.0 CSS -->
     <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../huebee.css" media="screen">
 
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
@@ -301,7 +302,7 @@
             <button type="button" class="btn btn-info" id="calculate-reference">Calculate Predicted Directions</button>
             &nbsp;
             <select data-size="5" class="selectpicker form-control text-center" data-actions-box="true" id="plate-select" title="<i class='far fa-hand-point-down'></i> Select one or multiple plates" multiple>
-                      <optgroup label="Default Rotations">
+              <optgroup label="Default Rotations">
 		        <option value="AF" data-type="default">Africa</option>
 		        <option value="AR" data-type="default">Arabia</option>
 		        <option value="AU" data-type="default">Australia</option>
@@ -315,7 +316,7 @@
 		        <option value="NA" data-type="default">North America</option>
 		        <option value="PA" data-type="default">Pacific</option>
 		        <option value="SA" data-type="default">South America</option>
-                      </optgroup>
+              </optgroup>
             </select>
 
           </div>
@@ -481,6 +482,8 @@
   <script src="https://code.highcharts.com/modules/exporting.js"></script>
   <script src="https://code.highcharts.com/modules/offline-exporting.js"></script>
 
+
+
   <!-- Library for multi select -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.2/js/bootstrap-select.min.js"></script>
 
@@ -489,6 +492,7 @@
     integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA=="
     crossorigin=""></script>
 
+  <!-- Huebee color picker -->
   <script src="./lib/grid.js"></script>
   <script src="./lib/togeojson.js"></script>
 

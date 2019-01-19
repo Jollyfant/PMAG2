@@ -82,7 +82,8 @@ Site.prototype.directionFrom = function(pole) {
   var cosp = Math.sin(poleLat) * Math.sin(siteLat) + Math.cos(poleLat) * Math.cos(siteLat) * Math.cos(poleLong - siteLong);
   var sinp = Math.sqrt(1 - Math.pow(cosp, 2));
 
-  var declination = Math.acos((Math.sin(poleLat) - Math.sin(siteLat) * cosp) / (Math.cos(siteLat) * sinp));
+  // Clamp number between -1 and 1 (range of acos). Floating point errors may result in math.acos(1.0000000000000002) which turns in to NaN
+  var declination = Math.acos(((Math.sin(poleLat) - Math.sin(siteLat) * cosp) / (Math.cos(siteLat) * sinp)).clamp(-1, 1));
 
   // Put in the right quadrant
   if(poleLong > siteLong && (poleLong - siteLong) > Math.PI) {
