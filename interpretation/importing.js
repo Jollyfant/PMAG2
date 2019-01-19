@@ -131,9 +131,9 @@ function importMagic(file) {
           if(!magicSamples.hasOwnProperty(object.sample)) {
             throw("Referenced sample " + object.sample + " does not exist.")
           }
-        
+      
           var sample = magicSamples[object.sample];
-        
+
           // The sample points to a specific site
           if(!magicSites.hasOwnProperty(sample.site)) {
             throw("Referenced site " + sample.site + " does not exist.")
@@ -193,6 +193,7 @@ function importMagic(file) {
             "maxStep": Number(object["meas_step_max"]),
             "anchored": methods.includes("DE-BFL-A"),
             "type": ((methods.includes("DE-BFP") || methods.includes("DE-BFP-G")) ? "TAU3" : "TAU1"),
+            "unit": object["meas_step_unit"],
             //
             "created": new Date().toISOString(),
             "steps": new Array(),
@@ -238,13 +239,18 @@ function importMagic(file) {
           var step, demagnetizationType;
 
           // Determine the demagnetization type
+          // And handle units
           if(types.includes("LP-DIR-AF")) {
             step = Number(object["treat_ac_field"]);
-            step *= 1000
+            if(specimen.unit === "T") {
+              step *= 1000;
+            }
             demagnetizationType = "alternating";
           } else if(types.includes("LP-DIR-T")) {
             step = Number(object["treat_temp"]);
-            step -= 273;
+            if(specimen.unit === "K") {
+              step -= 273;
+            }
             demagnetizationType = "thermal";
           } else {
             return;
@@ -262,11 +268,20 @@ function importMagic(file) {
 
   });
 
-
+  // Try adding the existing interpretations
   Object.values(magicSpecimens).forEach(function(specimen) {
 
     if(specimen.minStep === null || specimen.maxStep === null) {
       return;
+    }
+
+    // Make sure the step units are also in mT and C
+    if(specimen.demagnetizationType === "alternating" && specimen.unit === "T") {
+      specimen.minStep *= 1000;
+      specimen.maxStep *= 1000;
+    } else if(specimen.demagnetizationType === "thermal" && specimen.unit === "K") {
+      specimen.minStep -= 273;
+      specimen.maxStep -= 273;
     }
 
     // The interpretation includes a list of used steps
@@ -285,9 +300,11 @@ function importMagic(file) {
     // Re-do the interpretation
     makeInterpretation(specimen, {"type": specimen.type, "anchored": specimen.anchored, "refresh": false});
 
+    // Remove unnecessary metadata
     delete specimen.minStep;
     delete specimen.maxStep;
     delete specimen.type;
+    delete specimen.unit;
     delete specimen.anchored;
 
   });
