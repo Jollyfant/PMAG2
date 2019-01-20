@@ -270,6 +270,11 @@ function registerEventHandlers() {
   document.getElementById("defaultCheck1").checked = true;
   document.getElementById("geology-layer-toggle").checked = true;
 
+  // Enable popovers
+  $(".example-popover").popover({
+    "container": "body"
+  });
+
 }
 
 function getSelectedItems(id) {

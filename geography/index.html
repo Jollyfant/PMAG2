@@ -251,9 +251,12 @@
 
                       <div class="input-group">
                           <div class="input-group-prepend">
-                            <div class="input-group-text">Age Range</div>
+                            <div class="input-group-text">Age </div>
                           </div>
                           <input id='site-age-min-input' type="text" class="form-control input-sm" placeholder="Minimum">
+                          <div class="input-group-append">
+                            <div class="input-group-text">to</div>
+                          </div>
                           <input id='site-age-max-input' type="text" class="form-control input-sm" placeholder="Maximum">
                           <div class="input-group-append">
                             <div class="input-group-text">Ma</div>
@@ -274,16 +277,28 @@
 
                       <p>
 
-                      <div class="custom-file">
-                        <input type="file" class="custom-file-input" id="euler-upload">
-                        <label class="custom-file-label" for="euler-upload">Custom Euler Rotations</label>
+                      <!-- Euler poles upload handler -->
+                      <div class="input-group">
+                        <div class="input-group-prepend">
+                          <button type="button" class="btn btn-primary example-popover" data-toggle="popover" data-placement="left" data-trigger="focus" title="Add Euler Rotations" data-content="Select a custom GPlates file (.rot) from disk to add to the application."><i class="fas fa-info-circle"></i></button>
+                        </div>
+                        <div class="custom-file">
+                          <input type="file" class="custom-file-input" id="euler-upload">
+                          <label class="custom-file-label" for="euler-upload">Custom Euler Rotations</label>
+                        </div>
                       </div>
 
                       <p>
 
-                      <div class="custom-file">
-                        <input type="file" class="custom-file-input" id="apwp-upload" multiple>
-                        <label class="custom-file-label" for="apwp-upload">Custom APWP</label>
+                      <!-- APWP upload handler -->
+                      <div class="input-group">
+                        <div class="input-group-prepend">
+                          <button type="button" class="btn btn-primary example-popover" data-toggle="popover" data-placement="left" data-trigger="focus" title="Add Custom APWPs" data-content="Select a custom APWP file (.csv) from disk to add to the application. Each row of the input file must contain four pole parameters delimited by a comma: longitude, latitude, A95, age"><i class="fas fa-info-circle"></i></button>
+                        </div>
+                        <div class="custom-file">
+                          <input type="file" class="custom-file-input" id="apwp-upload" multiple>
+                          <label class="custom-file-label" for="apwp-upload">Custom APWP</label>
+                        </div>
                       </div>
 
                     </div>
@@ -291,7 +306,7 @@
                 </div>
               </div>
             </div>
-            <div id="map" class="map" style="z-index: 1; height: 400px;"></div>
+            <div id="map" class="map" style="z-index: 1; height: 500px;"></div>
           </div>
           <figcaption class="figure-caption text-right">Map showing mean declinations and confidence parachutes for the selected collections. Normal and reversed polarities are shown in black and white respectively.</figcaption>
 
