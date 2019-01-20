@@ -255,6 +255,7 @@ function registerEventHandlers() {
 
   // Simple listeners
   document.getElementById("euler-upload").addEventListener("change", eulerSelectionHandler);
+  document.getElementById("apwp-upload").addEventListener("change", APWPSelectionHandler);
   document.getElementById("kml-upload").addEventListener("change", kmlSelectionHandler);
   document.getElementById("customFile").addEventListener("change", fileSelectionHandler);
   document.getElementById("specimen-select").addEventListener("change", siteSelectionHandler);
@@ -263,6 +264,7 @@ function registerEventHandlers() {
   document.addEventListener("keydown", keyboardHandler);
   document.getElementById("defaultCheck1").addEventListener("change", toggle);
   document.getElementById("geology-layer-toggle").addEventListener("change", toggleGeology);
+  document.getElementById("calculate-reference").addEventListener("click", plotPredictedDirections);
 
   // Always set grid to false
   document.getElementById("defaultCheck1").checked = true;
@@ -289,11 +291,21 @@ function getSelectedItems(id) {
 
 }
 
-document.getElementById("calculate-reference").addEventListener("click", plotPredictedDirections);
-
 function plotPredictedDirections() {
 
+  /*
+   * Function plotPredictedDirections
+   * Plots the predricted directions (declination, inclination) at a given site for a particular APWP
+   * The APWP can be supplied from a database (e.g. Torsvik, Kent, Besse) or supplied by the user from a CSV file
+   * or GPlates rotation file
+   */
+
   function mapPlateName(name) {
+
+    /*
+     * Function plotPredictedDirections::mapPlateName
+     * Maps short hand plate name to full name
+     */
 
     switch(name) {
       case "AF":
@@ -345,19 +357,24 @@ function plotPredictedDirections() {
   var plates = getSelectedItems("plate-select");
   var references = getSelectedItems("reference-select").map(x => APWPs[x]);
 
-  if(plates.length === 0) {
-    return notify("danger", "Select at least one plate on the right hand side.");
-  }
-
   if(references.length === 0) {
     return notify("danger", "Select at least one reference model on the left hand side.");
   }
 
-  // Go over all plates
-  plates.forEach(function(plate) {
+  // All references frames (or APWPs)
+  references.forEach(function(APWP) {
 
-    // All references frames
-    references.forEach(function(APWP) {
+    // Custom APWP was supplied: ignore selected plates since all Euler rotations will be 0
+    if(APWP.type === "custom") {
+      plates = new Array("Custom APWP");
+    }
+
+    if(plates.length === 0) {
+      return notify("danger", "Select at least one plate on the right hand side.");
+    }
+
+    // Go over all plates
+    plates.forEach(function(plate) {
 
       var dataDeclination = new Array();
       var dataInclination = new Array();
@@ -379,20 +396,28 @@ function plotPredictedDirections() {
           return;
         }
 
-        // Check if the user has added euler poles
-        // Fixed plate must be 701 (SOUTH AFRICA)
-        if(eulerData.hasOwnProperty(plate)) {
+        // TODO FIXME 2 function
+        if(APWP.type !== "custom") {
 
-          try {
-            var eulerPole = extractEulerPole(plate, APWP_FIXED_PLATE_ID, pole.age, pole.age, 1).pop().pole;
-          } catch(exception) {
-            return;
-          }
+           // Check if the user has added euler poles
+           // Fixed plate must be 701 (SOUTH AFRICA)
+           if(eulerData.hasOwnProperty(plate)) {
+           
+             try {
+               var eulerPole = extractEulerPole(plate, APWP_FIXED_PLATE_ID, pole.age, pole.age, 1).pop().pole;
+             } catch(exception) {
+               return;
+             }
+           
+           } else if(!pole.euler.hasOwnProperty(plate)) {
+             return;
+           } else {
+             var eulerPole = new EulerPole(pole.euler[plate].lng, pole.euler[plate].lat, pole.euler[plate].rot);
+           }
 
-        } else if(!pole.euler.hasOwnProperty(plate)) {
-          return;
         } else {
-          var eulerPole = new EulerPole(pole.euler[plate].lng, pole.euler[plate].lat, pole.euler[plate].rot);
+          // No rot
+          var eulerPole = new EulerPole(0, 0, 0);
         }
 
         // The rotated pole
@@ -422,6 +447,7 @@ function plotPredictedDirections() {
         dataInclinationRange.push({"x": pole.age, "low": directions.inc - dIx, "high": directions.inc + dIx});
         dataPaleolatitudeRange.push({"x": pole.age, "low": minPaleolatitude, "high": maxPaleolatitude});
 
+        // The pole series
         poleSeries.push({"x": rPole.lng, "y": projectInclination(rPole.lat), "inc": rPole.lat, "age": pole.age});
         poleSeriesConfidence = poleSeriesConfidence.concat(getPlaneData({"dec": rPole.lng, "inc": rPole.lat}, A95 / RADIANS));
         poleSeriesConfidence.push({"x": null, "y": null});
@@ -500,13 +526,15 @@ function plotPredictedDirections() {
   const CHART_CONTAINER_INCLINATION = "inclination-container";
   const CHART_CONTAINER_PALEOLATITUDE = "paleolatitude-container";
 
+  // Create Highcharts for declination, inclination & paleolatitude
   plotExpected(CHART_CONTAINER_DECLINATION, dataSeriesDeclination, site);
   plotExpected(CHART_CONTAINER_INCLINATION, dataSeriesInclination, site);
   plotExpected(CHART_CONTAINER_PALEOLATITUDE, dataSeriesPaleolatitude, site);
 
+  // Create Highcharts for pole positions
   plotPoles(dataSeriesPoles);
 
-  window.scrollTo(0,document.body.scrollHeight);
+  window.scrollTo(0, document.body.scrollHeight);
 
 }
 
@@ -2421,6 +2449,92 @@ function parseGroundOverlay(documents) {
 
 }
 
+function APWPSelectionHandler(event) {
+
+  /*
+   * Function eulerSelectionHandler
+   * Callback fired when a euler file is selected (.rot)
+   */
+
+  readMultipleFiles(Array.from(event.target.files), function(files) {
+
+    // Create a hashmap for the plate ID
+    try { 
+      parseAPWPFile(files);
+    } catch(exception) {
+      notify("danger", exception.message);
+    }
+
+  });
+ 
+}
+
+function parseAPWPFile(files) {
+
+  /*
+   * Function parseAPWPFile
+   * Parses a supplied APWP file
+   */
+
+  function parseAPWPLine(line) {
+
+    /*
+     * Function parseAPWPFile::parseAPWPLine
+     * Parses a single line of the file
+     */
+
+    var values = line.split(",").map(Number);
+
+    if(values.length !== 4) {
+      throw(new Exception("Invalid APWP input file. Each row must contain pole lng, lat, A95, age seperated by a comma."));
+    }
+	
+    return {
+      "lng": values[0],
+      "lat": values[1],
+      "A95": values[2],
+      "age": values[3]
+    }
+
+  }
+
+  // Add each file to the reference frames
+  files.forEach(function(file) {
+
+    // Add to the existing APWP object
+    APWPs[file.name] = new Object({
+      "name": file.name,
+      "type": "custom",
+      "poles": file.data.split(/\r?\n/).map(parseAPWPLine)
+    });
+
+    // Create an option
+    document.getElementById("reference-select").add(createOption("*" + file.name, file.name));
+
+  });
+
+  // Update and notify
+  $("#reference-select").selectpicker("refresh");
+  notify("success", "Succesfully added information for <b>" + files.length + "</b> apparent polar wander path(s).");
+
+}
+
+function createOption(text, value) {
+
+  /*
+   * Function createOption
+   * Creates an HTML option with a particular value and text
+   */
+
+  var option = document.createElement("option");
+
+  option.text = text;
+  option.value = value;
+
+  return option;
+
+}
+
 function eulerSelectionHandler(event) {
 
   /*
@@ -2503,12 +2617,7 @@ function parseGPlatesRotationFile(files) {
       return;
     }
 
-    var option = document.createElement("option");
-
-    option.text = plate.name || plate.id;
-    option.value = plate.id;
-
-    optionGroup.appendChild(option);
+    optionGroup.appendChild(createOption(plate.name || plate.id, plate.id));
 
   })
 

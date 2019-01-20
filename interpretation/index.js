@@ -339,6 +339,7 @@ function redrawInterpretationGraph(fit) {
     series.push({
       "name": "Great Circles",
       "type": "line",
+      "turboThreshold": 0,
       "data": dataSeriesPlane,
       "color": HIGHCHARTS_ORANGE,
       "dashStyle": "ShortDash",
