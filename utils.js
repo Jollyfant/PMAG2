@@ -758,6 +758,17 @@ function createLink(href, text) {
     });
   
   }
+
+  // Add CSV export button
+  Highcharts.getOptions().exporting.buttons.contextButton.menuItems.push({
+    "text": "Download CSV File",
+    "onclick": function() {
+      if(!this.userOptions.exporting.hasOwnProperty("getCSV")) { 
+        return notify("danger", "CSV exporting for this graph is not implemented.");
+      }
+      this.userOptions.exporting.getCSV();
+    }
+  });
   
   // Set global default options for all charts
   Highcharts.setOptions({

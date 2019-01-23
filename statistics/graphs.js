@@ -1911,6 +1911,7 @@ function eqAreaProjectionMean() {
     "  <caption>",
     "    <div class='text-right'>",
     "      <button class='btn btn-sm btn-light' onclick='exportMeanCSV()'><i class='far fa-file-image'></i> CSV</button>",
+    "      <button class='btn btn-sm btn-light' onclick='exportMeanJSON()'><i class='far fa-file-image'></i> JSON</button>",
     "    </div>",
     "  </caption>",
     "  <thead>",
@@ -2307,10 +2308,69 @@ function eqAreaChart(container, dataSeries, plotBands) {
    */
 
   function addDegree() {
+
+    /*
+     * Function addDegree
+     * Adds a degree symbol
+     */
+
     return this.value + "\u00B0";
+
+  }
+
+  function exportCSVPole() {
+
+    /*
+     * Function exportCSVPole
+     * Exports VGP Distribution to CSV file
+     */
+
+    const HEADER = new Array("longitude,latitude");
+
+    var csv = HEADER.concat(dataSeries[0].data.map(function(point) {
+      return new Array(point.x.toFixed(PRECISION), point.inc.toFixed(PRECISION)).join(ITEM_DELIMITER) 
+    })).join(LINE_DELIMITER);
+
+    downloadAsCSV("VGP-distribution.csv", csv);
+
+  }
+
+  function exportCSVDirection() {
+    
+    /*
+     * Function exportCSVDirection
+     * Exports ChRM Distribution to CSV file
+     */
+    
+    const HEADER = new Array("declination,inclination");
+    
+    var csv = HEADER.concat(dataSeries[0].data.map(function(point) {
+      return new Array(point.x.toFixed(PRECISION), point.inc.toFixed(PRECISION)).join(ITEM_DELIMITER)
+    })).join(LINE_DELIMITER);
+    
+    downloadAsCSV("ChRM-distribution.csv", csv);
+  
+  }
+
+  function exportCSV() {
+
+    switch(container) {
+      case "pole-container":
+        return exportCSVPole();
+      case "direction-container":
+      case "modal-container":
+      case "foldtest-geographic-container":
+      case "foldtest-tectonic-container":
+      case "mean-container":
+        return exportCSVDirection();
+      default:
+        return;
+    }
+
   }
 
   const ENABLE_45_CUTOFF = true;
+  const PRECISION = 2;
 
   var title;
   if(container === "pole-container") {
@@ -2334,13 +2394,14 @@ function eqAreaChart(container, dataSeries, plotBands) {
     subtitle = "(" + COORDINATES + " coordinates)";
   }
 
-  Highcharts.chart(container, {
+  new Highcharts.chart(container, {
     "chart": {
       "polar": true,
       "animation": false,
       "height": 600,
     },
     "exporting": {
+      "getCSV": exportCSV.bind(this),
       "filename": "hemisphere-projection",
       "sourceWidth": 600,
       "sourceHeight": 600,
