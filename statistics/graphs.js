@@ -1477,8 +1477,9 @@ function simulateCTMD(one, two) {
     var statisticsOne = getStatisticalParameters(sampledOne);
     var statisticsTwo = getStatisticalParameters(sampledTwo);
 
-    var coordinatesOne = statisticsOne.dir.mean.toCartesian();
-    var coordinatesTwo = statisticsTwo.dir.mean.toCartesian();
+    // Get unit coordinates of mean
+    var coordinatesOne = statisticsOne.dir.mean.unit().toCartesian();
+    var coordinatesTwo = statisticsTwo.dir.mean.unit().toCartesian();
 
     // Save the coordinates
     xOne.push(coordinatesOne.x);
