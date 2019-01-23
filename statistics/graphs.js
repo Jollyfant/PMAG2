@@ -718,12 +718,15 @@ function plotEICDF(inclinations, originalInclination, unflattenedInclination) {
 
   // Get the lower and upper 2.5%
   var confidence = getConfidence(cdf);
+  var lower = confidence.lower || -90;
+  var upper = confidence.upper || 90;
 
   // Add the confidence plot band
   var plotBands = [{
+    "id": "plotband",
     "color": PLOTBAND_COLOR_BLUE,
-    "from": confidence.lower,
-    "to": confidence.upper
+    "from": lower,
+    "to": upper
   }];
 
   var mySeries = [{
@@ -779,6 +782,28 @@ function plotEICDF(inclinations, originalInclination, unflattenedInclination) {
 
   }
 
+  mySeries.push({
+    "color": HIGHCHARTS_BLUE,
+    "name": "Confidence Interval",
+    "lineWidth": 0,
+    "marker": {
+      "symbol": "square"
+    },
+    "events": {
+      "legendItemClick": (function(closure) {
+        return function(event) {
+          closure.forEach(function(plotBand) {
+            if(this.visible) {
+              this.chart.xAxis[0].removePlotBand(plotBand.id);
+            } else {
+              this.chart.xAxis[0].addPlotBand(plotBand);
+            }
+          }, this);
+        }
+      })(memcpy(plotBands))
+    }
+  });
+
   new Highcharts.chart(CHART_CONTAINER, {
     "title": {
       "text": "Cumulative Distribution of bootstrapped TK03.GAD intersections",
@@ -795,7 +820,7 @@ function plotEICDF(inclinations, originalInclination, unflattenedInclination) {
       }
     },
     "subtitle": {
-      "text": "<b>Original Inclination</b>: " + originalInclination.toFixed(2) + " <b>Unflattened Inclination</b>: " + unflattenedInclination.toFixed(2) + " <b>Bootstrapped Confidence</b>: " + confidence.lower.toFixed(2) + " to " + confidence.upper.toFixed(2) + " (" + COORDINATES + " coordinates)"
+      "text": "<b>Original Inclination</b>: " + originalInclination.toFixed(2) + " <b>Unflattened Inclination</b>: " + unflattenedInclination.toFixed(2) + " <b>Bootstrapped Confidence</b>: " + lower.toFixed(2) + " to " + upper.toFixed(2) + " (" + COORDINATES + " coordinates)"
     },
     "xAxis": {
       "min": -90,
@@ -954,6 +979,7 @@ function plotFoldtestCDF(untilt, savedBootstraps) {
 
   // Create plotband for 95% bootstrapped confidence interval
   var plotBands =  [{
+    "id": "plotband",
     "color": PLOTBAND_COLOR_BLUE,
     "from": lower,
     "to": upper
@@ -1004,6 +1030,30 @@ function plotFoldtestCDF(untilt, savedBootstraps) {
       "linkedTo": "bootstraps",
       "enableMouseTracking": false,
     });
+  });
+
+  // The legend item click must contain a closure for the plotband data
+  // Loop over the plotband data to add or remove it
+  mySeries.push({
+    "color": HIGHCHARTS_BLUE,
+    "name": "Confidence Interval",
+    "lineWidth": 0,
+    "marker": { 
+      "symbol": "square"
+    },
+    "events": { 
+      "legendItemClick": (function(closure) { 
+        return function(event) { 
+          closure.forEach(function(plotBand) { 
+            if(this.visible) { 
+              this.chart.xAxis[0].removePlotBand(plotBand.id);
+            } else { 
+              this.chart.xAxis[0].addPlotBand(plotBand);
+            } 
+          }, this);
+        } 
+      })(memcpy(plotBands))
+    } 
   });
 
   new Highcharts.chart(CHART_CONTAINER, {
@@ -2249,6 +2299,7 @@ function eqAreaPlotBand(mDec, decError) {
   var maxError = mDec + decError;
 
   var plotBands = [{
+    "id": "plotband",
     "from": minError,
     "to": maxError,
     "color": PLOTBAND_COLOR_BLUE,
@@ -2261,6 +2312,7 @@ function eqAreaPlotBand(mDec, decError) {
   if(minError < 0) {
 
     plotBands.push({
+      "id": "plotbandNeg",
       "from": 360,
       "to": minError + 360,
       "color": PLOTBAND_COLOR_BLUE,
@@ -2273,6 +2325,7 @@ function eqAreaPlotBand(mDec, decError) {
   if(maxError > 360) {
 
     plotBands.push({
+      "id": "plotbandPos",
       "from": 0,
       "to": maxError - 360,
       "color": PLOTBAND_COLOR_BLUE,
@@ -2393,6 +2446,35 @@ function eqAreaChart(container, dataSeries, plotBands) {
     subtitle = "";
   } else {
     subtitle = "(" + COORDINATES + " coordinates)";
+  }
+
+  // Add plotband to the legend and make it a toggle
+  if(plotBands !== undefined) {
+
+    // The legend item click must contain a closure for the plotband data
+    // Loop over the plotband data to add or remove it
+    dataSeries.push({
+      "color": HIGHCHARTS_BLUE,
+      "name": "ΔDx Confidence Parachute",
+      "lineWidth": 0,
+      "marker": {
+        "symbol": "square"
+      },
+      "events": {
+        "legendItemClick": (function(closure) { 
+          return function(event) {
+            closure.forEach(function(plotBand) {
+              if(this.visible) {
+                this.chart.xAxis[0].removePlotBand(plotBand.id);
+              } else {
+                this.chart.xAxis[0].addPlotBand(plotBand);
+              }
+            }, this);
+          }
+        })(memcpy(plotBands))
+      }
+    });
+
   }
 
   new Highcharts.chart(container, {
