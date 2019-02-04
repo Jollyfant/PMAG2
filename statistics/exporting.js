@@ -40,11 +40,69 @@ function exportHandlerBootstrap(event) {
 
 }
 
+function exportMeanJSON() {
+
+  /*
+   * Function exportMeanJSON
+   * Exports mean table in JSON format
+   */
+
+  const PRECISION = 2;
+
+  var selectedCollections = getSelectedCollections();
+
+  if(selectedCollections.length === 0) {
+    return notify("failure", "No collections are selected for exporting.");
+  }
+
+  var statisticsRows = new Array();
+
+  selectedCollections.forEach(function(site) {
+
+    var cutofC = doCutoff(site.components.map(x => x.inReferenceCoordinates()));
+    var statistics = getStatisticalParameters(cutofC.components);
+
+    // Check if a polarity switch is requested
+    if(statistics.dir.mean.inc < 0 && document.getElementById("polarity-selection").value === "NORMAL") {
+      statistics.dir.mean.inc = -statistics.dir.mean.inc;
+      statistics.dir.mean.dec = (statistics.dir.mean.dec + 180) % 360;
+    }
+    if(statistics.dir.mean.inc > 0 && document.getElementById("polarity-selection").value === "REVERSED") {
+      statistics.dir.mean.inc = -statistics.dir.mean.inc;
+      statistics.dir.mean.dec = (statistics.dir.mean.dec + 180) % 360;
+    }
+
+    statisticsRows.push({
+      "collection": site.name,
+      "numberComponentsUsed": Number(cutofC.components.filter(x => !x.rejected).length),
+      "numberComponents": Number(cutofC.components.length),
+      "cutoff": Number(cutofC.cutoff.toFixed(PRECISION)),
+      "scatter": Number(cutofC.scatter.toFixed(PRECISION)),
+      "declination": Number(statistics.dir.mean.dec.toFixed(PRECISION)),
+      "inclination": Number(statistics.dir.mean.inc.toFixed(PRECISION)),
+      "resultantlength": Number(statistics.dir.R.toFixed(PRECISION)),
+      "dispersion": Number(statistics.dir.dispersion.toFixed(PRECISION)),
+      "confidence": Number(statistics.dir.confidence.toFixed(PRECISION)),
+      "dispersionpole": Number(statistics.pole.dispersion.toFixed(PRECISION)),
+      "confidencepole": Number(statistics.pole.confidence.toFixed(PRECISION)),
+      "confidencepolemin": Number(statistics.pole.confidenceMin.toFixed(PRECISION)),
+      "confidencepolemax": Number(statistics.pole.confidenceMax.toFixed(PRECISION)),
+      "declinationconfidence": Number(statistics.butler.dDx.toFixed(PRECISION)),
+      "inclinationconfidence": Number(statistics.butler.dIx.toFixed(PRECISION)),
+      "paleolatitude": Number(statistics.dir.lambda.toFixed(PRECISION))
+    });
+
+  });
+
+  downloadAsGeoJSON("collection-means.json", statisticsRows);
+
+}
+
 
 function exportMeanCSV() {
 
   /*
-   * Function exportMeanCSV
+   * Function exportmeanCSV
    * Exports the mean parameter table as a CSV
    */
 
@@ -97,7 +155,7 @@ function exportMeanCSV() {
   });
 
   // Delegate to the downloader
-  downloadAsCSV("collection-means", statisticsRows.join("\n"));
+  downloadAsCSV("collection-means.csv", statisticsRows.join("\n"));
 
 }
 

@@ -704,12 +704,15 @@ function plotEICDF(inclinations, originalInclination, unflattenedInclination) {
 
   // Get the lower and upper 2.5%
   var confidence = getConfidence(cdf);
+  var lower = confidence.lower || -90;
+  var upper = confidence.upper || 90;
 
   // Add the confidence plot band
   var plotBands = [{
+    "id": "plotband",
     "color": PLOTBAND_COLOR_BLUE,
-    "from": confidence.lower,
-    "to": confidence.upper
+    "from": lower,
+    "to": upper
   }];
 
   var mySeries = [{
@@ -765,6 +768,28 @@ function plotEICDF(inclinations, originalInclination, unflattenedInclination) {
 
   }
 
+  mySeries.push({
+    "color": HIGHCHARTS_BLUE,
+    "name": "Confidence Interval",
+    "lineWidth": 0,
+    "marker": {
+      "symbol": "square"
+    },
+    "events": {
+      "legendItemClick": (function(closure) {
+        return function(event) {
+          closure.forEach(function(plotBand) {
+            if(this.visible) {
+              this.chart.xAxis[0].removePlotBand(plotBand.id);
+            } else {
+              this.chart.xAxis[0].addPlotBand(plotBand);
+            }
+          }, this);
+        }
+      })(memcpy(plotBands))
+    }
+  });
+
   new Highcharts.chart(CHART_CONTAINER, {
     "title": {
       "text": "Cumulative Distribution of bootstrapped TK03.GAD intersections",
@@ -781,7 +806,7 @@ function plotEICDF(inclinations, originalInclination, unflattenedInclination) {
       }
     },
     "subtitle": {
-      "text": "<b>Original Inclination</b>: " + originalInclination.toFixed(2) + " <b>Unflattened Inclination</b>: " + unflattenedInclination.toFixed(2) + " <b>Bootstrapped Confidence</b>: " + confidence.lower.toFixed(2) + " to " + confidence.upper.toFixed(2) + " (" + COORDINATES + " coordinates)"
+      "text": "<b>Original Inclination</b>: " + originalInclination.toFixed(2) + " <b>Unflattened Inclination</b>: " + unflattenedInclination.toFixed(2) + " <b>Bootstrapped Confidence</b>: " + lower.toFixed(2) + " to " + upper.toFixed(2) + " (" + COORDINATES + " coordinates)"
     },
     "xAxis": {
       "min": -90,
@@ -940,6 +965,7 @@ function plotFoldtestCDF(untilt, savedBootstraps) {
 
   // Create plotband for 95% bootstrapped confidence interval
   var plotBands =  [{
+    "id": "plotband",
     "color": PLOTBAND_COLOR_BLUE,
     "from": lower,
     "to": upper
@@ -990,6 +1016,30 @@ function plotFoldtestCDF(untilt, savedBootstraps) {
       "linkedTo": "bootstraps",
       "enableMouseTracking": false,
     });
+  });
+
+  // The legend item click must contain a closure for the plotband data
+  // Loop over the plotband data to add or remove it
+  mySeries.push({
+    "color": HIGHCHARTS_BLUE,
+    "name": "Confidence Interval",
+    "lineWidth": 0,
+    "marker": { 
+      "symbol": "square"
+    },
+    "events": { 
+      "legendItemClick": (function(closure) { 
+        return function(event) { 
+          closure.forEach(function(plotBand) { 
+            if(this.visible) { 
+              this.chart.xAxis[0].removePlotBand(plotBand.id);
+            } else { 
+              this.chart.xAxis[0].addPlotBand(plotBand);
+            } 
+          }, this);
+        } 
+      })(memcpy(plotBands))
+    } 
   });
 
   new Highcharts.chart(CHART_CONTAINER, {
@@ -1468,8 +1518,9 @@ function simulateCTMD(one, two) {
     var statisticsOne = getStatisticalParameters(sampledOne);
     var statisticsTwo = getStatisticalParameters(sampledTwo);
 
-    var coordinatesOne = statisticsOne.dir.mean.toCartesian();
-    var coordinatesTwo = statisticsTwo.dir.mean.toCartesian();
+    // Get unit coordinates of mean
+    var coordinatesOne = statisticsOne.dir.mean.unit().toCartesian();
+    var coordinatesTwo = statisticsTwo.dir.mean.unit().toCartesian();
 
     // Save the coordinates
     xOne.push(coordinatesOne.x);
@@ -1902,6 +1953,7 @@ function eqAreaProjectionMean() {
     "  <caption>",
     "    <div class='text-right'>",
     "      <button class='btn btn-sm btn-light' onclick='exportMeanCSV()'><i class='far fa-file-image'></i> CSV</button>",
+    "      <button class='btn btn-sm btn-light' onclick='exportMeanJSON()'><i class='far fa-file-image'></i> JSON</button>",
     "    </div>",
     "  </caption>",
     "  <thead>",
@@ -2238,6 +2290,7 @@ function eqAreaPlotBand(mDec, decError) {
   var maxError = mDec + decError;
 
   var plotBands = [{
+    "id": "plotband",
     "from": minError,
     "to": maxError,
     "color": PLOTBAND_COLOR_BLUE,
@@ -2250,6 +2303,7 @@ function eqAreaPlotBand(mDec, decError) {
   if(minError < 0) {
 
     plotBands.push({
+      "id": "plotbandNeg",
       "from": 360,
       "to": minError + 360,
       "color": PLOTBAND_COLOR_BLUE,
@@ -2262,6 +2316,7 @@ function eqAreaPlotBand(mDec, decError) {
   if(maxError > 360) {
 
     plotBands.push({
+      "id": "plotbandPos",
       "from": 0,
       "to": maxError - 360,
       "color": PLOTBAND_COLOR_BLUE,
@@ -2298,10 +2353,69 @@ function eqAreaChart(container, dataSeries, plotBands) {
    */
 
   function addDegree() {
+
+    /*
+     * Function addDegree
+     * Adds a degree symbol
+     */
+
     return this.value + "\u00B0";
+
+  }
+
+  function exportCSVPole() {
+
+    /*
+     * Function exportCSVPole
+     * Exports VGP Distribution to CSV file
+     */
+
+    const HEADER = new Array("longitude,latitude");
+
+    var csv = HEADER.concat(dataSeries[0].data.map(function(point) {
+      return new Array(point.x.toFixed(PRECISION), point.inc.toFixed(PRECISION)).join(ITEM_DELIMITER) 
+    })).join(LINE_DELIMITER);
+
+    downloadAsCSV("VGP-distribution.csv", csv);
+
+  }
+
+  function exportCSVDirection() {
+    
+    /*
+     * Function exportCSVDirection
+     * Exports ChRM Distribution to CSV file
+     */
+    
+    const HEADER = new Array("declination,inclination");
+    
+    var csv = HEADER.concat(dataSeries[0].data.map(function(point) {
+      return new Array(point.x.toFixed(PRECISION), point.inc.toFixed(PRECISION)).join(ITEM_DELIMITER)
+    })).join(LINE_DELIMITER);
+    
+    downloadAsCSV("ChRM-distribution.csv", csv);
+  
+  }
+
+  function exportCSV() {
+
+    switch(container) {
+      case "pole-container":
+        return exportCSVPole();
+      case "direction-container":
+      case "modal-container":
+      case "foldtest-geographic-container":
+      case "foldtest-tectonic-container":
+      case "mean-container":
+        return exportCSVDirection();
+      default:
+        return;
+    }
+
   }
 
   const ENABLE_45_CUTOFF = true;
+  const PRECISION = 2;
 
   var title;
   if(container === "pole-container") {
@@ -2325,13 +2439,43 @@ function eqAreaChart(container, dataSeries, plotBands) {
     subtitle = "(" + COORDINATES + " coordinates)";
   }
 
-  Highcharts.chart(container, {
+  // Add plotband to the legend and make it a toggle
+  if(plotBands !== undefined) {
+
+    // The legend item click must contain a closure for the plotband data
+    // Loop over the plotband data to add or remove it
+    dataSeries.push({
+      "color": HIGHCHARTS_BLUE,
+      "name": "ΔDx Confidence Parachute",
+      "lineWidth": 0,
+      "marker": {
+        "symbol": "square"
+      },
+      "events": {
+        "legendItemClick": (function(closure) { 
+          return function(event) {
+            closure.forEach(function(plotBand) {
+              if(this.visible) {
+                this.chart.xAxis[0].removePlotBand(plotBand.id);
+              } else {
+                this.chart.xAxis[0].addPlotBand(plotBand);
+              }
+            }, this);
+          }
+        })(memcpy(plotBands))
+      }
+    });
+
+  }
+
+  new Highcharts.chart(container, {
     "chart": {
       "polar": true,
       "animation": false,
       "height": 600,
     },
     "exporting": {
+      "getCSV": exportCSV.bind(this),
       "filename": "hemisphere-projection",
       "sourceWidth": 600,
       "sourceHeight": 600,
