@@ -114,20 +114,11 @@ function bootstrapFoldtest() {
   // Combine all geographic components to a single array
   var vectors = new Array().concat(...cutoffCollectionsG);
 
-  // Fake data for testing
-  var AHHH = FAKE.data[1].data.map(function(x) {
-    return {
-      "coordinates": new Direction(x[0], x[1]).toCartesian(),
-      "beddingStrike": x[2],
-      "beddingDip": x[3]
-    }
-  });
-
   var untilts = new Array();
   var savedBootstraps = new Array();
 
   // Save the unfolding of actual data
-  savedBootstraps.push(unfold(AHHH, 0).taus);
+  savedBootstraps.push(unfold(vectors, 0).taus);
 
   // No bootstrap, only unfold the data
   if(!document.getElementById("foldtest-bootstrap-checkbox").checked) {
@@ -145,7 +136,7 @@ function bootstrapFoldtest() {
       return plotFoldtestCDF(untilts, savedBootstraps);     
     }
 
-    result = unfold(drawBootstrap(AHHH), iteration);
+    result = unfold(drawBootstrap(vectors), iteration);
 
     // Save the index of maximum untilting
     untilts.push(result.index);
@@ -159,7 +150,7 @@ function bootstrapFoldtest() {
     progressBarElement.css("width", 100 * (iteration / NUMBER_OF_BOOTSTRAPS) + "%");
 
     // Queue for next bootstrap but release UI thread
-    setTimeout(next, 0);
+    setTimeout(next);
 
   })();
 
@@ -221,11 +212,6 @@ function bootstrapShallowing() {
 
   var inclinations = new Array();
 
-  // Some fake data (compare to pmag live)
-  var dirs = FAKE.data[0].data.filter(x => x[4] !== "EI_Example.16").map(function(x) {
-    return new Direction(x[0], x[1])
-  });
-
   if(dirs.length < NUMBER_OF_COMPONENTS_REQUIRED) {
     return notify("danger", "A minimum of " + NUMBER_OF_COMPONENTS_REQUIRED + " components is recommended.");
   }
@@ -264,7 +250,7 @@ function bootstrapShallowing() {
 
     // No intersection with TK03.GAD: proceed immediately next bootstrap
     if(result === null) {
-      return setTimeout(next, 0);
+      return setTimeout(next);
     }
 
     // Save the first 24 bootstraps
@@ -278,7 +264,7 @@ function bootstrapShallowing() {
     progressBarElement.css("width", 100 * (iteration / NUMBER_OF_BOOTSTRAPS) + "%");
 
     // Queue for next bootstrap
-    setTimeout(next, 0);
+    setTimeout(next);
 
   })();
 
@@ -1124,7 +1110,7 @@ function unfold(vectors, iteration) {
 
     if(tau.t1 > max) {
       max = tau.t1;
-      index = i
+      index = i;
     }
 
   }
@@ -1256,14 +1242,20 @@ function getSelectedComponents() {
 
 }
 
-function RUN() {
+function createCTMDGrid() {
+
+  /*
+   * Function createCTMDGrid
+   * Creates the CTMD grid
+   */
 
   var collections = getSelectedCollections();
-  var names = collections.map(x => x.name);
 
   if(collections.length < 2) {
-    return notify("Select two or more selections for the grid view.");
+    return notify("danger", "Select two or more selections for the grid view.");
   }
+
+  var names = collections.map(x => x.name);
 
   // Asynchronous call (using setTimeout)
   CTMDPermutations(collections, function(result) {
@@ -1271,7 +1263,6 @@ function RUN() {
     // Create heatmap data series
     var success = new Array();
     var fail = new Array();
-    var none = new Array();
 
     result.forEach(function(x) {
 
@@ -1443,7 +1434,7 @@ function CTMDPermutations(collections, callback) {
     });
 
     // Proceed
-    setTimeout(next, 0);
+    setTimeout(next);
 
   })();
 

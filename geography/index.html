@@ -35,8 +35,8 @@
   <body>
 
     <!-- Header -->
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
 
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
       <a class="navbar-brand" href="http://www.paleomagnetism.org">Paleomagnetism<span class="text-danger">.org</span></a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -504,8 +504,6 @@
   <script src="https://code.highcharts.com/modules/exporting.js"></script>
   <script src="https://code.highcharts.com/modules/offline-exporting.js"></script>
 
-
-
   <!-- Library for multi select -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.2/js/bootstrap-select.min.js"></script>
 
@@ -514,12 +512,13 @@
     integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA=="
     crossorigin=""></script>
 
-  <!-- Huebee color picker -->
   <script src="./lib/grid.js"></script>
   <script src="./lib/togeojson.js"></script>
 
+  <!-- Shared utilities -->
   <script src="../utils.js"></script>
 
+  <!-- Shared classes -->
   <script src="../Exception.js"></script>
   <script src="../Direction.js"></script>
   <script src="../Pole.js"></script>
@@ -528,6 +527,8 @@
   <script src="../Site.js"></script>
   <script src="../Distribution.js"></script>
 
+  <!-- Self modules -->
+  <script src="./graphs.js"></script>
   <script src="./index.js"></script>
   <script src="./euler.js"></script>
   <script src="./apwp.js"></script>
