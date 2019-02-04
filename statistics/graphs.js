@@ -114,20 +114,11 @@ function bootstrapFoldtest() {
   // Combine all geographic components to a single array
   var vectors = new Array().concat(...cutoffCollectionsG);
 
-  // Fake data for testing
-  var AHHH = FAKE.data[1].data.map(function(x) {
-    return {
-      "coordinates": new Direction(x[0], x[1]).toCartesian(),
-      "beddingStrike": x[2],
-      "beddingDip": x[3]
-    }
-  });
-
   var untilts = new Array();
   var savedBootstraps = new Array();
 
   // Save the unfolding of actual data
-  savedBootstraps.push(unfold(AHHH, 0).taus);
+  savedBootstraps.push(unfold(vectors, 0).taus);
 
   // No bootstrap, only unfold the data
   if(!document.getElementById("foldtest-bootstrap-checkbox").checked) {
@@ -145,7 +136,7 @@ function bootstrapFoldtest() {
       return plotFoldtestCDF(untilts, savedBootstraps);     
     }
 
-    result = unfold(drawBootstrap(AHHH), iteration);
+    result = unfold(drawBootstrap(vectors), iteration);
 
     // Save the index of maximum untilting
     untilts.push(result.index);
@@ -159,7 +150,7 @@ function bootstrapFoldtest() {
     progressBarElement.css("width", 100 * (iteration / NUMBER_OF_BOOTSTRAPS) + "%");
 
     // Queue for next bootstrap but release UI thread
-    setTimeout(next, 0);
+    setTimeout(next);
 
   })();
 
@@ -221,11 +212,6 @@ function bootstrapShallowing() {
 
   var inclinations = new Array();
 
-  // Some fake data (compare to pmag live)
-  var dirs = FAKE.data[0].data.filter(x => x[4] !== "EI_Example.16").map(function(x) {
-    return new Direction(x[0], x[1])
-  });
-
   if(dirs.length < NUMBER_OF_COMPONENTS_REQUIRED) {
     return notify("danger", "A minimum of " + NUMBER_OF_COMPONENTS_REQUIRED + " components is recommended.");
   }
@@ -264,7 +250,7 @@ function bootstrapShallowing() {
 
     // No intersection with TK03.GAD: proceed immediately next bootstrap
     if(result === null) {
-      return setTimeout(next, 0);
+      return setTimeout(next);
     }
 
     // Save the first 24 bootstraps
@@ -278,7 +264,7 @@ function bootstrapShallowing() {
     progressBarElement.css("width", 100 * (iteration / NUMBER_OF_BOOTSTRAPS) + "%");
 
     // Queue for next bootstrap
-    setTimeout(next, 0);
+    setTimeout(next);
 
   })();
 
@@ -718,12 +704,15 @@ function plotEICDF(inclinations, originalInclination, unflattenedInclination) {
 
   // Get the lower and upper 2.5%
   var confidence = getConfidence(cdf);
+  var lower = confidence.lower || -90;
+  var upper = confidence.upper || 90;
 
   // Add the confidence plot band
   var plotBands = [{
+    "id": "plotband",
     "color": PLOTBAND_COLOR_BLUE,
-    "from": confidence.lower,
-    "to": confidence.upper
+    "from": lower,
+    "to": upper
   }];
 
   var mySeries = [{
@@ -779,6 +768,28 @@ function plotEICDF(inclinations, originalInclination, unflattenedInclination) {
 
   }
 
+  mySeries.push({
+    "color": HIGHCHARTS_BLUE,
+    "name": "Confidence Interval",
+    "lineWidth": 0,
+    "marker": {
+      "symbol": "square"
+    },
+    "events": {
+      "legendItemClick": (function(closure) {
+        return function(event) {
+          closure.forEach(function(plotBand) {
+            if(this.visible) {
+              this.chart.xAxis[0].removePlotBand(plotBand.id);
+            } else {
+              this.chart.xAxis[0].addPlotBand(plotBand);
+            }
+          }, this);
+        }
+      })(memcpy(plotBands))
+    }
+  });
+
   new Highcharts.chart(CHART_CONTAINER, {
     "title": {
       "text": "Cumulative Distribution of bootstrapped TK03.GAD intersections",
@@ -795,7 +806,7 @@ function plotEICDF(inclinations, originalInclination, unflattenedInclination) {
       }
     },
     "subtitle": {
-      "text": "<b>Original Inclination</b>: " + originalInclination.toFixed(2) + " <b>Unflattened Inclination</b>: " + unflattenedInclination.toFixed(2) + " <b>Bootstrapped Confidence</b>: " + confidence.lower.toFixed(2) + " to " + confidence.upper.toFixed(2) + " (" + COORDINATES + " coordinates)"
+      "text": "<b>Original Inclination</b>: " + originalInclination.toFixed(2) + " <b>Unflattened Inclination</b>: " + unflattenedInclination.toFixed(2) + " <b>Bootstrapped Confidence</b>: " + lower.toFixed(2) + " to " + upper.toFixed(2) + " (" + COORDINATES + " coordinates)"
     },
     "xAxis": {
       "min": -90,
@@ -954,6 +965,7 @@ function plotFoldtestCDF(untilt, savedBootstraps) {
 
   // Create plotband for 95% bootstrapped confidence interval
   var plotBands =  [{
+    "id": "plotband",
     "color": PLOTBAND_COLOR_BLUE,
     "from": lower,
     "to": upper
@@ -1004,6 +1016,30 @@ function plotFoldtestCDF(untilt, savedBootstraps) {
       "linkedTo": "bootstraps",
       "enableMouseTracking": false,
     });
+  });
+
+  // The legend item click must contain a closure for the plotband data
+  // Loop over the plotband data to add or remove it
+  mySeries.push({
+    "color": HIGHCHARTS_BLUE,
+    "name": "Confidence Interval",
+    "lineWidth": 0,
+    "marker": { 
+      "symbol": "square"
+    },
+    "events": { 
+      "legendItemClick": (function(closure) { 
+        return function(event) { 
+          closure.forEach(function(plotBand) { 
+            if(this.visible) { 
+              this.chart.xAxis[0].removePlotBand(plotBand.id);
+            } else { 
+              this.chart.xAxis[0].addPlotBand(plotBand);
+            } 
+          }, this);
+        } 
+      })(memcpy(plotBands))
+    } 
   });
 
   new Highcharts.chart(CHART_CONTAINER, {
@@ -1124,7 +1160,7 @@ function unfold(vectors, iteration) {
 
     if(tau.t1 > max) {
       max = tau.t1;
-      index = i
+      index = i;
     }
 
   }
@@ -1256,14 +1292,20 @@ function getSelectedComponents() {
 
 }
 
-function RUN() {
+function createCTMDGrid() {
+
+  /*
+   * Function createCTMDGrid
+   * Creates the CTMD grid
+   */
 
   var collections = getSelectedCollections();
-  var names = collections.map(x => x.name);
 
   if(collections.length < 2) {
-    return notify("Select two or more selections for the grid view.");
+    return notify("danger", "Select two or more selections for the grid view.");
   }
+
+  var names = collections.map(x => x.name);
 
   // Asynchronous call (using setTimeout)
   CTMDPermutations(collections, function(result) {
@@ -1271,7 +1313,6 @@ function RUN() {
     // Create heatmap data series
     var success = new Array();
     var fail = new Array();
-    var none = new Array();
 
     result.forEach(function(x) {
 
@@ -1443,7 +1484,7 @@ function CTMDPermutations(collections, callback) {
     });
 
     // Proceed
-    setTimeout(next, 0);
+    setTimeout(next);
 
   })();
 
@@ -1477,8 +1518,9 @@ function simulateCTMD(one, two) {
     var statisticsOne = getStatisticalParameters(sampledOne);
     var statisticsTwo = getStatisticalParameters(sampledTwo);
 
-    var coordinatesOne = statisticsOne.dir.mean.toCartesian();
-    var coordinatesTwo = statisticsTwo.dir.mean.toCartesian();
+    // Get unit coordinates of mean
+    var coordinatesOne = statisticsOne.dir.mean.unit().toCartesian();
+    var coordinatesTwo = statisticsTwo.dir.mean.unit().toCartesian();
 
     // Save the coordinates
     xOne.push(coordinatesOne.x);
@@ -1911,6 +1953,7 @@ function eqAreaProjectionMean() {
     "  <caption>",
     "    <div class='text-right'>",
     "      <button class='btn btn-sm btn-light' onclick='exportMeanCSV()'><i class='far fa-file-image'></i> CSV</button>",
+    "      <button class='btn btn-sm btn-light' onclick='exportMeanJSON()'><i class='far fa-file-image'></i> JSON</button>",
     "    </div>",
     "  </caption>",
     "  <thead>",
@@ -2247,6 +2290,7 @@ function eqAreaPlotBand(mDec, decError) {
   var maxError = mDec + decError;
 
   var plotBands = [{
+    "id": "plotband",
     "from": minError,
     "to": maxError,
     "color": PLOTBAND_COLOR_BLUE,
@@ -2259,6 +2303,7 @@ function eqAreaPlotBand(mDec, decError) {
   if(minError < 0) {
 
     plotBands.push({
+      "id": "plotbandNeg",
       "from": 360,
       "to": minError + 360,
       "color": PLOTBAND_COLOR_BLUE,
@@ -2271,6 +2316,7 @@ function eqAreaPlotBand(mDec, decError) {
   if(maxError > 360) {
 
     plotBands.push({
+      "id": "plotbandPos",
       "from": 0,
       "to": maxError - 360,
       "color": PLOTBAND_COLOR_BLUE,
@@ -2307,10 +2353,69 @@ function eqAreaChart(container, dataSeries, plotBands) {
    */
 
   function addDegree() {
+
+    /*
+     * Function addDegree
+     * Adds a degree symbol
+     */
+
     return this.value + "\u00B0";
+
+  }
+
+  function exportCSVPole() {
+
+    /*
+     * Function exportCSVPole
+     * Exports VGP Distribution to CSV file
+     */
+
+    const HEADER = new Array("longitude,latitude");
+
+    var csv = HEADER.concat(dataSeries[0].data.map(function(point) {
+      return new Array(point.x.toFixed(PRECISION), point.inc.toFixed(PRECISION)).join(ITEM_DELIMITER) 
+    })).join(LINE_DELIMITER);
+
+    downloadAsCSV("VGP-distribution.csv", csv);
+
+  }
+
+  function exportCSVDirection() {
+    
+    /*
+     * Function exportCSVDirection
+     * Exports ChRM Distribution to CSV file
+     */
+    
+    const HEADER = new Array("declination,inclination");
+    
+    var csv = HEADER.concat(dataSeries[0].data.map(function(point) {
+      return new Array(point.x.toFixed(PRECISION), point.inc.toFixed(PRECISION)).join(ITEM_DELIMITER)
+    })).join(LINE_DELIMITER);
+    
+    downloadAsCSV("ChRM-distribution.csv", csv);
+  
+  }
+
+  function exportCSV() {
+
+    switch(container) {
+      case "pole-container":
+        return exportCSVPole();
+      case "direction-container":
+      case "modal-container":
+      case "foldtest-geographic-container":
+      case "foldtest-tectonic-container":
+      case "mean-container":
+        return exportCSVDirection();
+      default:
+        return;
+    }
+
   }
 
   const ENABLE_45_CUTOFF = true;
+  const PRECISION = 2;
 
   var title;
   if(container === "pole-container") {
@@ -2334,13 +2439,43 @@ function eqAreaChart(container, dataSeries, plotBands) {
     subtitle = "(" + COORDINATES + " coordinates)";
   }
 
-  Highcharts.chart(container, {
+  // Add plotband to the legend and make it a toggle
+  if(plotBands !== undefined) {
+
+    // The legend item click must contain a closure for the plotband data
+    // Loop over the plotband data to add or remove it
+    dataSeries.push({
+      "color": HIGHCHARTS_BLUE,
+      "name": "ΔDx Confidence Parachute",
+      "lineWidth": 0,
+      "marker": {
+        "symbol": "square"
+      },
+      "events": {
+        "legendItemClick": (function(closure) { 
+          return function(event) {
+            closure.forEach(function(plotBand) {
+              if(this.visible) {
+                this.chart.xAxis[0].removePlotBand(plotBand.id);
+              } else {
+                this.chart.xAxis[0].addPlotBand(plotBand);
+              }
+            }, this);
+          }
+        })(memcpy(plotBands))
+      }
+    });
+
+  }
+
+  new Highcharts.chart(container, {
     "chart": {
       "polar": true,
       "animation": false,
       "height": 600,
     },
     "exporting": {
+      "getCSV": exportCSV.bind(this),
       "filename": "hemisphere-projection",
       "sourceWidth": 600,
       "sourceHeight": 600,

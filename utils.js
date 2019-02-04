@@ -730,7 +730,7 @@ function addFooter() {
     "<hr>",
     "<b>Paleomagnetism<span class='text-danger'>.org</span></b> &copy; " + new Date().getFullYear() + ". All Rights Reserved.",
     "<div style='float: right;' class='text-muted'><small>Version v" + __VERSION__ + "</small></div>",
-    "&nbsp; <i class='fab fa-github'></i> <a href='https://github.com/Jollyfant'><b>Source Code</b></a>",
+    "&nbsp; <i class='fab fa-github'></i> <a href='https://github.com/Jollyfant/PMAG2'><b>Source Code</b></a>",
     "&nbsp; <i class='fas fa-balance-scale'></i> Licensed under <a href='https://github.com/Jollyfant'><b>MIT</b>.</a>",
     "<br>"
   ).join("\n");
@@ -740,6 +740,127 @@ function addFooter() {
 function createLink(href, text) {
 
   return "<a href='" + href + "'>" + text + "</a>";
+
+}
+
+function addCollectionData(files, format) {
+
+  switch(format) {
+    case "DIR2":
+      return files.forEach(addData);
+    case "PMAG":
+      return files.forEach(importPmag);
+    default:
+      throw(new Exception("Unknown importing format requested."));
+  }
+
+}
+
+function addData(files) {
+
+  /*
+   * Function addData
+   * Adds data from the Paleomagnetism 2.0.0 format to the application
+   */
+
+  files.forEach(function(file) {
+
+    // Could be a string or object (when loaded from PID)
+    if(file.data instanceof Object) {
+      var json = file.data;
+    } else {
+      var json = JSON.parse(file.data);
+    }
+
+    // Collect some metadata from the file
+    var siteName = file.name;
+    var reference = json.pid;
+    var components = new Array();
+
+    json.specimens.forEach(function(specimen) {
+
+       specimen.interpretations.forEach(function(interpretation) {
+
+         // Skip components that are great circles: these can be fitted in the interpretation portal
+         if(interpretation.type === "TAU3") {
+           return;
+         }
+
+         components.push(new Component(specimen, interpretation.specimen.coordinates));
+
+       });
+
+    });
+
+    collections.push({
+      "color": null,
+      "name": siteName,
+      "reference": reference,
+      "components": components,
+      "created": new Date().toISOString()
+    });
+
+  });
+
+}
+
+function importPmag(file) {
+
+  /*
+   * Function importPmag
+   * Imports deprecated Paleomagnetism.org 1.0.0 format to the application
+   */
+
+  var json = JSON.parse(file.data);
+
+  json.data.forEach(function(site) {
+
+    var metadata = site.metaData;
+    var components = site.data.map(function(x, i) {
+
+      var dec = x[0];
+      var inc = x[1];
+      var coords = new Direction(dec, inc).toCartesian().toLiteral();
+
+      if(x.length > 2) {
+        var strike = x[2];
+        var dip = x[3];
+      } else {
+        var strike = 0;
+        var dip = 0;
+      }
+
+      if(x.length > 4) {
+        var name = x[4];
+      } else {
+        var name = metadata.name + "." + i;
+      }
+
+      return new Component({
+        "name": name,
+        "latitude": metadata.latitude,
+        "longitude": metadata.longitude,
+        "age": Number(metadata.age),
+        "ageMin": Number(metadata.minAge),
+        "ageMax": Number(metadata.maxAge),
+        "coreAzimuth": 0,
+        "coreDip": 90,
+        "beddingStrike": strike,
+        "beddingDip": dip,
+      }, coords);
+
+    });
+
+    // Add the site to the collection
+    collections.push({
+      "color": metadata.markerColor,
+      "name": metadata.name,
+      "reference": "specimen",
+      "components": components,
+      "created": json.dateExported
+    });
+
+  });
 
 }
 
@@ -758,6 +879,17 @@ function createLink(href, text) {
     });
   
   }
+
+  // Add CSV export button
+  Highcharts.getOptions().exporting.buttons.contextButton.menuItems.push({
+    "text": "Download CSV File",
+    "onclick": function() {
+      if(!this.userOptions.exporting.hasOwnProperty("getCSV")) { 
+        return notify("danger", "CSV exporting for this graph is not implemented.");
+      }
+      this.userOptions.exporting.getCSV();
+    }
+  });
   
   // Set global default options for all charts
   Highcharts.setOptions({

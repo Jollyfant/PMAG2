@@ -7,6 +7,11 @@ function showStratigraphy(container, plotData) {
 
   function tooltip() {
 
+    /*
+     * Function showStratigraphy::tooltip
+     * Creates tooltip for chart
+     */
+
     return [
       "<b>Sample: </b>" + this.point.sample,
       "<b>" + title + ": </b>" + this.x.toFixed(2),
@@ -19,7 +24,7 @@ function showStratigraphy(container, plotData) {
 
   // Determine title and x-range
   if(container === "magstrat-container-declination") {
-    var range = USE_POSITIVE_XAXIS ? {"min": 0, "max": 360} : {"min": -180, "max": 180}
+    var range = (USE_POSITIVE_XAXIS ? {"min": 0, "max": 360} : {"min": -180, "max": 180});
     var title = "Declination";
   } else if(container === "magstrat-container-inclination") {
     var range = {"min": -90, "max": 90}
@@ -328,4 +333,3 @@ function determinePolarities(stratigraphicData) {
   return polarity;
 
 }
-

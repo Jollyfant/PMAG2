@@ -167,7 +167,7 @@ function keyboardHandler(event) {
       return document.getElementById("notification-container").innerHTML = "";
     case CODES.KEYPAD_FIVE:
       A95_CONFIDENCE = !A95_CONFIDENCE;
-      notify("info", "Switched to <b>" + (A95_CONFIDENCE ? "A95" : "a95") + "</b> confidence interval.");
+      notify("info", "Switched to <b>" + (A95_CONFIDENCE ? "A95" : "α95") + "</b> confidence interval.");
       return redrawCharts();
   }
 
@@ -264,53 +264,6 @@ Component.prototype.inReferenceCoordinates = function(coordinates) {
 
   // Return a itself as a new component but in reference coordinates
   return new Component(this, inReferenceCoordinates(coordinates, this, this.coordinates));
-
-}
-
-function addData(files) {
-
-  /*
-   * Function addData
-   * Adds data from the Paleomagnetism 2.0.0 format to the application
-   */
-
-  files.forEach(function(file) {
-
-    // Could be a string or object (when loaded from PID)
-    if(file.data instanceof Object) {
-      var json = file.data;
-    } else {
-      var json = JSON.parse(file.data);
-    }
-
-    // Collect some metadata from the file
-    var siteName = file.name;
-    var reference = json.pid;
-    var components = new Array();
-
-    json.specimens.forEach(function(specimen) {
-
-       specimen.interpretations.forEach(function(interpretation) {
-
-         // Skip components that are great circles: these can be fitted in the interpretation portal
-         if(interpretation.type === "TAU3") {
-           return;
-         }
-
-         components.push(new Component(specimen, interpretation.specimen.coordinates));
-
-       });
-
-    });
-
-    collections.push({
-      "name": siteName,
-      "reference": reference,
-      "components": components,
-      "created": new Date().toISOString()
-    });
-
-  });
 
 }
 
@@ -515,6 +468,8 @@ function fileSelectionHandler(event) {
    * Callback fired when input files are selected
    */
 
+  const format = document.getElementById("format-selection").value;
+
   readMultipleFiles(Array.from(event.target.files), function(files) {
 
     // Drop the existing collections if not appending
@@ -526,7 +481,7 @@ function fileSelectionHandler(event) {
 
     // Try adding the demagnetization data
     try {
-      addData(files);
+      addCollectionData(files, format);
     } catch(exception) {
       return notify("danger", exception);
     }
