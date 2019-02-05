@@ -4,16 +4,22 @@ var KMLLayers = new Array();
 var mapMakers = new Array();
 var openedCollection;
 
+$(".selectpicker").selectpicker("show");
+
+var COORDINATES_COUNTER = 0;
+var COORDINATES = "specimen";
+
 function addMap() {
+
+  /*
+   * Function addMap
+   * Adds the Leaflet map to the application
+   * Containers default map settings and handlers
+   */
 
   const MAP_CONTAINER = "map";
   const TILE_LAYER = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
-  const GEOLOGY_LAYER = "https://mrdata.usgs.gov/services/worldgeol?";
-
   const VIEWPORT = new L.latLng(35, 0);
-
-  // Reload the map when the tab is focussed on
-  $("#nav-apwp-tab").on("shown.bs.tab", mapTabFocusHandler);
 
   // Set map options (bounds)
   var mapOptions = {
@@ -26,14 +32,39 @@ function addMap() {
   // Create the map and tile layer
   map = L.map(MAP_CONTAINER, mapOptions).setView(VIEWPORT, 1);
   L.tileLayer(TILE_LAYER).addTo(map);
-  //window.geologyLayer = L.tileLayer.wms(GEOLOGY_LAYER, {"layers": "geology", "opacity": 0.5}).addTo(map);
 
-  map.on("popupopen", function(e) {
-    openedCollection = collections[e.popup._source.options.index];
-  });
+  // Reload the map when the tab is focussed on
+  $("#nav-apwp-tab").on("shown.bs.tab", map.invalidateSize.bind(map));
+
+  // Other handlers
+  map.on("popupopen", mapPopupHandler);
+  map.on("click", mapClickHandler);
 
   // Add a lovely grid layer: good job guy who did this
-  window.gridLayer = L.latlngGraticule({
+  window.gridLayer = createGridLayer(map);
+
+}
+
+function mapPopupHandler(event) {
+
+  /*
+   * Function mapPopupHandler
+   * Handler when a marker popup is opened
+   */
+
+  // Reference the opened collection
+  openedCollection = collections[event.popup._source.options.index];
+
+}
+
+function createGridLayer(map) {
+
+  /*
+   * Function addGrid
+   * Adds grid as Leaflet layer
+   */
+
+  return L.latlngGraticule({
     "opacity": 0.5,
     "color": HIGHCHARTS_WHITE,
     "fontColor": HIGHCHARTS_BLACK,
@@ -48,27 +79,20 @@ function addMap() {
     ]
   }).addTo(map);
 
-  // Attach a click handler
-  map.on("click", mapClickHandler);
-
 }
 
-function toggle() {
+function toggleGridLayer() {
 
+  /*
+   * Function toggleGridLayer
+   * Toggles the grid layer on/off
+   */
+
+  // Add or remove
   if(!document.getElementById("defaultCheck1").checked && map.hasLayer(window.gridLayer)) {
     map.removeLayer(window.gridLayer);
   } else {
     map.addLayer(window.gridLayer);
-  }
-
-}
-
-function toggleGeology() {
-
-  if(!document.getElementById("geology-layer-toggle").checked && map.hasLayer(window.geologyLayer)) {
-    map.removeLayer(window.geologyLayer);
-  } else {
-    map.addLayer(window.geologyLayer);
   }
 
 }
@@ -82,17 +106,10 @@ function mapClickHandler(event) {
  
   const LOCATION_PRECISION = 5;
  
-  // Extract the latitude, longitude
+  // Extract the latitude, longitude and put it in the HTML input
   document.getElementById("site-longitude-input").value = event.latlng.lng.toPrecision(LOCATION_PRECISION);
   document.getElementById("site-latitude-input").value = event.latlng.lat.toPrecision(LOCATION_PRECISION);
  
-}
-
-function mapTabFocusHandler() {
-
-  map.invalidateSize();
-
-
 }
 
 function getPublicationFromPID() {
@@ -126,13 +143,19 @@ function getPublicationFromPID() {
 
 function __init__() {
 
+  /*
+   * Function __init__
+   * Initializes the geography portal
+   */
+
   document.title += " - Geography Portal";
 
   // Check local storage
   if(!window.localStorage) {
-    return notify("warning", "Local storage is not supported by your browser. Save your work manually by exporting your data.");
+    return notify("warning", "Local storage is not supported by your browser. Save your work by exporting your data manually.");
   }
 
+  // A database/collection from the data library is requested
   if(location.search) {
     return getPublicationFromPID();
   }
@@ -140,21 +163,12 @@ function __init__() {
   // Load the specimens from local storage
   var item = localStorage.getItem("collections");
 
-  // Nothing returned from local storage
-  if(item === null) {
-    collections = new Array();
-  } else {
-
-    // Convert literals to components
-    collections = JSON.parse(item).map(function(x) {
-      x.components = x.components.map(function(y) {
-        return new Component(y, y.coordinates);
-      });
-      return x;
-    });
-
+  // Something returned from local storage
+  if(item !== null) {
+    importPMAG2(JSON.parse(item));
   }
 
+  // Add Leaflet map to the Geography portal
   addMap();
 
   __unlock__();
@@ -187,6 +201,11 @@ function saveLocalStorage(force) {
 
 function __unlock__() {
 
+  /*
+   * Function __unlock__
+   * Unlocks the application
+   */
+
   if(collections.length) {
     notify("success", "Welcome back! Succesfully loaded <b>" + collections.length + "</b> collection(s).");
     enable();
@@ -207,11 +226,6 @@ function enable() {
   $("#specimen-select").selectpicker("refresh");
 
 }
-
-  $(".selectpicker").selectpicker("show");
-
-var COORDINATES_COUNTER = 0;
-var COORDINATES = "specimen";
 
 function keyboardHandler(event) {
 
@@ -262,15 +276,14 @@ function registerEventHandlers() {
   document.getElementById("cutoff-selection").addEventListener("change", redrawCharts);
   document.getElementById("polarity-selection").addEventListener("change", redrawCharts);
   document.addEventListener("keydown", keyboardHandler);
-  document.getElementById("defaultCheck1").addEventListener("change", toggle);
-  document.getElementById("geology-layer-toggle").addEventListener("change", toggleGeology);
+  document.getElementById("defaultCheck1").addEventListener("change", toggleGridLayer);
   document.getElementById("calculate-reference").addEventListener("click", plotPredictedDirections);
 
   // Always set grid to false
   document.getElementById("defaultCheck1").checked = true;
   document.getElementById("geology-layer-toggle").checked = true;
 
-  // Enable popovers
+  // Enable the information popovers
   $(".example-popover").popover({
     "container": "body"
   });
@@ -447,6 +460,8 @@ function changeColor(color) {
 
   // Set the new color
   openedCollection.color = color;
+
+  saveLocalStorage();
 
   // Overkill but redraw all markers
   showCollectionsOnMap();
@@ -801,90 +816,6 @@ function getCutoffAngle(type) {
 
 }
 
-function doCutoff(directions) {
-
-  /*
-   * Function doCutoff
-   * Does the Vandamme or 45-cutoff
-   */
-
-  // Get the cutoff type from the DOM
-  var cutoffType = document.getElementById("cutoff-selection").value || null;
-
-  // Create a fake site at 0, 0
-  var site = new Site(0, 0);
-
-  // Create a copy in memory
-  var iterateDirections = memcpy(directions);
-
-  while(true) {
-
-    var index;
-    var deltaSum = 0;
-    var cutoffValue = getCutoffAngle(cutoffType);
-
-    // Calculate the poles & mean pole from the accepted group
-    var poles = iterateDirections.filter(x => !x.rejected).map(x => site.poleFrom(literalToCoordinates(x.coordinates).toVector(Direction)));
-    var poleDistribution = new PoleDistribution(poles);
-
-    // Go over all all poles
-    iterateDirections.forEach(function(component, i) {
-
-      // Do not incude directions that were already rejected
-      if(component.rejected) {
-        return;
-      }
-
-      var pole = site.poleFrom(literalToCoordinates(component.coordinates).toVector(Direction));
-
-      // Find the angle between the mean VGP (mLon, mLat) and the particular VGPj.
-      var angleToMean = poleDistribution.mean.toCartesian().angle(pole.toCartesian());
-
-      // Capture the maximum angle from the mean and save its index
-      if(angleToMean > cutoffValue) {
-        cutoffValue = angleToMean;
-        index = i;
-      }
-
-      // Add to t he sum of angles
-      deltaSum += Math.pow(angleToMean, 2);
-
-    });
-
-    // Calculate ASD (scatter) and optimum cutoff angle (A) (Vandamme, 1994)
-    var ASD = Math.sqrt(deltaSum / (poles.length - 1));
-    var A = 1.8 * ASD + 5;
-
-    if(cutoffType === null) {
-      break;
-    }
-
-    // Vandamme cutoff
-    if(cutoffType === "VANDAMME") {
-      if(cutoffValue < A) {
-        break;
-      }
-    }
-
-    // 45 Cutoff
-    if(cutoffType === "CUTOFF45") {
-       if(cutoffValue <= getCutoffAngle("CUTOFF45")) {
-        break;
-      }   
-    }
-
-    iterateDirections[index].rejected = true;
-
-  }
-
-  return {
-    "components": iterateDirections,
-    "cutoff": cutoffValue,
-    "scatter": ASD
-  }
-
-}
-
 function sortSamples(type) {
 
   /*
@@ -926,6 +857,11 @@ function sortSamples(type) {
 }
 
 function mapPlate(id) {
+
+  /*
+   * Function mapPlate
+   * Maps the GPlates plate identifier to a name
+   */
 
   // Taken from http://earthbyte.org/Resources/Seton_etal_ESR2012_PlateIDs.pdf
   const plateNames = {
@@ -1860,184 +1796,6 @@ function eulerSelectionHandler(event) {
  
 }
 
-function parseGPlatesRotationFile(files) {
-
-  /*
-   * Function parseGPlatesRotationFile
-   * Parses and loads a selected GPlates rotation file
-   */
-
-  function parseLine(line) {
-
-    /*
-     * Function eulerSelectionHandler::parseLine
-     * Parses a single line of the file
-     */
-
-    var values = line.split(/\s+/);
-
-    if(values.length < 6) {
-      throw(new Exception("Invalid GPlates rotation file."));
-    }
-
-    return {
-      "id": values[0],
-      "age": Number(values[1]),
-      "lat": Number(values[2]),
-      "lng": Number(values[3]),
-      "rot": Number(values[4]),
-      "rel": values[5]
-    }
-
-  }
-
-
-  // Create a hashmap for the plate ID
-  files.pop().data.split(/\r?\n/).slice(1, -1).map(parseLine).forEach(function(x) {
-
-    if(!eulerData.hasOwnProperty(x.id)) {
-      eulerData[x.id] = new Array();
-    }
-
-    eulerData[x.id].push(x);
-
-  });
-
-  function byName(a, b) {
-
-    if((a.name || a.id) < (b.name || b.id)) return -1;
-    if((a.name || a.id) > (b.name || b.id)) return 1;
-    return 0;
-
-  }
-
-  var optionGroup = document.createElement("optgroup");
-  optionGroup.label = "Custom Rotations";
-
-  // Add Euler poles to plates
-  Object.keys(eulerData).map(mapPlate).sort(byName).forEach(function(plate) {
-
-    // Skip unconstrained plate
-    if(plate.id === "1001") {
-      return;
-    }
-
-    optionGroup.appendChild(createOption(plate.name || plate.id, plate.id));
-
-  })
-
-  document.getElementById("plate-select").add(optionGroup);
-
-  $("#plate-select").selectpicker("refresh");
-
-  notify("success", "Succesfully added rotation information for <b>" + Object.keys(eulerData).length + "</b> plates.");
-
-}
-
-function extractEulerPole(plate, fixed, min, max, increment) {
-
-  /*
-   * Function extractEulerPole
-   * Gets arbitrary rotation poles
-   */
-
-  if(Object.keys(eulerData).length === 0) {
-    return notify("danger", "No custom Euler poles are loaded.");
-  }
-
-  if(!eulerData.hasOwnProperty(plate)) {
-    return notify("danger", "Could not plate with id <b>" + plate + "</b>.");
-  }
-
-  if(plate === fixed) {
-    return notify("danger", "The fixed plate and relative plate are equal.");
-  }
-
-  var plate = plate.toString();
-  var fixed = fixed.toString();
-
-  var poles = new Array();
-
-  // Go over all requested ages
-  for(var age = min; age <= max; age += increment) {
-    
-    // same
-    var a = getStagePoleAge(plate, age);
-    var b = getStagePoleAge(fixed, age);
-
-    // Could not determine the pole (age problem?)
-    if(a === null || b === null) {
-      throw("Could not deterine Euler pole.");
-    }
-
-    // Reverse the angle
-    var b = new EulerPole(b.lng, b.lat, -b.angle);
-    var pole = convolvePoles(a, b);
-
-    // Save this pole
-    poles.push({"pole": pole, "age": age});
-
-  }
-
-  return poles;
-
-}
-
-
-function getStagePoleAge(ID, age) {
-
-  // Create an empty total reconstruction pole
-  var totalPole = new EulerPole(0, 0, 0);
-
-  // Uh.. nothing
-  if(age === 0) {
-    return totalPole;
-  }
-
-  // Continue when we are referencing the fixed plate ID
-  while(ID !== "000") {
-
-    var plateData = eulerData[ID];
-
-    // Search input for matching plateID & age
-    for(var i = 0; i < plateData.length; i++) {
-      
-      if(plateData[i].age < age) {
-
-        // Last age checked: return the total pole
-        if(i === plateData.length - 1) {
-          return null;
-        } 
-
-        continue;
-
-      }
-
-      // Get the previous pole
-      var poleYoung = new EulerPole(plateData[i - 1].lng, plateData[i - 1].lat, plateData[i - 1].rot);
-      var poleOld = new EulerPole(plateData[i].lng, plateData[i].lat, plateData[i].rot);
-
-      // Calculate the stage pole
-      var stagePole = getStagePole(poleOld, poleYoung);
-
-      // Interpolate the stage pole to a given age
-      var interPole = getInterPole(poleOld, stagePole, plateData[i].age, plateData[i - 1].age, age);
-
-      // Add the interpolated pole to the total reconstruction pole
-      totalPole = convolvePoles(totalPole, interPole);
-
-      // Update the relative plate identifier and move up the GPlates tree
-      ID = plateData[i].rel;
-      break;
-
-    }
-
-  }
-
-  return totalPole;
-
-}
-
 function fileSelectionHandler(event) {
 
   /*
@@ -2065,7 +1823,6 @@ function fileSelectionHandler(event) {
 
     enable();
     saveLocalStorage();
-    $("#specimen-select").selectpicker("refresh");
     notify("success", "Succesfully added <b>" + (collections.length - nCollections) + "</b> specimen(s).");
 
   });

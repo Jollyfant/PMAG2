@@ -406,22 +406,35 @@ function notify(type, text) {
    * Sends notification to the user
    */
 
-  // Load the audio files
-  const warning = new Audio("../resources/sounds/error.mp3");
-  const notification = new Audio("../resources/sounds/notification.mp3");
+  const SOUND_WARNING = new Audio("../resources/sounds/error.mp3");
+  const SOUND_NOTIFY = new Audio("../resources/sounds/notification.mp3");
 
-  // Jump to the top
-  if(type !== "info") {
-    window.scrollTo(0, 0);
+  function formatError(text) {
+
+    /*
+     * Function notify::formatError
+     * Formats an exception depending on the debug level
+     */
+
+    if(__DEBUG__) {
+      return "<b>" + text.message + "</b><br>" + text.stack.replace(/\n/g, "<br>");
+    } else {
+      return text.message;
+    }
+
   }
 
-  // Play sound if enabled
+  // Parse an exception
+  if(text instanceof Error) {
+    text = formatError(text);
+  }
+
   if(document.getElementById("enable-sound") && document.getElementById("enable-sound").checked) {
 
     if(type === "warning" || type === "danger") {
-      warning.play();
+      SOUND_WARNING.play();
     } else if(type === "success") {
-      notification.play();
+      SOUND_NOTIFY.play();
     }
 
   }
@@ -435,6 +448,11 @@ function notify(type, text) {
       text,
     "</div>"
   ].join("\n");
+
+  // Jump to the top
+  if(type !== "info") {
+    window.scrollTo(0, 0);
+  }
 
 }
 
@@ -547,6 +565,7 @@ function memcpy(object) {
   /*
    * Function memcpy
    * Uses a JSON (de-)serialization to create a copy of an object in memory
+   * This works for nested objects but is very slow
    */
 
   return JSON.parse(JSON.stringify(object));
@@ -750,66 +769,62 @@ function addCollectionData(files, format) {
     case "DIR2":
       return files.forEach(addData);
     case "PMAG":
-      return files.forEach(importPmag);
+      return files.forEach(importPMAG);
     default:
       throw(new Exception("Unknown importing format requested."));
   }
 
 }
 
-function addData(files) {
+function addData(file) {
 
   /*
    * Function addData
    * Adds data from the Paleomagnetism 2.0.0 format to the application
    */
 
-  files.forEach(function(file) {
+  // Could be a string or object (when loaded from PID)
+  if(file.data instanceof Object) {
+    var json = file.data;
+  } else {
+    var json = JSON.parse(file.data);
+  }
 
-    // Could be a string or object (when loaded from PID)
-    if(file.data instanceof Object) {
-      var json = file.data;
-    } else {
-      var json = JSON.parse(file.data);
-    }
+  // Collect some metadata from the file
+  var siteName = file.name;
+  var reference = json.pid;
+  var components = new Array();
 
-    // Collect some metadata from the file
-    var siteName = file.name;
-    var reference = json.pid;
-    var components = new Array();
+  json.specimens.forEach(function(specimen) {
 
-    json.specimens.forEach(function(specimen) {
+     specimen.interpretations.forEach(function(interpretation) {
 
-       specimen.interpretations.forEach(function(interpretation) {
+       // Skip components that are great circles!
+       // These can be fitted in the interpretation portal
+       if(interpretation.type === "TAU3") {
+         return;
+       }
 
-         // Skip components that are great circles!
-         // These can be fitted in the interpretation portal
-         if(interpretation.type === "TAU3") {
-           return;
-         }
+       components.push(new Component(specimen, interpretation.specimen.coordinates));
 
-         components.push(new Component(specimen, interpretation.specimen.coordinates));
+     });
 
-       });
+  });
 
-    });
-
-    collections.push({
-      "color": null,
-      "name": siteName,
-      "reference": reference,
-      "components": components,
-      "created": new Date().toISOString()
-    });
-
+  collections.push({
+    "color": null,
+    "name": siteName,
+    "reference": reference,
+    "components": components,
+    "created": new Date().toISOString()
   });
 
 }
 
-function exportPmag() {
+function exportPMAG() {
 
   /*
-   * Function exportPmag
+   * Function exportPMAG
    * Exports a list of collections as a .pmag database file
    */
 
@@ -831,12 +846,10 @@ function importPMAG2(json) {
    * Imports paleomagnetism database from the PMAG 2.0.0 format
    */
 
-  json.collections.forEach(function(collection) {
+  json.forEach(function(collection) {
 
     // Convert all literal coordinates to a class instance
-    collection.components = collection.components.map(function(component) {
-      return new Component(component, component.coordinates);
-    });
+    collection.components = collection.components.map(toComponent);
 
     // Add to the application
     collections.push(collection);
@@ -845,10 +858,10 @@ function importPMAG2(json) {
 
 }
 
-function importPmag(file) {
+function importPMAG(file) {
 
   /*
-   * Function importPmag
+   * Function importPMAG
    * Imports deprecated Paleomagnetism.org 1.0.0 format to the application
    */
 
@@ -856,7 +869,7 @@ function importPmag(file) {
 
   // Parse Paleomagnetism.org 2.0.0 files
   if(Number(json.version.split(".").shift()) === 2) {
-    return importPMAG2(json);
+    return importPMAG2(json.collections);
   }
 
   json.data.forEach(function(site) {
@@ -1070,6 +1083,99 @@ function exportChartsWrapper(id, charts, type) {
    */
 
   Highcharts.exportCharts({id, charts}, {"type": getMime(type)});
+
+}
+
+function doCutoff(directions) {
+
+  /*
+   * Function doCutoff
+   * Does no, the Vandamme or 45-cutoff
+   */
+
+  // Get the cutoff type from the DOM
+  var cutoffType = document.getElementById("cutoff-selection").value || null;
+
+  // Create a fake site at 0, 0: we use this for getting the VGP distribution
+  var site = new Site(0, 0);
+
+  // Create a copy in memory
+  var iterateDirections = memcpy(directions).map(toComponent);
+
+  while(true) {
+
+    var index;
+    var deltaSum = 0;
+    var cutoffValue = getCutoffAngle(cutoffType);
+
+    // Calculate the poles & mean pole from the accepted group
+    var poleDistribution = getStatisticalParameters(iterateDirections).pole;
+
+    // Go over all all poles
+    iterateDirections.forEach(function(component, i) {
+
+      // Skip directions that were previously rejected
+      if(component.rejected) {
+        return;
+      }
+
+      var pole = site.poleFrom(literalToCoordinates(component.coordinates).toVector(Direction));
+
+      // Find the angle between the mean VGP (mLon, mLat) and the particular VGP
+      var angleToMean = poleDistribution.mean.toCartesian().angle(pole.toCartesian());
+
+      // Capture the maximum angle from the mean and save its index
+      if(angleToMean > cutoffValue) {
+        cutoffValue = angleToMean;
+        index = i;
+      }
+
+      // Add to the sum of angles
+      deltaSum += Math.pow(angleToMean, 2);
+
+    });
+
+    // Calculate ASD (scatter) and optimum cutoff angle (A) (Vandamme, 1994)
+    var ASD = Math.sqrt(deltaSum / (poleDistribution.N - 1));
+    var A = 1.8 * ASD + 5;
+
+    // No cutoff: accept everything
+    if(cutoffType === null) {
+      break;
+    }
+
+    // Vandamme cutoff
+    if(cutoffType === "VANDAMME" && cutoffValue < A) {
+      break;
+    }
+
+    // 45 Cutoff
+    if(cutoffType === "CUTOFF45" && cutoffValue <= getCutoffAngle("CUTOFF45")) {
+      break;
+    }
+
+    // Cutoff is decided pretty randomly
+    if(cutoffType === "KRIJGSMAN" && Math.random() < 0.25) {
+      break;
+    }
+
+    // Set this direction to rejected
+    iterateDirections[index].rejected = true;
+
+  }
+
+  return {
+    "components": iterateDirections,
+    "cutoff": cutoffValue,
+    "scatter": ASD,
+    "optimum": A
+  }
+
+}
+
+function toComponent(component) {
+
+  return new Component(component, component.coordinates);
 
 }
 
