@@ -1,0 +1,128 @@
+body {
+  padding-top: 5rem;
+}
+
+p {
+  text-align: justify;
+}
+
+#color-picker {
+  text-align: center;
+  max-width: 220px;
+}
+
+.color-item {
+  width: 16px;
+  height: 16px;
+  margin: 1px;
+  border: 1px solid darkslategrey;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+#wrapper {
+  position: relative;
+}
+.popover {
+  min-width: 25%;
+}
+
+#location-information-wrapper2 {
+  bottom:2px;
+  border-radius: 2px;
+  left: 2px;
+  position: absolute;
+  box-shadow: 0px 1px 4px -1px rgba(0, 0, 0, 0.3);
+  margin: 10px;
+  color: rgb(86, 86, 86);
+  text-align: center;
+  z-index: 10;
+}
+
+#location-information-wrapper {
+  top:2px;
+  border-radius: 2px;
+  right: 2px;
+  width: 35%;
+  position: absolute;
+  box-shadow: 0px 1px 4px -1px rgba(0, 0, 0, 0.3);
+  margin: 10px;
+  color: rgb(86, 86, 86);
+  background-color: white;
+  text-align: center;
+  z-index: 10;
+}
+
+.leaflet-popup-close-button {
+  display: none;
+}
+
+#specimen-age-select {
+  background: #fff url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3E%3Cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3E%3C/svg%3E") no-repeat left .75rem center;
+  background-size: 8px 10px;
+}
+
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  text-indent: 1px;
+  text-overflow: '';
+}
+
+img:hover {
+  opacity: 0.8;
+}
+
+select::-ms-expand {
+  display: none;
+}
+
+
+.map {
+  height: 300px;
+  width: 100%;
+  box-shadow: 0px 1px 4px -1px rgba(0, 0, 0, 0.3);
+}
+
+a .dropdown-item {
+  text-align: center;
+}
+
+.filter-option-inner-inner{
+  text-align: center;
+}
+
+select {
+ text-align: center;
+}
+
+#notification-container {
+  text-align: center;
+}
+
+.table-scroll {
+  height: 400px;
+  direction: rtl;
+  overflow-y: auto;
+}
+
+#table-container {
+  text-align: center;
+}
+
+#step-container {
+  text-align: center;
+  cursor: pointer;
+}
+
+#step-container tr.selected {
+  font-weight: bold;
+}
+
+#step-container tr.current {
+  background-image: linear-gradient(to right, rgba(0,0,0,0), rgba(124,181,236,0.25), rgba(0,0,0,0));
+}
+
+#step-container tr:hover {
+  background-image: linear-gradient(to right, rgba(0,0,0,0), rgba(124,181,236,0.25), rgba(0,0,0,0));
+}

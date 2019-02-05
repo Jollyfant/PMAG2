@@ -12,7 +12,7 @@
 
     <meta name="author" content="Mathijs Koymans">
 
-    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../css/style.css">
 
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
@@ -83,11 +83,17 @@
           <p> The following page records changes that were made and fixes that were applied to the application. 
         </div>
 
-        <div class="card">
-          <h5 class="card-header"> Paleomagnetism.org 2.0.0 - Release <small class="text-muted">&nbsp; 2019-01-01</small></h5>
+        <div id="accordion">
+          <div class="card">
+            <div class="card-header" id="headingOne">
+              <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                Paleomagnetism.org 2.0.0 - Release <small class="text-muted">&nbsp; 2019-01-01</small>
+              </button>
+            </div>
+    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
           <div class="card-body">
-            <b> Summary </b>
-            <p> The release of Paleomagnetism 2.0.0 exists in parallel with the old application. The old version may have some additional features in the statistics portal that were removed in the new version. This version of Paleomagnetism.org focuses on raw demagnetization data and its provenance, and may therefore be more limited in what it allows. <b> For raw data interpretation this application is always recommended </b>. 
+            <b> Change Summary </b>
+            <p> The release of Paleomagnetism 2.0.0 exists in parallel with the old application. The old version may have some additional features in the statistics portal that were removed in the new version. This version of Paleomagnetism.org focuses on raw demagnetization data and its provenance, and may therefore be more limited in what it allows. <b> For raw data interpretation this application is always recommended</b>. 
             <ul>
               <p> <b> Features </b>
               <li> General redesign and improvement of the application has been completed.
@@ -103,6 +109,7 @@
               <li> Added option to add APWP from a csv file.
               <li> Core and bedding parameters can now be changed within the application.
               <li> In the statistics portal coordinate frame can now be switched between using the key <b>8</b>.
+              <li> Confidence ellipse can be toggled between A95 and α95 using key <b>5</b>.
               <li> Added option to view all data in the statistics portal in a single polarity.
               <li> Added a data library where demagnetization data can be added.
               <li> Demagnetization data from the Paleomagnetism.org 1.0.0 format can be loaded.
@@ -119,6 +126,7 @@
             </ul>
           </div>
         </div>
+      </div>
 
     </div>
 
@@ -133,7 +141,5 @@
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-
-  <script src="../utils.js"></script>
 
 </html>

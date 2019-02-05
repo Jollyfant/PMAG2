@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+  <head>
+
+    <!-- Required metadata tags -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Paleomagnetism.org 2 - An online environment for paleomagnetic analysis">
+    <meta name="keywords" content="paleomagnetism, interpretation, zijderveld, pca">
+
+    <meta name="author" content="Mathijs Koymans">
+
+    <link rel="stylesheet" href="./css/style.css">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
+          integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+          crossorigin=""/>
+
+    <!-- Bootstrap & Font Awesome CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css"
+          integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz"
+          crossorigin="anonymous">
+
+  </head>
+
+  <body>
+
+    <!-- Header -->
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+
+      <a class="navbar-brand" href="http://www.paleomagnetism.org">Paleomagnetism<span class="text-danger">.org</span></a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="./interpretation/index.html">Interpretation</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="./statistics/index.html">Statistics</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="./geography/index.html">Geography</a>
+          </li>
+          <li class="nav-item">
+            <span class="nav-link disabled" href="#">|</span></li>
+          <li class="nav-item">
+            <a class="nav-link" href="./references/index.html">References</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="./team/index.html">Team & Contact</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="./magic/index.html">MagIC interface</a>
+          </li>
+        </ul>
+
+        <form class="form-inline my-2 my-lg-0">
+          <a href="./library/index.html" class="btn btn-sm btn-primary my-2 my-sm-0"><i class="fas fa-book-open"></i> <b>Data Library</b></a>
+        </form>
+
+      </div>
+
+    </nav>
+
+    <!-- Main body -->
+    <div class="container">
+
+      <!-- Container for user notifications -->
+      <div id="notification-container"></div>
+
+        <div class="alert alert-light" role="alert">
+          <div class="container">
+            <div class="row justify-content-md-center">
+              <div class="col col-lg-3" style="text-align: center;">
+                <img src="./resources/images/pmag-logo.png">
+              </div>
+              <div class="col col-lg-9">
+                <h5> Paleomagnetism.org 2.0 - Homepage </h5>
+                <p><b>Welcome to Paleomagnetism.org 2.0</b> - In this application we emphasize on the clear distinction between the <i>interpretation</i> and <i>analysis</i> of magnetic components. Inside the interpretation portal metadata is collected at the specimen level and multiple specimens can be combined to form a single <b> collection</b>. This collection is a permanent data object that can be published through our <a href="./library/index.html">Data Library</a> and used as the input for the other <i>statistics</i> and <i>geography</i> portals. 
+                <p><small><i class="far fa-heart"></i> The deprecated version of Paleomagnetism.org version 1.0.0 can be found <a href="http://paleomagnetism.org">here</a>. </small>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <hr>
+        <div class="card-deck">
+          <div class="card">
+            <img class="card-img-top" src="./resources/images/banner.jpg" alt="Card image cap">
+            <div class="card-body">
+              <h5 class="card-title">Interpretation Portal</h5>
+              <p class="card-text">The interpretation portal accepts demagnetization data from many laboratory formats. This is the portal where data is interpreted and specimen <b>collections</b> are created.</p>
+            </div>
+            <div class="card-footer text-center">
+              <span class="text-muted"><a href="./interpretation/index.html"><i class="fas fa-globe-americas" aria-hidden="true"></i> Interpretation Portal</a></span>
+            </div>
+          </div>
+          <div class="card">
+            <img class="card-img-top" src="./resources/images/banner2.jpg" alt="Card image cap">
+            <div class="card-body">
+              <h5 class="card-title">Statistics Portal</h5>
+              <p class="card-text">The statistics portal reads data from a <b>collection</b> that was created using Paleomagnetism.org 2.0. This portal has tools for the statistical analysis of paleomagnetic data.</p>
+            </div>
+            <div class="card-footer text-center">
+              <span class="text-muted"><a href="./statistics/index.html"><i class="fas fa-globe-africa"></i> Statistics Portal</a></span>
+            </div>
+          </div>
+          <div class="card">
+            <img class="card-img-top" src="./resources/images/banner3.jpg" alt="Card image cap">
+            <div class="card-body">
+              <h5 class="card-title">Geography Portal</h5>
+              <p class="card-text">The geography portal reads data from a <b>collection</b> that was created using Paleomagnetism.org 2.0. It has tools for visualing collections on a map, plotting apparent polar wander paths and magnetostratigraphy.</p>
+            </div>
+            <div class="card-footer text-center">
+              <span class="text-danger"><a href="./geography/index.html"><i class="fas fa-globe-asia" aria-hidden="true"></i> Geography Portal</a></span>
+            </div>
+          </div>
+        </div>
+
+    </div>
+
+    <footer id="footer-container" class="container text-muted"></footer>
+
+    <br> 
+
+  </body>
+
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+</html>
