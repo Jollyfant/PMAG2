@@ -10,10 +10,10 @@ function getPublicationFromPID() {
    * Returns the resource that belogns to the PID
    */
 
-  // Get the publication from the URL
+  // Get the publication from the URL and strip the query indicator (?)
   var SHA256 = location.search.substring(1);
 
-  HTTPRequest("publications.json", "GET", function(PUBLICATIONS) {
+  HTTPRequest("../../resources/publications.json", "GET", function(PUBLICATIONS) {
 
     var pid = SHA256;
     var publication = PUBLICATIONS.filter(x => x.pid === pid);
@@ -229,41 +229,6 @@ function siteSelectionHandler() {
   if(getSelectedCollections().length === 0) {
     return notify("warning", "No collections selected.");
   }	
-
-}
-
-var Component = function(specimen, coordinates) {
-
-  /*
-   * Class Component
-   * Container for a single direction
-   */
-
-  this.name = specimen.name
-  this.rejected = false;
-
-  this.coreAzimuth = specimen.coreAzimuth
-  this.coreDip = specimen.coreDip
-  this.beddingStrike = specimen.beddingStrike
-  this.beddingDip = specimen.beddingDip
-
-  this.coordinates = literalToCoordinates(coordinates);
-
-}
-
-Component.prototype.inReferenceCoordinates = function(coordinates) {
-
-  /*
-   * Function Component.inReferenceCoordinates
-   * Returns a component in the requested reference coordinates
-   */
-
-  if(coordinates === undefined) {
-    coordinates = COORDINATES;
-  }
-
-  // Return a itself as a new component but in reference coordinates
-  return new Component(this, inReferenceCoordinates(coordinates, this, this.coordinates));
 
 }
 

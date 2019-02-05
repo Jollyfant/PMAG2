@@ -2090,7 +2090,7 @@ function eqAreaProjection() {
     "type": "line",
     "dashStyle": "LongDash",
     "color": HIGHCHARTS_CYAN,
-    "data": getPlaneData(new Direction(0, 90), allComponents.cutoff),
+    "data": getConfidenceEllipse(allComponents.cutoff).map(prepareDirectionData),
     "enableMouseTracking": false,
     "marker": {
       "enabled": false

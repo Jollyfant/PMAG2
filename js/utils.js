@@ -1175,6 +1175,11 @@ function doCutoff(directions) {
 
 function toComponent(component) {
 
+  /*
+   * Function toComponent
+   * Converts a literal component to a class component
+   */
+
   return new Component(component, component.coordinates);
 
 }
