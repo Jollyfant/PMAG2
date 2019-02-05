@@ -406,9 +406,9 @@ function notify(type, text) {
    * Sends notification to the user
    */
 
-  // Audio files
-  const warning = new Audio("sounds/error.mp3");
-  const notification = new Audio("sounds/notification.mp3");
+  // Load the audio files
+  const warning = new Audio("../resources/sounds/error.mp3");
+  const notification = new Audio("../resources/sounds/notification.mp3");
 
   // Jump to the top
   if(type !== "info") {

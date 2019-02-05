@@ -64,7 +64,6 @@
         </ul>
 
         <form class="form-inline my-2 my-lg-0">
-          <!--<input id="search-bar" class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">-->
           <a href="../library/index.html" class="btn btn-sm btn-primary my-2 my-sm-0"><i class="fas fa-book-open"></i> <b>Data Library</b></a>
         </form>
 
@@ -74,6 +73,8 @@
 
     <!-- Main container -->
     <div class="container">
+
+      <div id="notification-container"></div>
 
       <div class="row">
         
@@ -121,7 +122,12 @@ function loadDigitalObjects() {
    */
 
   // Load the information from a JSON
-  HTTPRequest("publications.json", "GET", function(publications) {
+  HTTPRequest("../resources/publications.json", "GET", function(publications) {
+
+    // Problem getting the publications
+    if(publications === null) {
+      return notify("danger", "Could not load publication list.");
+    }
 
     var rows = publications.map(function(x) {
       return [

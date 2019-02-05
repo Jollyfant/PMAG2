@@ -2,6 +2,10 @@ body {
   padding-top: 5rem;
 }
 
+p {
+  text-align: justify;
+}
+
 #color-picker {
   text-align: center;
   max-width: 220px;
