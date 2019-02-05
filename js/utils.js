@@ -3,9 +3,6 @@ const __VERSION__ = "2.0.0";
 const RADIANS = Math.PI / 180;
 const PROJECTION_TYPE = "AREA";
 
-const warning = new Audio("sounds/error.mp3");
-const notification = new Audio("sounds/notification.mp3");
-
 // Color definitions
 const HIGHCHARTS_BLUE = "#7CB5EC";
 const HIGHCHARTS_BLACK = "#434348";
@@ -409,6 +406,10 @@ function notify(type, text) {
    * Sends notification to the user
    */
 
+  // Audio files
+  const warning = new Audio("sounds/error.mp3");
+  const notification = new Audio("sounds/notification.mp3");
+
   // Jump to the top
   if(type !== "info") {
     window.scrollTo(0, 0);
@@ -514,10 +515,10 @@ function downloadURIComponent(name, string) {
 
 }
 
-function downloadAsGeoJSON(filename, json) {
+function downloadAsJSON(filename, json) {
 
   /*
-   * Function downloadAsGeoJSON
+   * Function downloadAsJSON
    * Downloads a particular GeoJSON object  as a BLOB
    */
 
@@ -606,7 +607,7 @@ function HTTPRequest(url, type, callback) {
 
   }
 
-  // Ingore errors
+  // Ingore HTTP errors
   xhr.onerror = function(error) {
     callback(null);
   }
@@ -781,7 +782,8 @@ function addData(files) {
 
        specimen.interpretations.forEach(function(interpretation) {
 
-         // Skip components that are great circles: these can be fitted in the interpretation portal
+         // Skip components that are great circles!
+         // These can be fitted in the interpretation portal
          if(interpretation.type === "TAU3") {
            return;
          }
@@ -804,6 +806,45 @@ function addData(files) {
 
 }
 
+function exportPmag() {
+
+  /*
+   * Function exportPmag
+   * Exports a list of collections as a .pmag database file
+   */
+
+  var payload = {
+    "collections": collections,
+    "version": __VERSION__,
+    "created": new Date().toISOString()
+  }
+
+  // Encode the JSON and download to file
+  downloadAsJSON("database.pmag", payload);
+
+}
+
+function importPMAG2(json) {
+
+  /*
+   * Function importPMAG2
+   * Imports paleomagnetism database from the PMAG 2.0.0 format
+   */
+
+  json.collections.forEach(function(collection) {
+
+    // Convert all literal coordinates to a class instance
+    collection.components = collection.components.map(function(component) {
+      return new Component(component, component.coordinates);
+    });
+
+    // Add to the application
+    collections.push(collection);
+
+  });
+
+}
+
 function importPmag(file) {
 
   /*
@@ -812,6 +853,11 @@ function importPmag(file) {
    */
 
   var json = JSON.parse(file.data);
+
+  // Parse Paleomagnetism.org 2.0.0 files
+  if(Number(json.version.split(".").shift()) === 2) {
+    return importPMAG2(json);
+  }
 
   json.data.forEach(function(site) {
 
@@ -866,18 +912,22 @@ function importPmag(file) {
 
 (function(Highcharts) {
 
+  /*
+   * Highcharts closure
+   * Modifies some Highcharts settings
+   */
+
   // Highcharts patching
   Highcharts.seriesTypes.line.prototype.requireSorting = false;
+
+  // SVG combined exporting
   Highcharts.exportCharts = function(charts, options) {
-  
     options = Highcharts.merge(Highcharts.getOptions().exporting, options);
-  
     Highcharts.getSVG(charts, options, function(svg) { 
       Highcharts.downloadSVGLocal(svg, options, function() { 
         notify("danger", "Failured to export figure.");
       });
     });
-  
   }
 
   // Add CSV export button
@@ -1014,9 +1064,14 @@ function importPmag(file) {
 
 function exportChartsWrapper(id, charts, type) {
 
-  Highcharts.exportCharts({id, charts}, {"type": getMime(type) });
+  /*
+   * Function exportChartsWrapper
+   * Wrapping function for calling Highcharts exporting
+   */
+
+  Highcharts.exportCharts({id, charts}, {"type": getMime(type)});
 
 }
 
-// Add the footer to every page
+// Add the footer to every page that includes the utils
 addFooter();

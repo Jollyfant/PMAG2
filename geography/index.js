@@ -494,10 +494,10 @@ function generateColorPalette() {
 
 }
 
-function downloadAsGeoJSON() {
+function downloadAsJSON() {
 
   /*
-   * Function downloadAsGeoJSON
+   * Function downloadAsJSON
    * Opens download for station metata in KML format
    */
 
