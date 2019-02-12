@@ -393,6 +393,7 @@ function handleLocationSave(event) {
     specimen.age = age;
     specimen.ageMin = ageMin;
     specimen.ageMax = ageMax;
+    specimen.sample = sample;
 
   }
 
@@ -409,7 +410,6 @@ function handleLocationSave(event) {
 
   var specimen = getSelectedSpecimen();
 
-  // Lithology is a semantic vocabulary
   var lithology = document.getElementById("specimen-lithology-input").value;
   if(lithology === "null") {
     lithology = null;
@@ -421,6 +421,8 @@ function handleLocationSave(event) {
   var ageMin = nullOrNumber(document.getElementById("age-min-input").value);
   var ageMax = nullOrNumber(document.getElementById("age-max-input").value);
   var age = nullOrNumber(document.getElementById("age-input").value);
+
+  var sample = document.getElementById("specimen-sample-input").value;
 
   // If apply all has been checked we apply to all specimens
   if(document.getElementById("location-apply-all").checked) {
@@ -1195,7 +1197,7 @@ function modalOpenHandler() {
   }
 
   document.getElementById("specimen-name-input").value = specimen.name;
-  document.getElementById("specimen-sample-input").value = specimen.name;
+  document.getElementById("specimen-sample-input").value = specimen.sample;
 
   // Set current specimen location
   if(specimen.latitude !== null) {
