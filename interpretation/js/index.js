@@ -16,6 +16,9 @@ function registerEventHandlers() {
     });
   });
 
+  // Initialize controlled vocab
+  addLithologyOptions();
+
 }
 
 var Measurement = function(step, coordinates, error) {
@@ -582,6 +585,30 @@ function removeOptions(selectbox) {
 
   Array.from(selectbox.options).forEach(function(x) {
     selectbox.remove(x);
+  });
+
+}
+
+function addLithologyOptions() {
+
+  /*
+   * Function addLithologyOptions
+   * Loads lithologies from MagIC controlled vocabularies
+   */
+
+  HTTPRequest("./db/lithologies.json", "GET", function(lithologies) {
+
+    lithologies.forEach(function(x) {
+
+      var option = document.createElement("option");
+
+      option.text = x.item;
+      option.value = x.item;
+
+      document.getElementById("specimen-lithology-input").add(option);
+
+    });
+
   });
 
 }
@@ -1166,6 +1193,9 @@ function modalOpenHandler() {
   if(leafletMarker && specimen.latitude !== null && specimen.longitude !== null) {
     leafletMarker.setLatLng(new L.LatLng(specimen.latitude, specimen.longitude));
   }
+
+  document.getElementById("specimen-name-input").value = specimen.name;
+  document.getElementById("specimen-sample-input").value = specimen.name;
 
   // Set current specimen location
   if(specimen.latitude !== null) {
