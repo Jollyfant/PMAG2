@@ -1,33 +1,13 @@
 [{
-  "author": "Mathijs Koymans",
-  "filename": "SivasBasin.dir",
-  "type": "collection",
-  "institution": "Koninklijk Nederlands Metereologisch Instituut",
-  "description": "Sivas Basin site KO",
-  "pid": "b66030bc390dff755fc1ba71040b7e37c375149ea7785b653bc4ee30a3ed5faf",
-  "created": "2018-10-18T19:49:25.000Z"
-}, {
-  "author": "Felix Fixit",
-  "type": "collection",
-  "filename": "SivasBasin.dir",
-  "institution": "Koninklijk Nederlands Metereologisch Instituut",
-  "description": "Sivas Basin site KO FIXED!",
-  "pid": "c91632d50fef680df629170ae7ce347698f44ef50e03d09fa2dd001061a8d4a1",
-  "created": "2018-10-18T19:49:25.000Z"
-}, {
-  "author": "Felix Fixit",
-  "type": "collection",
-  "filename": "SivasBasin.dir",
-  "institution": "Koninklijk Nederlands Metereologisch Instituut",
-  "description": "Sivas Basin site Fokrie!!!!",
-  "pid": "5136409877ba639d1fd6e06efed120b454ef85f29c238ed879a74d1e42f6bd89",
-  "created": "2018-10-18T19:49:25.000Z"
-}, {
   "author": "Felix Fixit 2",
   "type": "collection",
   "filename": "SivasBasin.dir",
   "institution": "Koninklijk Nederlands Metereologisch Instituut",
   "description": "Sivas Basin site Fokrie Real!!!!",
   "pid": "ed855a6c28c62a3bbb47beb112faebe0447be0c2e40795322be29f48413902e7",
-  "created": "2018-10-18T19:49:25.000Z"
+  "created": "2018-10-18T19:49:25.000Z",
+  "location": {
+    "latitude": 50,
+    "longitude": 50
+  }
 }]

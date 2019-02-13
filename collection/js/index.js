@@ -73,7 +73,7 @@ function loadDigitalObjectMetadata(pid, callback) {
    * Get the parent metadata object that describes this collection
    */
 
-  HTTPRequest("./publications.json", "GET", function(json) {
+  HTTPRequest("../resources/publications.json", "GET", function(json) {
     callback(json.filter(x => pid === x.pid));
   });
 
@@ -86,7 +86,7 @@ function resolvePID(pid) {
    * Attempts to make a HTTP request and resolve a persistent identifier
    */
 
-  HTTPRequest("publications/" + pid + ".pid", "GET", formatPublicationTable);
+  HTTPRequest("../resources/publications/" + pid + ".pid", "GET", formatPublicationTable);
 
 }
 

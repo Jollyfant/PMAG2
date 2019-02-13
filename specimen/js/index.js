@@ -222,7 +222,7 @@ function resolvePID(pids) {
 
   var [pid, sample] = pids.split(".");
 
-  HTTPRequest("publications/" + pid + ".pid", "GET", function(json) {
+  HTTPRequest("../resources/publications/" + pid + ".pid", "GET", function(json) {
 
     return formatSpecimenTable(pids, json.specimens[Number(sample)]);
 
