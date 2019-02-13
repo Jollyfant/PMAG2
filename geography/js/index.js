@@ -1,6 +1,7 @@
 var collections = new Array();
 var eulerData = new Object();
 var KMLLayers = new Array();
+var APWPs = new Object();
 var mapMakers = new Array();
 var openedCollection;
 
@@ -286,6 +287,21 @@ function registerEventHandlers() {
   // Enable the information popovers
   $(".example-popover").popover({
     "container": "body"
+  });
+
+  addAPWPs();
+
+}
+
+function addAPWPs() {
+
+  /*
+   * Function addAPWPs
+   * Adds the APWP from a json file
+   */
+
+  HTTPRequest("db/apwp.json", "GET", function(data) {
+    APWPs = data;
   });
 
 }

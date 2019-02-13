@@ -8,6 +8,7 @@ function registerEventHandlers() {
   document.getElementById("specimen-select").addEventListener("change", resetSpecimenHandler);
   document.getElementById("table-container").addEventListener("click", handleTableClick);
   document.getElementById("save-location").addEventListener("click", handleLocationSave);
+  document.getElementById("specimen-age-select").addEventListener("change", handleAgeSelection);
 
   // Radio class listeners
   Array.from(document.getElementsByClassName("demagnetization-type-radio")).forEach(function(x) {
