@@ -612,7 +612,7 @@ function HTTPRequest(url, type, callback) {
     console.debug(type + " HTTP Request to " + url + " returned with status code " + this.status);
 
     // Ignore HTTP errors
-    if(this.status !== HTTP_OK) {
+    if(this.status !== HTTP_OK && this.status !== 0) {
       return callback(null);
     }
 
