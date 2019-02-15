@@ -94,7 +94,7 @@ function exportMeanJSON() {
 
   });
 
-  downloadAsGeoJSON("collection-means.json", statisticsRows);
+  downloadAsJSON("collection-means.json", statisticsRows);
 
 }
 

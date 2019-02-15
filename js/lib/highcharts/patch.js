@@ -149,3 +149,15 @@
   }
 
 })(Highcharts);
+
+
+function exportChartsWrapper(id, charts, type) {
+
+  /*
+   * Function exportChartsWrapper
+   * Wrapping function for calling Highcharts exporting
+   */
+
+  Highcharts.exportCharts({id, charts}, {"type": getMime(type)});
+
+}

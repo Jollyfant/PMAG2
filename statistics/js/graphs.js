@@ -520,7 +520,7 @@ function plotUnfoldedData() {
   eqAreaChart(CHART_CONTAINER, plotData);
 
   // Show the modal
-  $("#map-modal").modal("show");
+  $("#map-modal-2").modal("show");
 
 }
 
