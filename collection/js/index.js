@@ -66,15 +66,15 @@ function mapTabFocusHandler() {
 
 }
 
-function loadDigitalObjectMetadata(pid, callback) {
+function loadDigitalObjectMetadata(callback) {
 
   /*
    * Fuction loadDigitalObjectMetadata
    * Get the parent metadata object that describes this collection
    */
 
-  HTTPRequest("../resources/publications.json", "GET", function(json) {
-    callback(json.filter(x => pid === x.pid));
+  HTTPRequest("../resources/publications/" + window.location.search.slice(1).split(".")[0] + ".pid", "GET", function(json) {
+    callback(json);
   });
 
 }
@@ -86,7 +86,11 @@ function resolvePID(pid) {
    * Attempts to make a HTTP request and resolve a persistent identifier
    */
 
-  HTTPRequest("../resources/publications/" + pid + ".pid", "GET", formatPublicationTable);
+  var [publication, collection] = pid.split(".");
+
+  HTTPRequest("../resources/publications/" + publication + ".pid", "GET", function(json) {
+    formatPublicationTable(json.collections[Number(collection)]);
+  });
 
 }
 
@@ -116,11 +120,8 @@ function metadataContent(json) {
    * Fills upper table with metadata about the collection
    */
 
-  // First element
-  json = json.pop();
-
   return new Array(
-    "<caption>Metadata associated with this collection.</caption>",
+    "<caption>Publication associated with this collection.</caption>",
     "<thead>",
     "  <tr>",
     "    <th>Author</th>",
@@ -158,18 +159,21 @@ function formatPublicationTable(collection) {
    */
 
   // Initialize the leaflet map
-  addMap(collection.specimens);
+  addMap(collection.data.specimens);
 
   // Load the metadata for this collection
-  loadDigitalObjectMetadata(collection.pid, function(json) {
+  loadDigitalObjectMetadata(function(json) {
     document.getElementById("card-table").innerHTML = metadataContent(json);
   });
 
-  document.getElementById("fork-link").innerHTML = createForkLink(collection.pid);
-  document.getElementById("pid-box").innerHTML = collection.pid;
+  var pid = window.location.search.slice(1);
+
+  document.getElementById("fork-link").innerHTML = createForkLink(pid);
+  document.getElementById("pid-box").innerHTML = pid;
+  document.getElementById("back-href").href = "../publication/index.html" + window.location.search.split(".")[0];
 
   // Add a row for each specimen
-  var rows = collection.specimens.map(formatSampleRows);
+  var rows = collection.data.specimens.map(formatSampleRows);
 
   document.getElementById("publication-table").innerHTML = new Array(
     "<head>",

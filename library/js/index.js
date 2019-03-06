@@ -46,7 +46,7 @@ function addCollectionsToTable(publications) {
       "  <td>" + x.author + "</td>",
       "  <td>" + x.institution + "</td>",
       "  <td>" + x.description + "</td>",
-      "  <td><code><a href='../collection/index.html?" + x.pid + "'>" + x.pid.slice(0, 16) + "…</a></code></td>",
+      "  <td><code><a href='../publication/index.html?" + x.pid + "'>" + x.pid.slice(0, 16) + "…</a></code></td>",
       "  <td>" + new Date(x.created).toISOString().slice(0, 10) + "</td>",
       "</tr>"
     ].join("\n");
@@ -59,7 +59,7 @@ function addCollectionsToTable(publications) {
     "    <th>Author</th>",
     "    <th>Institution</th>",
     "    <th>Description</th>",
-    "    <th>Persistent Identifier (PID)</th>",
+    "    <th>Persistent Identifier</th>",
     "    <th>Created</th>",
     "  </tr>",
     "</head>",
@@ -107,88 +107,28 @@ function addCollectionsToMap(publications) {
 
   function expandPublicationMarker() {
  
-    references.forEach(map.removeLayer, map);
+    map.removeLayer(references);
 
     var publication = publications[this.options.index];
-    var hulls = new Array();
 
-    // Request specimens within this publication
-    HTTPRequest("../resources/publications/" + publication.pid + ".pid", "GET", function(data) {
+/*
+    const TRANSITION_DELAY_MS = 250;
 
-      references = data.specimens.map(function(specimen) {
-        return new L.Marker(L.latLng(specimen.location.lat, specimen.location.lng), {"icon": greenIcon}).addTo(map);
-      });
+    map.invalidateSize();
 
-      const TRANSITION_DELAY_MS = 250;
+    setTimeout(function() {
+      map.fitBounds(references.getBounds())
+    }, TRANSITION_DELAY_MS);
+*/
 
-      map.invalidateSize();
-
-      setTimeout(function() {
-        map.fitBounds(new L.featureGroup(references).getBounds());
-      }, TRANSITION_DELAY_MS);
-
-      new L.polygon(convexHull(references), {color: HIGHCHARTS_GREEN}).addTo(map);
-
-    });
+    references = new L.polygon(publication.convexHull.map(x => new L.LatLng(x.lat, x.lng)), {color: HIGHCHARTS_GREEN}).addTo(map);
 
   }
 
   // Add all publications
   publications.forEach(function(publication, index) {
-    new L.Marker(L.latLng(publication.location.latitude, publication.location.longitude), {"index": index}).on("click", expandPublicationMarker).addTo(map);
+    new L.Marker(L.latLng(publication.location), {"index": index}).on("mouseover", expandPublicationMarker).addTo(map);
   });
-
-}
-
-function convexHull(markers) {
-
-  /*
-   * Function convexHull
-   * Returns the convex hull of a set of Leaflet markers
-   * https://en.wikibooks.org/wiki/Algorithm_Implementation/Geometry/Convex_hull/Monotone_chain#JavaScript
-   */
-
-  function cross(a, b, o) {
-
-    /*
-     * Function convexHull:cross
-     * Cross product
-     */
-
-    return (a.lat - o.lat) * (b.lng - o.lng) - (a.lng - o.lng) * (b.lat - o.lat)
-
-  }
-
-  // Extract latitude, longitudes from the markers
-  var points = markers.map(x => x.getLatLng());
-
-  // Sort by latitude, longitude
-  points.sort(function(a, b) {
-    return a.lat - b.lat || a.lng - b.lng;
-  });
-
-  // Calculate the lower bounds
-  var lower = new Array();
-  for(var i = 0; i < points.length; i++) {
-    while(lower.length >= 2 && cross(lower[lower.length - 2], lower[lower.length - 1], points[i]) <= 0) {
-       lower.pop();
-    }
-    lower.push(points[i]);
-  }
-
-  // Calculate the upper bounds
-  var upper = new Array();
-  for(var i = points.length - 1; i >= 0; i--) {
-    while(upper.length >= 2 && cross(upper[upper.length - 2], upper[upper.length - 1], points[i]) <= 0) {
-       upper.pop();
-    }
-    upper.push(points[i]);
-  }
-
-  upper.pop();
-  lower.pop();
-
-  return lower.concat(upper).map(x => new L.latLng(x.lat, x.lng));
 
 }
 
@@ -201,4 +141,23 @@ function __init__() {
 
 }
 
+document.getElementById("pid-lookup").addEventListener("blur", function() {
+
+  var value = document.getElementById("pid-lookup").value;
+  var [publication, collection, specimen] = value.split(".");
+
+  // Confirm identifier before resolution
+  if(publication !== "" && publication.length === 64) {
+    if(collection !== undefined) {
+      if(specimen !== undefined) {
+        return window.location = "../specimen/index.html?" + value;
+      }
+      return window.location = "../collection/index.html?" + value;
+    }
+    return window.location = "../publication/index.html?" + value;
+  }
+
+  return notify("danger", "The submitted identifier is not valid and cannot be resolved.");
+
+});
 __init__();

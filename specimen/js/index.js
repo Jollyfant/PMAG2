@@ -1,4 +1,3 @@
-
 var map;
 var markerGroup = new Array();
 
@@ -153,7 +152,7 @@ function formatSpecimenTable(pid, specimen) {
 
   document.getElementById("fork-link").innerHTML = createForkLink(pid);
   document.getElementById("card-table").innerHTML = updateCardTable(specimen);
-  document.getElementById("back-link").innerHTML = "<i class='fas fa-backward text-secondary'></i>&nbsp; <a href='../collection/index.html?" + pid.split(".").shift() + "'>Return to Collection</a>"
+  document.getElementById("back-link").innerHTML = "<i class='fas fa-backward text-secondary'></i>&nbsp; <a href='../collection/index.html?" + pid.split(".").slice(0,2).join(".") + "'>Return to Collection</a>"
 
   document.getElementById("pid-box").innerHTML = pid;
 
@@ -220,11 +219,11 @@ function resolvePID(pids) {
    * Resolves the persistent identifier
    */
 
-  var [pid, sample] = pids.split(".");
+  var [pid, collection, sample] = pids.split(".");
 
   HTTPRequest("../resources/publications/" + pid + ".pid", "GET", function(json) {
 
-    return formatSpecimenTable(pids, json.specimens[Number(sample)]);
+    return formatSpecimenTable(pids, json.collections[Number(collection)].data.specimens[Number(sample)]);
 
   });
 

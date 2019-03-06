@@ -1,13 +1,45 @@
-[{
-  "author": "Felix Fixit 2",
-  "type": "collection",
-  "filename": "SivasBasin.dir",
-  "institution": "Koninklijk Nederlands Metereologisch Instituut",
-  "description": "Sivas Basin site Fokrie Real!!!!",
-  "pid": "ed855a6c28c62a3bbb47beb112faebe0447be0c2e40795322be29f48413902e7",
-  "created": "2018-10-18T19:49:25.000Z",
-  "location": {
-    "latitude": 50,
-    "longitude": 50
-  }
-}]
+[
+    {
+        "author": "Mathijs Koymans",
+        "created": "2019-03-06T15:42:42.103Z",
+        "institution": "KNMI",
+        "description": "Some description",
+        "collections": 3,
+        "specimens": 75,
+        "pid": "f0ca63fcb8c19ff4cd8cbd8414d96221f66cd46de672286681007696d96d0458",
+        "location": {
+            "lat": 39.450325812135816,
+            "lng": 33.141865408990405
+        },
+        "convexHull": [
+            {
+                "lng": 33.591,
+                "lat": 38.376
+            },
+            {
+                "lng": 31.108,
+                "lat": 38.565
+            },
+            {
+                "lng": 31.558,
+                "lat": 39.91
+            },
+            {
+                "lng": 33.745,
+                "lat": 40.388
+            },
+            {
+                "lng": 34.634,
+                "lat": 40.422
+            },
+            {
+                "lng": 34.656,
+                "lat": 39.977
+            },
+            {
+                "lng": 34.228,
+                "lat": 39.13
+            }
+        ]
+    }
+]

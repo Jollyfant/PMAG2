@@ -11,22 +11,18 @@ function getPublicationFromPID() {
    */
 
   // Get the publication from the URL and strip the query indicator (?)
-  var SHA256 = location.search.substring(1);
+  var pid = location.search.substring(1); 
 
-  HTTPRequest("../../resources/publications.json", "GET", function(PUBLICATIONS) {
+  // Request the persistent resource from disk
+  HTTPRequest("../resources/publications/" + pid + ".pid", "GET", function(json) {
 
-    var pid = SHA256;
-    var publication = PUBLICATIONS.filter(x => x.pid === pid);
-
-    if(!publication.length) {
+    if(json === null) {
       return notify("danger", "Data from this persistent identifier could not be found.");
     }
 
-    // Request the persistent resource from disk
-    HTTPRequest("./publications/" + pid + ".pid", "GET", function(json) {
-      addData([{"data": json, "name": publication[0].filename}]);
-      __unlock__();
-    });
+    json.collections.forEach(addData);
+
+    __unlock__();
 
   });
 
@@ -95,6 +91,9 @@ function __unlock__() {
    * Function __unlock__
    * Unlocks the application for usage
    */
+
+  // Set the default selector to NULL
+  document.getElementById("polarity-selection").value = "";
 
   if(collections.length) {
     notify("success", "Welcome back! Succesfully loaded <b>" + collections.length + "</b> collection(s).");
@@ -191,9 +190,6 @@ function registerEventHandlers() {
 
   // The keyboard handler
   document.addEventListener("keydown", keyboardHandler);
-
-  // Set the default selector to NULL
-  document.getElementById("polarity-selection").value = "";
 
 }
 
