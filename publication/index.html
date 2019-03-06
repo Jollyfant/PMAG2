@@ -76,23 +76,21 @@
     <!-- Main container -->
     <div class="container">
 
-      <div id="notification-container"></div>
-
       <div class="row">
         <div class="col-lg-2">
           <div id="card-content" class="card" style="width: auto; max-width: 200px;">
             <div class='card-body' style="text-align: center;">
-              <i class="fas fa-cubes" style="color: grey; font-size: 72px;"></i>
+              <i class="fa fa-book" style="color: grey; font-size: 72px;"></i>
               <br>
               <br>
-              <p class='card-text text-center text-secondary'><b>Collection</b></p>
+              <p class='card-text text-center text-secondary'><b>Publication</b></p>
             </div>
           </div>
           <p>
        </div>
         
        <div class="col-md-10">
-         <div style="float: right;"><i class='fas fa-backward text-secondary'></i>&nbsp; <a id="back-href" href="">Return to Publication</a></div>
+         <div style="float: right;"><i class='fas fa-backward text-secondary'></i>&nbsp; <a href="../library/index.html">Return to Library</a></div>
          <h5> PID <small><code><span id="pid-box"></span></code></small></h5>
          <div class="table-responsive">
            <table id="card-table" class="table text-center table-sm table-striped"></table>
@@ -103,10 +101,9 @@
 
       <hr>
 
-      <h5>Specimens in Collection</h5>
+      <h5> Collections in Publication </h5>
       <div id="fork-link"></div>
-
-      <hr>
+      <br>
 
       <nav>
         <div class="nav nav-tabs nav-justified" id="nav-tab" role="tablist">
@@ -126,8 +123,7 @@
             <table class='table table-sm text-center table-striped' id="publication-table"></table>
 <!--
             <div class="text-right">
-                  <button onclick='downloadTableAsCSV()' class="btn btn-sm btn-light" id="export-foldtest-png"><i class="far fa-file"></i> Download as .csv</button>
-                  <button onclick='downloadTableAsCSV()' class="btn btn-sm btn-light" id="export-foldtest-png"><i class="far fa-file"></i> Download as .dir</button>
+                  <button onclick='downloadTableAsJSON()' class="btn btn-sm btn-light" id="export-foldtest-png"><i class="far fa-file"></i> Download as JSON</button>
             </div>
 -->
           </div>
@@ -139,7 +135,7 @@
 
           <br>
           <div id="map" class="map"></div>
-          <figcaption class="figure-caption">Map showing location of specimens.</figcaption>
+          <figcaption class="figure-caption">Map showing geographical coverage of the collections in this publication.</figcaption>
 
         </div>
 

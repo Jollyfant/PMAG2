@@ -1,4 +1,3 @@
-
 var map;
 var markerGroup = new Array();
 
@@ -99,7 +98,7 @@ function createForkLink(pid) {
    * Creates link to fork data from a PID in paleomagnetism.org
    */
 
-  return " &nbsp; <small><a href='../interpretation/index.html?" + pid +"'><b><i class='fas fa-code-branch'></i> Fork on paleomagnetism.org</b></a>"
+  return "<small><a href='../interpretation/index.html?" + pid +"'><b><i class='fas fa-code-branch'></i> Fork in Interpretation Portal</b></a>"
 
 }
 
@@ -153,7 +152,7 @@ function formatSpecimenTable(pid, specimen) {
 
   document.getElementById("fork-link").innerHTML = createForkLink(pid);
   document.getElementById("card-table").innerHTML = updateCardTable(specimen);
-  document.getElementById("back-link").innerHTML = "<i class='fas fa-backward text-secondary'></i>&nbsp; <a href='../collection/index.html?" + pid.split(".").shift() + "'>Return to Collection</a>"
+  document.getElementById("back-link").innerHTML = "<i class='fas fa-backward text-secondary'></i>&nbsp; <a href='../collection/index.html?" + pid.split(".").slice(0,2).join(".") + "'>Return to Collection</a>"
 
   document.getElementById("pid-box").innerHTML = pid;
 
@@ -220,11 +219,15 @@ function resolvePID(pids) {
    * Resolves the persistent identifier
    */
 
-  var [pid, sample] = pids.split(".");
+  var [pid, collection, sample] = pids.split(".");
 
-  HTTPRequest("publications/" + pid + ".pid", "GET", function(json) {
+  HTTPRequest("../resources/publications/" + pid + ".pid", "GET", function(json) {
 
-    return formatSpecimenTable(pids, json.specimens[Number(sample)]);
+    if(json === null || Number(collection) >= json.collections.length || Number(sample) >= json.collections[Number(collection)].data.specimens.length) {
+      return notify("danger", "A specimen with this persistent identifier could not be found.");
+    }
+
+    return formatSpecimenTable(pids, json.collections[Number(collection)].data.specimens[Number(sample)]);
 
   });
 

@@ -520,7 +520,7 @@ function plotUnfoldedData() {
   eqAreaChart(CHART_CONTAINER, plotData);
 
   // Show the modal
-  $("#map-modal").modal("show");
+  $("#map-modal-2").modal("show");
 
 }
 
@@ -2085,8 +2085,17 @@ function eqAreaProjection() {
     "marker": {
       "enabled": false
     }
+  }, {
+    "name": "Cutoff",
+    "type": "line",
+    "dashStyle": "LongDash",
+    "color": HIGHCHARTS_CYAN,
+    "data": getConfidenceEllipse(allComponents.cutoff).map(prepareDirectionData),
+    "enableMouseTracking": false,
+    "marker": {
+      "enabled": false
+    }
   }];
-
 
   if(document.getElementById("enable-deenen").checked) {
 
@@ -2345,7 +2354,7 @@ function prepareDirectionData(direction) {
 
 }
 
-function eqAreaChart(container, dataSeries, plotBands) {
+function eqAreaChart(container, dataSeries, plotBands, tickPositions) {
 
   /*
    * Function eqAreaChart
@@ -2414,7 +2423,6 @@ function eqAreaChart(container, dataSeries, plotBands) {
 
   }
 
-  const ENABLE_45_CUTOFF = true;
   const PRECISION = 2;
 
   var title;
@@ -2468,6 +2476,11 @@ function eqAreaChart(container, dataSeries, plotBands) {
 
   }
 
+  // Default tick positions
+  if(tickPositions === undefined) {
+    tickPositions = new Array(0, 45, 90);
+  }
+
   new Highcharts.chart(container, {
     "chart": {
       "polar": true,
@@ -2502,9 +2515,7 @@ function eqAreaChart(container, dataSeries, plotBands) {
       "labels": {
         "enabled": false
       },
-      "tickInterval": (ENABLE_45_CUTOFF ? 45 : 90),
-      "min": 0,
-      "max": 90,
+      "tickPositions": [0, 90]
     },
     "credits": {
       "enabled": ENABLE_CREDITS,

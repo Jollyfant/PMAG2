@@ -82,25 +82,36 @@
 
         <div class="alert alert-light" role="alert">
           <h5> Paleomagnetism.org 2 - Data Library </h5>
-          <p>Data collections that were exported from Paleomagnetism.org can be added to this library. Data sets will be published on this page and become openly available for anyone.
-          All data collections, specimens, and interpretations are assigned <b>persistent identifiers</b> (PID) that can be used to reference each digital object respectively.
+          <p>Specimen collections that were exported from Paleomagnetism.org 2 can be added to this library. Multiple collections can be grouped in to a single coherent publication. All sata sets will be published on this page and are openly available for anyone.
+          All data publications, collections, specimens, and interpretations are assigned unique <b>persistent identifiers</b> (PID) that can be used to reference each digital object respectively.
           If you want to add your data to the collective library write us an e-mail on the <a href='../team/index.html'><b>contact page</b></a>.
-          <p><b><i class='fas fa-code-branch'></i> Forking</b> copies an existing dataset from the library. This dataset can be modified and will reference the original data collection.
-                <hr>
+
+          <div class="input-group mb-3">
+            <input id="pid-lookup" class="form-control" placeholder="Quick PID Reverse Lookup">
+            <div class="input-group-append">
+              <button id="pid-lookup-button" class="btn btn-primary" type="button"><i class="fas fa-search"></i> Search</button>
+            </div>
+          </div>
+          <hr>
         </div>
        </div>
       </div>
 
-      <h5>Available Collections</h5>
+      <h5>Available Publications in Library</h5>
       <!-- Tab for table view -->
 
-        <div class="table-responsive">
-          <table class='table table-sm text-center table-striped' id="publication-table"></table>
-        </div>
+      <div class="table-responsive">
+        <table class='table table-sm text-center table-striped' id="publication-table"></table>
+      </div>
+      <hr>
+      <div id="map" class="map" style="height: 400px;"></div>
+      <figcaption class="figure-caption">Map showing geographical distribution of publications. Hover over publication marker to shows its convex hull and geographical coverage.</figcaption>
     
     </div>
 
     <footer id='footer-container' class='container text-muted'></footer>
+
+    <br>
 
   </body>
 
@@ -110,66 +121,12 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
+    <!-- Include leaflet -->
+   <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"
+     integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA=="
+     crossorigin=""></script>
+
   <script src="../js/utils.js"></script>
+  <script src="./js/index.js"></script>
 
-  <script>
-
-function loadDigitalObjects() {
-
-  /*
-   * Function loadDigitalObjects
-   * Loads all digital objects from disk
-   */
-
-  // Load the information from a JSON
-  HTTPRequest("../resources/publications.json", "GET", function(publications) {
-
-    // Problem getting the publications
-    if(publications === null) {
-      return notify("danger", "Could not load publication list.");
-    }
-
-    var rows = publications.map(function(x) {
-      return [
-        "<tr>",
-        "  <td>" + x.author + "</td>",
-        "  <td>" + x.institution + "</td>",
-        "  <td>" + x.description + "</td>",
-        "  <td><code><a href='../collection/index.html?" + x.pid + "'>" + x.pid.slice(0, 16) + "…</a></code></td>",
-        "  <td>" + new Date(x.created).toISOString().slice(0, 10) + "</td>",
-        "</tr>"
-      ].join("\n");
-    });
-
-    document.getElementById("publication-table").innerHTML = [
-      "<head>",
-      "  <tr>",
-      "    <th>Author</th>",
-      "    <th>Institution</th>",
-      "    <th>Description</th>",
-      "    <th>Persistent Identifier (PID)</th>",
-      "    <th>Created</th>",
-      "  </tr>",
-      "</head>",
-    ].concat(rows).join("\n");
-  
-  });
-
-}
-
-function __init__() {
-
-  // No search specified: show all digital objects
-  if(!window.location.search) {
-    return loadDigitalObjects();
-  }
-
-  // Attempt to resolve the persistent identifier
-  resolvePID(window.location.search.slice(1));
-
-}
-
-__init__();
-
-  </script>
 </html>

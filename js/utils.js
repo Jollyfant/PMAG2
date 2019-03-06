@@ -44,6 +44,58 @@ function getRotationMatrix(lambda, phi) {
 
 }
 
+function determineLocationType(latitudes, longitudes, levels) {
+
+  /*
+   * Function determineLocationType
+   * Attempts to logically deduce the type of this location
+   */
+
+  // Single location: it is an outcrop
+  if(new Set(latitudes).size === 1 && new Set(longitudes).size === 1) {
+    return "Outcrop";
+  }
+
+  // Multiple locations and more than single stratigraphic level: section
+  if(new Set(levels).size > 1) {
+    return "Stratigraphic Section";
+  }
+
+  // Only multiple locations: region  
+  return "Region";
+
+}
+
+function getPublicationFromPID() {
+
+  /*
+   * Function getPublicationFromPID
+   * Returns the resource that belogns to the PID
+   */
+
+  // Get the publication from the URL and strip the query indicator (?)
+  var [publication, collection] = location.search.substring(1).split(".");
+
+  // Request the persistent resource from disk
+  HTTPRequest("../resources/publications/" + publication + ".pid", "GET", function(json) {
+
+    if(json === null) {
+      return notify("danger", "Data from this persistent identifier could not be found.");
+    }
+
+    // A collection identifier was passed
+    if(collection !== undefined) {
+      json.collections = [json.collections[collection]];
+    }
+
+    json.collections.forEach(addData);
+
+    __unlock__();
+
+  });
+
+}
+
 function extractNumbers(string) {
 
   /*
@@ -406,22 +458,35 @@ function notify(type, text) {
    * Sends notification to the user
    */
 
-  // Load the audio files
-  const warning = new Audio("../resources/sounds/error.mp3");
-  const notification = new Audio("../resources/sounds/notification.mp3");
+  const SOUND_WARNING = new Audio("../resources/sounds/error.mp3");
+  const SOUND_NOTIFY = new Audio("../resources/sounds/notification.mp3");
 
-  // Jump to the top
-  if(type !== "info") {
-    window.scrollTo(0, 0);
+  function formatError(text) {
+
+    /*
+     * Function notify::formatError
+     * Formats an exception depending on the debug level
+     */
+
+    if(__DEBUG__) {
+      return "<b>" + text.message + "</b><br>" + text.stack.replace(/\n/g, "<br>");
+    } else {
+      return text.message;
+    }
+
   }
 
-  // Play sound if enabled
+  // Parse an exception
+  if(text instanceof Error) {
+    text = formatError(text);
+  }
+
   if(document.getElementById("enable-sound") && document.getElementById("enable-sound").checked) {
 
     if(type === "warning" || type === "danger") {
-      warning.play();
+      SOUND_WARNING.play();
     } else if(type === "success") {
-      notification.play();
+      SOUND_NOTIFY.play();
     }
 
   }
@@ -435,6 +500,11 @@ function notify(type, text) {
       text,
     "</div>"
   ].join("\n");
+
+  // Jump to the top
+  if(type !== "info") {
+    window.scrollTo(0, 0);
+  }
 
 }
 
@@ -547,6 +617,7 @@ function memcpy(object) {
   /*
    * Function memcpy
    * Uses a JSON (de-)serialization to create a copy of an object in memory
+   * This works for nested objects but is very slow
    */
 
   return JSON.parse(JSON.stringify(object));
@@ -593,7 +664,7 @@ function HTTPRequest(url, type, callback) {
     console.debug(type + " HTTP Request to " + url + " returned with status code " + this.status);
 
     // Ignore HTTP errors
-    if(this.status !== HTTP_OK) {
+    if(this.status !== HTTP_OK && this.status !== 0) {
       return callback(null);
     }
 
@@ -750,66 +821,62 @@ function addCollectionData(files, format) {
     case "DIR2":
       return files.forEach(addData);
     case "PMAG":
-      return files.forEach(importPmag);
+      return files.forEach(importPMAG);
     default:
       throw(new Exception("Unknown importing format requested."));
   }
 
 }
 
-function addData(files) {
+function addData(file) {
 
   /*
    * Function addData
    * Adds data from the Paleomagnetism 2.0.0 format to the application
    */
 
-  files.forEach(function(file) {
+  // Could be a string or object (when loaded from PID)
+  if(file.data instanceof Object) {
+    var json = file.data;
+  } else {
+    var json = JSON.parse(file.data);
+  }
 
-    // Could be a string or object (when loaded from PID)
-    if(file.data instanceof Object) {
-      var json = file.data;
-    } else {
-      var json = JSON.parse(file.data);
-    }
+  // Collect some metadata from the file
+  var siteName = file.name;
+  var reference = json.pid;
+  var components = new Array();
 
-    // Collect some metadata from the file
-    var siteName = file.name;
-    var reference = json.pid;
-    var components = new Array();
+  json.specimens.forEach(function(specimen) {
 
-    json.specimens.forEach(function(specimen) {
+     specimen.interpretations.forEach(function(interpretation) {
 
-       specimen.interpretations.forEach(function(interpretation) {
+       // Skip components that are great circles!
+       // These can be fitted in the interpretation portal
+       if(interpretation.type === "TAU3") {
+         return;
+       }
 
-         // Skip components that are great circles!
-         // These can be fitted in the interpretation portal
-         if(interpretation.type === "TAU3") {
-           return;
-         }
+       components.push(new Component(specimen, interpretation.specimen.coordinates));
 
-         components.push(new Component(specimen, interpretation.specimen.coordinates));
+     });
 
-       });
+  });
 
-    });
-
-    collections.push({
-      "color": null,
-      "name": siteName,
-      "reference": reference,
-      "components": components,
-      "created": new Date().toISOString()
-    });
-
+  collections.push({
+    "color": null,
+    "name": siteName,
+    "reference": reference,
+    "components": components,
+    "created": new Date().toISOString()
   });
 
 }
 
-function exportPmag() {
+function exportPMAG() {
 
   /*
-   * Function exportPmag
+   * Function exportPMAG
    * Exports a list of collections as a .pmag database file
    */
 
@@ -831,12 +898,10 @@ function importPMAG2(json) {
    * Imports paleomagnetism database from the PMAG 2.0.0 format
    */
 
-  json.collections.forEach(function(collection) {
+  json.forEach(function(collection) {
 
     // Convert all literal coordinates to a class instance
-    collection.components = collection.components.map(function(component) {
-      return new Component(component, component.coordinates);
-    });
+    collection.components = collection.components.map(toComponent);
 
     // Add to the application
     collections.push(collection);
@@ -845,10 +910,10 @@ function importPMAG2(json) {
 
 }
 
-function importPmag(file) {
+function importPMAG(file) {
 
   /*
-   * Function importPmag
+   * Function importPMAG
    * Imports deprecated Paleomagnetism.org 1.0.0 format to the application
    */
 
@@ -856,7 +921,7 @@ function importPmag(file) {
 
   // Parse Paleomagnetism.org 2.0.0 files
   if(Number(json.version.split(".").shift()) === 2) {
-    return importPMAG2(json);
+    return importPMAG2(json.collections);
   }
 
   json.data.forEach(function(site) {
@@ -910,166 +975,142 @@ function importPmag(file) {
 
 }
 
-(function(Highcharts) {
+function doCutoff(directions) {
 
   /*
-   * Highcharts closure
-   * Modifies some Highcharts settings
+   * Function doCutoff
+   * Does no, the Vandamme or 45-cutoff
    */
 
-  // Highcharts patching
-  Highcharts.seriesTypes.line.prototype.requireSorting = false;
+  // Get the cutoff type from the DOM
+  var cutoffType = document.getElementById("cutoff-selection").value || null;
 
-  // SVG combined exporting
-  Highcharts.exportCharts = function(charts, options) {
-    options = Highcharts.merge(Highcharts.getOptions().exporting, options);
-    Highcharts.getSVG(charts, options, function(svg) { 
-      Highcharts.downloadSVGLocal(svg, options, function() { 
-        notify("danger", "Failured to export figure.");
-      });
+  // Create a fake site at 0, 0: we use this for getting the VGP distribution
+  var site = new Site(0, 0);
+
+  // Create a copy in memory
+  var iterateDirections = memcpy(directions).map(toComponent);
+
+  while(true) {
+
+    var index;
+    var deltaSum = 0;
+    var cutoffValue = getCutoffAngle(cutoffType);
+
+    // Calculate the poles & mean pole from the accepted group
+    var poleDistribution = getStatisticalParameters(iterateDirections).pole;
+
+    // Go over all all poles
+    iterateDirections.forEach(function(component, i) {
+
+      // Skip directions that were previously rejected
+      if(component.rejected) {
+        return;
+      }
+
+      var pole = site.poleFrom(literalToCoordinates(component.coordinates).toVector(Direction));
+
+      // Find the angle between the mean VGP (mLon, mLat) and the particular VGP
+      var angleToMean = poleDistribution.mean.toCartesian().angle(pole.toCartesian());
+
+      // Capture the maximum angle from the mean and save its index
+      if(angleToMean > cutoffValue) {
+        cutoffValue = angleToMean;
+        index = i;
+      }
+
+      // Add to the sum of angles
+      deltaSum += Math.pow(angleToMean, 2);
+
     });
+
+    // Calculate ASD (scatter) and optimum cutoff angle (A) (Vandamme, 1994)
+    var ASD = Math.sqrt(deltaSum / (poleDistribution.N - 1));
+    var A = 1.8 * ASD + 5;
+
+    // No cutoff: accept everything
+    if(cutoffType === null) {
+      break;
+    }
+
+    // Vandamme cutoff
+    if(cutoffType === "VANDAMME" && cutoffValue < A) {
+      break;
+    }
+
+    // 45 Cutoff
+    if(cutoffType === "CUTOFF45" && cutoffValue <= getCutoffAngle("CUTOFF45")) {
+      break;
+    }
+
+    // Cutoff is decided pretty randomly
+    if(cutoffType === "KRIJGSMAN" && Math.random() < 0.25) {
+      break;
+    }
+
+    // Set this direction to rejected
+    iterateDirections[index].rejected = true;
+
   }
 
-  // Add CSV export button
-  Highcharts.getOptions().exporting.buttons.contextButton.menuItems.push({
-    "text": "Download CSV File",
-    "onclick": function() {
-      if(!this.userOptions.exporting.hasOwnProperty("getCSV")) { 
-        return notify("danger", "CSV exporting for this graph is not implemented.");
-      }
-      this.userOptions.exporting.getCSV();
-    }
-  });
-  
-  // Set global default options for all charts
-  Highcharts.setOptions({
-    "exporting": {
-      "fallbackToExportServer": false 
-    }
-  });
-
-  Highcharts.getSVG = function(figure, options, callback) {
-  
-    function fail() {
-  
-      /*
-       * Function Highcharts.getSVG::fail
-       * Callback function fired when exporting fails
-       */
-  
-      notify("danger", "Could not export charts.");
-  
-    }
-  
-    function getChartOffsets(id) {
-  
-      /*
-       * Function Highcharts.getSVG::getChartOffsets
-       * Returns the individual chart offsets in compilation figures
-       */
-  
-      switch(id) {
-        case "foldtest-geographic-container":
-        case "direction-container":
-        case "ei-bootstrap-container":
-        case "ctmd-container-x":
-        case "zijderveld-container":
-        case "declination-container":
-        case "magstrat-container-declination":
-          return {"width": 0, "top": 0}
-        case "foldtest-tectonic-container":
-        case "pole-container":
-        case "hemisphere-container":
-        case "magstrat-container-inclination":
-        case "pole-container":
-          return {"width": 600, "top": 0}
-        case "foldtest-full-container":
-        case "ei-cdf-container":
-        case "intensity-container":
-        case "inclination-container":
-          return {"width": 0, "top": 600}
-        case "ctmd-container-y":
-        case "magstrat-container-binary":
-          return {"width": 400, "top": 0}
-        case "ctmd-container-z":
-          return {"width": 800, "top": 0}
-        case "paleolatitude-container":
-          return {"width": 0, "top": 1200}
-      }
-  
-    }
-  
-    function getChartSize(id) {
-  
-      /*
-       * Function Highcharts.getSVG::getChartSize
-       * Returns the expected size for compilation figures
-       */
-  
-      switch(id) {
-        case "foldtest":
-          return {"top": 1200, "width": 1200}
-        case "coordinate-bootstrap":
-          return {"top": 400, "width": 1200}
-        case "geomagnetic-directions":
-          return {"top": 600, "width": 1200}
-        case "shallowing":
-        case "interpretation":
-          return {"top": 1200, "width": 1200}
-        case "predicted":
-          return {"top": 1800, "width": 1200}
-        case "magstrat":
-          return {"top": 800, "width": 1000}
-      }
-  
-    }
-  
-    var svgArr = new Array();
-  
-    function addSVG(svgres, id) {
-  
-      // Get the offset
-      var offset = getChartOffsets(id);
-  
-      // Offset the position of this chart in the final SVG
-      var svg = svgres.replace('<svg', '<g transform="translate(' + offset.width + ',' + offset.top + ')" ').replace('</svg>', '</g>');
-  
-      svgArr.push(svg);
-  
-    }
-  
-    var size = getChartSize(figure.id);
-    var charts = figure.charts;
-    var next;
-  
-    // Must be handled asynchronously
-    (next = function() {
-  
-      if(charts.length === 0) {
-        return callback('<svg height="' + size.top + '" width="' + size.width + '" version="1.1" xmlns="http://www.w3.org/2000/svg">' + svgArr.join('') + '</svg>');
-      }
-  
-      var chart = charts.pop();
-  
-      chart.getSVGForLocalExport(options, {}, fail, function(svg) {
-        addSVG(svg, chart.renderTo.id);
-        next();
-      });
-  
-    })();
-  
+  return {
+    "components": iterateDirections,
+    "cutoff": cutoffValue,
+    "scatter": ASD,
+    "optimum": A
   }
 
-})(Highcharts);
+}
 
-function exportChartsWrapper(id, charts, type) {
+function averageGeolocation(coords) {
 
   /*
-   * Function exportChartsWrapper
-   * Wrapping function for calling Highcharts exporting
+   * Function averageGeolocation
+   * Returns the average geolocation for a list of latitudes, longitudes
    */
 
-  Highcharts.exportCharts({id, charts}, {"type": getMime(type)});
+  if(coords.length === 1) {
+    return coords[0];
+  }
+
+  let x = 0.0;
+  let y = 0.0;
+  let z = 0.0;
+
+  for (let coord of coords) {
+    let latitude = coord.lat * Math.PI / 180;
+    let longitude = coord.lng * Math.PI / 180;
+
+    x += Math.cos(latitude) * Math.cos(longitude);
+    y += Math.cos(latitude) * Math.sin(longitude);
+    z += Math.sin(latitude);
+  }
+
+  let total = coords.length;
+
+  x = x / total;
+  y = y / total;
+  z = z / total;
+
+  let centralLongitude = Math.atan2(y, x);
+  let centralSquareRoot = Math.sqrt(x * x + y * y);
+  let centralLatitude = Math.atan2(z, centralSquareRoot);
+
+  return {
+    lat: centralLatitude * 180 / Math.PI,
+    lng: centralLongitude * 180 / Math.PI
+  };
+
+}
+
+function toComponent(component) {
+
+  /*
+   * Function toComponent
+   * Converts a literal component to a class component
+   */
+
+  return new Component(component, component.coordinates);
 
 }
 

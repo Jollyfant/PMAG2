@@ -162,11 +162,11 @@
           <!-- Specimen Scroller -->
           <div class="input-group">
             <div class="input-group-prepend">
-              <button onclick='handleSpecimenScroll(-1)' type="button" class="btn btn-primary btn-lg"><</button>
+              <button onclick='handleSpecimenScroll(-1)' type="button" class="btn btn-primary btn-lg"><i class="fas fa-arrow-circle-left"></i></button>
             </div>
             <select class="custom-select custom-select-lg" id="specimen-select"></select>
             <div class="input-group-append">
-              <button onclick='handleSpecimenScroll(1)' type="button" class="btn btn-primary btn-lg">></button>
+              <button onclick='handleSpecimenScroll(1)' type="button" class="btn btn-primary btn-lg"><i class="fas fa-arrow-circle-right"></i></button>
            </div>
           </div>
           
@@ -371,11 +371,28 @@
           </div>
           <div class="modal-body">
     
+            <div class="input-group input-group-sm">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="">Specimen</span>
+              </div>
+              <input id="specimen-name-input" class="form-control" disabled>
+              <div class="input-group-prepend">
+                <span class="input-group-text">Sample</span>
+              </div>
+              <input id="specimen-sample-input" title="Specimen belongs to a sample" class="form-control">
+            </div>
+
+            <p>
+
+            <div id="map" class="map"></div>
+
+            <p>
+
             <!-- Latitude, Longitude container -->
             <div class="form-group">
               <div class="row">
                 <div class="col">
-                  <div class="input-group mb-6">
+                  <div class="input-group input-group-sm mb-4">
                     <input id='specimen-longitude-input' type="text" class="form-control input-sm" placeholder="Longitude">
                     <div class="input-group-append">
                       <div class="input-group-text">°E</div>
@@ -383,31 +400,32 @@
                   </div>
                 </div>
                 <div class="col">
-                  <div class="input-group mb-6">
+                  <div class="input-group input-group-sm mb-4">
                   <input id='specimen-latitude-input' type="text" class="form-control input-sm" placeholder="Latitude">
                     <div class="input-group-append">
                       <div class="input-group-text">°N</div>
                     </div>
                   </div>
                 </div>
+                <div class="col">
+                  <div class="input-group input-group-sm mb-4">
+                    <div class="input-group-prepend">
+                      <div class="input-group-text">Level</div>
+                    </div>
+                    <input id="specimen-level-input" class="form-control">
+                </div>
               </div>
             </div>
-    
-            <div id="map" class="map"></div>
-            <p>
+
             <div class="input-group input-group-sm">
               <div class="input-group-prepend">
                 <span class="input-group-text" id="">Lithology</span>
               </div>
               <select id="specimen-lithology-input" class="form-control custom-select text-left">
                 <option value="null">Unknown</option>
-                <option value="volcanic">Volcanic</option>
-                <option value="sediment">Sediment</option>
+                <optgroup label="MagIC Controlled Vocabulary">
+                </optgroup>
               </select>
-              <div class="input-group-prepend">
-                <span class="input-group-text">Stratigraphic Level</span>
-              </div>
-              <input id="specimen-level-input" class="form-control">
             </div>
 
             <p>
@@ -427,19 +445,18 @@
               </div>
               <input id="age-max-input"class="form-control">
             </div>
-            <figcaption class="figure-caption text-right">Age must be given in <b>Ma</b>.</figcaption>
+          </div>
           </div>
 
           <div class="modal-footer">
             <div class="mr-auto">
-              <button id="save-location" type="button" class="btn btn-primary">Save Location</button>
+              <button id="save-location" type="button" class="btn btn-sm btn-success">Save Metadata</button>
               &nbsp;
               <div class="form-check form-check-inline">
                 <input type="checkbox" class="form-check-input" id="location-apply-all">
                 <label class="form-check-label" for="location-apply-all">Apply to all</label>
               </div>
             </div>
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           </div>
         </div>
       </div>
@@ -458,6 +475,7 @@
     <script src="../js/lib/highcharts/highcharts-more.js"></script>
     <script src="../js/lib/highcharts/exporting.js"></script>
     <script src="../js/lib/highcharts/offline-exporting.js"></script>
+    <script src="../js/lib/highcharts/patch.js"></script>
 
     <!-- Include leaflet -->
    <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"

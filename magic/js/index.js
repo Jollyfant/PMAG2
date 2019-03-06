@@ -337,8 +337,8 @@ function exportMagIC(metadata) {
     // Orientation
     "azimuth",
     "dip",
-    "bed_dip",
     "bed_dip_direction",
+    "bed_dip",
     // Geography
     "lat",
     "lon"
@@ -404,7 +404,8 @@ function exportMagIC(metadata) {
     // Age
     "age",
     "age_low",
-    "age_high"
+    "age_high",
+    "age_unit"
   );
 
   // Required fields in the MagIC 3.0 data model
@@ -495,7 +496,8 @@ function exportMagIC(metadata) {
         specimen.longitude,
         specimen.age,
         specimen.ageMin,
-        specimen.ageMax
+        specimen.ageMax,
+        "Ma"
       ].join("\t"));
 
       magicSamples.push([
@@ -507,17 +509,24 @@ function exportMagIC(metadata) {
         metadata.reference,
         specimen.coreAzimuth,
         specimen.coreDip,
+        specimen.beddingStrike + 90,
+        specimen.beddingDip,
         specimen.latitude,
         specimen.longitude
       ].join("\t"));
+
+      // Determine minimum and maximum step in correct units
+      var minimumStep = (demagnetizationType === DEMAGNETIZATION_ALTERNATING ? toTesla(specimen.steps[0].step) : toKelvin(specimen.steps[0].step));
+      var maximumStep = (demagnetizationType === DEMAGNETIZATION_ALTERNATING ? toTesla(specimen.steps[specimen.steps.length - 1].step) : toKelvin(specimen.steps[specimen.steps.length - 1].step));
 
       magicSpecimens.push([
         specimen.name,
         specimen.name,
         "g",
         demagnetizationType,
-        specimen.steps[0].step,
-        specimen.steps[specimen.steps.length - 1].step,
+        metadata.reference,
+        minimumStep,
+        maximumStep,
         getStepUnit(demagnetizationType),
         specimen.coreAzimuth,
         specimen.coreDip
@@ -623,29 +632,6 @@ function toKelvin(step) {
    */
 
   return 273 + extractNumbers(step);
-
-}
-
-
-function determineLocationType(latitudes, longitudes, levels) {
-
-  /*
-   * Function determineLocationType
-   * Attempts to logically deduce the type of this location
-   */
-
-  // Single location: it is an outcrop
-  if(new Set(latitudes).size === 1 && new Set(longitudes).size === 1) {
-    return "Outcrop";
-  }
-
-  // Multiple locations and more than single stratigraphic level: section
-  if(new Set(levels).size > 1) {
-    return "Stratigraphic Section";
-  }
-
-  // Only multiple locations: region  
-  return "Region";
 
 }
 

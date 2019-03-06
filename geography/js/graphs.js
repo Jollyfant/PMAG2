@@ -5,15 +5,22 @@ function plotExpected(container, dataSeries, site) {
    * Plots the sites or specimens on the APWP curves
    */
 
-  var title;
+  function getTitle(container) {
 
-  // Determine the chart title
-  if(container === "declination-container") {
-    title = "Predicted Declination";
-  } else if(container === "inclination-container") {
-    title = "Predicted Inclination";
-  } else if(container === "paleolatitude-container") {
-    title = "Predicted Paleolatitude";
+    /*
+     * Function plotExpected::getTitle
+     * Returns the title for the respective plot
+     */
+
+    switch(container) {
+      case "declination-container":
+        return "APWP Predicted Declination";
+      case "inclination-container":
+        return "APWP Predicted Inclination";
+      case "paleolatitude-container":
+        return "APWP Predicted Paleolatitude";
+    }
+
   }
 
   function tooltip() {
@@ -31,6 +38,9 @@ function plotExpected(container, dataSeries, site) {
     ].join("<br>");
 
   }
+
+  var title = getTitle(container);
+
 
   // Plotting options
   var PLOT_SPECIMENS = !document.getElementById("group-collection").checked;

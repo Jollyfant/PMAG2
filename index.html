@@ -33,7 +33,6 @@
 
     <!-- Header -->
     <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-
       <a class="navbar-brand" href="http://www.paleomagnetism.org">Paleomagnetism<span class="text-danger">.org</span></a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -81,7 +80,7 @@
           <div class="container">
             <div class="row justify-content-md-center">
               <div class="col col-lg-3" style="text-align: center;">
-                <img src="./resources/images/pmag-logo.png">
+                <img id="logo" src="./resources/images/pmag-logo.png">
               </div>
               <div class="col col-lg-9">
                 <h5> Paleomagnetism.org 2.0 - Homepage </h5>
@@ -139,5 +138,11 @@
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+  <script>
+    if(Math.random() < 0.05) {
+      document.getElementById("logo").src = "./resources/images/waldo.png"
+    }
+  </script>
 
 </html>
