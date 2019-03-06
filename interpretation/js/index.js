@@ -1530,29 +1530,33 @@ function getPublicationFromPID() {
    * Returns the resource that belogns to the PID
    */
 
-  // Get the publication from the URL
-  var SHA256 = location.search.substring(1);
+  // Get the publication, collection, and specimen identifier from the URL
+  var [publication, collection, specimen] = location.search.substring(1).split(".");
 
-  HTTPRequest("publications.json", "GET", function(PUBLICATIONS) {
+  if(collection === undefined) {
+    return notify("danger", "A persistent identifier related to a collection must be given.");
+  }
 
-    var [pid, sample] = SHA256.split(".");
+  HTTPRequest("../resources/publications/" + publication + ".pid", "GET", function(json) {
 
-    var publication = PUBLICATIONS.filter(x => x.pid === pid);
-
-    if(!publication.length) {
+    if(json === null) {
       return notify("danger", "Data from this persistent identifier could not be found.");
     }
 
-    // Request the persistent resource from disk
-    if(!sample) {
-      HTTPRequest("./publications/" + pid + ".pid", "GET", function(json) {
-        __unlock__(json.specimens);
-      });
-    } else {
-      HTTPRequest("./publications/" + pid + ".pid", "GET", function(json) {
-        __unlock__(new Array(json.specimens[sample]));
-      });
+    // A collection identifier was passed
+    if(collection !== undefined) {
+      json.collections = [json.collections[collection]];
     }
+
+    // Get the specimens
+    specimens = json.collections[0].data.specimens;
+
+    // A specimen identifier was passed
+    if(specimen !== undefined) {
+      specimens = [specimens[specimen]];
+    }
+
+    __unlock__(specimens);
 
   });
 
@@ -1585,7 +1589,7 @@ function downloadInterpretations() {
 
   // Create the payload with some additional metadata
   var payload = encodeURIComponent(JSON.stringify({
-    "pid": forge_sha256(JSON.stringify(samples)),
+    "hash": forge_sha256(JSON.stringify(samples)),
     "specimens": specimens,
     "version": __VERSION__,
     "created": new Date().toISOString()
@@ -2095,7 +2099,7 @@ function exportApplicationSave() {
 
   // Create the payload with some additional metadata
   var payload = encodeURIComponent(JSON.stringify({
-    "pid": forge_sha256(JSON.stringify(specimens)),
+    "hash": forge_sha256(JSON.stringify(specimens)),
     "specimens": specimens,
     "version": __VERSION__,
     "created": new Date().toISOString()

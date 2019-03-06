@@ -130,7 +130,11 @@ function locations(collections) {
   var locationsA = new Array();
   for(var i = 0; i < collections.length; i++) {
     for(var j = 0; j < collections[i].data.specimens.length; j++) {
-      locationsA.push(collections[i].data.specimens[j].location);
+      locationsA.push({
+        "lat": collections[i].data.specimens[j].latitude,
+        "lng": collections[i].data.specimens[j].longitude,
+        "level": collections[i].data.specimens[j].level
+      });
     }
   }
 
@@ -146,6 +150,32 @@ function sumSpecimens(collections) {
   }
 
   return sum;
+
+}
+
+function determineLocationType(latitudes, longitudes, levels) {
+
+  /*
+   * Function determineLocationType
+   * Attempts to logically deduce the type of this location
+   */
+
+  let latitudes = locations.map(x => x.lat);
+  let longitudes = locations.map(x => x.lng);
+  let levels = locations.map(x => x.level);
+
+  // Single location: it is an outcrop
+  if(new Set(latitudes).size === 1 && new Set(longitudes).size === 1) {
+    return "Outcrop";
+  }
+
+  // Multiple locations and more than single stratigraphic level: section
+  if(new Set(levels).size > 1) {
+    return "Stratigraphic Section";
+  }
+
+  // Only multiple locations: region  
+  return "Region";
 
 }
 
@@ -179,9 +209,9 @@ function averageGeolocation(coords) {
   let centralLatitude = Math.atan2(z, centralSquareRoot);
 
   return {
-    lat: centralLatitude * 180 / Math.PI,
-    lng: centralLongitude * 180 / Math.PI
-  };
+    "lat": centralLatitude * 180 / Math.PI,
+    "lng": centralLongitude * 180 / Math.PI
+  }
 
 }
 
@@ -195,15 +225,19 @@ if(require.main === module) {
     "author": "Mathijs Koymans",
     "institution": "KNMI",
     "description": "Some description",
+    "doi": null,
+    "name": "My First Pub!",
     "collections": collections.map(createCollection)
   }
+
+  metadata.nSpecimens = sumSpecimens(metadata.collections);
+  metadata.nCollections = metadata.collections.length;
+  metadata.location = averageGeolocation(locations(metadata.collections));
+  metadata.convexHull = convexHull(locations(metadata.collections));
   
-  // Assign a persitent identifier!
+  // Assign a persitent identifier before setting the created date!
   metadata.pid = generatePID(metadata);
   metadata.created = new Date().toISOString();
-  metadata.specimens = sumSpecimens(metadata.collections);
-  metadata.location = averageGeolocation(locations(metadata.collections)),
-  metadata.convexHull = convexHull(locations(metadata.collections)),
 
   fs.writeFileSync(metadata.pid + ".pid", JSON.stringify(metadata));
 

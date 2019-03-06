@@ -44,6 +44,58 @@ function getRotationMatrix(lambda, phi) {
 
 }
 
+function determineLocationType(latitudes, longitudes, levels) {
+
+  /*
+   * Function determineLocationType
+   * Attempts to logically deduce the type of this location
+   */
+
+  // Single location: it is an outcrop
+  if(new Set(latitudes).size === 1 && new Set(longitudes).size === 1) {
+    return "Outcrop";
+  }
+
+  // Multiple locations and more than single stratigraphic level: section
+  if(new Set(levels).size > 1) {
+    return "Stratigraphic Section";
+  }
+
+  // Only multiple locations: region  
+  return "Region";
+
+}
+
+function getPublicationFromPID() {
+
+  /*
+   * Function getPublicationFromPID
+   * Returns the resource that belogns to the PID
+   */
+
+  // Get the publication from the URL and strip the query indicator (?)
+  var [publication, collection] = location.search.substring(1).split(".");
+
+  // Request the persistent resource from disk
+  HTTPRequest("../resources/publications/" + publication + ".pid", "GET", function(json) {
+
+    if(json === null) {
+      return notify("danger", "Data from this persistent identifier could not be found.");
+    }
+
+    // A collection identifier was passed
+    if(collection !== undefined) {
+      json.collections = [json.collections[collection]];
+    }
+
+    json.collections.forEach(addData);
+
+    __unlock__();
+
+  });
+
+}
+
 function extractNumbers(string) {
 
   /*

@@ -30,7 +30,9 @@ function addMap(publication) {
   // Add collections to map
   publication.collections.forEach(function(collection, i) {
 
-    var averageLocation = averageGeolocation(collection.data.specimens.map(x => x.location));
+    var averageLocation = averageGeolocation(collection.data.specimens.map(function(x) {
+      return {"lat": x.latitude, "lng": x.longitude}
+    }));
 
     var markerInformation = [
       "<h5>Collection " + collection.name + "</h5>",
@@ -122,6 +124,7 @@ function metadataContent(json) {
     "<caption>Metadata associated with this publication.</caption>",
     "<thead>",
     "  <tr>",
+    "    <th>Name</th>",
     "    <th>Author</th>",
     "    <th>Description</th>",
     "    <th>Created</th>",
@@ -129,9 +132,10 @@ function metadataContent(json) {
     "</thead>", 
     "<tbody>",
     "  <tr>",
+    "    <td>" + json.name + "</td>",
     "    <td>" + json.author + "</td>",
     "    <td>" + json.description + "</td>",
-    "    <td>" + json.created + "</td>",
+    "    <td>" + json.created.slice(0, 10) + "</td>",
     "  </tr>",
     "</tbody>"
   ).join("\n");
@@ -160,8 +164,7 @@ function formatCollectionTable(publication) {
     "<head>",
     "  <tr>",
     "    <th>Collection</th>",
-    "    <th>Average Latitude</th>",
-    "    <th>Average Longitude</th>",
+    "    <th>Type</th>",
     "    <th>Number of Specimens</th>",
     "    <th>Created</th>",
     "  </tr>",
@@ -177,7 +180,7 @@ function createForkLink(pid) {
    * Creates link to fork data from a PID in paleomagnetism.org
    */
 
-  return " &nbsp; <small><a href='../statistics/index.html?" + pid +"'><b>View in Statistics Portal</b></a> or <a href='../geography/index.html?" + pid +"'><b>View in Geography Portal</b></a></small>"
+  return "<small><a href='../statistics/index.html?" + pid +"'><b>View in Statistics Portal</b></a> or <a href='../geography/index.html?" + pid +"'><b>View in Geography Portal</b></a></small>"
 
 }
 
@@ -211,6 +214,12 @@ function formatSampleRows(collection, i) {
     var latitude = "";
   }
 
+  var latitudes = collection.data.specimens.map(x => x.latitude);
+  var longitudes = collection.data.specimens.map(x => x.longitude);
+  var levels = collection.data.specimens.map(x => x.longitude);
+
+  var locationType = determineLocationType(latitudes, longitudes, levels);
+
   // If this collection was forked add a fork symbol and the reference
   var name = collection.name;
   var reference;
@@ -223,8 +232,7 @@ function formatSampleRows(collection, i) {
   // Format the row
   return "<tr>" + new Array(
     "<a href='../collection/index.html" + window.location.search + "." + i + "'>" + collection.name + "</a>" + reference,
-    10,
-    20,
+    locationType,
     collection.data.specimens.length,
     collection.data.created.slice(0, 10),
   ).map(x => "<td>" + x + "</td>").join("\n") + "</tr>";

@@ -635,29 +635,6 @@ function toKelvin(step) {
 
 }
 
-
-function determineLocationType(latitudes, longitudes, levels) {
-
-  /*
-   * Function determineLocationType
-   * Attempts to logically deduce the type of this location
-   */
-
-  // Single location: it is an outcrop
-  if(new Set(latitudes).size === 1 && new Set(longitudes).size === 1) {
-    return "Outcrop";
-  }
-
-  // Multiple locations and more than single stratigraphic level: section
-  if(new Set(levels).size > 1) {
-    return "Stratigraphic Section";
-  }
-
-  // Only multiple locations: region  
-  return "Region";
-
-}
-
 function downloadMagICTXT(payload) {
 
   /*

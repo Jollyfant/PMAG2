@@ -85,26 +85,32 @@
           <p>Specimen collections that were exported from Paleomagnetism.org 2 can be added to this library. Multiple collections can be grouped in to a single coherent publication. All sata sets will be published on this page and are openly available for anyone.
           All data publications, collections, specimens, and interpretations are assigned unique <b>persistent identifiers</b> (PID) that can be used to reference each digital object respectively.
           If you want to add your data to the collective library write us an e-mail on the <a href='../team/index.html'><b>contact page</b></a>.
-          <div class="form-group">
-            <input id="pid-lookup" type="email" class="form-control" id="exampleFormControlInput1" placeholder="Quick PID lookup">
+
+          <div class="input-group mb-3">
+            <input id="pid-lookup" class="form-control" placeholder="Quick PID Reverse Lookup">
+            <div class="input-group-append">
+              <button id="pid-lookup-button" class="btn btn-primary" type="button"><i class="fas fa-search"></i> Search</button>
+            </div>
           </div>
           <hr>
         </div>
        </div>
       </div>
 
-      <h5>Available Publications</h5>
+      <h5>Available Publications in Library</h5>
       <!-- Tab for table view -->
 
-        <div class="table-responsive">
-          <table class='table table-sm text-center table-striped' id="publication-table"></table>
-        </div>
-        <hr>
-        <div id="map" class="map" style="height: 400px;"></div>
+      <div class="table-responsive">
+        <table class='table table-sm text-center table-striped' id="publication-table"></table>
+      </div>
+      <hr>
+      <div id="map" class="map" style="height: 400px;"></div>
+      <figcaption class="figure-caption">Map showing geographical distribution of publications. Hover over publication marker to shows its convex hull and geographical coverage.</figcaption>
     
     </div>
 
     <footer id='footer-container' class='container text-muted'></footer>
+
     <br>
 
   </body>

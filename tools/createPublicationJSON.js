@@ -1,33 +1,47 @@
+/*
+ *
+ * Script to create a list of publications
+ * Author: Mathijs Koymans
+ *
+ */
+
 const fs = require("fs");
-const { join } = require("path");
 
 const BASE = "../resources/publications/";
 
 function createEntry(filename) {
 
-  var publication = read(filename);
+  /*
+   * Function createEntry
+   * Creates a single entry with a reference to the real file
+   */
 
-  console.log(publication);
-  return {
-    "author": publication.author,
-    "created": publication.created,
-    "institution": publication.institution,
-    "description": publication.description,
-    "collections": publication.collections.length,
-    "specimens": publication.specimens,
-    "pid": publication.pid,
-    "location": publication.location,
-    "convexHull": publication.convexHull
-  }
+  var publication = read(filename);
+  
+  // Delete collection information we will reference this instead through the PID
+  delete publication.collections;
+
+  // Well return then!
+  return publication;
 
 }
 
 function read(filename) {
 
+  /*
+   * Function read
+   * Reads a JSON file to memory
+   */
+
+  const { join } = require("path");
+
   return JSON.parse(fs.readFileSync(join(BASE, filename)).toString());
 
 }
 
-var json = fs.readdirSync(BASE).map(createEntry);
+if(require.main === module) {
 
-fs.writeFileSync("publications.json", JSON.stringify(json, null, 4));
+  // Read all publication entries and add them to a single summary file
+  fs.writeFileSync("publications.json", JSON.stringify(fs.readdirSync(BASE).map(createEntry), null, 4));
+
+}

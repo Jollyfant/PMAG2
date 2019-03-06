@@ -8,6 +8,8 @@ const greenIcon = new L.Icon({
   shadowSize: [41, 41]
 });
 
+document.getElementById("pid-lookup-button").addEventListener("click", quickPID);
+
 function loadDigitalObjects() {
 
   /*
@@ -20,7 +22,7 @@ function loadDigitalObjects() {
 
     // Problem getting the publications
     if(publications === null) {
-      return notify("danger", "Could not load publication list.");
+      return notify("danger", "Could not load the list of publications.");
     }
 
     // Update the map and table with the returned collections
@@ -43,10 +45,12 @@ function addCollectionsToTable(publications) {
   var rows = publications.map(function(x) {
     return [
       "<tr>",
+      "  <td>" + x.name + "</td>",
       "  <td>" + x.author + "</td>",
       "  <td>" + x.institution + "</td>",
       "  <td>" + x.description + "</td>",
       "  <td><code><a href='../publication/index.html?" + x.pid + "'>" + x.pid.slice(0, 16) + "…</a></code></td>",
+      "  <td>" + (x.doi || "N/A") + "</td>",
       "  <td>" + new Date(x.created).toISOString().slice(0, 10) + "</td>",
       "</tr>"
     ].join("\n");
@@ -56,10 +60,12 @@ function addCollectionsToTable(publications) {
   document.getElementById(TABLE_CONTAINER).innerHTML = [
     "<head>",
     "  <tr>",
+    "    <th>Name</th>",
     "    <th>Author</th>",
     "    <th>Institution</th>",
     "    <th>Description</th>",
     "    <th>Persistent Identifier</th>",
+    "    <th>DOI</th>",
     "    <th>Created</th>",
     "  </tr>",
     "</head>",
@@ -90,9 +96,6 @@ function addMap() {
   map = L.map(MAP_CONTAINER, mapOptions).setView(VIEWPORT, 1);
   L.tileLayer(TILE_LAYER).addTo(map);
 
-  // Attach a click handler
-  // map.on("click", mapClickHandler);
-
 }
 
 function addCollectionsToMap(publications) {
@@ -102,33 +105,101 @@ function addCollectionsToMap(publications) {
    * Adds collections from the library to the map
    */
 
-  // Save references to the markers
-  var references = new Array();
+  function addPublication(publication, index) {
 
-  function expandPublicationMarker() {
- 
-    map.removeLayer(references);
+    /*
+     * Function addCollectionsToMap::addPublication
+     * Adds a single publication marker to the map
+     */
 
-    var publication = publications[this.options.index];
+    function createTooltip(publication) {
+  
+      /*
+       * Function addCollectionsToMap::addPublication::createTooltip
+       * Creates a tooltip for the marker
+       */
+  
+      return new Array(
+        "<b>" + publication.name + "</b>",
+        "<i>" + publication.description + "</i>",
+        "",
+        "Publication contains " + publication.nSpecimens + " specimens from " + publication.nCollections + " collections.",
+        "",
+        "<b>Author</b>: " + publication.author,
+        "<b>Published</b>: " + publication.created,
+        "",
+        "<a href='../publication/index.html?" + publication.pid +"'><b>View Publication</b></a>"
+      ).join("<br>");
 
-/*
-    const TRANSITION_DELAY_MS = 250;
+    }
 
-    map.invalidateSize();
+    // Add the publication index so we can track it
+    const marker = new L.Marker(L.latLng(publication.location), {"index": index});
 
-    setTimeout(function() {
-      map.fitBounds(references.getBounds())
-    }, TRANSITION_DELAY_MS);
-*/
-
-    references = new L.polygon(publication.convexHull.map(x => new L.LatLng(x.lat, x.lng)), {color: HIGHCHARTS_GREEN}).addTo(map);
+    // Show and hide the publication convex hull
+    marker.on("mouseover", showConvexHull);
+    marker.on("mouseout", hideConvexHull)
+    marker.bindPopup(createTooltip(publication));
+    marker.addTo(map);
 
   }
 
-  // Add all publications
-  publications.forEach(function(publication, index) {
-    new L.Marker(L.latLng(publication.location), {"index": index}).on("mouseover", expandPublicationMarker).addTo(map);
-  });
+  function hideConvexHull() {
+
+    /*
+     * Function addCollectionsToMap::hideConvexHull
+     * Hides the convex hull of a publication
+     */
+
+    map.removeLayer(convexHullRef);
+
+  }
+
+  function showConvexHull() {
+
+    /*
+     * Function addCollectionsToMap::hideConvexHull
+     * Hides the convex hull of a publication
+     */
+
+    // Save reference
+    convexHullRef = new L.polygon(publications[this.options.index].convexHull.map(x => new L.LatLng(x.lat, x.lng)), {"color": HIGHCHARTS_BLUE}).addTo(map);
+
+  }
+
+  // Save references to the open hull
+  let convexHullRef;
+
+  // Add all the publications
+  publications.forEach(addPublication);
+
+}
+
+function quickPID() {
+
+  /*
+   * Function quickPID
+   * Quickly looks up a Paleomagnetism.org 2 persistent identifier
+   */
+
+  let PIDValue = document.getElementById("pid-lookup").value;
+
+  // Extract the publication, coordinate, and specimen identifier
+  var [publication, collection, specimen] = PIDValue.split(".");
+
+  // Confirm identifier before resolution and resolve to correct page
+  if(publication !== "") {
+    if(collection !== undefined) {
+      if(specimen !== undefined) {
+        return window.location = "../specimen/index.html?" + PIDValue;
+      }
+      return window.location = "../collection/index.html?" + PIDValue;
+    }
+    return window.location = "../publication/index.html?" + PIDValue;
+  }
+
+  // Not a correct PID?
+  return notify("danger", "The submitted identifier is not valid and could not be resolved.");
 
 }
 
@@ -141,23 +212,4 @@ function __init__() {
 
 }
 
-document.getElementById("pid-lookup").addEventListener("blur", function() {
-
-  var value = document.getElementById("pid-lookup").value;
-  var [publication, collection, specimen] = value.split(".");
-
-  // Confirm identifier before resolution
-  if(publication !== "" && publication.length === 64) {
-    if(collection !== undefined) {
-      if(specimen !== undefined) {
-        return window.location = "../specimen/index.html?" + value;
-      }
-      return window.location = "../collection/index.html?" + value;
-    }
-    return window.location = "../publication/index.html?" + value;
-  }
-
-  return notify("danger", "The submitted identifier is not valid and cannot be resolved.");
-
-});
 __init__();

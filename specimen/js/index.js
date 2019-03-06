@@ -98,7 +98,7 @@ function createForkLink(pid) {
    * Creates link to fork data from a PID in paleomagnetism.org
    */
 
-  return " &nbsp; <small><a href='../interpretation/index.html?" + pid +"'><b><i class='fas fa-code-branch'></i> Fork on paleomagnetism.org</b></a>"
+  return "<small><a href='../interpretation/index.html?" + pid +"'><b><i class='fas fa-code-branch'></i> Fork in Interpretation Portal</b></a>"
 
 }
 
@@ -222,6 +222,10 @@ function resolvePID(pids) {
   var [pid, collection, sample] = pids.split(".");
 
   HTTPRequest("../resources/publications/" + pid + ".pid", "GET", function(json) {
+
+    if(json === null || Number(collection) >= json.collections.length || Number(sample) >= json.collections[Number(collection)].data.specimens.length) {
+      return notify("danger", "A specimen with this persistent identifier could not be found.");
+    }
 
     return formatSpecimenTable(pids, json.collections[Number(collection)].data.specimens[Number(sample)]);
 

@@ -88,8 +88,24 @@ function resolvePID(pid) {
 
   var [publication, collection] = pid.split(".");
 
+  if(collection === undefined) {
+    return notify("danger", "A persistent identifier related to a collection must be given.");
+  }
+
+  document.getElementById("back-href").href = "../publication/index.html" + window.location.search.split(".")[0];
+
   HTTPRequest("../resources/publications/" + publication + ".pid", "GET", function(json) {
-    formatPublicationTable(json.collections[Number(collection)]);
+
+    if(Number(collection) >= json.collections.length) {
+      return notify("danger", "A collection with this persistent identifier could not be found.");
+    }
+
+    var collectionObject = json.collections[Number(collection)];
+
+    formatPublicationTable(collectionObject);
+
+    document.getElementById("card-table").innerHTML = metadataContent(json, collectionObject);
+
   });
 
 }
@@ -113,17 +129,18 @@ function __init__() {
 
 __init__();
 
-function metadataContent(json) {
+function metadataContent(publication, collection) {
 
   /*
    * Function metadataContent
    * Fills upper table with metadata about the collection
    */
-
+console.log(collection)
   return new Array(
     "<caption>Publication associated with this collection.</caption>",
     "<thead>",
     "  <tr>",
+    "    <th>Name</th>",
     "    <th>Author</th>",
     "    <th>Description</th>",
     "    <th>Created</th>",
@@ -131,9 +148,10 @@ function metadataContent(json) {
     "</thead>", 
     "<tbody>",
     "  <tr>",
-    "    <td>" + json.author + "</td>",
-    "    <td>" + json.description + "</td>",
-    "    <td>" + json.created + "</td>",
+    "    <td>" + collection.name + "</td>",
+    "    <td>" + publication.author + "</td>",
+    "    <td>" + publication.description + "</td>",
+    "    <td>" + collection.data.created.slice(0, 10) + "</td>",
     "  </tr>",
     "</tbody>"
   ).join("\n");
@@ -147,7 +165,7 @@ function createForkLink(pid) {
    * Creates link to fork data from a PID in paleomagnetism.org
    */
 
-  return " &nbsp; <small><a href='../interpretation/index.html?" + pid +"'><b><i class='fas fa-code-branch'></i> Fork in Interpretation Portal</b></a> or <a href='../statistics/index.html?" + pid +"'><b>View in Statistics Portal</b></a> or <a href='../geography/index.html?" + pid +"'><b>View in Geography Portal</b></a></small>"
+  return "<small><a href='../interpretation/index.html?" + pid +"'><b><i class='fas fa-code-branch'></i> Fork in Interpretation Portal</b></a> or <a href='../statistics/index.html?" + pid +"'><b>View in Statistics Portal</b></a> or <a href='../geography/index.html?" + pid +"'><b>View in Geography Portal</b></a></small>"
 
 }
 
@@ -161,16 +179,10 @@ function formatPublicationTable(collection) {
   // Initialize the leaflet map
   addMap(collection.data.specimens);
 
-  // Load the metadata for this collection
-  loadDigitalObjectMetadata(function(json) {
-    document.getElementById("card-table").innerHTML = metadataContent(json);
-  });
-
   var pid = window.location.search.slice(1);
 
   document.getElementById("fork-link").innerHTML = createForkLink(pid);
   document.getElementById("pid-box").innerHTML = pid;
-  document.getElementById("back-href").href = "../publication/index.html" + window.location.search.split(".")[0];
 
   // Add a row for each specimen
   var rows = collection.data.specimens.map(formatSampleRows);

@@ -76,8 +76,6 @@
     <!-- Main container -->
     <div class="container">
 
-      <div id="notification-container"></div>
-
       <div class="row">
         <div class="col-lg-2">
           <div id="card-content" class="card" style="width: auto; max-width: 200px;">
@@ -103,7 +101,9 @@
 
       <hr>
 
-      <h5> Collections in Publication <span id="fork-link"></span></h5>
+      <h5> Collections in Publication </h5>
+      <div id="fork-link"></div>
+      <br>
 
       <nav>
         <div class="nav nav-tabs nav-justified" id="nav-tab" role="tablist">
@@ -121,9 +121,11 @@
 
           <div class="table-responsive">
             <table class='table table-sm text-center table-striped' id="publication-table"></table>
+<!--
             <div class="text-right">
                   <button onclick='downloadTableAsJSON()' class="btn btn-sm btn-light" id="export-foldtest-png"><i class="far fa-file"></i> Download as JSON</button>
             </div>
+-->
           </div>
 
         </div>
@@ -133,7 +135,7 @@
 
           <br>
           <div id="map" class="map"></div>
-          <figcaption class="figure-caption">Map showing location of collections in the publication.</figcaption>
+          <figcaption class="figure-caption">Map showing geographical coverage of the collections in this publication.</figcaption>
 
         </div>
 

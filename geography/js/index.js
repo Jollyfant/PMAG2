@@ -113,35 +113,6 @@ function mapClickHandler(event) {
  
 }
 
-function getPublicationFromPID() {
-
-  /*
-   * Function getPublicationFromPID
-   * Returns the resource that belogns to the PID
-   */
-
-  // Get the publication from the URL
-  var SHA256 = location.search.substring(1);
-
-  HTTPRequest("publications.json", "GET", function(PUBLICATIONS) {
-
-    var pid = SHA256;
-    var publication = PUBLICATIONS.filter(x => x.pid === pid);
-
-    if(!publication.length) {
-      return notify("danger", "Data from this persistent identifier could not be found.");
-    }
-
-    // Request the persistent resource from disk
-    HTTPRequest("./publications/" + pid + ".pid", "GET", function(json) {
-      addData({"data": json, "name": publication[0].filename});
-      __unlock__();
-    });
-
-  });
-
-}
-
 function __init__() {
 
   /*
@@ -164,13 +135,10 @@ function __init__() {
   // Load the specimens from local storage
   var item = localStorage.getItem("collections");
 
-  // Something returned from local storage
+  // Something was returned from local storage
   if(item !== null) {
     importPMAG2(JSON.parse(item));
   }
-
-  // Add Leaflet map to the Geography portal
-  addMap();
 
   __unlock__();
 
@@ -206,6 +174,9 @@ function __unlock__() {
    * Function __unlock__
    * Unlocks the application
    */
+
+  // Add Leaflet map to the Geography portal
+  addMap();
 
   if(collections.length) {
     notify("success", "Welcome back! Succesfully loaded <b>" + collections.length + "</b> collection(s).");

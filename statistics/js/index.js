@@ -3,31 +3,6 @@ var COORDINATES_COUNTER = 0;
 var COORDINATES = "specimen";
 var A95_CONFIDENCE = true;
 
-function getPublicationFromPID() {
-
-  /*
-   * Function getPublicationFromPID
-   * Returns the resource that belogns to the PID
-   */
-
-  // Get the publication from the URL and strip the query indicator (?)
-  var pid = location.search.substring(1); 
-
-  // Request the persistent resource from disk
-  HTTPRequest("../resources/publications/" + pid + ".pid", "GET", function(json) {
-
-    if(json === null) {
-      return notify("danger", "Data from this persistent identifier could not be found.");
-    }
-
-    json.collections.forEach(addData);
-
-    __unlock__();
-
-  });
-
-}
-
 function __init__() {
 
   /*

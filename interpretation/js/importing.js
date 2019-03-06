@@ -959,10 +959,11 @@ function importApplicationSave(file) {
   var json = JSON.parse(file.data);
 
   // Confirm the file was not tampered with 
-  if(CONFIRM_INTEGRITY && json.pid !== forge_sha256(JSON.stringify(json.specimens))) {
+  if(CONFIRM_INTEGRITY && json.hash !== forge_sha256(JSON.stringify(json.specimens))) {
     throw(new Exception("Could not verify the integrity of this specimen file."));
   }
 
+  // Add all specimens
   json.specimens.forEach(function(specimen) {
     specimens.push(specimen);
   });
