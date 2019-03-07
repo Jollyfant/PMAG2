@@ -821,9 +821,88 @@ function addCollectionData(files, format) {
       return files.forEach(addData);
     case "PMAG":
       return files.forEach(importPMAG);
+    case "CSV":
+      return files.forEach(importCSV);
     default:
       throw(new Exception("Unknown importing format requested."));
   }
+
+}
+
+function importCSV(file) {
+
+  /*
+   * Function importCSV
+   * Imports from a default CSV format
+   */
+
+  function removeComments(line) {
+
+    /*
+     * Function importCSV::removeComments
+     * Returns FALSE when line starts with comment sign #
+     */
+
+    return !line.startsWith("#");
+
+  }
+
+  function parseLine(line) {
+
+    /*
+     * Function importCSV::parseLine
+     * Parses a single component line
+     */
+
+    var [name, dec, inc, coreAzimuth, coreDip, beddingStrike, beddingDip, latitude, longitude, level, age, ageMin, ageMax, coordinates] = line.split(",");
+
+    // Longitude within [-180, 180]
+    if(longitude > 180) {
+      longitude = longitude - 360;
+    }
+
+    // Latitude within [-90, 90]
+    if(latitude > 90) {
+      latitude = latitude - 180;
+    }
+
+    // Confirm the reference frame
+    if(coordinates !== "specimen" && coordinates !== "geographic" && coordinates !== "tectonic") {
+      return notify("danger", "The coordinate reference frame must be either: <b>specimen</b>, <b>geographic</b>, or <b>tectonic</b>.");
+    }
+
+    // Create specimen metadata object
+    let object = {
+      "name": name,
+      "coreAzimuth": Number(coreAzimuth),
+      "coreDip": Number(coreDip),
+      "beddingStrike": Number(beddingStrike),
+      "beddingDip": Number(beddingDip),
+      "latitude": Number(latitude),
+      "longitude": Number(longitude),
+      "level": Number(level),
+      "age": Number(age),
+      "ageMin": Number(ageMin),
+      "ageMax": Number(ageMax)
+    }
+
+    let direction = new Direction(Number(dec), Number(inc));
+
+    // Return in the correct reference frame
+    return new Component(object, direction.toCartesian()).fromReferenceCoordinates(coordinates);
+
+  }
+
+  // Extract all lines from the CSV
+  var lines = file.data.split(/\r?\n/).filter(Boolean).filter(removeComments);
+
+  collections.push({
+    "color": null,
+    "name": file.name,
+    "reference": null,
+    "components": lines.map(parseLine),
+    "created": new Date().toISOString()
+  });
 
 }
 

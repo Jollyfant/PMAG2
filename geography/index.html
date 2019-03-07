@@ -107,7 +107,7 @@
 
           <div class="alert alert-light" role="alert">
             <h5> Paleomagnetism.org 2 - Geography </h5>
-            <p> The Geography portal focuses on geographic applications of paleomagnetic directions. Data from the Paleomagnetism 2.0.0 .dir format can be imported to the statistics portal. Each selected file will be associated with a new selectable collection.
+            <p> The Geography portal focuses on geographic applications of paleomagnetic directions. Data from various formats can be imported to the geography portal portal. 
           </div>
 
           <div class="input-group mb-6">
@@ -127,8 +127,12 @@
 
             <select class="custom-select" id="format-selection">
               <optgroup label="Application Formats">
+                <option value="PMAG2">Paleomagnetism.org (2.0.0 .pmag) </option>
                 <option value="DIR2">Paleomagnetism.org (2.0.0 .dir)</option>
                 <option value="PMAG">Paleomagnetism.org (1.0.0 .pmag) </option>
+              </optgroup>
+              <optgroup label="ASCII Formats">
+                <option value="CSV">Default Format (.csv)</option>
               </optgroup>
             </select>
 

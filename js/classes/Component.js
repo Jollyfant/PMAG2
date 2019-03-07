@@ -14,10 +14,12 @@ var Component = function(specimen, coordinates) {
   this.ageMin = specimen.ageMin;
   this.ageMax = specimen.ageMax;
 
-  this.coreAzimuth = specimen.coreAzimuth
-  this.coreDip = specimen.coreDip
-  this.beddingStrike = specimen.beddingStrike
-  this.beddingDip = specimen.beddingDip
+  this.coreAzimuth = specimen.coreAzimuth;
+  this.coreDip = specimen.coreDip;
+  this.beddingStrike = specimen.beddingStrike;
+  this.beddingDip = specimen.beddingDip;
+
+  this.level = specimen.level;
 
   this.coordinates = literalToCoordinates(coordinates);
 
@@ -36,5 +38,21 @@ Component.prototype.inReferenceCoordinates = function(coordinates) {
 
   // Return a itself as a new component but in reference coordinates
   return new Component(this, inReferenceCoordinates(coordinates, this, this.coordinates));
+
+}
+
+Component.prototype.fromReferenceCoordinates = function(coordinates) {
+
+  /*
+   * Function Component.inReferenceCoordinates
+   * Returns a component in the requested reference coordinates
+   */
+
+  if(coordinates === undefined) {
+    throw(new Exception("Coordinates must be passed when returning from a reference frame."));
+  }
+
+  // Return a itself as a new component but in reference coordinates
+  return new Component(this, fromReferenceCoordinates(coordinates, this, this.coordinates));
 
 }
