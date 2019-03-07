@@ -30,51 +30,21 @@ function addMap(specimens) {
   // Add specimens to map
   specimens.forEach(function(specimen, i) {
 
-    if(!specimen.location) {
+    if(specimen.latitude === null || specimens.longitude === null) {
       return;
     }
 
     var markerInformation = [
       "<h5>Specimen " + specimen.name + "</h5>",
-      "<b>Location: </b>" + specimen.location.lng + "°E, " + specimen.location.lat + "°N",
+      "<b>Location: </b>" + specimen.longitude + "°E, " + specimen.latitude + "°N",
       "<b>Demagnetization Type: </b>" + getDemagnetizationTypeLabel(specimen.demagnetizationType),
       "<b>Created: </b>" + specimen.created,
       "<hr>",
       "<b><a href='../specimen/index.html" + window.location.search + "." + i + "'>Specimen Details</a>",
     ].join("<br>");
 
-    markerGroup.push(new L.Marker(new L.LatLng(specimen.location.lat, specimen.location.lng)).addTo(map).bindPopup(markerInformation));
+    markerGroup.push(new L.Marker(new L.LatLng(specimen.latitude, specimen.longitude)).addTo(map).bindPopup(markerInformation));
 
-  });
-
-}
-
-function mapTabFocusHandler() {
-
-  /*
-   * Function mapTabFocusHandler
-   * Resize map to fit markers within bounds
-   */
-
-  const TRANSITION_DELAY_MS = 250;
-
-  map.invalidateSize();
-
-  setTimeout(function() {
-    map.fitBounds(new L.featureGroup(markerGroup).getBounds());
-  }, TRANSITION_DELAY_MS);
-
-}
-
-function loadDigitalObjectMetadata(callback) {
-
-  /*
-   * Fuction loadDigitalObjectMetadata
-   * Get the parent metadata object that describes this collection
-   */
-
-  HTTPRequest("../resources/publications/" + window.location.search.slice(1).split(".")[0] + ".pid", "GET", function(json) {
-    callback(json);
   });
 
 }
@@ -86,16 +56,27 @@ function resolvePID(pid) {
    * Attempts to make a HTTP request and resolve a persistent identifier
    */
 
-  var [publication, collection] = pid.split(".");
-
-  if(collection === undefined) {
-    return notify("danger", "A persistent identifier related to a collection must be given.");
+  if(pid.split(".").length !== 2) {
+    return notify("danger", "A collection with this persistent identifier could not be found.");
   }
 
-  document.getElementById("back-href").href = "../publication/index.html" + window.location.search.split(".")[0];
+  // Extract the publication and collection identifier
+  var [publication, collection] = pid.split(".");
 
+  // The link to go back to the parent publication
+  document.getElementById("back-href").href = "../publication/index.html?" + publication;
+  document.getElementById("fork-link").innerHTML = createForkLink(pid);
+  document.getElementById("pid-box").innerHTML = pid;
+
+  // Look up the persistent identifier on disk
   HTTPRequest("../resources/publications/" + publication + ".pid", "GET", function(json) {
 
+    // 404
+    if(json === null) {
+      return notify("danger", "A collection with this persistent identifier could not be found.");
+    }
+
+    // Collection does not exist within the publication
     if(Number(collection) >= json.collections.length) {
       return notify("danger", "A collection with this persistent identifier could not be found.");
     }
@@ -117,7 +98,7 @@ function __init__() {
    * Entrypoint for JavaScript
    */
 
-  // No search specified: show all digital objects
+  // No search specified: abort
   if(!window.location.search) {
     return;
   }
@@ -127,20 +108,26 @@ function __init__() {
 
 }
 
-__init__();
-
 function metadataContent(publication, collection) {
 
   /*
    * Function metadataContent
    * Fills upper table with metadata about the collection
    */
-console.log(collection)
+
+  // Determine the location type for the heck of it
+  var latitudes = collection.data.specimens.map(x => x.latitude);
+  var longitudes = collection.data.specimens.map(x => x.longitude);
+  var levels = collection.data.specimens.map(x => x.longitude);
+
+  var locationType = determineLocationType(latitudes, longitudes, levels);
+
   return new Array(
-    "<caption>Publication associated with this collection.</caption>",
+    "<caption>Metadata associated with this collection.</caption>",
     "<thead>",
     "  <tr>",
     "    <th>Name</th>",
+    "    <th>Type</th>",
     "    <th>Author</th>",
     "    <th>Description</th>",
     "    <th>Created</th>",
@@ -149,23 +136,13 @@ console.log(collection)
     "<tbody>",
     "  <tr>",
     "    <td>" + collection.name + "</td>",
+    "    <td>" + locationType + "</td>",
     "    <td>" + publication.author + "</td>",
     "    <td>" + publication.description + "</td>",
     "    <td>" + collection.data.created.slice(0, 10) + "</td>",
     "  </tr>",
     "</tbody>"
   ).join("\n");
-
-}
-
-function createForkLink(pid) {
-
-  /*
-   * Function createForkLink
-   * Creates link to fork data from a PID in paleomagnetism.org
-   */
-
-  return "<small><a href='../interpretation/index.html?" + pid +"'><b><i class='fas fa-code-branch'></i> Fork in Interpretation Portal</b></a> or <a href='../statistics/index.html?" + pid +"'><b>View in Statistics Portal</b></a> or <a href='../geography/index.html?" + pid +"'><b>View in Geography Portal</b></a></small>"
 
 }
 
@@ -179,14 +156,7 @@ function formatPublicationTable(collection) {
   // Initialize the leaflet map
   addMap(collection.data.specimens);
 
-  var pid = window.location.search.slice(1);
-
-  document.getElementById("fork-link").innerHTML = createForkLink(pid);
-  document.getElementById("pid-box").innerHTML = pid;
-
   // Add a row for each specimen
-  var rows = collection.data.specimens.map(formatSampleRows);
-
   document.getElementById("publication-table").innerHTML = new Array(
     "<head>",
     "  <tr>",
@@ -203,7 +173,7 @@ function formatPublicationTable(collection) {
     "    <th>Created</th>",
     "  </tr>",
     "</head>"
-  ).concat(rows).join("\n");
+  ).concat(collection.data.specimens.map(formatSampleRows)).join("\n");
 
 }
 
@@ -227,15 +197,6 @@ function formatSampleRows(sample, i) {
    * Creates HTML for rows of the sample table
    */
 
-  // Attempt to extract the location
-  if(sample.location) {
-    var longitude = sample.location.lng;
-    var latitude = sample.location.lat;
-  } else {
-    var longitude = "";
-    var latitude = "";
-  }
-
   // If this sample was forked add a fork symbol and the reference
   var name = sample.name;
   var reference;
@@ -252,8 +213,8 @@ function formatSampleRows(sample, i) {
     sample.coreDip,
     sample.beddingStrike,
     sample.beddingDip,
-    longitude,
-    latitude,
+    sample.longitude,
+    sample.latitude,
     getDemagnetizationTypeLabel(sample.demagnetizationType),
     sample.interpretations.length,
     sample.steps.length,
@@ -261,3 +222,5 @@ function formatSampleRows(sample, i) {
   ).map(x => "<td>" + x + "</td>").join("\n") + "</tr>";
 
 }
+
+__init__();

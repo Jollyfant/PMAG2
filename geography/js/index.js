@@ -701,7 +701,6 @@ function redrawCharts() {
   var tempScrollTop = window.pageYOffset || document.scrollingElement.scrollTop || document.documentElement.scrollTop;
 
   showCollectionsOnMap();
-  plotPredictedDirections();
 
   window.scrollTo(0, tempScrollTop);
 

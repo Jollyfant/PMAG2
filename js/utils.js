@@ -608,7 +608,6 @@ function downloadAsCSV(filename, csv) {
   const MIME_TYPE = "data:text/csv;charset=utf-8";
 
   downloadURIComponent(filename, MIME_TYPE + "," + encodeURIComponent(csv));
-
 }
 
 
@@ -1111,6 +1110,52 @@ function toComponent(component) {
    */
 
   return new Component(component, component.coordinates);
+
+}
+
+function createForkLink(pid) {
+
+  /*
+   * Function createForkLink
+   * Creates link to view data from a PID in paleomagnetism.org data library
+   */
+
+  // Create links
+  const INTERPRETATION = createLink("../interpretation/index.html?" + pid, "Interpretation Portal")
+  const STATISTICS = createLink("../statistics/index.html?" + pid, "Statistics Portal");
+  const GEOGRAPHIC = createLink("../geography/index.html?" + pid, "Geography Portal");
+
+  // Determine options
+  if(pid.split(".").length === 1) {
+    var value = new Array(STATISTICS, GEOGRAPHIC).join(" or ");
+  }
+
+  if(pid.split(".").length === 2) {
+    var value = new Array(INTERPRETATION, STATISTICS, GEOGRAPHIC).join(" or ");
+  }
+
+  if(pid.split(".").length === 3) {
+    var value = INTERPRETATION;
+  }
+ 
+  return "<small>Open in " + value + ".</small>";
+
+}
+
+function mapTabFocusHandler() {
+
+  /*
+   * Function mapTabFocusHandler
+   * Resize map to fit markers within bounds
+   */
+
+  const TRANSITION_DELAY_MS = 250;
+
+  map.invalidateSize();
+
+  setTimeout(function() {
+    map.fitBounds(new L.featureGroup(markerGroup).getBounds());
+  }, TRANSITION_DELAY_MS);
 
 }
 

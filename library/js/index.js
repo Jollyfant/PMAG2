@@ -1,14 +1,4 @@
 var map;
-const greenIcon = new L.Icon({
-  iconUrl: "../resources/images/markers/green.png",
-  shadowUrl: "../resources/images/markers/shadow.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
-});
-
-document.getElementById("pid-lookup-button").addEventListener("click", quickPID);
 
 function loadDigitalObjects() {
 
@@ -188,7 +178,7 @@ function quickPID() {
   var [publication, collection, specimen] = PIDValue.split(".");
 
   // Confirm identifier before resolution and resolve to correct page
-  if(publication !== "") {
+  if(publication !== "" && publication.length === 64) {
     if(collection !== undefined) {
       if(specimen !== undefined) {
         return window.location = "../specimen/index.html?" + PIDValue;
@@ -205,10 +195,14 @@ function quickPID() {
 
 function __init__() {
 
+  // Add Leaflet
   addMap();
 
   // Load all publications from JSON
   loadDigitalObjects();
+
+  // Listener for search
+  document.getElementById("pid-lookup-button").addEventListener("click", quickPID);
 
 }
 
