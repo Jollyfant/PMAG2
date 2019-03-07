@@ -160,7 +160,7 @@ function formatPublicationTable(collection) {
   document.getElementById("publication-table").innerHTML = new Array(
     "<head>",
     "  <tr>",
-    "    <th>Sample</th>",
+    "    <th>Specimen</th>",
     "    <th>Core Azimuth</th>",
     "    <th>Core Dip</th>",
     "    <th>Bedding Strike</th>",

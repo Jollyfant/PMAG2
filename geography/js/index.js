@@ -496,7 +496,7 @@ function generateColorPalette() {
 
 }
 
-function downloadAsJSON() {
+function downloadAsGeoJSON() {
 
   /*
    * Function downloadAsJSON

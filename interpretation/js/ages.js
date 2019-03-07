@@ -1,3 +1,5 @@
+var TIME_SCALE_AGES;
+
 function addAges() {
 
   /*
@@ -9,7 +11,10 @@ function addAges() {
 
   HTTPRequest("db/ages.json", "GET", function(ages) {
 
-    Object.keys(ages).forEach(function(age) {
+    // Save reference
+    TIME_SCALE_AGES = ages;
+
+    Object.keys(TIME_SCALE_AGES).forEach(function(age) {
 
       var option = document.createElement("option");
 

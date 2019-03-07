@@ -23,5 +23,32 @@
                 "lng": 36.211
             }
         ]
+    },
+    {
+        "author": "Pietje",
+        "institution": "Unknown",
+        "description": "Not Available",
+        "doi": "Not Available",
+        "name": "Unknown",
+        "nSpecimens": 25,
+        "nCollections": 1,
+        "location": {
+            "lat": 34.88599999999999,
+            "lng": 36.21100000000001
+        },
+        "convexHull": [
+            {
+                "lat": 34.886,
+                "lng": 36.211,
+                "level": null
+            },
+            {
+                "lat": 34.886,
+                "lng": 36.211,
+                "level": null
+            }
+        ],
+        "pid": "2d96c31b9149459fa1a6c9486c1d6de8c01446b2995a7df88d69b253ee6566cc",
+        "created": "2019-03-07T15:11:04.861Z"
     }
 ]

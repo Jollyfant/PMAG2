@@ -9,8 +9,7 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 
-const BUNDLE_DIRECTORY = "bundle";
-const DONE_DIRECTORY = "done";
+let bundleDirectory = null;
 
 function isDir(name) {
 
@@ -41,7 +40,7 @@ function createCollection(filename) {
    * Reads a single collection from the bundle and parses it
    */
 
-  var filepath = path.join(BUNDLE_DIRECTORY, filename);
+  var filepath = path.join(bundleDirectory, filename);
 
   // Read the content of the file
   var content = read(filepath);
@@ -153,32 +152,6 @@ function sumSpecimens(collections) {
 
 }
 
-function determineLocationType(latitudes, longitudes, levels) {
-
-  /*
-   * Function determineLocationType
-   * Attempts to logically deduce the type of this location
-   */
-
-  let latitudes = locations.map(x => x.lat);
-  let longitudes = locations.map(x => x.lng);
-  let levels = locations.map(x => x.level);
-
-  // Single location: it is an outcrop
-  if(new Set(latitudes).size === 1 && new Set(longitudes).size === 1) {
-    return "Outcrop";
-  }
-
-  // Multiple locations and more than single stratigraphic level: section
-  if(new Set(levels).size > 1) {
-    return "Stratigraphic Section";
-  }
-
-  // Only multiple locations: region  
-  return "Region";
-
-}
-
 function averageGeolocation(coords) {
 
   if(coords.length === 1) {
@@ -215,21 +188,73 @@ function averageGeolocation(coords) {
 
 }
 
+function parseArguments(args) {
+
+  const OPTIONS = new Array(
+    "author",
+    "institution",
+    "description",
+    "doi",
+    "name",
+    "bundle"
+  );
+
+  let metadata = {
+    "author": "Unknown",
+    "institution": "Unknown",
+    "description": "Not Available",
+    "doi": "Not Available",
+    "name": "Unknown",
+  }
+
+  while(args.length) {
+
+    let thing = args.pop();
+    let values = new Array();
+
+    while(!thing.startsWith("--")) {
+      values.push(thing);
+      thing = args.pop();
+    }
+
+    let key = thing;
+    let value = values.reverse().join(" ");
+
+    if(!OPTIONS.includes(key.slice(2))) {
+      throw("Invalid argument specified.");
+    }
+
+    if(key.slice(2) === "bundle") {
+      bundleDirectory = value;
+      continue;
+    }
+
+    metadata[key.slice(2)] = value;
+
+  }
+
+  if(bundleDirectory === null) {
+    throw("A bundle must be specified with --bundle.");
+  }
+
+  if(!fs.existsSync(bundleDirectory)) {
+    throw("Bundle directory does not exist on disk.");
+  }
+
+  return metadata;
+
+}
 
 if(require.main === module) {
 
-  // Read collections from the bundle directory
-  const collections = fs.readdirSync(BUNDLE_DIRECTORY).filter(isDir);
-  
-  const metadata = {
-    "author": "Mathijs Koymans",
-    "institution": "KNMI",
-    "description": "Some description",
-    "doi": null,
-    "name": "My First Pub!",
-    "collections": collections.map(createCollection)
-  }
+  // Parse arguments
+  let args = process.argv.slice(2);
+  let metadata = parseArguments(args);
 
+  // Read collections from the bundle directory
+  const collections = fs.readdirSync(bundleDirectory).filter(isDir);
+
+  metadata.collections = collections.map(createCollection);
   metadata.nSpecimens = sumSpecimens(metadata.collections);
   metadata.nCollections = metadata.collections.length;
   metadata.location = averageGeolocation(locations(metadata.collections));

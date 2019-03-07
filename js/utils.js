@@ -1217,7 +1217,7 @@ function createForkLink(pid) {
     var value = INTERPRETATION;
   }
  
-  return "<small>Open in " + value + ".</small>";
+  return "<i class='fas fa-globe-americas'><small></i> Open in " + value + ".</small>";
 
 }
 
