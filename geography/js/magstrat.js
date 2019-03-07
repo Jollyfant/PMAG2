@@ -189,15 +189,15 @@ function updateStratigraphicLevel() {
    */
 
   // Get the extremes, sanity check and update
-  var extremesInc = $("#magstratInclination").highcharts().yAxis[0].getExtremes();
-  var extremesDec = $("#magstratDeclination").highcharts().yAxis[0].getExtremes();
+  var extremesInc = $("#magstrat-container-inclination").highcharts().yAxis[0].getExtremes();
+  var extremesDec = $("#magstrat-container-declination").highcharts().yAxis[0].getExtremes();
 
   if(extremesInc.max !== extremesDec.max || extremesInc.min !== extremesDec.min) {
     return notify("danger", "The axis scales for the charts do not match.");
   }
 
   // Set new extremes and check new extremes
-  $("#magstratSet").highcharts().yAxis[0].setExtremes(extremesInc.min, extremesInc.max);
+  $("#magstrat-container-binary").highcharts().yAxis[0].setExtremes(extremesInc.min, extremesInc.max);
 
 }
 
@@ -244,7 +244,7 @@ function plotStrat() {
     stratigraphicData.push({
       "dec": direction.dec,
       "inc": direction.inc,
-      "level": Math.floor(Math.random() * 500),
+      "level": component.level,
       "name": component.name
     }); 
 

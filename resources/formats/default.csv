@@ -4,5 +4,5 @@
 # Note that core dip is the DIP and not the HADE: vertical means 90.
 
 first,45,0,1,89,1,1,20,30,0,10,0,20,specimen
-second,42,8,1,89,1,1,20,30,1,10,0,20,specimen
+second,42,-8,1,89,1,1,20,30,1,10,0,20,specimen
 third,47,2,1,89,1,1,20,30,2,10,0,20,specimen
