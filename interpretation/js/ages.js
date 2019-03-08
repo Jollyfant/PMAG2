@@ -19,7 +19,7 @@ function addAges() {
       var option = document.createElement("option");
 
       // Indent the name based on its level
-      option.text = age === "null" ? "Unknown" : INDENTATION_CHARACTER.repeat(2 * ages[age].indentation) + age;
+      option.text = age === "null" ? "\xA0\xA0\xA0\xA0Unknown" : INDENTATION_CHARACTER.repeat(2 * (2 + ages[age].indentation)) + age;
       option.value = age;
 
       document.getElementById("specimen-age-select").add(option);
