@@ -147,8 +147,6 @@ Coordinates.prototype.rotateTo = function(azimuth, plunge) {
    * Rotates a direction to azimuth, plunge
    */
 
-  // TODO return early when plunge = 90: add azimuth to declination
-
   // Convert to radians
   var azimuth = azimuth * RADIANS;
   var plunge = plunge * RADIANS;

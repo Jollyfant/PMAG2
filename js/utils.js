@@ -211,6 +211,28 @@ function meanDirection(vectors) {
 
 }
 
+function nullMatrix() {
+  
+  /*
+   * Function nullMatrix
+   * Returns an empty 3D matrix
+   */
+  
+  return new Array(nullVector(), nullVector(), nullVector());
+
+}
+
+function nullVector() {
+  
+  /*
+   * Function nullVector
+   * Returns an empty 1D vector
+   */
+
+  return new Array(0, 0, 0);
+
+}
+
 function TMatrix(data) {
 
   /*
@@ -218,7 +240,7 @@ function TMatrix(data) {
    * Returns the orientation matrix for a set of directions
    */
 
-  var T = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+  var T = nullMatrix();
 
   data.forEach(function(vector) {
     for(var k = 0; k < 3; k++) {
@@ -287,10 +309,13 @@ function getRotationMatrixR(lambda, phi) {
    * Returns the reversed rotation matrix (transpose)
    */
 
+  var matrix = getRotationMatrix(lambda, phi);
+
+  // Return the transpose (inverse rotation)
   return new Array(
-    new Array(Math.cos(lambda) * Math.sin(phi), Math.sin(phi) * Math.sin(lambda), -Math.cos(phi)),
-    new Array(-Math.sin(lambda), Math.cos(lambda), 0),
-    new Array(Math.cos(phi) * Math.cos(lambda), Math.sin(lambda) * Math.cos(phi), Math.sin(phi))
+    new Array(matrix[0][0], matrix[1][0], matrix[2][0]),
+    new Array(matrix[0][1], matrix[1][1], matrix[2][1]),
+    new Array(matrix[0][2], matrix[1][2], matrix[2][2])
   );
 
 }
@@ -608,6 +633,7 @@ function downloadAsCSV(filename, csv) {
   const MIME_TYPE = "data:text/csv;charset=utf-8";
 
   downloadURIComponent(filename, MIME_TYPE + "," + encodeURIComponent(csv));
+
 }
 
 
@@ -810,11 +836,21 @@ function addFooter() {
 
 function createLink(href, text) {
 
+  /*
+   * Function createLink
+   * Creates an HTML link element from a reference and text
+   */
+
   return "<a href='" + href + "'>" + text + "</a>";
 
 }
 
 function addCollectionData(files, format) {
+
+  /*
+   * Function addCollectionData
+   * Adds collections to statistics/geography portal depending on input format
+   */
 
   switch(format) {
     case "DIR2":
@@ -854,6 +890,7 @@ function importCSV(file) {
      * Parses a single component line
      */
 
+    // Extract all
     var [name, dec, inc, coreAzimuth, coreDip, beddingStrike, beddingDip, latitude, longitude, level, age, ageMin, ageMax, coordinates] = line.split(",");
 
     // Longitude within [-180, 180]

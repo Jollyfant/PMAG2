@@ -33,11 +33,11 @@ function parseGPlatesRotationFile(files) {
   // Create a hashmap for the plate ID
   files.pop().data.split(/\r?\n/).slice(1, -1).map(parseLine).forEach(function(x) {
 
-    if(!eulerData.hasOwnProperty(x.id)) {
-      eulerData[x.id] = new Array();
+    if(!GPlatesData.hasOwnProperty(x.id)) {
+      GPlatesData[x.id] = new Array();
     }
 
-    eulerData[x.id].push(x);
+    GPlatesData[x.id].push(x);
 
   });
 
@@ -58,7 +58,7 @@ function parseGPlatesRotationFile(files) {
   optionGroup.label = "Custom Rotations";
 
   // Add Euler poles to plates
-  Object.keys(eulerData).map(mapPlate).sort(byName).forEach(function(plate) {
+  Object.keys(GPlatesData).map(mapPlate).sort(byName).forEach(function(plate) {
 
     // Skip unconstrained plate
     if(plate.id === "1001") {
@@ -73,16 +73,21 @@ function parseGPlatesRotationFile(files) {
 
   $("#plate-select").selectpicker("refresh");
 
-  notify("success", "Succesfully added rotation information for <b>" + Object.keys(eulerData).length + "</b> plates.");
+  notify("success", "Succesfully added rotation information for <b>" + Object.keys(GPlatesData).length + "</b> plates.");
 
 }
 
-function getStagePoleAge(ID, age) {
+function readGPlatesRotation(ID, age) {
+
+  /*
+   * Function readGPlatesRotation
+   * Goes up the GPlates tree and reads rotations
+   */
 
   // Create an empty total reconstruction pole
   var totalPole = new EulerPole(0, 0, 0);
 
-  // Uh.. nothing
+  // Uh.. do nothing
   if(age === 0) {
     return totalPole;
   }
@@ -90,14 +95,15 @@ function getStagePoleAge(ID, age) {
   // Continue when we are referencing the fixed plate ID
   while(ID !== "000") {
 
-    var plateData = eulerData[ID];
+    var plateData = GPlatesData[ID];
 
     // Search input for matching plateID & age
     for(var i = 0; i < plateData.length; i++) {
      
       if(plateData[i].age < age) {
   
-        // Last age checked: return the total pole
+        // Last age checked: pole does not exist for this age
+        // Skip!
         if(i === plateData.length - 1) {
           return null;
         }  

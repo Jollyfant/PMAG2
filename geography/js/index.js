@@ -1,5 +1,5 @@
 var collections = new Array();
-var eulerData = new Object();
+var GPlatesData = new Object();
 var KMLLayers = new Array();
 var APWPs = new Object();
 var mapMakers = new Array();
@@ -1487,12 +1487,26 @@ function mapPlate(id) {
     "993": "South Panthalass Spreading Centre 1",
     "994": "South Panthalass Spreading Centre 2",
     "995": "East Panthalass Spreading Centre 1",
-    "996": "East Panthalass Spreading Centre 2"
+    "996": "East Panthalass Spreading Centre 2",
+    "AF": "Africa",
+    "AR": "Arabia",
+    "AU": "Australia",
+    "CA": "Caribbean",
+    "EA": "East Antarctica",
+    "EU": "Eurasia",
+    "GR": "Greenland",
+    "IB": "Iberia",
+    "IN": "India",
+    "MA": "Madagascar",
+    "NA": "North America",
+    "PA": "Pacific",
+    "SA": "South America"
   }
 
+  // Just return the ID
   if(!plateNames.hasOwnProperty(id)) {
     return {
-      "name": null, "id": id
+      "name": id, "id": id
     }
   }
 
