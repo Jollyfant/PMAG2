@@ -14,18 +14,10 @@
 
     <link rel="stylesheet" href="../css/style.css">
 
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
-          integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
-          crossorigin=""/>
-
-    <!-- Bootstrap & Font Awesome CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
-          crossorigin="anonymous">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css"
-          integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz"
-          crossorigin="anonymous">
+    <!-- Bootstrap & Font Awesome CSS & Leaflet -->
+    <link rel="stylesheet" href="../lib/bootstrap-4.3.1/dist/css/bootstrap.min.css"></link>
+    <link rel="stylesheet" href="../lib/fontawesome-free-5.7.2-web/css/all.css">
+    <link rel="stylesheet" href="../lib/leaflet-1.4.0/leaflet.css">
 
   </head>
 
@@ -64,8 +56,7 @@
         </ul>
 
         <form class="form-inline my-2 my-lg-0">
-          <!--<input id="search-bar" class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">-->
-          <a href="../library/index.html" class="btn btn-sm btn-primary my-2 my-sm-0"><i class="fas fa-book-open"></i> <b>Data Library</b></a>
+          <a href="../library/index.html" class="btn btn-sm btn-secondary my-2 my-sm-0"><i class="fas fa-book-open"></i><b>&nbsp; Data Library</b></a>
         </form>
 
       </div>
@@ -476,35 +467,34 @@
 
     </body>
 
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <!-- jQuery slim and bootstrap -->
+    <script src="../lib/jquery-3.3.1/jquery-3.3.1.slim.min.js"></script>
+    <script src="../lib/bootstrap-4.3.1/dist/js/bootstrap.bundle.min.js"></script>
 
     <!-- Highcharts -->
-    <script src="../js/lib/highcharts/highcharts.js"></script>
-    <script src="../js/lib/highcharts/highcharts-more.js"></script>
-    <script src="../js/lib/highcharts/exporting.js"></script>
-    <script src="../js/lib/highcharts/offline-exporting.js"></script>
-    <script src="../js/lib/highcharts/patch.js"></script>
+    <script src="../lib/highcharts-7.0.3/code/highcharts.js"></script>
+    <script src="../lib/highcharts-7.0.3/code/highcharts-more.js"></script>
+    <script src="../lib/highcharts-7.0.3/code/modules/exporting.js"></script>
+    <script src="../lib/highcharts-7.0.3/code/modules/offline-exporting.js"></script>
 
-    <!-- Include leaflet -->
-   <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"
-     integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA=="
-     crossorigin=""></script>
+    <!-- Leaflet -->
+    <script src="../lib/leaflet-1.4.0/leaflet.js"></script>
 
+    <!-- SHA256 & numeric lib for PCA -->
     <script src="../js/lib/sha.js"></script>
-    <script src="../js/lib/numeric.js"></script>
+    <script src="../lib/numeric-js-1.2.6/numeric.js"></script>
+
+    <!-- General Utilities -->
     <script src="../js/utils.js"></script>
+    <script src="../js/highcharts-patch.js"></script>
 
     <!-- Shared Classes -->
     <script src="../js/classes/Exception.js"></script>
     <script src="../js/classes/Direction.js"></script>
     <script src="../js/classes/Coordinates.js"></script>
 
+    <!-- Intepretation Portal -->
     <script src="./js/ages.js"></script>
-    <script src="./js/publications.json"></script>
     <script src="./js/importing.js"></script>
     <script src="./js/exporting.js"></script>
     <script src="./js/graphs.js"></script>
