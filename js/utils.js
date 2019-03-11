@@ -203,7 +203,7 @@ function meanDirection(vectors) {
 
   var sumVector = new Coordinates(0, 0, 0);
 
-  vectors.map(vector => vector.toCartesian()).forEach(function(coordinates) {
+  vectors.forEach(function(coordinates) {
     sumVector = sumVector.add(coordinates);
   });
 

@@ -607,7 +607,7 @@ function getAverageLocation(site) {
 
   // We can use declination instead of poles.. doens't really matter
   var locations = site.components.filter(x => x.latitude !== null && x.longitude !== null).map(function(x) {
-    return new Direction(x.longitude, x.latitude);
+    return new Direction(x.longitude, x.latitude).toCartesian();
   });
 
   if(locations.length === 0) {

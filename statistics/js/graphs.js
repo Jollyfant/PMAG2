@@ -202,21 +202,21 @@ function bootstrapShallowing() {
     return notify("warning", "The inclination shallowing module is already running.");
   }
 
-  shallowingRunning = true;
-
   // Get the vector in the reference coordinates
   var dirs = doCutoff(collections[0].components.map(x => x.inReferenceCoordinates())).components;
+
+  if(dirs.length < NUMBER_OF_COMPONENTS_REQUIRED) {
+    notify("warning", "A minimum of " + NUMBER_OF_COMPONENTS_REQUIRED + " components is recommended.");
+  }
+
+  shallowingRunning = true;
 
   var nIntersections = 0;
   var bootstrapIteration = 0;
 
   var inclinations = new Array();
 
-  if(dirs.length < NUMBER_OF_COMPONENTS_REQUIRED) {
-    return notify("danger", "A minimum of " + NUMBER_OF_COMPONENTS_REQUIRED + " components is recommended.");
-  }
-
-  var originalInclination = meanDirection(dirs).inc;
+  var originalInclination = meanDirection(dirs.map(x => x.coordinates)).inc;
   var originalUnflatted = unflattenDirections(dirs);
 
   var savedBootstraps = new Array();
@@ -241,6 +241,8 @@ function bootstrapShallowing() {
   // Asynchronous bootstrapping
   (next = function() {
 
+    progressBarElement.css("width", 100 * (iteration / NUMBER_OF_BOOTSTRAPS) + "%");
+
     // Bootstrapp completed: finish
     if(++iteration > NUMBER_OF_BOOTSTRAPS) {
       return EICompletionCallback(inclinations, originalInclination, unflattenedInclination, savedBootstraps);
@@ -260,8 +262,6 @@ function bootstrapShallowing() {
 
     // Save the inclination of intersection
     inclinations.push(result.pop().inclination);
-
-    progressBarElement.css("width", 100 * (iteration / NUMBER_OF_BOOTSTRAPS) + "%");
 
     // Queue for next bootstrap
     setTimeout(next);
@@ -806,7 +806,7 @@ function plotEICDF(inclinations, originalInclination, unflattenedInclination) {
       }
     },
     "subtitle": {
-      "text": "<b>Original Inclination</b>: " + originalInclination.toFixed(2) + " <b>Unflattened Inclination</b>: " + unflattenedInclination.toFixed(2) + " <b>Bootstrapped Confidence</b>: " + lower.toFixed(2) + " to " + upper.toFixed(2) + " (" + COORDINATES + " coordinates)"
+      "text": "<b>Original Inclination</b>: " + originalInclination.toFixed(2) + " <b>Unflattened Inclination</b>: " + (unflattenedInclination === null ? "NaN" : unflattenedInclination.toFixed(2)) + " <b>Bootstrapped Confidence</b>: " + lower.toFixed(2) + " to " + upper.toFixed(2) + " (" + COORDINATES + " coordinates)"
     },
     "xAxis": {
       "min": -90,

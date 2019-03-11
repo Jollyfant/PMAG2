@@ -1,7 +1,7 @@
-function getEulerPole(R) {
+function getEulerPoleFromMatrix(R) {
 
   /*
-   * Function getEulerPole
+   * Function getEulerPoleFromMatrix
    * Converts a rotation matrix to an Euler pole
    * Routine implemented after Bram Vaes @ UU (some changes to fit with Paleomagnetism,org functions)
    * https://en.wikipedia.org/wiki/Rotation_matrix#Axis_and_angle
@@ -52,8 +52,10 @@ function getRotatedPole(eulerPole, pole) {
   var L = getRotationMatrix(phiEuler, thetaEuler);
   
   // Construct rotation matrix (negative rotation)
+  // Pass 90 degrees (0.5 PI) to rotate around a single axis
   var R = getRotationMatrixR(rotationAngle, 0.5 * Math.PI);
 
+  // Placeholders
   var M = nullMatrix();
   var B = nullMatrix();
 
@@ -116,7 +118,7 @@ function convolvePoles(poleOne, poleTwo) {
     }
   }
 
-  return getEulerPole(M);
+  return getEulerPoleFromMatrix(M);
 
 }
 
