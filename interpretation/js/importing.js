@@ -896,7 +896,7 @@ function importApplicationSaveOld(file) {
       "ageMin": null,
       "ageMax": null,
       "lithology": null,
-      "sample": sampleName,
+      "sample": specimen.name,
       "name": specimen.name,
       "volume": null,
       "beddingStrike": Number(specimen.bedStrike),
