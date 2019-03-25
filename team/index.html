@@ -14,18 +14,9 @@
 
     <link rel="stylesheet" href="../css/style.css">
 
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
-          integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
-          crossorigin=""/>
-
     <!-- Bootstrap & Font Awesome CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
-          crossorigin="anonymous">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css"
-          integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz"
-          crossorigin="anonymous">
+    <link rel="stylesheet" href="../lib/bootstrap-4.3.1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../lib/fontawesome-free-5.7.2-web/css/all.css">
 
   </head>
 
@@ -64,8 +55,7 @@
         </ul>
 
         <form class="form-inline my-2 my-lg-0">
-          <!--<input id="search-bar" class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">-->
-          <a href="../library/index.html" class="btn btn-sm btn-primary my-2 my-sm-0"><i class="fas fa-book-open"></i> <b>Data Library</b></a>
+          <a href="../library/index.html" class="btn btn-sm btn-secondary my-2 my-sm-0"><i class="fas fa-book-open"></i><b>&nbsp; Data Library</b></a>
         </form>
 
       </div>
@@ -80,7 +70,7 @@
 
         <div class="alert alert-light" role="alert">
           <h5> Paleomagnetism.org 2 - Team & Contact </h5>
-          <p> The following team of people were involved in the development of Paleomagnetism.org. Other contributors can be found under the reference page. Your suggestions, questions, and comments are welcome and the team can be contacted through <a href="#">email</a>.
+          <p> The following group of people were involved in the development of Paleomagnetism.org. Other contributors can be found under the reference page. Your suggestions, questions, and comments are welcome and the team can be contacted through <a href="mailto:paleomagnetism.org@gmail.com">email</a>.
         </div>
 
 
@@ -125,7 +115,7 @@
   <div class="card" style="border: none;">
     <img style="padding: 20px;" class="card-img-top" src="../resources/images/bv.jpg" alt="Card image cap">
     <div class="card-body">
-      <h5 class="card-title">Bram Vaes</h5>
+      <h5 class="card-title">Bram Vaes <a style="float: right;" href="https://www.uu.nl/staff/bvaes"><i class="fas fa-home"></i></a></h5>
       <hr>
       <p class="card-text text-muted text-justify">Bram works as a Junior Researcher in the Mantle Dynamics and Theoretical Geophysics group. His current research mainly focuses on developing new global plate motion reference frames. This includes building a new paleomagnetic reference frame, in which plate motions are described relative the Earth's spin axis, and developing new ways to model global absolute plate motions (i.e. plate motions relative to the deep mantle) back in geological time.
     </div>
@@ -135,14 +125,15 @@
 
 </div>
 <br>
+<hr>
 
         <h5> Changelog </h5>
         <p> A changelog for the application can be found <a href="../changelog/index.html">here</a>.
-        <h5> Paleomagnetism.org Source Code </h5>
-        <p>  The source code for Paleomagnetism.org 2.0.0 is available as a public repository on <i class="fab fa-github"></i> <a href="https://github.com/Jollyfant/PMAG2">GitHub</a>. The code is licensed under MIT and can be freely used, modified, and shared. 
+        <h5> Paleomagnetism.org Source Code & License </h5>
+        <p>  The source code for Paleomagnetism.org 2.0.0 is available as a public repository on <i class="fab fa-github"></i> <a href="https://github.com/Jollyfant/PMAG2">GitHub</a> and we welcome contributions in any form. The code is licensed under MIT and can be freely used, modified, and shared. 
 
         <h5>  Offline (Local) Version </h5>
-        <p>  A local version of the Paleomagnetism.org application can be downloaded from the <a href="https://github.com/Jollyfant/PMAG2/releases">Releases Page</a>. To run the application locally, unpack the zipped files and open an index.html file in your browser. Features that require an internet connection cannot be used in offline mode.
+        <p>  A local version of the Paleomagnetism.org application can be downloaded from the <i class="fab fa-github"></i> <a href="https://github.com/Jollyfant/PMAG2/releases">GitHub Releases Page</a>. To run the application locally, unpack the zipped files and open any index.html file in your browser. Features that require an internet connection cannot be used in offline mode.
 <br>
 <br>
 <hr>
@@ -150,7 +141,8 @@
   <h5> Paleomagnetism.org Disclaimer </h5>
     <p>  Paleomagnetism.org and its data contributors take care to ensure that the software, data, and metadata are of the highest possible quality. Users of the application assume all responsibility and risk for use of the data and application. In no event shall Paleomagnetism.org or any data providers be liable for any damages caused by, but not limited to, erroneous data or results.
     <p> All data processed with Paleomagnetism.org are treated locally and not sent over a network. Resources required for the functionality of the application are fetched initially when the user visits the page. Data that have been submitted to the <a href="../library/index.html">Data Library</a> are free of use and cannot be reused in unaltered form for commercial use.
-   <p> Paleomagnetism.org &copy; 2019. All rights reserved.
+    <p><b>We kindly remind you to cite all sources.</b>
+   <div style='text-align: right;'> Paleomagnetism.org &copy; 2019. All rights reserved.</div>
 </div>
 
 <div class='justify-content-md-center text-center'>
@@ -165,19 +157,16 @@
 
     </div>
 
-
     <footer id="footer-container" class="container text-muted"></footer>
 
     <br> 
 
   </body>
 
-  <!-- Optional JavaScript -->
-  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  <!-- jQuery slim and bootstrap -->
+  <script src="../lib/jquery-3.3.1/jquery-3.3.1.slim.min.js"></script>
+  <script src="../lib/bootstrap-4.3.1/dist/js/bootstrap.bundle.min.js"></script>
 
-  <script src="../utils.js"></script>
+  <script src="../js/utils.js"></script>
 
 </html>

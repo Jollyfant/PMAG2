@@ -203,11 +203,33 @@ function meanDirection(vectors) {
 
   var sumVector = new Coordinates(0, 0, 0);
 
-  vectors.map(vector => vector.toCartesian()).forEach(function(coordinates) {
+  vectors.forEach(function(coordinates) {
     sumVector = sumVector.add(coordinates);
   });
 
   return sumVector.toVector(Direction);
+
+}
+
+function nullMatrix() {
+  
+  /*
+   * Function nullMatrix
+   * Returns an empty 3D matrix
+   */
+  
+  return new Array(nullVector(), nullVector(), nullVector());
+
+}
+
+function nullVector() {
+  
+  /*
+   * Function nullVector
+   * Returns an empty 1D vector
+   */
+
+  return new Array(0, 0, 0);
 
 }
 
@@ -218,7 +240,7 @@ function TMatrix(data) {
    * Returns the orientation matrix for a set of directions
    */
 
-  var T = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+  var T = nullMatrix();
 
   data.forEach(function(vector) {
     for(var k = 0; k < 3; k++) {
@@ -287,10 +309,13 @@ function getRotationMatrixR(lambda, phi) {
    * Returns the reversed rotation matrix (transpose)
    */
 
+  var matrix = getRotationMatrix(lambda, phi);
+
+  // Return the transpose (inverse rotation)
   return new Array(
-    new Array(Math.cos(lambda) * Math.sin(phi), Math.sin(phi) * Math.sin(lambda), -Math.cos(phi)),
-    new Array(-Math.sin(lambda), Math.cos(lambda), 0),
-    new Array(Math.cos(phi) * Math.cos(lambda), Math.sin(lambda) * Math.cos(phi), Math.sin(phi))
+    new Array(matrix[0][0], matrix[1][0], matrix[2][0]),
+    new Array(matrix[0][1], matrix[1][1], matrix[2][1]),
+    new Array(matrix[0][2], matrix[1][2], matrix[2][2])
   );
 
 }
@@ -811,20 +836,110 @@ function addFooter() {
 
 function createLink(href, text) {
 
+  /*
+   * Function createLink
+   * Creates an HTML link element from a reference and text
+   */
+
   return "<a href='" + href + "'>" + text + "</a>";
 
 }
 
 function addCollectionData(files, format) {
 
+  /*
+   * Function addCollectionData
+   * Adds collections to statistics/geography portal depending on input format
+   */
+
   switch(format) {
     case "DIR2":
       return files.forEach(addData);
     case "PMAG":
       return files.forEach(importPMAG);
+    case "CSV":
+      return files.forEach(importCSV);
     default:
       throw(new Exception("Unknown importing format requested."));
   }
+
+}
+
+function importCSV(file) {
+
+  /*
+   * Function importCSV
+   * Imports from a default CSV format
+   */
+
+  function removeComments(line) {
+
+    /*
+     * Function importCSV::removeComments
+     * Returns FALSE when line starts with comment sign #
+     */
+
+    return !line.startsWith("#");
+
+  }
+
+  function parseLine(line) {
+
+    /*
+     * Function importCSV::parseLine
+     * Parses a single component line
+     */
+
+    // Extract all
+    var [name, dec, inc, coreAzimuth, coreDip, beddingStrike, beddingDip, latitude, longitude, level, age, ageMin, ageMax, coordinates] = line.split(",");
+
+    // Longitude within [-180, 180]
+    if(longitude > 180) {
+      longitude = longitude - 360;
+    }
+
+    // Latitude within [-90, 90]
+    if(latitude > 90) {
+      latitude = latitude - 180;
+    }
+
+    // Confirm the reference frame
+    if(coordinates !== "specimen" && coordinates !== "geographic" && coordinates !== "tectonic") {
+      return notify("danger", "The coordinate reference frame must be either: <b>specimen</b>, <b>geographic</b>, or <b>tectonic</b>.");
+    }
+
+    // Create specimen metadata object
+    let object = {
+      "name": name,
+      "coreAzimuth": Number(coreAzimuth),
+      "coreDip": Number(coreDip),
+      "beddingStrike": Number(beddingStrike),
+      "beddingDip": Number(beddingDip),
+      "latitude": Number(latitude),
+      "longitude": Number(longitude),
+      "level": Number(level),
+      "age": Number(age),
+      "ageMin": Number(ageMin),
+      "ageMax": Number(ageMax)
+    }
+
+    let direction = new Direction(Number(dec), Number(inc));
+
+    // Return in the correct reference frame
+    return new Component(object, direction.toCartesian()).fromReferenceCoordinates(coordinates);
+
+  }
+
+  // Extract all lines from the CSV
+  var lines = file.data.split(/\r?\n/).filter(Boolean).filter(removeComments);
+
+  collections.push({
+    "color": null,
+    "name": file.name,
+    "reference": null,
+    "components": lines.map(parseLine),
+    "created": new Date().toISOString()
+  });
 
 }
 
@@ -1111,6 +1226,52 @@ function toComponent(component) {
    */
 
   return new Component(component, component.coordinates);
+
+}
+
+function createForkLink(pid) {
+
+  /*
+   * Function createForkLink
+   * Creates link to view data from a PID in paleomagnetism.org data library
+   */
+
+  // Create links
+  const INTERPRETATION = createLink("../interpretation/index.html?" + pid, "Interpretation Portal")
+  const STATISTICS = createLink("../statistics/index.html?" + pid, "Statistics Portal");
+  const GEOGRAPHIC = createLink("../geography/index.html?" + pid, "Geography Portal");
+
+  // Determine options
+  if(pid.split(".").length === 1) {
+    var value = new Array(STATISTICS, GEOGRAPHIC).join(" or ");
+  }
+
+  if(pid.split(".").length === 2) {
+    var value = new Array(INTERPRETATION, STATISTICS, GEOGRAPHIC).join(" or ");
+  }
+
+  if(pid.split(".").length === 3) {
+    var value = INTERPRETATION;
+  }
+ 
+  return "<i class='fas fa-globe-americas'><small></i> Open in " + value + ".</small>";
+
+}
+
+function mapTabFocusHandler() {
+
+  /*
+   * Function mapTabFocusHandler
+   * Resize map to fit markers within bounds
+   */
+
+  const TRANSITION_DELAY_MS = 250;
+
+  map.invalidateSize();
+
+  setTimeout(function() {
+    map.fitBounds(new L.featureGroup(markerGroup).getBounds());
+  }, TRANSITION_DELAY_MS);
 
 }
 

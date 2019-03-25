@@ -8,6 +8,27 @@ function addMap(publication) {
    * Adds map to the application
    */
 
+  function createTooltip(publication, collection, i) {
+
+    /*
+     * Function addCollectionsToMap::addPublication::createTooltip
+     * Creates a tooltip for the marker
+     */
+
+    return new Array(
+      "<b>" + collection.name + "</b>",
+      "<i>" + publication.description + "</i>",
+      "",
+      "Collections contains " + publication.nSpecimens + " specimens",
+      "",
+      "<b>Author</b>: " + publication.author,
+      "<b>Published</b>: " + publication.created,
+      "",
+      "<a href='../collection/index.html?" + publication.pid + "." + i + "'><b>View Collection</b></a>"
+    ).join("<br>");
+
+  }
+
   const MAP_CONTAINER = "map";
   const TILE_LAYER = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
   const VIEWPORT = new L.latLng(35, 0);
@@ -34,14 +55,7 @@ function addMap(publication) {
       return {"lat": x.latitude, "lng": x.longitude}
     }));
 
-    var markerInformation = [
-      "<h5>Collection " + collection.name + "</h5>",
-      "<b>Average Location: </b>" + averageLocation.lng + "°E, " + averageLocation.lat + "°N",
-      "<b>Demagnetization Type: </b>" + getDemagnetizationTypeLabel(collection.demagnetizationType),
-      "<b>Created: </b>" + collection.data.created,
-      "<hr>",
-      "<b><a href='../collection/index.html" + window.location.search + "." + i + "'>Collection Details</a>",
-    ].join("<br>");
+    var markerInformation = createTooltip(publication, collection, i);
 
     markerGroup.push(new L.Marker(new L.LatLng(averageLocation.lat, averageLocation.lng)).addTo(map).bindPopup(markerInformation));
 
@@ -49,36 +63,6 @@ function addMap(publication) {
 
   // Create the convex hull
   polygon = new L.polygon(publication.convexHull.map(x => new L.LatLng(x.lat, x.lng)), {color: HIGHCHARTS_GREEN}).addTo(map);
-
-}
-
-function mapTabFocusHandler() {
-
-  /*
-   * Function mapTabFocusHandler
-   * Resize map to fit markers within bounds
-   */
-
-  const TRANSITION_DELAY_MS = 250;
-
-  map.invalidateSize();
-
-  setTimeout(function() {
-    map.fitBounds(polygon.getBounds());
-  }, TRANSITION_DELAY_MS);
-
-}
-
-function loadDigitalObjectMetadata(pid, callback) {
-
-  /*
-   * Fuction loadDigitalObjectMetadata
-   * Get the parent metadata object that describes this collection
-   */
-
-  HTTPRequest("../resources/publications.json", "GET", function(json) {
-    callback(json.filter(x => x.pid === pid));
-  });
 
 }
 
@@ -90,7 +74,6 @@ function resolvePID(pid) {
    */
 
   // Load publication identifiers
-  loadDigitalObjectMetadata(pid, metadataContent);
   HTTPRequest("../resources/publications/" + pid + ".pid", "GET", formatCollectionTable);
 
 }
@@ -127,6 +110,8 @@ function metadataContent(json) {
     "    <th>Name</th>",
     "    <th>Author</th>",
     "    <th>Description</th>",
+    "    <th>Collections</th>",
+    "    <th>DOI</th>",
     "    <th>Created</th>",
     "  </tr>",
     "</thead>", 
@@ -135,6 +120,8 @@ function metadataContent(json) {
     "    <td>" + json.name + "</td>",
     "    <td>" + json.author + "</td>",
     "    <td>" + json.description + "</td>",
+    "    <td>" + json.nCollections + "</td>",
+    "    <td>" + (json.doi || "N/A") + "</td>",
     "    <td>" + json.created.slice(0, 10) + "</td>",
     "  </tr>",
     "</tbody>"
@@ -173,31 +160,6 @@ function formatCollectionTable(publication) {
 
 }
 
-function createForkLink(pid) {
-
-  /*
-   * Function createForkLink
-   * Creates link to fork data from a PID in paleomagnetism.org
-   */
-
-  return "<small><a href='../statistics/index.html?" + pid +"'><b>View in Statistics Portal</b></a> or <a href='../geography/index.html?" + pid +"'><b>View in Geography Portal</b></a></small>"
-
-}
-
-function downloadTableAsJSON() {
-
-  const MIME_TYPE = "data:application/json;charset=utf-8";
-  const FILENAME = "collections.json";
-
-  var pid = window.location.search.slice(1)
-
-  // Make a HTTP request
-  HTTPRequest("publications/" + pid + ".pid", "GET", function(json) {
-    downloadURIComponent(FILENAME, MIME_TYPE + "," + JSON.stringify(json));
-  });
-
-}
-
 function formatSampleRows(collection, i) {
 
   /*
@@ -206,14 +168,6 @@ function formatSampleRows(collection, i) {
    */
 
   // Attempt to extract the location
-  if(collection.location) {
-    var longitude = collection.location.lng;
-    var latitude = collection.location.lat;
-  } else {
-    var longitude = "";
-    var latitude = "";
-  }
-
   var latitudes = collection.data.specimens.map(x => x.latitude);
   var longitudes = collection.data.specimens.map(x => x.longitude);
   var levels = collection.data.specimens.map(x => x.longitude);

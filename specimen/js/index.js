@@ -30,34 +30,13 @@ function addMap(specimens) {
   // Add specimens to map
   specimens.forEach(function(specimen) {
 
-    if(!specimen.location) {
-      return;
-    }
-
     var markerInformation = [
       "<b>Specimen " + specimen.name + "</b>",
     ].join("<br>");
 
-    markerGroup.push(new L.Marker(new L.LatLng(specimen.location.lat, specimen.location.lng)).addTo(map).bindPopup(markerInformation));
+    markerGroup.push(new L.Marker(new L.LatLng(specimen.latitude, specimen.longitude)).addTo(map).bindPopup(markerInformation));
 
   });
-
-}
-
-function mapTabFocusHandler() {
-
-  /*
-   * Function mapTabFocusHandler
-   * Resize map to fit markers within bounds
-   */
-
-  const TRANSITION_DELAY_MS = 250;
-
-  map.invalidateSize();
-
-  setTimeout(function() {
-    map.fitBounds(new L.featureGroup(markerGroup).getBounds());
-  }, TRANSITION_DELAY_MS);
 
 }
 
@@ -91,17 +70,6 @@ function __init__() {
 
 __init__();
 
-function createForkLink(pid) {
-
-  /*
-   * Function createForkLink
-   * Creates link to fork data from a PID in paleomagnetism.org
-   */
-
-  return "<small><a href='../interpretation/index.html?" + pid +"'><b><i class='fas fa-code-branch'></i> Fork in Interpretation Portal</b></a>"
-
-}
-
 function updateCardTable(specimen) {
 
   /*
@@ -129,8 +97,8 @@ function updateCardTable(specimen) {
     "<tbody>",
     "  <tr>",
     "    <td>" + specimen.name + " </td>",
-    "    <td>" + (specimen.location ? specimen.location.lng : '') + " </td>",
-    "    <td>" + (specimen.location ? specimen.location.lat : '') + " </td>",
+    "    <td>" + specimen.longitude + " </td>",
+    "    <td>" + specimen.latitude + " </td>",
     "    <td>" + getDemagnetizationTypeLabel(specimen.demagnetizationType) + "</td>",
     "    <td>" + specimen.interpretations.length + "</td>",
     "    <td>" + specimen.steps.length + "</td>",

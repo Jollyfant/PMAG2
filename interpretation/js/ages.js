@@ -1,3 +1,5 @@
+var TIME_SCALE_AGES;
+
 function addAges() {
 
   /*
@@ -9,12 +11,15 @@ function addAges() {
 
   HTTPRequest("db/ages.json", "GET", function(ages) {
 
-    Object.keys(ages).forEach(function(age) {
+    // Save reference
+    TIME_SCALE_AGES = ages;
+
+    Object.keys(TIME_SCALE_AGES).forEach(function(age) {
 
       var option = document.createElement("option");
 
       // Indent the name based on its level
-      option.text = age === "null" ? "Unknown" : INDENTATION_CHARACTER.repeat(2 * ages[age].indentation) + age;
+      option.text = age === "null" ? "\xA0\xA0\xA0\xA0Unknown" : INDENTATION_CHARACTER.repeat(2 * (2 + ages[age].indentation)) + age;
       option.value = age;
 
       document.getElementById("specimen-age-select").add(option);

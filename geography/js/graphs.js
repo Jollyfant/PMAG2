@@ -34,7 +34,7 @@ function plotExpected(container, dataSeries, site) {
       "<b>" + this.series.name + "</b>",
       "<b>Age: </b>" + this.x + "Ma",
       "<b>" + title +": </b>" + this.y.toFixed(2),
-      (this.point.lower && this.point.upper) ? "<b>Interval: </b> " + (this.y - this.point.lower).toFixed(2) + ", " + (this.y + this.point.upper).toFixed(2) : ""
+      (this.point.lower && this.point.upper) ? "<b>Interval: </b> " + this.point.lower.toFixed(2) + ", " + this.point.upper.toFixed(2) : ""
     ].join("<br>");
 
   }
@@ -121,8 +121,8 @@ function plotExpected(container, dataSeries, site) {
         "data": [{
           "x": avAge.value,
           "y": statistics.dir.mean.dec,
-          "lower": statistics.butler.dDx,
-          "upper": statistics.butler.dDx
+          "lower": (statistics.dir.mean.dec - statistics.butler.dDx),
+          "upper": (statistics.dir.mean.dec + statistics.butler.dDx)
         }]
       }, {
         "name": "Confidence",
@@ -160,8 +160,8 @@ function plotExpected(container, dataSeries, site) {
         "data": [{
           "x": avAge.value,
           "y": statistics.dir.mean.inc,
-          "lower": statistics.butler.dIx,
-          "upper": statistics.butler.dIx
+          "lower": (statistics.dir.mean.inc - statistics.butler.dIx),
+          "upper": (statistics.dir.mean.inc + statistics.butler.dIx)
         }]
       }, {
         "name": "Confidence",
@@ -312,51 +312,83 @@ function plotPredictedDirections() {
    * or GPlates rotation file
    */
 
-  function mapPlateName(name) {
+  function createPoleSeries(name, data, color, confidence) {
 
-    /*
-     * Function plotPredictedDirections::mapPlateName
-     * Maps short hand plate name to full name
-     */
-
-    switch(name) {
-      case "AF":
-        return "Africa";
-      case "AR":
-        return "Arabia";
-      case "AU":
-        return "Australia";
-      case "CA":
-        return "Caribbean";
-      case "EA":
-        return "East Antarctica";
-      case "EU":
-        return "Eurasia";
-      case "GR":
-        return "Greenland";
-      case "IB":
-        return "Iberia";
-      case "IN":
-        return "India";
-      case "MA":
-        return "Madagascar";
-      case "NA":
-        return "North America";
-      case "PA":
-        return "Pacific";
-      case "SA":
-        return "South America";
-      default:
-        return name;
-    }
+    return [{
+      "name": name,
+      "data": data,
+      "lineWidth": 2,
+      "color": color,
+      "marker": {
+        "symbol": "circle"
+      }
+    }, {
+      "data": confidence,
+      "type": "line",
+      "lineWidth": 2,
+      "dashStyle": "ShortDash",
+      "enableMouseTracking": false,
+      "linkedTo": ":previous",
+      "marker": {
+        "enabled": false
+      }
+    }];
 
   }
 
-  const APWP_FIXED_PLATE_ID = "701";
+  function createRangeSeries(name, data, color, rangeData) {
 
+    /*
+     * Function plotPredictedDirections::createRangeSeries
+     * Creates Highcharts series
+     */
+
+    return [{ 
+      "name": name,
+      "data": data,
+      "color": color
+    }, {
+      "data": rangeData,
+      "type": "arearange",
+      "linkedTo": ":previous",
+      "marker": {
+        "enabled": false
+      }
+    }];
+
+  }
+
+  function getParticularEulerPole(plate, pole) {
+  
+    /*
+     * Function plotPredictedDirections::getParticularEulerPole
+     * Returns a particular Euler pole
+     */
+
+    // Check the GPlates data first
+    if(GPlatesData.hasOwnProperty(plate)) {
+  
+       try {
+         return readGPlatesRotation(plate, pole.age);
+       } catch(exception) {
+         throw(new Exception("Could not extract Euler pole from GPlates rotation file."));
+       }
+  
+    }
+  
+    if(pole.euler.hasOwnProperty(plate)) {
+      return new EulerPole(pole.euler[plate].lng, pole.euler[plate].lat, pole.euler[plate].rot);
+    }
+  
+    // Not exist for age
+    return null;
+  
+  }
+
+  // Create a site from the input
   var site = new Site(
-    Number(document.getElementById("site-latitude-input").value),
-    Number(document.getElementById("site-longitude-input").value)
+    Number(document.getElementById("site-longitude-input").value),
+    Number(document.getElementById("site-latitude-input").value)
   );
 
   var dataSeriesDeclination = new Array();
@@ -381,6 +413,7 @@ function plotPredictedDirections() {
       plates = new Array("Custom APWP");
     }
 
+    // Confirm plates are selected
     if(plates.length === 0) {
       return notify("danger", "Select at least one plate on the right hand side.");
     }
@@ -408,127 +441,71 @@ function plotPredictedDirections() {
           return;
         }
 
-        // TODO FIXME 2 function
-        if(APWP.type !== "custom") {
-
-           // Check if the user has added euler poles
-           // Fixed plate must be 701 (SOUTH AFRICA)
-           if(eulerData.hasOwnProperty(plate)) {
-           
-             try {
-               var eulerPole = extractEulerPole(plate, APWP_FIXED_PLATE_ID, pole.age, pole.age, 1).pop().pole;
-             } catch(exception) {
-               return;
-             }
-           
-           } else if(!pole.euler.hasOwnProperty(plate)) {
-             return;
-           } else {
-             var eulerPole = new EulerPole(pole.euler[plate].lng, pole.euler[plate].lat, pole.euler[plate].rot);
-           }
-
-        } else {
-          // No rot
+        // Custom APWPS need not be rotated (since they are defined)
+        // Just do an Euler rotation with rotation angle 0
+        if(APWP.type === "custom") {
           var eulerPole = new EulerPole(0, 0, 0);
+        } else {
+          var eulerPole = getParticularEulerPole(plate, pole);
         }
 
-        // The rotated pole
+        // Could not determine the Euler pole: skip this age!
+        if(eulerPole === null) {
+          return;
+        }
+
+        // Get the rotated pole
         var rPole = getRotatedPole(eulerPole, new Pole(pole.lng, pole.lat));
         var directions = site.directionFrom(rPole);
 
+        // Within [-180, 180]
         if(directions.dec > 180) {
           directions.dec -= 360;
         }
 
-        // Use A95, palat to get confidence regions
-        var A95 = pole.A95 * RADIANS;
-        var palat = paleolatitude(directions.inc);
+        // Butler parameters
+        var butler = getButlerParameters(pole.A95, directions.inc);
 
-        var dIx = A95 * (2 / (1 + 3 * Math.pow(Math.cos((90 - palat) * RADIANS), 2))) / RADIANS;
-        var dDx = Math.asin(Math.sin(A95) / Math.cos(palat * RADIANS)) / RADIANS;
-        var minPaleolatitude = paleolatitude(directions.inc - dIx);
-        var maxPaleolatitude = paleolatitude(directions.inc + dIx);
+        // Calculate the confidence bounds
+        var minDeclination = (directions.dec - butler.dDx);
+        var maxDeclination = (directions.dec + butler.dDx);
+        var minInclination = (directions.inc - butler.dIx);
+        var maxInclination = (directions.inc + butler.dIx);
+        var minPaleolatitude = butler.palatMin;
+        var maxPaleolatitude = butler.palatMax;
 
-        // Data series
-        dataDeclination.push({"x": pole.age, "y": directions.dec, "lower": dDx, "upper": dDx});
-        dataInclination.push({"x": pole.age, "y": directions.inc, "lower": dIx, "upper": dIx});
-        dataPaleolatitude.push({"x": pole.age, "y": palat, "lower": minPaleolatitude, "upper": maxPaleolatitude});
+        // The actual line data series
+        // Lower and upper are for tooltip display
+        dataDeclination.push({"x": pole.age, "y": directions.dec, "lower": minDeclination, "upper": maxDeclination});
+        dataInclination.push({"x": pole.age, "y": directions.inc, "lower": minInclination, "upper": maxInclination});
+        dataPaleolatitude.push({"x": pole.age, "y": paleolatitude(directions.inc), "lower": minPaleolatitude, "upper": maxPaleolatitude});
 
         // Confidence ranges
-        dataDeclinationRange.push({"x": pole.age, "low": directions.dec - dDx, "high": directions.dec + dDx});
-        dataInclinationRange.push({"x": pole.age, "low": directions.inc - dIx, "high": directions.inc + dIx});
+        dataDeclinationRange.push({"x": pole.age, "low": minDeclination, "high": maxDeclination});
+        dataInclinationRange.push({"x": pole.age, "low": minInclination, "high": maxInclination});
         dataPaleolatitudeRange.push({"x": pole.age, "low": minPaleolatitude, "high": maxPaleolatitude});
 
         // The pole series
         poleSeries.push({"x": rPole.lng, "y": projectInclination(rPole.lat), "inc": rPole.lat, "age": pole.age});
-        poleSeriesConfidence = poleSeriesConfidence.concat(getPlaneData({"dec": rPole.lng, "inc": rPole.lat}, A95 / RADIANS));
+        poleSeriesConfidence = poleSeriesConfidence.concat(getPlaneData({"dec": rPole.lng, "inc": rPole.lat}, pole.A95));
         poleSeriesConfidence.push({"x": null, "y": null});
 
       });
 
+      // Do not connect any circles
       poleSeries.push({"x": null, "y": null});
 
       // Make sure that the area range and line share a color
+      var name = mapPlate(plate).name + " (" + APWP.name + ")";
       var color = Highcharts.getOptions().colors[counter++ % 8];
 
-      dataSeriesDeclination.push({
-        "name": mapPlateName(plate) + " (" + APWP.name + ")",
-        "data": dataDeclination,
-        "color": color
-      }, {
-        "data": dataDeclinationRange,
-        "type": "arearange",
-        "linkedTo": ":previous",
-        "marker": {
-          "enabled": false
-        }
-      });
+      // Create line/range data series
+      dataSeriesDeclination.push(...createRangeSeries(name, dataDeclination, color, dataDeclinationRange));
+      dataSeriesInclination.push(...createRangeSeries(name, dataInclination, color, dataInclinationRange));
+      dataSeriesPaleolatitude.push(...createRangeSeries(name, dataPaleolatitude, color, dataPaleolatitudeRange));
 
-      dataSeriesInclination.push({
-        "name": mapPlateName(plate) + " (" + APWP.name + ")",
-        "data": dataInclination,
-        "color": color
-      }, {
-        "data": dataInclinationRange,
-        "type": "arearange",
-        "linkedTo": ":previous",
-        "marker": {
-          "enabled": false
-        }
-      });
-
-      dataSeriesPaleolatitude.push({
-        "name": mapPlateName(plate) + " (" + APWP.name + ")",
-        "data": dataPaleolatitude,
-        "color": color
-      }, {
-        "data": dataPaleolatitudeRange,
-        "type": "arearange",
-        "linkedTo": ":previous",
-        "marker": {
-          "enabled": false
-        }
-      });
-
-      dataSeriesPoles.push({
-        "name": mapPlateName(plate) + " (" + APWP.name + ")",
-        "data": poleSeries,
-        "lineWidth": 2,
-        "color": color,
-        "marker": {
-          "symbol": "circle"
-        }
-      }, {
-        "data": poleSeriesConfidence,
-        "type": "line",
-        "lineWidth": 2,
-        "dashStyle": "ShortDash",
-        "enableMouseTracking": false,
-        "linkedTo": ":previous",
-        "marker": {
-          "enabled": false
-        }
-      });
+      // And a series for the poles
+      dataSeriesPoles.push(...createPoleSeries(name, poleSeries, color, poleSeriesConfidence));
 
     });
 
@@ -546,6 +523,7 @@ function plotPredictedDirections() {
   // Create Highcharts for pole positions
   plotPoles(dataSeriesPoles);
 
+  // Jump to bottom
   window.scrollTo(0, document.body.scrollHeight);
 
 }

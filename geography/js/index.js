@@ -1,5 +1,5 @@
 var collections = new Array();
-var eulerData = new Object();
+var GPlatesData = new Object();
 var KMLLayers = new Array();
 var APWPs = new Object();
 var mapMakers = new Array();
@@ -496,7 +496,7 @@ function generateColorPalette() {
 
 }
 
-function downloadAsJSON() {
+function downloadAsGeoJSON() {
 
   /*
    * Function downloadAsJSON
@@ -607,7 +607,7 @@ function getAverageLocation(site) {
 
   // We can use declination instead of poles.. doens't really matter
   var locations = site.components.filter(x => x.latitude !== null && x.longitude !== null).map(function(x) {
-    return new Direction(x.longitude, x.latitude);
+    return new Direction(x.longitude, x.latitude).toCartesian();
   });
 
   if(locations.length === 0) {
@@ -701,7 +701,6 @@ function redrawCharts() {
   var tempScrollTop = window.pageYOffset || document.scrollingElement.scrollTop || document.documentElement.scrollTop;
 
   showCollectionsOnMap();
-  plotPredictedDirections();
 
   window.scrollTo(0, tempScrollTop);
 
@@ -1488,12 +1487,26 @@ function mapPlate(id) {
     "993": "South Panthalass Spreading Centre 1",
     "994": "South Panthalass Spreading Centre 2",
     "995": "East Panthalass Spreading Centre 1",
-    "996": "East Panthalass Spreading Centre 2"
+    "996": "East Panthalass Spreading Centre 2",
+    "AF": "Africa",
+    "AR": "Arabia",
+    "AU": "Australia",
+    "CA": "Caribbean",
+    "EA": "East Antarctica",
+    "EU": "Eurasia",
+    "GR": "Greenland",
+    "IB": "Iberia",
+    "IN": "India",
+    "MA": "Madagascar",
+    "NA": "North America",
+    "PA": "Pacific",
+    "SA": "South America"
   }
 
+  // Just return the ID
   if(!plateNames.hasOwnProperty(id)) {
     return {
-      "name": null, "id": id
+      "name": id, "id": id
     }
   }
 

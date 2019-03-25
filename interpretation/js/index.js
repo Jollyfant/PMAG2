@@ -19,6 +19,7 @@ function registerEventHandlers() {
 
   // Initialize controlled vocab
   addLithologyOptions();
+  addGeologicalClassOptions();
 
 }
 
@@ -592,6 +593,24 @@ function removeOptions(selectbox) {
 
 }
 
+function addGeologicalClassOptions() {
+
+  /*
+   * Function addGeologicalClassOptions
+   * Semantic vocab for geological classes (may also be Not Specified)
+   */
+
+  const geologicalClasses = new Array(
+    "Archeologic", "Extraterrestrial", "Extrusive",
+    "Igneous", "Intrusive", "Lunar", "Martian",
+    "Metamorphic", "Meteorite", "Sedimentary",
+    "Subaerial", "Submarine", "Synthetic"
+  );
+
+  addOptions(geologicalClasses, "specimen-geology-input");
+
+}
+
 function addLithologyOptions() {
 
   /*
@@ -600,17 +619,26 @@ function addLithologyOptions() {
    */
 
   HTTPRequest("./db/lithologies.json", "GET", function(lithologies) {
+    addOptions(lithologies, "specimen-lithology-input");
+  });
 
-    lithologies.forEach(function(x) {
+}
 
-      var option = document.createElement("option");
+function addOptions(options, element) {
 
-      option.text = x.item;
-      option.value = x.item;
+  /*
+   * Function addOptions
+   * Adds a list of options to a specific option element
+   */
 
-      document.getElementById("specimen-lithology-input").add(option);
+  options.forEach(function(x) {
 
-    });
+    var option = document.createElement("option");
+
+    option.text = x;
+    option.value = x;
+
+    document.getElementById(element).add(option);
 
   });
 
