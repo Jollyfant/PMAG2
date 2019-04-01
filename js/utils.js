@@ -27,6 +27,9 @@ const LINE_DELIMITER = "\n";
 
 document.title = "Paleomagnetism.org " + __VERSION__;
 
+window.addEventListener("online",  notify.bind(null, "success", "Your connection to the internet has been recovered."));
+window.addEventListener("offline", notify.bind(null, "danger", "Your connection to the internet was dropped."));
+
 function getRotationMatrix(lambda, phi) {
 
   /*
