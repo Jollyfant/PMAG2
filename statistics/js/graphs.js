@@ -98,12 +98,12 @@ function bootstrapFoldtest() {
 
   foldtestRunning = true;
 
-  // Get the components for each site (no cutoff)
+  // Get the components for each site (no cutoff applied)
   var cutoffCollectionsG = collections.map(function(collection) {
     return collection.components.map(x => x.inReferenceCoordinates("geographic"));
   });
 
- // The same for tectonic coordinates
+  // The same for tectonic coordinates
   var cutoffCollectionsT = collections.map(function(collection) {
     return collection.components.map(x => x.inReferenceCoordinates("tectonic"));
   });
