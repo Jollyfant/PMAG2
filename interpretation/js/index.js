@@ -246,13 +246,15 @@ function redrawInterpretationGraph(fit) {
   }
 
   var meanVector = new Coordinates(0, 0, 0);
-  var nSamples = 0;
+  var rVector = new Coordinates(0, 0, 0);
+  var nCircles = 0;
+  var nDirections = 0;
 
   sampless.forEach(function(sample) {
 
     sample.interpretations.forEach(function(interpretation) {
 
-      // Skip anything not in the group
+      // Skip anything that is not in the group
       if(interpretation.group !== GROUP) {
         return;
       }
@@ -265,7 +267,13 @@ function redrawInterpretationGraph(fit) {
       if(interpretation.type === "TAU1") {
 
         meanVector = meanVector.add(co);
-        nSamples++;
+
+        if(interpretation.fitted) {
+          nCircles++;
+        } else {
+          rVector = rVector.add(co);
+          nDirections++;
+        }
 
         // Add fitted components to another series
         if(interpretation.fitted) {
@@ -308,9 +316,13 @@ function redrawInterpretationGraph(fit) {
 
   // Update the mean table
   var mean = meanVector.toVector(Direction);
+  var R = mean.length;
+
+  // Modified Fisher statistics /McFadden and McElhinny (1988)
+  var statistics = getFisherStatisticsFit(nDirections, nCircles, R);
 
   // Update the table
-  updateInterpretationMeanTable(mean, nSamples);
+  updateInterpretationMeanTable(mean, statistics);
 
   var series = [{
     "name": "Directions",
@@ -370,6 +382,32 @@ function redrawInterpretationGraph(fit) {
   }
 
   createHemisphereChart(series);
+
+}
+
+function getFisherStatisticsFit(nDirections, nCircles, R) {
+
+  /*
+   * function getFisherStatisticsFit
+   * Gets fitted great circle fisher parameters (McFadden & McElhinny)
+   */
+
+  var nTotal = nDirections + nCircles;
+  var nPrime = Math.max(1.1, nDirections + 0.5 * nCircles);
+  
+  // Other statistical parameters (McFadden & McElhinny, 1988)
+  var k = (2 * nDirections + nCircles - 2) / (2 * (nDirections + nCircles - R));
+  var t95 = Math.acos(1 - ((nPrime - 1)/k) * (Math.pow(20, (1 / (nPrime - 1))) - 1)) / RADIANS;
+  
+  // Standard Fisher parameters (k, a95);
+  var k = (nTotal - 1) / (nTotal - R);
+  var a95 = Math.acos(1 - ((nTotal - R) / R) * (Math.pow(20, (1 / (nTotal - 1))) - 1)) / RADIANS;
+
+  return {
+    "N": nTotal,
+    "a95": a95,
+    "t95": t95
+  }
 
 }
 
@@ -848,7 +886,7 @@ function getFittedGreatCircles() {
 
 }
 
-function updateInterpretationMeanTable(direction, N) {
+function updateInterpretationMeanTable(direction, parameters) {
 
   /*
    * Function updateInterpretationMeanTable
@@ -862,15 +900,19 @@ function updateInterpretationMeanTable(direction, N) {
     "      <td>Directions</td>",
     "      <td>Declination</td>",
     "      <td>Inclination</td>",
+    "      <td>α95</td>",
+    "      <td>t95</td>",
     "      <td>Reference</td>",
     "      <td>Fitted</td>",
     "    </tr>",
     "  </thead>",
     "  <tbody>",
     "    <tr>",
-    "      <td>" + N + "</td>",
+    "      <td>" + parameters.N + "</td>",
     "      <td>" + direction.dec.toFixed(2) + "</td>",
     "      <td>" + direction.inc.toFixed(2) + "</td>",
+    "      <td>" + parameters.a95.toFixed(2) + "</td>",
+    "      <td>" + parameters.t95.toFixed(2) + "</td>",
     "      <td>" + COORDINATES + "</td>",
     "      <td>" + (IS_FITTED ? "<i class='fas fa-check text-success'></i>" : "<i class='fas fa-times text-danger'></i>") + "</td>",
     "    </tr>",
