@@ -1,5 +1,5 @@
 const __DEBUG__ = true;
-const __VERSION__ = "2.0.0";
+const __VERSION__ = "2.0.0-alpha";
 const RADIANS = Math.PI / 180;
 const PROJECTION_TYPE = "AREA";
 
@@ -829,7 +829,7 @@ function addFooter() {
   document.getElementById("footer-container").innerHTML = new Array(
     "<hr>",
     "<b>Paleomagnetism<span class='text-danger'>.org</span></b> &copy; " + new Date().getFullYear() + ". All Rights Reserved.",
-    "<div style='float: right;' class='text-muted'><small>Version v" + __VERSION__ + "</small></div>",
+    "<div style='float: right;' class='text-muted'><small>Version v" + __VERSION__ + " (<a href='https://doi.org/10.5281/zenodo.2649907'>10.5281/zenodo.2649907</a>)</small></div>",
     "&nbsp; <i class='fab fa-github'></i> <a href='https://github.com/Jollyfant/PMAG2'><b>Source Code</b></a>",
     "&nbsp; <i class='fas fa-balance-scale'></i> Licensed under <a href='https://github.com/Jollyfant'><b>MIT</b>.</a>",
     "<br>"
