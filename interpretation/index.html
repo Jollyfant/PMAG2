@@ -226,8 +226,8 @@
           <br>
 
           <div class="row justify-content-md-center">
-            <div class="col-md-6 ">
-              <div id="fitting-container"></div>
+            <div class="col-md-12">
+              <div id="fitting-container" style="height: 600px;"></div>
               <figcaption class="figure-caption">Great circles can be fitted to directional set points by pressing <b>9</b>.</figcaption>
             </div>
           </div>
@@ -235,13 +235,13 @@
           <br>
 
           <div class="row justify-content-md-center">
-            <div class="col-md-6 ">
+            <div class="col-md-12 ">
               <table class='table table-sm text-center table-striped' id="fitted-table-container"></table>
             </div>
           </div>
 
           <div class="row justify-content-md-center">
-            <div class="col-md-6 ">
+            <div class="col-md-12 ">
               <div class='text-center'>
                 <button class="btn btn-sm btn-success" onclick="downloadInterpretations()" type="button" class="btn btn-primary"><i class="fas fa-file-download"></i>&nbsp; Download Interpretations</button>
                 <button class="btn btn-sm btn-success" onclick="downloadInterpretationsCSV()" type="button" class="btn btn-primary"><i class="fas fa-file-download"></i>&nbsp; Download Interpretations (CSV)</button>
@@ -331,6 +331,10 @@
             &nbsp;
             <input class="form-check-input" type="checkbox" id="auto-comment" value="option1">
             <label class="form-check-label" for="auto-comment"> Auto comment </label>
+            &nbsp;
+            &nbsp;
+            <input class="form-check-input" type="checkbox" id="confirm-integrity" value="option1">
+            <label class="form-check-label" for="confirm-integrity"> Confirm file integrity </label>
           </div>
           <br>
           <br>

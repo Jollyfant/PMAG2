@@ -320,6 +320,7 @@ function redrawInterpretationGraph(fit) {
 
   // Modified Fisher statistics /McFadden and McElhinny (1988)
   var statistics = getFisherStatisticsFit(nDirections, nCircles, R);
+  var a95ellipse = getPlaneData(mean, statistics.a95);
 
   // Update the table
   updateInterpretationMeanTable(mean, statistics);
@@ -350,7 +351,31 @@ function redrawInterpretationGraph(fit) {
       "lineWidth": 1,
       "lineColor": HIGHCHARTS_GREEN
     }
+  }, {
+    "name": "Confidence Ellipse",
+    "linkedTo": ":previous",
+    "type": "line",
+    "color": HIGHCHARTS_RED,
+    "data": getPlaneData(mean, statistics.a95),
+    "enableMouseTracking": false,
+    "marker": {
+      "enabled": false
+    }
   }];
+
+  // Add t95 confidence ellipse
+  if(IS_FITTED) {
+    series.push({
+      "name": "t95 Confidence Ellipse",
+      "type": "line",
+      "color": HIGHCHARTS_ORANGE,
+      "data": getPlaneData(mean, statistics.t95),
+      "enableMouseTracking": false,
+      "marker": {
+        "enabled": false
+      }
+    });
+  }
 
   if(dataSeriesPlane.length) {
     series.push({
@@ -405,6 +430,8 @@ function getFisherStatisticsFit(nDirections, nCircles, R) {
 
   return {
     "N": nTotal,
+    "nCircles": nCircles,
+    "nDirections": nDirections,
     "a95": a95,
     "t95": t95
   }
@@ -418,7 +445,7 @@ function handleLocationSave(event) {
    * Handler when the location and some additional metadata are saved
    */
 
-  function setMetadata(specimen) {
+  function setMetadata(specimen, i) {
 
     /*
      * Function handleLocationSave
@@ -433,7 +460,11 @@ function handleLocationSave(event) {
     specimen.age = age;
     specimen.ageMin = ageMin;
     specimen.ageMax = ageMax;
-    specimen.sample = sample;
+
+    // Skip overwriting sample name when "apply all" is selected (e.g. forEach call)
+    if(i === null) {
+      specimen.sample = sample;
+    }
 
   }
 
@@ -468,7 +499,7 @@ function handleLocationSave(event) {
   if(document.getElementById("location-apply-all").checked) {
     specimens.forEach(setMetadata);
   } else {
-    setMetadata(specimen);
+    setMetadata(specimen, null);
   }
 
   // Success
@@ -897,7 +928,9 @@ function updateInterpretationMeanTable(direction, parameters) {
     "  <caption>Mean Component Statistics</caption>",
     "  <thead>",
     "    <tr>",
+    "      <td>Components</td>",
     "      <td>Directions</td>",
+    "      <td>Circles</td>",
     "      <td>Declination</td>",
     "      <td>Inclination</td>",
     "      <td>α95</td>",
@@ -909,6 +942,8 @@ function updateInterpretationMeanTable(direction, parameters) {
     "  <tbody>",
     "    <tr>",
     "      <td>" + parameters.N + "</td>",
+    "      <td>" + parameters.nDirections + "</td>",
+    "      <td>" + parameters.nCircles + "</td>",
     "      <td>" + direction.dec.toFixed(2) + "</td>",
     "      <td>" + direction.inc.toFixed(2) + "</td>",
     "      <td>" + parameters.a95.toFixed(2) + "</td>",
@@ -1197,13 +1232,15 @@ function deleteCurrentSpecimen() {
     return;
   }
 
-  if(!confirm("Are you sure you wish to delete this specimen?")) {
+  if(!confirm("Are you sure you wish to remove this specimen?")) {
     return;
   }
 
+  notify("success", "Succesfully removed specimen <b>" + specimens[selectedIndex].name + "</b>.");
+
   // Remove from the array
   specimens.splice(selectedIndex, 1);
-
+  
   updateSpecimenSelect();
 
 }

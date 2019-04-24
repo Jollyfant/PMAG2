@@ -1,4 +1,4 @@
-const __DEBUG__ = true;
+let __DEBUG__ = false;
 const __VERSION__ = "2.0.0-alpha";
 const RADIANS = Math.PI / 180;
 const PROJECTION_TYPE = "AREA";
@@ -133,7 +133,7 @@ function getStatisticalParameters(components) {
 
   /*
    * Function getStatisticalParameters
-   * Returns statistical parameters based on on a directional distirbution
+   * Returns statistical parameters based on on a directional distribution
    */
 
   // Create a fake site at 0, 0 since we only look at the distritbuion of VGPs and not the actual positions
@@ -858,6 +858,8 @@ function addCollectionData(files, format) {
   switch(format) {
     case "DIR2":
       return files.forEach(addData);
+    case "PMAG2":
+      return files.map(x => x.data).forEach(importPMAG2);
     case "PMAG":
       return files.forEach(importPMAG);
     case "CSV":
@@ -865,6 +867,78 @@ function addCollectionData(files, format) {
     default:
       throw(new Exception("Unknown importing format requested."));
   }
+
+}
+
+function exportSelectedCollections() {
+
+  /*
+   * Function exportSelectedCollections
+   * Exports selected collections by the user
+   */
+
+  downloadAsJSON("export.pmag", getSelectedCollections());
+  
+}
+
+function removeOptions(selectbox) {
+
+  /*
+   * Function removeOptions
+   * Removes options from a select box
+   */
+
+  Array.from(selectbox.options).forEach(x => selectbox.remove(x));
+
+}
+
+function updateSpecimenSelect() {
+
+  /*
+   * Function updateSpecimenSelect
+   * Updates the specimenSelector with new samples
+   */
+
+  // Clear previous options and add the new ones
+  removeOptions(document.getElementById("specimen-select"));
+
+  collections.forEach(addPrototypeSelection);
+
+  // Select the last option and refresh
+  $(".selectpicker").selectpicker("val", collections.length - 1);
+  $(".selectpicker").selectpicker("refresh");
+
+}
+function deleteSelectedCollections() {
+
+  /*
+   * Function deleteSelectedCollections
+   * Deletes the collections selected by the user
+   */
+
+  let selectedCollections = getSelectedCollections();
+ 
+  // Guard clauses
+  if(selectedCollections.length === 0) {
+    return;
+  }
+ 
+  if(!confirm("Are you sure you wish to delete " + selectedCollections.length + " selected collection(s)?")) {
+    return;
+  }
+
+  // Keep a track of the indices to delete
+  let indices = selectedCollections.map(x => x.index);
+  
+  // Filter out all indices at once
+  collections = collections.filter(function(collection) {
+    return !indices.includes(collection.index);
+  });
+
+  notify("success", "Succesfully deleted " + selectedCollections.length + " collection(s).");
+
+  // Update the selector
+  return updateSpecimenSelect();
 
 }
 
@@ -1016,7 +1090,7 @@ function importPMAG2(json) {
    * Imports paleomagnetism database from the PMAG 2.0.0 format
    */
 
-  json.forEach(function(collection) {
+  JSON.parse(json).forEach(function(collection) {
 
     // Convert all literal coordinates to a class instance
     collection.components = collection.components.map(toComponent);

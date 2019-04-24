@@ -137,7 +137,7 @@ function __init__() {
 
   // Something was returned from local storage
   if(item !== null) {
-    importPMAG2(JSON.parse(item));
+    importPMAG2(item);
   }
 
   __unlock__();
@@ -208,7 +208,9 @@ function keyboardHandler(event) {
 
   const CODES = {
     "KEYPAD_EIGHT": 56,
-    "ESCAPE_KEY": 27
+    "ESCAPE_KEY": 27,
+    "Q_KEY": 81,
+    "S_KEY": 83
   }
 
   if(collections.length === 0) {
@@ -228,6 +230,10 @@ function keyboardHandler(event) {
       return switchCoordinateReference();
     case CODES.ESCAPE_KEY:
       return document.getElementById("notification-container").innerHTML = "";
+    case CODES.S_KEY:
+      return exportSelectedCollections();
+    case CODES.Q_KEY:
+      return deleteSelectedCollections();
   }
 
 }
@@ -730,32 +736,6 @@ function addPrototypeSelection(x, i) {
   option.value = i;
 
   document.getElementById("specimen-select").add(option);
-
-}
-
-function updateSpecimenSelect() {
-
-  /*
-   * Function updateSpecimenSelect
-   * Updates the specimenSelector with new samples
-   */
-
-  removeOptions(document.getElementById("specimen-select"));
-
-  collections.forEach(addPrototypeSelection);
-
-}
-
-function removeOptions(selectbox) {
-
-  /*
-   * Function removeOptions
-   * Removes options from a select box
-   */
-
-  Array.from(selectbox.options).forEach(function(x) {
-    selectbox.remove(x);
-  });
 
 }
 
