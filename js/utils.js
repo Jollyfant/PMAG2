@@ -877,7 +877,7 @@ function addFooter() {
     "<b>Paleomagnetism<span class='text-danger'>.org</span></b> &copy; " + new Date().getFullYear() + ". All Rights Reserved.",
     "<div style='float: right;' class='text-muted'><small>Version v" + __VERSION__ + " (<a href='https://doi.org/" + __DOI__ + "'>" + __DOI__ + "</a>)</small></div>",
     "&nbsp; <i class='fab fa-github'></i> <a href='https://github.com/Jollyfant/PMAG2'><b>Source Code</b></a>",
-    "&nbsp; <i class='fas fa-balance-scale'></i> Licensed under <a href='https://github.com/Jollyfant'><b>MIT</b>.</a>",
+    "&nbsp; <i class='fas fa-balance-scale'></i> Licensed under <a href='https://opensource.org/licenses/MIT'><b>MIT</b>.</a>",
     "<br>",
     "<div id='version-modal' class='modal fade' tabindex='-1' role='dialog'>",
     "  <div class='modal-dialog' role='document'>",
