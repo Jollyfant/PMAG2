@@ -443,7 +443,52 @@ function getPlaneData(direction, angle) {
     angle = 90;
   }
 
-  return getConfidenceEllipse(angle).map(rotateEllipse);
+  var ellipse = getConfidenceEllipse(angle).map(rotateEllipse);
+
+  // Not flipping the ellipse
+  if(document.getElementById("flip-ellipse").checked) {
+    return flipEllipse(direction.inc, ellipse);
+  }
+
+  return ellipse;
+
+}
+
+function flipEllipse(inclination, ellipse) {
+
+  /*
+   * Function flipEllipse
+   * Flips an ellipse to the other side of the if it has a sign other than the mean value
+   */
+
+  let splitEllipse = new Array();
+  let sign = 0;
+
+  // Go over all the points on the ellipse
+  for(var i = 0; i < ellipse.length; i++) {
+
+    let point = ellipse[i];
+    let pointSign = Math.sign(point.inc);
+
+    // Sign changed: add null to prevent Highcharts drawing a connection
+    if(sign != pointSign) {
+      splitEllipse.push(null);
+    }
+ 
+    // Bitwise XOR: do not rotate when negative & negative or positive & positive
+    if(inclination < 0 ^ point.inc < 0) {
+      point.x = point.x + 180;
+    }
+
+    // Add the point again
+    splitEllipse.push(point);
+
+    // Sign for next iteration
+    sign = pointSign;
+
+  }
+
+  return splitEllipse;
 
 }
 
@@ -855,6 +900,7 @@ function addFooter() {
     "</div>"
   ).join("\n");
 
+  // Show versio modal
   if(window.localStorage && localStorage.getItem("__VERSION__") !== __VERSION__) {
     $("#version-modal").modal("show");
     localStorage.setItem("__VERSION__", __VERSION__);
