@@ -74,10 +74,14 @@
         </div>
 
         <div class="card">
-          <h5 class="card-header"> Paleomagnetism.org </h5>
+          <h5 class="card-header"> Paleomagnetism.org & Source Code </h5>
           <div class="card-body">
             <h5 class="card-title"><span class="badge badge-light"><a href="https://www.doi.org/10.1016/j.cageo.2016.05.007"><i class="fas fa-globe-americas"></i> 10.1016/j.cageo.2016.05.007</a></span></h5>
             <p class="card-text">Koymans, M.R., Langereis, C.G., Pastor-Galan, D., and van Hinsbergen, D.J.J., Paleomagnetism.org: An online multi-platform open source environment for paleomagnetic data analysis, Computers and Geosciences, Volume 93, Pages 127–137 (2016)</p>
+
+            <h5 class="card-title"><span class="badge badge-light"><span id="__doi__"></span></h5>
+            <p class="card-text">The source code for this particular version (<span id="__version__"></span>) of the Paleomagnetism.org software can be cited. It may be important to include what version of the software was used for analysis with respect to data provenance.</p>
+
           </div>
         </div>
 
@@ -174,14 +178,6 @@
 
         <br>
 
-        <div class="card">
-          <h5 class="card-header"> Paleomagnetism.org Source Code </h5>
-          <div class="card-body">
-            <h5 class="card-title"><span class="badge badge-light"><a href="https://doi.org/10.5281/zenodo.2649907"><i class="fas fa-globe-americas"></i> 10.5281/zenodo.2649907</a></h5>
-            <p class="card-text">The source code for this particular version of the Paleomagnetism.org software can be cited. It may be important to include what version of the software was used for analysis with respect to fixed bugs.</p>
-          </div>
-        </div>
-
     </div>
 
     <footer id="footer-container" class="container text-muted"></footer>
@@ -193,7 +189,12 @@
   <!-- jQuery slim and bootstrap -->
   <script src="../lib/jquery-3.3.1/jquery-3.3.1.slim.min.js"></script>
   <script src="../lib/bootstrap-4.3.1/dist/js/bootstrap.bundle.min.js"></script>
-
   <script src="../js/utils.js"></script>
+
+  <script>
+    document.getElementById("__doi__").innerHTML = "<a href='https://doi.org/" + __DOI__ + "'><i class='fas fa-globe-americas'></i> " + __DOI__ + "</a>";
+    document.getElementById("__version__").innerHTML = __VERSION__;
+  </script>
+
 
 </html>

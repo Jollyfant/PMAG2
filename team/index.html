@@ -132,7 +132,7 @@
         <h5> Paleomagnetism.org Source Code & License </h5>
         <p>  The source code for Paleomagnetism.org 2.0.0 is available as a public repository on <i class="fab fa-github"></i> <a href="https://github.com/Jollyfant/PMAG2">GitHub</a> and we welcome contributions in any form. The code is licensed under MIT and can be freely used, modified, and shared.
         <h5> Citation </h5> 
-        <p>  The citation for this website can be found at the top of the <a href="../references">references</a> page and should be cited appropriately. This specific version of the source code can be cited using the DOI <a href="https://doi.org/10.5281/zenodo.2649907">10.5281/zenodo.2649907</a>.
+        <p>  The citation for this website can be found at the top of the <a href="../references">references</a> page and should be cited appropriately. This specific version (<span id="__version__"></span>) of the source code can be cited using the DOI <span id="__doi__"></span>.
 
         <h5>  Offline (Local) Version </h5>
         <p>  A local version of the Paleomagnetism.org application can be downloaded from the <i class="fab fa-github"></i> <a href="https://github.com/Jollyfant/PMAG2/releases">GitHub Releases Page</a>. To run the application locally, unpack the zipped files and open any index.html file in your browser. Features that require an internet connection cannot be used in offline mode.
@@ -170,7 +170,12 @@
   <!-- jQuery slim and bootstrap -->
   <script src="../lib/jquery-3.3.1/jquery-3.3.1.slim.min.js"></script>
   <script src="../lib/bootstrap-4.3.1/dist/js/bootstrap.bundle.min.js"></script>
-
   <script src="../js/utils.js"></script>
+
+  <script>
+    document.getElementById("__doi__").innerHTML = "<a href='https://doi.org/" + __DOI__ + "'>" + __DOI__ + "</a>";
+    document.getElementById("__version__").innerHTML = __VERSION__;
+  </script>
+
 
 </html>

@@ -1,5 +1,6 @@
 let __DEBUG__ = false;
 const __VERSION__ = "2.0.0-alpha";
+const __DOI__ = "10.5281/zenodo.2649907";
 const RADIANS = Math.PI / 180;
 const PROJECTION_TYPE = "AREA";
 
@@ -829,11 +830,35 @@ function addFooter() {
   document.getElementById("footer-container").innerHTML = new Array(
     "<hr>",
     "<b>Paleomagnetism<span class='text-danger'>.org</span></b> &copy; " + new Date().getFullYear() + ". All Rights Reserved.",
-    "<div style='float: right;' class='text-muted'><small>Version v" + __VERSION__ + " (<a href='https://doi.org/10.5281/zenodo.2649907'>10.5281/zenodo.2649907</a>)</small></div>",
+    "<div style='float: right;' class='text-muted'><small>Version v" + __VERSION__ + " (<a href='https://doi.org/" + __DOI__ + "'>" + __DOI__ + "</a>)</small></div>",
     "&nbsp; <i class='fab fa-github'></i> <a href='https://github.com/Jollyfant/PMAG2'><b>Source Code</b></a>",
     "&nbsp; <i class='fas fa-balance-scale'></i> Licensed under <a href='https://github.com/Jollyfant'><b>MIT</b>.</a>",
-    "<br>"
+    "<br>",
+    "<div id='version-modal' class='modal fade' tabindex='-1' role='dialog'>",
+    "  <div class='modal-dialog' role='document'>",
+    "    <div class='modal-content'>",
+    "      <div class='modal-header'>",
+    "        <h5 class='modal-title'><i class='fas fa-rocket'></i> A new version was released! </h5>",
+    "        <button type='button' class='close' data-dismiss='modal' aria-label='Close'>",
+    "          <span aria-hidden='true'>&times;</span>",
+    "        </button>",
+    "      </div>",
+    "      <div class='modal-body'>",
+    "        <h5>Paleomagnetism " + __VERSION__ + "</h5>",
+    "        <p>A new version of Paleomagnetism.org was released. Consult the <a href='../changelog'>changelog</a> for more information.</p>",
+    "        <div style='text-align: center;'><img src='../resources/images/pmag-logo.png'></div>",
+    "        <hr>",
+    "        <button style='float: right;' type='button' class='btn btn-sm btn-primary' data-dismiss='modal'><b>Got it!</b></button>",
+    "      </div>",
+    "    </div>",
+    "  </div>",
+    "</div>"
   ).join("\n");
+
+  if(window.localStorage && localStorage.getItem("__VERSION__") !== __VERSION__) {
+    $("#version-modal").modal("show");
+    localStorage.setItem("__VERSION__", __VERSION__);
+  }
 
 }
 
