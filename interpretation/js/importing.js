@@ -749,7 +749,7 @@ function importBCN2G(file) {
     // Each parameter is delimited by at least one NULL byte
     var parameters = line.split(/\u0000+/);
 
-    // Intensity is in emu/cm^3 (0.001 A/m)
+    // Intensity is in emu/cm^3 (1000 A/m)
     var step = parameters[3];
     var dec = Number(parameters[4]);
     var inc = Number(parameters[5]);

@@ -232,6 +232,7 @@ function redrawInterpretationGraph(fit) {
   var dataSeries = new Array();
   var dataSeriesPlane = new Array();
   var dataSeriesFitted = new Array();
+  var dataSeriesPlane2 = new Array();
 
   IS_FITTED = fit;
 
@@ -307,6 +308,7 @@ function redrawInterpretationGraph(fit) {
       }
 
       if(interpretation.type === "TAU3") {
+        dataSeriesPlane2.push({"x": direction.dec, "inc": direction.inc, "sample": sample.name});
         dataSeriesPlane = dataSeriesPlane.concat(getPlaneData(direction), null);
       }
 
@@ -324,6 +326,7 @@ function redrawInterpretationGraph(fit) {
 
   // Update the table
   updateInterpretationMeanTable(mean, statistics);
+  updateInterpretationDirectionTable(dataSeries, dataSeriesFitted, dataSeriesPlane2);
 
   var series = [{
     "name": "Directions",
@@ -408,6 +411,23 @@ function redrawInterpretationGraph(fit) {
 
   createHemisphereChart(series);
 
+}
+
+function updateInterpretationDirectionTable(seriesOne, seriesTwo, dataSeriesPlane2) {
+
+  let rows = seriesOne.map(function(x) {
+    return "<tr><td>" + x.sample + "</td><td>" + x.x.toFixed(1) + "</td><td>" +  x.inc.toFixed(1) +"</td><td>τ1</td></tr>"
+  });
+
+  let rows2 = seriesTwo.map(function(x) {
+    return "<tr><td>" + x.sample + "</td><td>" + x.x.toFixed(1) + "</td><td>" +  x.inc.toFixed(1) +"</td><td>τ1 (τ3)</td></tr>"
+  });
+
+  let rows3 = dataSeriesPlane2.map(function(x) {
+    return "<tr><td>" + x.sample + "</td><td>" + x.x.toFixed(1) + "</td><td>" +  x.inc.toFixed(1) +"</td><td>τ3</td></tr>"
+  });
+
+  document.getElementById("fitting-container-table-tbody").innerHTML = rows.concat(rows2).concat(rows3).join("\n");
 }
 
 function getFisherStatisticsFit(nDirections, nCircles, R) {
@@ -916,7 +936,7 @@ function getFittedGreatCircles() {
   // Mutate the fitted TAU3 components to become TAU1
   fittedCircleCoordinates.forEach(convertInterpretation);
 
-  notify("success", "Succesfully fitted <b>" + fittedCircleCoordinates.length + "</b> great circle(s) to " + nPoints + " directional component(s) in <b>" + nIterations + "</b> iteration(s).");
+  notify("success", "Succesfully fitted <b>" + fittedCircleCoordinates.length + "</b> great circle(s) to <b>" + nPoints + "</b> directional component(s) in <b>" + nIterations + "</b> iteration(s).");
 
   // Return the new set of samples
   return copySamples;

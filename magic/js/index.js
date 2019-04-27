@@ -10,6 +10,11 @@ var data = null;
 
 function addEventHandlers() {
 
+  /*
+   * Function addEventHandlers
+   * Adds event listeners afor keyboard events
+   */
+
   document.getElementById("customFile").addEventListener("change", fileSelectionHandler);
   document.getElementById("download-magic-button").disabled = true;
   document.addEventListener("keydown", keyboardHandler);
@@ -137,6 +142,7 @@ function fileSelectionHandler(event) {
         "      <td>Specimen</td>",
         "      <td>Method</td>",
         "      <td>Location</td>",
+        "      <td>Geology</td>",
         "      <td>Lithology</td>",
         "      <td>Bed Strike</td>",
         "      <td>Bed Dip</td>",
@@ -157,6 +163,7 @@ function fileSelectionHandler(event) {
           "    <td>" + specimen.name + "</td>",
           "    <td>" + getDemagnetizationTypeLabel(specimen.demagnetizationType) + "</td>",
           "    <td>" + specimen.longitude + "°E, " + specimen.latitude + "°N</td>",
+          "    <td>" + specimen.geology + "</td>",
           "    <td>" + specimen.lithology + "</td>",
           "    <td>" + specimen.beddingStrike + "</td>",
           "    <td>" + specimen.beddingDip + "</td>",
@@ -468,6 +475,9 @@ function exportMagIC(metadata) {
 
       var demagnetizationType;
 
+      //  We assume a specimen volume of 10.5cc if it is missing
+      var volume = specimen.volume || 10.5;
+
       if(specimen.demagnetizationType === "thermal") {
         demagnetizationType = DEMAGNETIZATION_THERMAL;
       } else if(specimen.demagnetizationType === "alternating") {
@@ -544,6 +554,8 @@ function exportMagIC(metadata) {
         // Convert x, y, z in specimen coordinates to a direction
         var direction = new Coordinates(step.x, step.y, step.z).toVector(Direction);
 
+        // Intensities are in Am^2 in MagIC.
+        // Our values are in μA/m. (1E6 * intensity) / (1E6 * volume) = intensity / volume
         magicMeasurements.push([
           specimen.name + "_" + i,
           "experiment-" + demagnetizationType,
@@ -555,12 +567,12 @@ function exportMagIC(metadata) {
           metadata.reference,
           (demagnetizationType === DEMAGNETIZATION_ALTERNATING ? toTesla(step.step) : 0),
           (demagnetizationType === DEMAGNETIZATION_THERMAL ? toKelvin(step.step) : 293),
-          step.x,
-          step.y,
-          step.z,
+          step.x / volume,
+          step.y / volume,
+          step.z / volume,
           direction.dec,
           direction.inc,
-          direction.length
+          volume
         ].join("\t"));
 
       });
