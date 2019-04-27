@@ -38,29 +38,29 @@
       <div class="collapse navbar-collapse" id="navbarsExampleDefault">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item">
-            <a class="nav-link" href="../interpretation/index.html">Interpretation</a>
+            <a class="nav-link" href="../interpretation">Interpretation</a>
           </li>
           <li class="nav-item active">
-            <a class="nav-link" href="../statistics/index.html">Statistics</a>
+            <a class="nav-link" href="../statistics">Statistics</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="../geography/index.html">Geography</a>
+            <a class="nav-link" href="../geography">Geography</a>
           </li>
           <li class="nav-item">
             <span class="nav-link disabled" href="#">|</span></li>
           <li class="nav-item">
-            <a class="nav-link" href="../references/index.html">References</a>
+            <a class="nav-link" href="../references">References</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="../team/index.html">Team & Contact</a>
+            <a class="nav-link" href="../team">Team & Contact</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="../magic/index.html">MagIC Interface</a>
+            <a class="nav-link" href="../magic">MagIC Interface</a>
           </li>
         </ul>
 
         <form class="form-inline my-2 my-lg-0">
-          <a href="../library/index.html" class="btn btn-sm btn-secondary my-2 my-sm-0"><i class="fas fa-book-open"></i><b>&nbsp; Data Library</b></a>
+          <a href="../library" class="btn btn-sm btn-secondary my-2 my-sm-0"><i class="fas fa-book-open"></i><b>&nbsp; Data Library</b></a>
         </form>
 
       </div>
@@ -229,7 +229,7 @@
           <div class="alert alert-light alert-dismissible fade show" role="alert">
 
             <h5> Statistics - Common True Mean Directions </h5>
-            <p> Figures showing <b>1000</b> bootstrapped mean coordinates for the selected collections following the approach of <a href='../references/index.html'>Tauxe et al., 2014</a>. Select two collections and click <b>initialize</b> to begin the bootstrap. Overlapping distributions indicidate that two collections are the same within confidence limits.
+            <p> Figures showing <b>1000</b> bootstrapped mean coordinates for the selected collections following the approach of <a href='../references'>Tauxe et al., 2014</a>. Select two collections and click <b>initialize</b> to begin the bootstrap. Overlapping distributions indicidate that two collections are the same within confidence limits.
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -282,7 +282,7 @@
           <div class="alert alert-light alert-dismissible fade show" role="alert">
 
             <h5> Statistics - Foldtest </h5>
-            <p> This module allows the user to do a classical foldtest (<a href="../references/index.html">Tauxe & Watson, 1994</a>) on one or multiple collections. <b>No cutoff will be applied</b>. Select any number of collections and click <b>initialize</b> to start. 
+            <p> This module allows the user to do a classical foldtest (<a href="../references">Tauxe & Watson, 1994</a>) on one or multiple collections. <b>No cutoff will be applied</b>. Select any number of collections and click <b>initialize</b> to start. 
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -342,7 +342,7 @@
 
           <div class="alert alert-light" role="alert">
             <h5> Statistics - Shallowing </h5>
-            <p>  The inclination shallowing module unflattens observed inclinations in sediments to fit with the TK03.GAD Field Model (<a href="../references/index.html">Tauxe et al., 2008</a>) based on the relationship between the expected elongation (E) (τ2/τ3) and inclination. The flattening function of (King, 1955) is applied. A single collection can be selected and a cutoff will be applied. <b>A minimum of 80 directions are required</b>. The procedure can be bootstrapped <b>1000</b> times to find its confidence limits.
+            <p>  The inclination shallowing module unflattens observed inclinations in sediments to fit with the TK03.GAD Field Model (<a href="../references">Tauxe et al., 2008</a>) based on the relationship between the expected elongation (E) (τ2/τ3) and inclination. The flattening function of (King, 1955) is applied. A single collection can be selected and a cutoff will be applied. <b>A minimum of 80 directions are required</b>. The procedure can be bootstrapped <b>1000</b> times to find its confidence limits.
 
             <div class="input-group mb-3">
               <div class="btn-group-toggle" data-toggle="buttons">
@@ -437,9 +437,13 @@
               <tr>
                 <td>Cycle Confidence Ellipse (α95, A95)</td>
                 <td>Cycle Coordinates</td>
+                <td>Save Selected Collections</td>
+                <td>Remove Selected Collections</td>
               </tr>
                 <td>5</td>
                 <td>8</td>
+                <td>s</td>
+                <td>q</td>
             </table>
           </small>
 
@@ -456,6 +460,10 @@
             &nbsp;
             <input class="form-check-input" type="checkbox" id="enable-deenen" value="option1" checked>
             <label class="form-check-label" for="enable-deenen"> Show Deenen Criteria </label>
+            &nbsp;
+            &nbsp;
+            <input class="form-check-input" type="checkbox" id="flip-ellipse" value="option1" checked>
+            <label class="form-check-label" for="flip-ellipse"> Flip Confidence Ellipses </label>
           </div>
           <br>
           <br>
@@ -475,26 +483,6 @@
     <footer id="footer-container" class="container text-muted"></footer>
 
     <br>
-
-    <!-- Modal for saving a site -->
-    <div class="modal fade" id="map-modal-2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="modal-title"></h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-
-          <div class="modal-body">
-            <div id="modal-container">
-          </div>
-
-        </div>
-      </div>
-      </div>
-    </div>
 
     <!-- Modal for saving a site -->
     <div class="modal fade" id="map-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">

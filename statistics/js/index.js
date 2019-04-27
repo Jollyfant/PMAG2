@@ -119,7 +119,9 @@ function keyboardHandler(event) {
   const CODES = {
     "KEYPAD_FIVE": 53,
     "KEYPAD_EIGHT": 56,
-    "ESCAPE_KEY": 27
+    "ESCAPE_KEY": 27,
+    "Q_KEY": 81,
+    "S_KEY": 83
   }
 
   if(collections.length === 0) {
@@ -139,6 +141,10 @@ function keyboardHandler(event) {
       return switchCoordinateReference();
     case CODES.ESCAPE_KEY:
       return document.getElementById("notification-container").innerHTML = "";
+    case CODES.S_KEY:
+      return exportSelectedCollections();
+    case CODES.Q_KEY:
+      return deleteSelectedCollections();
     case CODES.KEYPAD_FIVE:
       A95_CONFIDENCE = !A95_CONFIDENCE;
       notify("info", "Switched to <b>" + (A95_CONFIDENCE ? "A95" : "α95") + "</b> confidence interval.");
@@ -216,35 +222,6 @@ function addPrototypeSelection(x, i) {
   option.value = i;
 
   document.getElementById("specimen-select").add(option);
-
-}
-
-function updateSpecimenSelect() {
-
-  /*
-   * Function updateSpecimenSelect
-   * Updates the specimenSelector with new samples
-   */
-
-  // Clear previous options and add the new ones
-  removeOptions(document.getElementById("specimen-select"));
-
-  collections.forEach(addPrototypeSelection);
-
-  // Select the last option and refresh
-  $(".selectpicker").selectpicker("val", collections.length - 1);
-  $(".selectpicker").selectpicker("refresh");
-
-}
-
-function removeOptions(selectbox) {
-
-  /*
-   * Function removeOptions
-   * Removes options from a select box
-   */
-
-  Array.from(selectbox.options).forEach(x => selectbox.remove(x));
 
 }
 

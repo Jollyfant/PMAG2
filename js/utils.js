@@ -1,5 +1,6 @@
-const __DEBUG__ = true;
-const __VERSION__ = "2.0.0";
+let __DEBUG__ = false;
+const __VERSION__ = "2.0.0-alpha";
+const __DOI__ = "10.5281/zenodo.2649907";
 const RADIANS = Math.PI / 180;
 const PROJECTION_TYPE = "AREA";
 
@@ -80,7 +81,7 @@ function getPublicationFromPID() {
   var [publication, collection] = location.search.substring(1).split(".");
 
   // Request the persistent resource from disk
-  HTTPRequest("../resources/publications/" + publication + ".pid", "GET", function(json) {
+  HTTPRequest("https://api.paleomagnetism.org/" + publication, "GET", function(json) {
 
     if(json === null) {
       return notify("danger", "Data from this persistent identifier could not be found.");
@@ -133,7 +134,7 @@ function getStatisticalParameters(components) {
 
   /*
    * Function getStatisticalParameters
-   * Returns statistical parameters based on on a directional distirbution
+   * Returns statistical parameters based on on a directional distribution
    */
 
   // Create a fake site at 0, 0 since we only look at the distritbuion of VGPs and not the actual positions
@@ -442,7 +443,52 @@ function getPlaneData(direction, angle) {
     angle = 90;
   }
 
-  return getConfidenceEllipse(angle).map(rotateEllipse);
+  var ellipse = getConfidenceEllipse(angle).map(rotateEllipse);
+
+  // Not flipping the ellipse
+  if(document.getElementById("flip-ellipse").checked) {
+    return flipEllipse(direction.inc, ellipse);
+  }
+
+  return ellipse;
+
+}
+
+function flipEllipse(inclination, ellipse) {
+
+  /*
+   * Function flipEllipse
+   * Flips an ellipse to the other side of the if it has a sign other than the mean value
+   */
+
+  let splitEllipse = new Array();
+  let sign = 0;
+
+  // Go over all the points on the ellipse
+  for(var i = 0; i < ellipse.length; i++) {
+
+    let point = ellipse[i];
+    let pointSign = Math.sign(point.inc);
+
+    // Sign changed: add null to prevent Highcharts drawing a connection
+    if(sign != pointSign) {
+      splitEllipse.push(null);
+    }
+ 
+    // Bitwise XOR: do not rotate when negative & negative or positive & positive
+    if(inclination < 0 ^ point.inc < 0) {
+      point.x = point.x + 180;
+    }
+
+    // Add the point again
+    splitEllipse.push(point);
+
+    // Sign for next iteration
+    sign = pointSign;
+
+  }
+
+  return splitEllipse;
 
 }
 
@@ -829,11 +875,36 @@ function addFooter() {
   document.getElementById("footer-container").innerHTML = new Array(
     "<hr>",
     "<b>Paleomagnetism<span class='text-danger'>.org</span></b> &copy; " + new Date().getFullYear() + ". All Rights Reserved.",
-    "<div style='float: right;' class='text-muted'><small>Version v" + __VERSION__ + "</small></div>",
+    "<div style='float: right;' class='text-muted'><small>Version v" + __VERSION__ + " (<a href='https://doi.org/" + __DOI__ + "'>" + __DOI__ + "</a>)</small></div>",
     "&nbsp; <i class='fab fa-github'></i> <a href='https://github.com/Jollyfant/PMAG2'><b>Source Code</b></a>",
-    "&nbsp; <i class='fas fa-balance-scale'></i> Licensed under <a href='https://github.com/Jollyfant'><b>MIT</b>.</a>",
-    "<br>"
+    "&nbsp; <i class='fas fa-balance-scale'></i> Licensed under <a href='https://opensource.org/licenses/MIT'><b>MIT</b>.</a>",
+    "<br>",
+    "<div id='version-modal' class='modal fade' tabindex='-1' role='dialog'>",
+    "  <div class='modal-dialog' role='document'>",
+    "    <div class='modal-content'>",
+    "      <div class='modal-header'>",
+    "        <h5 class='modal-title'><i class='fas fa-rocket'></i> A new version was released! </h5>",
+    "        <button type='button' class='close' data-dismiss='modal' aria-label='Close'>",
+    "          <span aria-hidden='true'>&times;</span>",
+    "        </button>",
+    "      </div>",
+    "      <div class='modal-body'>",
+    "        <h5>Paleomagnetism " + __VERSION__ + "</h5>",
+    "        <p>A new version of Paleomagnetism.org was released. Consult the <a href='../changelog'>changelog</a> for more information.</p>",
+    "        <div style='text-align: center;'><img src='../resources/images/pmag-logo.png'></div>",
+    "        <hr>",
+    "        <button style='float: right;' type='button' class='btn btn-sm btn-primary' data-dismiss='modal'><b>Got it!</b></button>",
+    "      </div>",
+    "    </div>",
+    "  </div>",
+    "</div>"
   ).join("\n");
+
+  // Show versio modal
+  if(window.localStorage && localStorage.getItem("__VERSION__") !== __VERSION__) {
+    $("#version-modal").modal("show");
+    localStorage.setItem("__VERSION__", __VERSION__);
+  }
 
 }
 
@@ -858,6 +929,8 @@ function addCollectionData(files, format) {
   switch(format) {
     case "DIR2":
       return files.forEach(addData);
+    case "PMAG2":
+      return files.map(x => x.data).forEach(importPMAG2);
     case "PMAG":
       return files.forEach(importPMAG);
     case "CSV":
@@ -865,6 +938,78 @@ function addCollectionData(files, format) {
     default:
       throw(new Exception("Unknown importing format requested."));
   }
+
+}
+
+function exportSelectedCollections() {
+
+  /*
+   * Function exportSelectedCollections
+   * Exports selected collections by the user
+   */
+
+  downloadAsJSON("export.pmag", getSelectedCollections());
+  
+}
+
+function removeOptions(selectbox) {
+
+  /*
+   * Function removeOptions
+   * Removes options from a select box
+   */
+
+  Array.from(selectbox.options).forEach(x => selectbox.remove(x));
+
+}
+
+function updateSpecimenSelect() {
+
+  /*
+   * Function updateSpecimenSelect
+   * Updates the specimenSelector with new samples
+   */
+
+  // Clear previous options and add the new ones
+  removeOptions(document.getElementById("specimen-select"));
+
+  collections.forEach(addPrototypeSelection);
+
+  // Select the last option and refresh
+  $(".selectpicker").selectpicker("val", collections.length - 1);
+  $(".selectpicker").selectpicker("refresh");
+
+}
+function deleteSelectedCollections() {
+
+  /*
+   * Function deleteSelectedCollections
+   * Deletes the collections selected by the user
+   */
+
+  let selectedCollections = getSelectedCollections();
+ 
+  // Guard clauses
+  if(selectedCollections.length === 0) {
+    return;
+  }
+ 
+  if(!confirm("Are you sure you wish to delete " + selectedCollections.length + " selected collection(s)?")) {
+    return;
+  }
+
+  // Keep a track of the indices to delete
+  let indices = selectedCollections.map(x => x.index);
+  
+  // Filter out all indices at once
+  collections = collections.filter(function(collection) {
+    return !indices.includes(collection.index);
+  });
+
+  notify("success", "Succesfully deleted " + selectedCollections.length + " collection(s).");
+
+  // Update the selector
+  return updateSpecimenSelect();
 
 }
 
@@ -1016,7 +1161,7 @@ function importPMAG2(json) {
    * Imports paleomagnetism database from the PMAG 2.0.0 format
    */
 
-  json.forEach(function(collection) {
+  JSON.parse(json).forEach(function(collection) {
 
     // Convert all literal coordinates to a class instance
     collection.components = collection.components.map(toComponent);

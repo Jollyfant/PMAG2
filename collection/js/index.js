@@ -69,7 +69,7 @@ function resolvePID(pid) {
   document.getElementById("pid-box").innerHTML = pid;
 
   // Look up the persistent identifier on disk
-  HTTPRequest("../resources/publications/" + publication + ".pid", "GET", function(json) {
+  HTTPRequest("https://api.paleomagnetism.org/" + publication, "GET", function(json) {
 
     // 404
     if(json === null) {
@@ -174,19 +174,6 @@ function formatPublicationTable(collection) {
     "  </tr>",
     "</head>"
   ).concat(collection.data.specimens.map(formatSampleRows)).join("\n");
-
-}
-
-function downloadTableAsCSV() {
-
-  const MIME_TYPE = "data:application/json;charset=utf-8";
-  const FILENAME = "specimens.dir";
-
-  var pid = window.location.search.slice(1)
-
-  HTTPRequest("publications/" + pid + ".pid", "GET", function(json) {
-    downloadURIComponent(FILENAME, MIME_TYPE + "," + JSON.stringify(json));
-  });
 
 }
 

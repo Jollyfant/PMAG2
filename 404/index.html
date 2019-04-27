@@ -17,22 +17,21 @@
     <!-- Bootstrap & Font Awesome CSS -->
     <link rel="stylesheet" href="../lib/bootstrap-4.3.1/dist/css/bootstrap.min.css"></link>
     <link rel="stylesheet" href="../lib/fontawesome-free-5.7.2-web/css/all.css">
-    <link rel="stylesheet" href="../lib/leaflet-1.4.0/leaflet.css">
 
   </head>
 
   <body>
 
+    <!-- Header -->
     <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
 
-      <a class="navbar-brand" href="#">Paleomagnetism<span class="text-danger">.org</span></a>
+      <a class="navbar-brand" href="http://www.paleomagnetism.org">Paleomagnetism<span class="text-danger">.org</span></a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
 
       <div class="collapse navbar-collapse" id="navbarsExampleDefault">
         <ul class="navbar-nav mr-auto">
-
           <li class="nav-item">
             <a class="nav-link" href="../interpretation">Interpretation</a>
           </li>
@@ -45,7 +44,7 @@
           <li class="nav-item">
             <span class="nav-link disabled" href="#">|</span></li>
           <li class="nav-item">
-            <a class="nav-link" href="../references">References</a>
+            <a class="nav-link active" href="../references">References</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="../team">Team & Contact</a>
@@ -63,45 +62,31 @@
 
     </nav>
 
-    <!-- Main container -->
+    <!-- Main body -->
     <div class="container">
 
+      <!-- Container for user notifications -->
       <div id="notification-container"></div>
 
-      <div class="row">
-        
-       <div class="col-md-12">
-
         <div class="alert alert-light" role="alert">
-          <h5> Paleomagnetism.org 2 - Data Library </h5>
-          <p>Complete collections of specimens exported from the Paleomagnetism.org 2 interpretation portal can be added to this library. Multiple collections can be grouped in to a single coherent publication. All data sets published on this page are unrestricted and openly available for anyone.
-          All data publications, collections, specimens, and interpretations are assigned unique <b>persistent identifiers</b> (PID) that can be used to reference each digital object respectively.
-          <p>If you want to add your data to the collective library write us an e-mail on the <a href='../team'><b>contact page</b></a>.
-<hr>
-          <div class="input-group mb-3">
-            <input id="pid-lookup" class="form-control" placeholder="Quick PID Reverse Lookup">
-            <div class="input-group-append">
-              <button id="pid-lookup-button" class="btn btn-primary" type="button"><i class="fas fa-search"></i> Reverse Lookup</button>
+          <div class="row justify-content-md-center align-items-center">
+            <div class="col-lg-3">
+              <img src="../resources/images/pmag-logo.png">
+            </div>
+            <div class="col-lg-9">
+              <h5><b>404</b> - Page Not Found </h5>
+              <p> The requested page could not be found. If this error comes unexpectedly please <a href="../team">contact us</a>.
             </div>
           </div>
         </div>
-       </div>
-      </div>
 
-      <h5>Available Publications in Library</h5>
-      <!-- Tab for table view -->
 
-      <div class="table-responsive">
-        <table class='table table-sm text-center table-striped' id="publication-table"></table>
-      </div>
-      <div id="map" class="map" style="height: 400px;"></div>
-      <figcaption class="figure-caption">Map showing the geographical distribution of publications. Hover over publication marker to shows its convex hull and geographical coverage.</figcaption>
-    
+
     </div>
 
-    <footer id='footer-container' class='container text-muted'></footer>
+    <footer id="footer-container" class="container text-muted"></footer>
 
-    <br>
+    <br> 
 
   </body>
 
@@ -109,13 +94,6 @@
   <script src="../lib/jquery-3.3.1/jquery-3.3.1.slim.min.js"></script>
   <script src="../lib/bootstrap-4.3.1/dist/js/bootstrap.bundle.min.js"></script>
 
-  <!-- Leaflet -->
-  <script src="../lib/leaflet-1.4.0/leaflet.js"></script>
-
-  <!-- Shared Utilities -->
   <script src="../js/utils.js"></script>
-
-  <!-- Library -->
-  <script src="./js/index.js"></script>
 
 </html>

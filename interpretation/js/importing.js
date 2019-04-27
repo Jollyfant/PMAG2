@@ -876,6 +876,11 @@ function importApplicationSaveOld(file) {
       throw(new Exception("This file contains incompatible specimens. Run this file through old.paleomagnetism.org."));
     }
 
+    // Declination correction BCN2G was stored as property.. just add it to the core azimuth now
+    if(specimen.declinationCorrection) {
+      specimen.coreAzi += specimen.declinationCorrection;
+    }
+
     // Get the steps from the specimen 
     var steps = specimen.data.map(function(step) {
       return new Measurement(step.step, new Coordinates(step.x, step.y, step.z), Number(step.a95));
@@ -954,12 +959,10 @@ function importApplicationSave(file) {
    * Imports a save from the application itself
    */
 
-  const CONFIRM_INTEGRITY = true;
-
   var json = JSON.parse(file.data);
 
   // Confirm the file was not tampered with 
-  if(CONFIRM_INTEGRITY && json.hash !== forge_sha256(JSON.stringify(json.specimens))) {
+  if(document.getElementById("confirm-integrity").checked && json.hash !== forge_sha256(JSON.stringify(json.specimens))) {
     throw(new Exception("Could not verify the integrity of this specimen file."));
   }
 

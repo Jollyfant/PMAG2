@@ -2284,7 +2284,13 @@ function transformEllipse(A95Ellipse, dir) {
     return site.directionFrom(new Pole(point.dec, point.inc)).toCartesian().rotateTo(dir.mean.dec, 90).toVector(Direction);
   });
 
-  return a95Ellipse.map(prepareDirectionData);
+  let ellipse = a95Ellipse.map(prepareDirectionData);
+
+  if(document.getElementById("flip-ellipse").checked) {
+    return flipEllipse(dir.inc, ellipse);
+  }
+
+  return ellipse;
 
 }
 

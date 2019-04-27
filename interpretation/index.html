@@ -34,29 +34,29 @@
       <div class="collapse navbar-collapse" id="navbarsExampleDefault">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item">
-            <a class="nav-link active" href="../interpretation/index.html">Interpretation</a>
+            <a class="nav-link active" href="../interpretation">Interpretation</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="../statistics/index.html">Statistics</a>
+            <a class="nav-link" href="../statistics">Statistics</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="../geography/index.html">Geography</a>
+            <a class="nav-link" href="../geography">Geography</a>
           </li>
           <li class="nav-item">
             <span class="nav-link disabled" href="#">|</span></li>
           <li class="nav-item">
-            <a class="nav-link" href="../references/index.html">References</a>
+            <a class="nav-link" href="../references">References</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="../team/index.html">Team & Contact</a>
+            <a class="nav-link" href="../team">Team & Contact</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="../magic/index.html">MagIC Interface</a>
+            <a class="nav-link" href="../magic">MagIC Interface</a>
           </li>
         </ul>
 
         <form class="form-inline my-2 my-lg-0">
-          <a href="../library/index.html" class="btn btn-sm btn-secondary my-2 my-sm-0"><i class="fas fa-book-open"></i><b>&nbsp; Data Library</b></a>
+          <a href="../library/" class="btn btn-sm btn-secondary my-2 my-sm-0"><i class="fas fa-book-open"></i><b>&nbsp; Data Library</b></a>
         </form>
 
       </div>
@@ -141,7 +141,7 @@
 
           </div>
 
-          <p><figcaption class="figure-caption text-right"><i class="far fa-frown"></i> Your institution's format not here? Write us an e-mail on the <a href=''>contact page</a>.</figcaption>
+          <p><figcaption class="figure-caption text-right"><i class="far fa-frown"></i> Your institution's format not here? Write us an e-mail on the <a href='/team'>contact page</a>.</figcaption>
 
         </div>
 
@@ -226,8 +226,8 @@
           <br>
 
           <div class="row justify-content-md-center">
-            <div class="col-md-6 ">
-              <div id="fitting-container"></div>
+            <div class="col-md-12">
+              <div id="fitting-container" style="height: 600px;"></div>
               <figcaption class="figure-caption">Great circles can be fitted to directional set points by pressing <b>9</b>.</figcaption>
             </div>
           </div>
@@ -235,13 +235,13 @@
           <br>
 
           <div class="row justify-content-md-center">
-            <div class="col-md-6 ">
+            <div class="col-md-12 ">
               <table class='table table-sm text-center table-striped' id="fitted-table-container"></table>
             </div>
           </div>
 
           <div class="row justify-content-md-center">
-            <div class="col-md-6 ">
+            <div class="col-md-12 ">
               <div class='text-center'>
                 <button class="btn btn-sm btn-success" onclick="downloadInterpretations()" type="button" class="btn btn-primary"><i class="fas fa-file-download"></i>&nbsp; Download Interpretations</button>
                 <button class="btn btn-sm btn-success" onclick="downloadInterpretationsCSV()" type="button" class="btn btn-primary"><i class="fas fa-file-download"></i>&nbsp; Download Interpretations (CSV)</button>
@@ -331,6 +331,14 @@
             &nbsp;
             <input class="form-check-input" type="checkbox" id="auto-comment" value="option1">
             <label class="form-check-label" for="auto-comment"> Auto comment </label>
+            &nbsp;
+            &nbsp;
+            <input class="form-check-input" type="checkbox" id="confirm-integrity" value="option1">
+            <label class="form-check-label" for="confirm-integrity"> Confirm file integrity </label>
+            &nbsp;
+            &nbsp;
+            <input class="form-check-input" type="checkbox" id="flip-ellipse" value="option1" checked>
+            <label class="form-check-label" for="flip-ellipse"> Flip Confidence Ellipses </label>
           </div>
           <br>
           <br>
