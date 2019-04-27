@@ -1644,7 +1644,7 @@ function getPublicationFromPID() {
     return notify("danger", "A persistent identifier related to a collection must be given.");
   }
 
-  HTTPRequest("../resources/publications/" + publication + ".pid", "GET", function(json) {
+  HTTPRequest("https://api.paleomagnetism.org/" + publication, "GET", function(json) {
 
     if(json === null) {
       return notify("danger", "Data from this persistent identifier could not be found.");

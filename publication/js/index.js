@@ -74,7 +74,7 @@ function resolvePID(pid) {
    */
 
   // Load publication identifiers
-  HTTPRequest("../resources/publications/" + pid + ".pid", "GET", formatCollectionTable);
+  HTTPRequest("https://api.paleomagnetism.org/" + pid, "GET", formatCollectionTable);
 
 }
 

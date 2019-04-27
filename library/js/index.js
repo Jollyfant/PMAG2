@@ -8,7 +8,7 @@ function loadDigitalObjects() {
    */
 
   // Load the information from a JSON
-  HTTPRequest("../resources/publications.json", "GET", function(publications) {
+  HTTPRequest("https://api.paleomagnetism.org", "GET", function(publications) {
 
     // Problem getting the publications
     if(publications === null) {

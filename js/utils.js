@@ -81,7 +81,7 @@ function getPublicationFromPID() {
   var [publication, collection] = location.search.substring(1).split(".");
 
   // Request the persistent resource from disk
-  HTTPRequest("../resources/publications/" + publication + ".pid", "GET", function(json) {
+  HTTPRequest("https://api.paleomagnetism.org/" + publication, "GET", function(json) {
 
     if(json === null) {
       return notify("danger", "Data from this persistent identifier could not be found.");
