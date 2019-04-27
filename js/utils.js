@@ -445,8 +445,8 @@ function getPlaneData(direction, angle) {
 
   var ellipse = getConfidenceEllipse(angle).map(rotateEllipse);
 
-  // Not flipping the ellipse
-  if(document.getElementById("flip-ellipse").checked) {
+  // Flip the ellipse when requested. Never flip great circles..
+  if(angle !== 90 && document.getElementById("flip-ellipse").checked) {
     return flipEllipse(direction.inc, ellipse);
   }
 
@@ -475,8 +475,8 @@ function flipEllipse(inclination, ellipse) {
       splitEllipse.push(null);
     }
  
-    // Bitwise XOR: do not rotate when negative & negative or positive & positive
-    if(inclination < 0 ^ point.inc < 0) {
+    // Do not rotate when negative & negative or positive & positive
+    if(pointSign !== Math.sign(inclination)) {
       point.x = point.x + 180;
     }
 

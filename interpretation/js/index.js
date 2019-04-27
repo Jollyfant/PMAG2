@@ -232,6 +232,7 @@ function redrawInterpretationGraph(fit) {
   var dataSeries = new Array();
   var dataSeriesPlane = new Array();
   var dataSeriesFitted = new Array();
+  var dataSeriesPlane2 = new Array();
 
   IS_FITTED = fit;
 
@@ -307,6 +308,7 @@ function redrawInterpretationGraph(fit) {
       }
 
       if(interpretation.type === "TAU3") {
+        dataSeriesPlane2.push({"x": direction.dec, "inc": direction.inc, "sample": sample.name});
         dataSeriesPlane = dataSeriesPlane.concat(getPlaneData(direction), null);
       }
 
@@ -324,6 +326,7 @@ function redrawInterpretationGraph(fit) {
 
   // Update the table
   updateInterpretationMeanTable(mean, statistics);
+  updateInterpretationDirectionTable(dataSeries, dataSeriesFitted, dataSeriesPlane2);
 
   var series = [{
     "name": "Directions",
@@ -410,6 +413,23 @@ function redrawInterpretationGraph(fit) {
 
 }
 
+function updateInterpretationDirectionTable(seriesOne, seriesTwo, dataSeriesPlane2) {
+
+  let rows = seriesOne.map(function(x) {
+    return "<tr><td>" + x.sample + "</td><td>" + x.x.toFixed(1) + "</td><td>" +  x.inc.toFixed(1) +"</td><td>τ1</td></tr>"
+  });
+
+  let rows2 = seriesTwo.map(function(x) {
+    return "<tr><td>" + x.sample + "</td><td>" + x.x.toFixed(1) + "</td><td>" +  x.inc.toFixed(1) +"</td><td>τ1 (τ3)</td></tr>"
+  });
+
+  let rows3 = dataSeriesPlane2.map(function(x) {
+    return "<tr><td>" + x.sample + "</td><td>" + x.x.toFixed(1) + "</td><td>" +  x.inc.toFixed(1) +"</td><td>τ3</td></tr>"
+  });
+
+  document.getElementById("fitting-container-table-tbody").innerHTML = rows.concat(rows2).concat(rows3).join("\n");
+}
+
 function getFisherStatisticsFit(nDirections, nCircles, R) {
 
   /*
@@ -456,6 +476,7 @@ function handleLocationSave(event) {
     specimen.latitude = latitude;
     specimen.longitude = longitude;
     specimen.lithology = lithology;
+    specimen.geology = geology;
     specimen.level = level;
     specimen.age = age;
     specimen.ageMin = ageMin;
@@ -484,6 +505,11 @@ function handleLocationSave(event) {
   var lithology = document.getElementById("specimen-lithology-input").value;
   if(lithology === "null") {
     lithology = null;
+  }
+
+  var geology = document.getElementById("specimen-geology-input").value;
+  if(geology === "null") {
+    geology = null;
   }
 
   var longitude = nullOrNumber(document.getElementById("specimen-longitude-input").value);
@@ -910,7 +936,7 @@ function getFittedGreatCircles() {
   // Mutate the fitted TAU3 components to become TAU1
   fittedCircleCoordinates.forEach(convertInterpretation);
 
-  notify("success", "Succesfully fitted <b>" + fittedCircleCoordinates.length + "</b> great circle(s) to " + nPoints + " directional component(s) in <b>" + nIterations + "</b> iteration(s).");
+  notify("success", "Succesfully fitted <b>" + fittedCircleCoordinates.length + "</b> great circle(s) to <b>" + nPoints + "</b> directional component(s) in <b>" + nIterations + "</b> iteration(s).");
 
   // Return the new set of samples
   return copySamples;
@@ -1292,6 +1318,7 @@ function modalOpenHandler() {
   // Clear cached form entries
   document.getElementById("specimen-age-select").value = null;
   document.getElementById("specimen-lithology-input").value = null;
+  document.getElementById("specimen-geology-input").value = null;
   document.getElementById("age-input").value = "";
   document.getElementById("age-min-input").value = "";
   document.getElementById("age-max-input").value = "";
@@ -1335,6 +1362,10 @@ function modalOpenHandler() {
   // Set the existing lithology
   if(specimen.lithology !== null) {
     document.getElementById("specimen-lithology-input").value = specimen.lithology;
+  }
+
+  if(specimen.geology !== null) {
+    document.getElementById("specimen-geology-input").value = specimen.geology;
   }
 
   if(specimen.level !== null) {
@@ -1497,7 +1528,7 @@ function formatStepTable() {
 
   var direction = inReferenceCoordinates(COORDINATES, specimen, new Coordinates(step.x, step.y, step.z)).toVector(Direction);
 
-  if(specimen.latitude === null || specimen.longitude === null || specimen.age === null && specimen.ageMin === null || specimen.ageMax === null || specimen.lithology === null) {
+  if(specimen.latitude === null || specimen.longitude === null || specimen.age === null && specimen.ageMin === null || specimen.ageMax === null || specimen.lithology === null || specimen.geology === null) {
     var specimenLocation = "<span style='pointer-events: none;' class='text-muted'>" + getSuccesfulLabel(false) + " Edit</span>";
   } else {
     var specimenLocation = "<span style='pointer-events: none;' class='text-muted'>" + getSuccesfulLabel(true) + " Edit</span>";

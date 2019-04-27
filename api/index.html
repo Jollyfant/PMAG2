@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
   <head>
@@ -8,13 +9,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="Paleomagnetism.org 2 - An online environment for paleomagnetic analysis">
     <meta name="keywords" content="paleomagnetism, interpretation, zijderveld, pca">
+
     <meta name="author" content="Mathijs Koymans">
 
     <link rel="shortcut icon" type="image/x-icon" href="../resources/images/hades-icon.png"/>
+
     <link rel="stylesheet" href="../css/style.css">
 
     <!-- Bootstrap & Font Awesome CSS -->
-    <link rel="stylesheet" href="../lib/bootstrap-4.3.1/dist/css/bootstrap.min.css"></link>
+    <link rel="stylesheet" href="../lib/bootstrap-4.3.1/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="../lib/fontawesome-free-5.7.2-web/css/all.css">
 
   </head>
@@ -43,7 +46,7 @@
           <li class="nav-item">
             <span class="nav-link disabled" href="#">|</span></li>
           <li class="nav-item">
-            <a class="nav-link active" href="../references">References</a>
+            <a class="nav-link" href="../references">References</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="../team">Team & Contact</a>
@@ -68,19 +71,29 @@
       <div id="notification-container"></div>
 
         <div class="alert alert-light" role="alert">
-          <div class="container">
-            <div class="row justify-content-md-center align-items-center">
-              <div class="col col-lg-3" style="text-align: center;">
-                <img id="logo" src="../resources/images/pmag-logo.png">
-              </div>
-              <div class="col col-lg-9">
-                <h5><b>404</b> - Page Not Found </h5>
-                <p> The requested page could not be found. If this error comes unexpectedly please <a href="../team">contact us</a>.
-              </div>
-            </div>
-          </div>
+          <h5> Paleomagnetism.org 2 - HTTP API </h5>
+          <p> The data available from the <a href="../library">Data Library</a> is sourced from the public Paleomagntism.org HTTP API available at <a href="https://api.paleomagnetism.org">https://api.paleomagnetism.org</a>. This API can be used by your software to access the data holdings of our collective archive in an automated way.
+        </div>
 
+        <h5> HTTP API Specifications </h5>
+        <p> All requests to the API must be made using HTTP GET and return JSON (<code>application/json</code>). The implemented methods are:
+        <hr>
+        <h5> / <span style="float: right;" class="badge badge-success">200</span></h5>
+       <small>e.g. <a href="https://api.paleomagnetism.org">https://api.paleomagnetism.org</a></small>
+        <p> Returns a list of available publications. Each publication is attributed a persistent identifier that can be used with the API.
+        <hr>
+        <h5> / <code>{persistent-identifier}</code> <div style="float: right;"><span class="badge badge-success">200</span> <span class="badge badge-warning">404</span></div></h5> 
+        <small>e.g. <a href="https://api.paleomagnetism.org/27efedb6cfb0329332521fa5a59cbefee4c5a3016e552e6862a1b235d42c2066">https://api.paleomagnetism.org/27efedb6cfb0329332521fa5a59cbefee4c5a3016e552e6862a1b235d42c2066</a></small>
+        <p> Returns the publication related to a particular persistent identifier.
 
+<div class='justify-content-md-center text-center'>
+  <div style='text-align: right; display: inline-block;'>
+    <a href='http://www.geo.uu.nl/~forth/'><img style='margin: 0px; height: 60px;' src='../resources/images/UU.png'></a>
+    <a href='http://erc.europa.eu/'><img style='margin: 0px; height: 60px;' src='../resources/images/ERC.png'></a>
+    <a href='http://www.nwo.nl/'><img style='margin: 0px; height: 60px;' src='../resources/images/NWO_logo_plain.png'></a>
+  </div>
+</div>
+<br>
 
 
     </div>
@@ -94,7 +107,12 @@
   <!-- jQuery slim and bootstrap -->
   <script src="../lib/jquery-3.3.1/jquery-3.3.1.slim.min.js"></script>
   <script src="../lib/bootstrap-4.3.1/dist/js/bootstrap.bundle.min.js"></script>
-
   <script src="../js/utils.js"></script>
+
+  <script>
+    document.getElementById("__doi__").innerHTML = "<a href='https://doi.org/" + __DOI__ + "'>" + __DOI__ + "</a>";
+    document.getElementById("__version__").innerHTML = __VERSION__;
+  </script>
+
 
 </html>

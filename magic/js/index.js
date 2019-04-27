@@ -10,6 +10,11 @@ var data = null;
 
 function addEventHandlers() {
 
+  /*
+   * Function addEventHandlers
+   * Adds event listeners afor keyboard events
+   */
+
   document.getElementById("customFile").addEventListener("change", fileSelectionHandler);
   document.getElementById("download-magic-button").disabled = true;
   document.addEventListener("keydown", keyboardHandler);
@@ -137,6 +142,7 @@ function fileSelectionHandler(event) {
         "      <td>Specimen</td>",
         "      <td>Method</td>",
         "      <td>Location</td>",
+        "      <td>Geology</td>",
         "      <td>Lithology</td>",
         "      <td>Bed Strike</td>",
         "      <td>Bed Dip</td>",
@@ -157,6 +163,7 @@ function fileSelectionHandler(event) {
           "    <td>" + specimen.name + "</td>",
           "    <td>" + getDemagnetizationTypeLabel(specimen.demagnetizationType) + "</td>",
           "    <td>" + specimen.longitude + "°E, " + specimen.latitude + "°N</td>",
+          "    <td>" + specimen.geology + "</td>",
           "    <td>" + specimen.lithology + "</td>",
           "    <td>" + specimen.beddingStrike + "</td>",
           "    <td>" + specimen.beddingDip + "</td>",
@@ -237,6 +244,10 @@ function checkSpecimen(specimen) {
 
     if(specimen.lithology === null) {
       throw("Lithology is not set.");
+    }
+
+    if(specimen.lithology === null) {
+      throw("Geology is not set.");
     }
 
   } catch(exception) {
@@ -452,6 +463,7 @@ function exportMagIC(metadata) {
     // Create a new set for the demagnetization codes
     var demagnetizationTypes = new Set();
     var lithologies = new Set();
+    var geologies = new Set();
 
     var latitudes = new Array();
     var longitudes = new Array();
@@ -462,6 +474,9 @@ function exportMagIC(metadata) {
     specimens.forEach(function(specimen) {
 
       var demagnetizationType;
+
+      //  We assume a specimen volume of 10.5cc if it is missing
+      var volume = specimen.volume || 10.5;
 
       if(specimen.demagnetizationType === "thermal") {
         demagnetizationType = DEMAGNETIZATION_THERMAL;
@@ -480,6 +495,7 @@ function exportMagIC(metadata) {
 
       demagnetizationTypes.add(demagnetizationType);
       lithologies.add(specimen.lithology);
+      geologies.add(specimen.geology);
 
       // TODO handling of ages/locations
       magicSites.push([
@@ -489,8 +505,8 @@ function exportMagIC(metadata) {
         "g",
         demagnetizationType,
         metadata.reference,
-        "whatever",
-        "whatever",
+        specimen.geology,
+        "Not Specified",
         specimen.lithology,
         specimen.latitude,
         specimen.longitude,
@@ -538,24 +554,25 @@ function exportMagIC(metadata) {
         // Convert x, y, z in specimen coordinates to a direction
         var direction = new Coordinates(step.x, step.y, step.z).toVector(Direction);
 
+        // Intensities are in Am^2 in MagIC.
+        // Our values are in μA/m. (1E6 * intensity) / (1E6 * volume) = intensity / volume
         magicMeasurements.push([
           specimen.name + "_" + i,
           "experiment-" + demagnetizationType,
           specimen.name,
-          0,
+          i,
           "s",
           "g",
           demagnetizationType,
           metadata.reference,
           (demagnetizationType === DEMAGNETIZATION_ALTERNATING ? toTesla(step.step) : 0),
           (demagnetizationType === DEMAGNETIZATION_THERMAL ? toKelvin(step.step) : 293),
-          direction.length,
-          step.x,
-          step.y,
-          step.z,
+          step.x / volume,
+          step.y / volume,
+          step.z / volume,
           direction.dec,
           direction.inc,
-          direction.length
+          volume
         ].join("\t"));
 
       });
@@ -570,7 +587,7 @@ function exportMagIC(metadata) {
     magicLocations.push([
       "location-" + i,
       determineLocationType(latitudes, longitudes, levels),
-      "whatever",
+      Array.from(geologies.values()).join(":"),
       Array.from(lithologies.values()).join(":"),
       latitudes[0],
       latitudes[latitudes.length - 1],
