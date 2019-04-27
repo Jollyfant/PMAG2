@@ -239,6 +239,10 @@ function checkSpecimen(specimen) {
       throw("Lithology is not set.");
     }
 
+    if(specimen.lithology === null) {
+      throw("Geology is not set.");
+    }
+
   } catch(exception) {
     throw(new Exception(specimen.name + " " + exception));
   }
@@ -452,6 +456,7 @@ function exportMagIC(metadata) {
     // Create a new set for the demagnetization codes
     var demagnetizationTypes = new Set();
     var lithologies = new Set();
+    var geologies = new Set();
 
     var latitudes = new Array();
     var longitudes = new Array();
@@ -480,6 +485,7 @@ function exportMagIC(metadata) {
 
       demagnetizationTypes.add(demagnetizationType);
       lithologies.add(specimen.lithology);
+      geologies.add(specimen.geology);
 
       // TODO handling of ages/locations
       magicSites.push([
@@ -489,8 +495,8 @@ function exportMagIC(metadata) {
         "g",
         demagnetizationType,
         metadata.reference,
-        "whatever",
-        "whatever",
+        specimen.geology,
+        "Not Specified",
         specimen.lithology,
         specimen.latitude,
         specimen.longitude,
@@ -569,7 +575,7 @@ function exportMagIC(metadata) {
     magicLocations.push([
       "location-" + i,
       determineLocationType(latitudes, longitudes, levels),
-      "whatever",
+      Array.from(geologies.values()).join(":"),
       Array.from(lithologies.values()).join(":"),
       latitudes[0],
       latitudes[latitudes.length - 1],

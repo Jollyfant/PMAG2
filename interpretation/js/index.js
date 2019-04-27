@@ -456,6 +456,7 @@ function handleLocationSave(event) {
     specimen.latitude = latitude;
     specimen.longitude = longitude;
     specimen.lithology = lithology;
+    specimen.geology = geology;
     specimen.level = level;
     specimen.age = age;
     specimen.ageMin = ageMin;
@@ -484,6 +485,11 @@ function handleLocationSave(event) {
   var lithology = document.getElementById("specimen-lithology-input").value;
   if(lithology === "null") {
     lithology = null;
+  }
+
+  var geology = document.getElementById("specimen-geology-input").value;
+  if(geology === "null") {
+    geology = null;
   }
 
   var longitude = nullOrNumber(document.getElementById("specimen-longitude-input").value);
@@ -1292,6 +1298,7 @@ function modalOpenHandler() {
   // Clear cached form entries
   document.getElementById("specimen-age-select").value = null;
   document.getElementById("specimen-lithology-input").value = null;
+  document.getElementById("specimen-geology-input").value = null;
   document.getElementById("age-input").value = "";
   document.getElementById("age-min-input").value = "";
   document.getElementById("age-max-input").value = "";
@@ -1335,6 +1342,10 @@ function modalOpenHandler() {
   // Set the existing lithology
   if(specimen.lithology !== null) {
     document.getElementById("specimen-lithology-input").value = specimen.lithology;
+  }
+
+  if(specimen.geology !== null) {
+    document.getElementById("specimen-geology-input").value = specimen.geology;
   }
 
   if(specimen.level !== null) {
@@ -1497,7 +1508,7 @@ function formatStepTable() {
 
   var direction = inReferenceCoordinates(COORDINATES, specimen, new Coordinates(step.x, step.y, step.z)).toVector(Direction);
 
-  if(specimen.latitude === null || specimen.longitude === null || specimen.age === null && specimen.ageMin === null || specimen.ageMax === null || specimen.lithology === null) {
+  if(specimen.latitude === null || specimen.longitude === null || specimen.age === null && specimen.ageMin === null || specimen.ageMax === null || specimen.lithology === null || specimen.geology === null) {
     var specimenLocation = "<span style='pointer-events: none;' class='text-muted'>" + getSuccesfulLabel(false) + " Edit</span>";
   } else {
     var specimenLocation = "<span style='pointer-events: none;' class='text-muted'>" + getSuccesfulLabel(true) + " Edit</span>";
