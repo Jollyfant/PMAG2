@@ -645,6 +645,7 @@ function formatInterpretationSeriesArea(interpretations) {
       series.push({
         "name": "Interpretation (" + interpretation.type + ")",
         "type": "scatter",
+        "zIndex": 100,
         "color": HIGHCHARTS_ORANGE,
         "marker": {
           "symbol": "circle",
@@ -666,7 +667,16 @@ function formatInterpretationSeriesArea(interpretations) {
     if(interpretation.type === "TAU3") {
 
       series.push({
-        "data": getPlaneData(direction),
+        "data": getPlaneData(direction).positive,
+        "linkedTo": ":previous",
+        "type": "line",
+        "color": HIGHCHARTS_ORANGE,
+        "enableMouseTracking": false,
+        "marker": {
+          "enabled": false
+        }
+      }, {
+        "data": getPlaneData(direction).negative,
         "linkedTo": ":previous",
         "type": "line",
         "color": HIGHCHARTS_ORANGE,

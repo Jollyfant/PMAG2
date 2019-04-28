@@ -2286,8 +2286,9 @@ function transformEllipse(A95Ellipse, dir) {
 
   let ellipse = a95Ellipse.map(prepareDirectionData);
 
+  // Flip was requested
   if(document.getElementById("flip-ellipse").checked) {
-    return flipEllipse(dir.inc, ellipse);
+    return flipEllipse(dir.mean.inc, ellipse);
   }
 
   return ellipse;
