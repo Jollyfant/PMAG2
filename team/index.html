@@ -144,20 +144,25 @@
 <br>
 <hr>
 <div class="alert alert-light" role="alert">
+
   <h5> Paleomagnetism.org Disclaimer </h5>
     <p>  Paleomagnetism.org and its data contributors take care to ensure that the software, data, and metadata are of the highest possible quality. Users of the application assume all responsibility and risk for use of the data and application. In no event shall Paleomagnetism.org or any data providers be liable for any damages caused by, but not limited to, erroneous data or results.
     <p> All data processed with Paleomagnetism.org are treated locally and not sent over a network. Resources required for the functionality of the application are fetched initially when the user visits the page. Data that have been submitted to the <a href="../library">Data Library</a> are free of use and cannot be reused in unaltered form for commercial use.
     <p><b>We kindly remind you to <a href="../references">cite</a> all sources.</b>
-   <div style='text-align: right;'> Paleomagnetism.org &copy; 2019. All rights reserved.</div>
+   <div style='text-align: right;'> Paleomagnetism.org &copy; <span id="__year__"></span>. All rights reserved.</div>
 </div>
 
-<div class='justify-content-md-center text-center'>
-  <div style='text-align: right; display: inline-block;'>
+  <div class="row justify-content-md-center text-center">
+    <div class="col-sm ">
     <a href='http://www.geo.uu.nl/~forth/'><img style='margin: 0px; height: 60px;' src='../resources/images/UU.png'></a>
+    </div>
+    <div class="col-sm">
     <a href='http://erc.europa.eu/'><img style='margin: 0px; height: 60px;' src='../resources/images/ERC.png'></a>
+    </div>
+    <div class="col-sm">
     <a href='http://www.nwo.nl/'><img style='margin: 0px; height: 60px;' src='../resources/images/NWO_logo_plain.png'></a>
+    </div>
   </div>
-</div>
 <br>
 
 
@@ -177,6 +182,7 @@
   <script>
     document.getElementById("__doi__").innerHTML = "<a href='https://doi.org/" + __DOI__ + "'>" + __DOI__ + "</a>";
     document.getElementById("__version__").innerHTML = __VERSION__;
+    document.getElementById("__year__").innerHTML = new Date().getFullYear();
   </script>
 
 

@@ -7,6 +7,7 @@ function registerEventHandlers() {
   document.getElementById("interpretation-table-container").addEventListener("click", interpretationTableClickHandler);
   document.getElementById("specimen-select").addEventListener("change", resetSpecimenHandler);
   document.getElementById("table-container").addEventListener("click", handleTableClick);
+  document.getElementById("fitting-container-table-tbody").addEventListener("click", handleTableClickComponents);
   document.getElementById("save-location").addEventListener("click", handleLocationSave);
   document.getElementById("specimen-age-select").addEventListener("change", handleAgeSelection);
 
@@ -254,7 +255,7 @@ function redrawInterpretationGraph(fit) {
 
   sampless.forEach(function(sample, i) {
 
-    sample.interpretations.forEach(function(interpretation) {
+    sample.interpretations.forEach(function(interpretation, j) {
 
       // Skip anything that is not in the group
       if(interpretation.group !== GROUP) {
@@ -285,6 +286,7 @@ function redrawInterpretationGraph(fit) {
             "y": projectInclination(direction.inc),
             "inc": direction.inc,
             "index": i, 
+            "interpretation": j, 
             "sample": sample.name,
             "marker": {
               "fillColor": direction.inc < 0 ? HIGHCHARTS_WHITE : HIGHCHARTS_RED,
@@ -299,6 +301,7 @@ function redrawInterpretationGraph(fit) {
             "y": projectInclination(direction.inc),
             "inc": direction.inc,
             "index": i, 
+            "interpretation": j,
             "sample": sample.name,
             "marker": {
               "fillColor": direction.inc < 0 ? HIGHCHARTS_WHITE : HIGHCHARTS_ORANGE,
@@ -315,6 +318,7 @@ function redrawInterpretationGraph(fit) {
           "x": direction.dec,
           "inc": direction.inc,
           "sample": sample.name,
+          "interpretation": j,
           "index": i, 
         });
 
@@ -452,7 +456,7 @@ function updateInterpretationDirectionTable(seriesOne, seriesTwo, dataSeriesPlan
      * Creates an entry in the table
      */
 
-    return "<tr><td onclick='swapTo(" + x.index + 	")'><a href='#'>" + x.sample + "</a></td><td>" + x.x.toFixed(1) + "</td><td>" +  x.inc.toFixed(1) +"</td><td>" + this + "</td></tr>"
+    return "<tr><td onclick='swapTo(" + x.index + 	")'><a href='#'>" + x.sample + "</a></td><td>" + x.x.toFixed(1) + "</td><td>" +  x.inc.toFixed(1) + "</td><td>" + this + "</td><td index='" + x.index + "' interpretation='" + x.interpretation + "' class='text-center text-danger' style='text-align: center; cursor: pointer;'><i style='pointer-events: none;' class='fas fa-times'></i></td>";
 
   }
 
@@ -571,6 +575,26 @@ function handleLocationSave(event) {
   formatStepTable();
 
 }
+
+function handleTableClickComponents(event) {
+
+  /*
+   * Function handleTableClickComponents
+   * Handles click on delete for interpreted component table
+   */
+
+  let specimenIndex = event.target.getAttribute("index");
+  let interpretationIndex = event.target.getAttribute("interpretation");
+
+  if(event.target.cellIndex === 4) {
+    specimens[specimenIndex].interpretations.splice(interpretationIndex - 1, 1);
+  }
+
+  saveLocalStorage();
+  redrawCharts();
+
+}
+
 
 function handleTableClick(event) {
 
