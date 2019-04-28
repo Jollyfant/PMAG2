@@ -430,7 +430,7 @@ function getPlaneData(direction, angle) {
   function rotateEllipse(x) {
 
     /*
-     * Function getPlaneData::rotateEllipse
+     * Function 	Data::rotateEllipse
      * Rotates each point on an ellipse (plane) to the correct direction
      */
 
@@ -450,7 +450,41 @@ function getPlaneData(direction, angle) {
     return flipEllipse(direction.inc, ellipse);
   }
 
+  // Different series for positive, negative
+  if(angle === 90) {
+    return flipPlane(direction.inc, ellipse);
+  }
+
   return ellipse;
+
+}
+
+function flipPlane(inclination, ellipse) {
+
+  let negative = new Array();
+  let positive = new Array();
+  let sign = 0;
+
+  // Go over all the points on the ellipse
+  for(var i = 1; i < ellipse.length; i++) {
+
+    let point = ellipse[i];
+    let pointSign = Math.sign(point.inc);
+
+    // Sign changed: add null to prevent Highcharts drawing a connection
+    if(sign !== pointSign) {
+      (pointSign < 0 ? positive : negative).push(ellipse[i - 1]);
+      (pointSign < 0 ? negative : positive).push(null);
+    }
+
+    (point.inc < 0 ? positive : negative).push(point);
+
+    // Sign for next iteration
+    sign = pointSign;
+
+  }
+
+  return { negative, positive };
 
 }
 
@@ -471,10 +505,10 @@ function flipEllipse(inclination, ellipse) {
     let pointSign = Math.sign(point.inc);
 
     // Sign changed: add null to prevent Highcharts drawing a connection
-    if(sign != pointSign) {
+    if(sign !== pointSign) {
       splitEllipse.push(null);
     }
- 
+
     // Do not rotate when negative & negative or positive & positive
     if(pointSign !== Math.sign(inclination)) {
       point.x = point.x + 180;

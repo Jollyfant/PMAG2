@@ -7,6 +7,7 @@ function registerEventHandlers() {
   document.getElementById("interpretation-table-container").addEventListener("click", interpretationTableClickHandler);
   document.getElementById("specimen-select").addEventListener("change", resetSpecimenHandler);
   document.getElementById("table-container").addEventListener("click", handleTableClick);
+  document.getElementById("fitting-container-table-tbody").addEventListener("click", handleTableClickComponents);
   document.getElementById("save-location").addEventListener("click", handleLocationSave);
   document.getElementById("specimen-age-select").addEventListener("change", handleAgeSelection);
 
@@ -230,7 +231,8 @@ function redrawInterpretationGraph(fit) {
    */
 
   var dataSeries = new Array();
-  var dataSeriesPlane = new Array();
+  var dataSeriesPlaneNegative = new Array();
+  var dataSeriesPlanePositive = new Array();
   var dataSeriesFitted = new Array();
   var dataSeriesPlane2 = new Array();
 
@@ -251,9 +253,9 @@ function redrawInterpretationGraph(fit) {
   var nCircles = 0;
   var nDirections = 0;
 
-  sampless.forEach(function(sample) {
+  sampless.forEach(function(sample, i) {
 
-    sample.interpretations.forEach(function(interpretation) {
+    sample.interpretations.forEach(function(interpretation, j) {
 
       // Skip anything that is not in the group
       if(interpretation.group !== GROUP) {
@@ -283,6 +285,8 @@ function redrawInterpretationGraph(fit) {
             "x": direction.dec,
             "y": projectInclination(direction.inc),
             "inc": direction.inc,
+            "index": i, 
+            "interpretation": j, 
             "sample": sample.name,
             "marker": {
               "fillColor": direction.inc < 0 ? HIGHCHARTS_WHITE : HIGHCHARTS_RED,
@@ -296,6 +300,8 @@ function redrawInterpretationGraph(fit) {
             "x": direction.dec,
             "y": projectInclination(direction.inc),
             "inc": direction.inc,
+            "index": i, 
+            "interpretation": j,
             "sample": sample.name,
             "marker": {
               "fillColor": direction.inc < 0 ? HIGHCHARTS_WHITE : HIGHCHARTS_ORANGE,
@@ -308,8 +314,17 @@ function redrawInterpretationGraph(fit) {
       }
 
       if(interpretation.type === "TAU3") {
-        dataSeriesPlane2.push({"x": direction.dec, "inc": direction.inc, "sample": sample.name});
-        dataSeriesPlane = dataSeriesPlane.concat(getPlaneData(direction), null);
+        dataSeriesPlane2.push({
+          "x": direction.dec,
+          "inc": direction.inc,
+          "sample": sample.name,
+          "interpretation": j,
+          "index": i, 
+        });
+
+        dataSeriesPlaneNegative = dataSeriesPlaneNegative.concat(getPlaneData(direction).negative, null);
+        dataSeriesPlanePositive = dataSeriesPlanePositive.concat(getPlaneData(direction).positive, null);
+
       }
 
     });
@@ -380,15 +395,27 @@ function redrawInterpretationGraph(fit) {
     });
   }
 
-  if(dataSeriesPlane.length) {
+  if(dataSeriesPlaneNegative.length) {
     series.push({
       "name": "Great Circles",
       "type": "line",
       "turboThreshold": 0,
-      "data": dataSeriesPlane,
+      "data": dataSeriesPlanePositive,
+      "color": HIGHCHARTS_ORANGE,
+      "lineWidth": 1,
+      "enableMouseTracking": false,
+      "marker": {
+        "enabled": false
+      }
+    }, {
+      "name": "Great Circles",
+      "type": "line",
+      "turboThreshold": 0,
+      "data": dataSeriesPlaneNegative,
       "color": HIGHCHARTS_ORANGE,
       "dashStyle": "ShortDash",
       "lineWidth": 1,
+      "linkedTo": ":previous",
       "enableMouseTracking": false,
       "marker": {
         "enabled": false
@@ -413,19 +440,30 @@ function redrawInterpretationGraph(fit) {
 
 }
 
+function swapTo(index) {
+
+  updateSpecimenSelect(index);
+  $("#nav-profile-tab").tab("show");
+
+}
+
 function updateInterpretationDirectionTable(seriesOne, seriesTwo, dataSeriesPlane2) {
 
-  let rows = seriesOne.map(function(x) {
-    return "<tr><td>" + x.sample + "</td><td>" + x.x.toFixed(1) + "</td><td>" +  x.inc.toFixed(1) +"</td><td>τ1</td></tr>"
-  });
+  function createRow(x, value) {
 
-  let rows2 = seriesTwo.map(function(x) {
-    return "<tr><td>" + x.sample + "</td><td>" + x.x.toFixed(1) + "</td><td>" +  x.inc.toFixed(1) +"</td><td>τ1 (τ3)</td></tr>"
-  });
+    /*
+     * Function createRow
+     * Creates an entry in the table
+     */
 
-  let rows3 = dataSeriesPlane2.map(function(x) {
-    return "<tr><td>" + x.sample + "</td><td>" + x.x.toFixed(1) + "</td><td>" +  x.inc.toFixed(1) +"</td><td>τ3</td></tr>"
-  });
+    return "<tr><td onclick='swapTo(" + x.index + 	")'><a href='#'>" + x.sample + "</a></td><td>" + x.x.toFixed(1) + "</td><td>" +  x.inc.toFixed(1) + "</td><td>" + this + "</td><td index='" + x.index + "' interpretation='" + x.interpretation + "' class='text-center text-danger' style='text-align: center; cursor: pointer;'><i style='pointer-events: none;' class='fas fa-times'></i></td>";
+
+  }
+
+  // Create a row for each series
+  let rows = seriesOne.map(createRow.bind("τ1"));
+  let rows2 = seriesTwo.map(createRow.bind("τ1 (τ3)"));
+  let rows3 = dataSeriesPlane2.map(createRow.bind("τ3"));
 
   document.getElementById("fitting-container-table-tbody").innerHTML = rows.concat(rows2).concat(rows3).join("\n");
 }
@@ -537,6 +575,26 @@ function handleLocationSave(event) {
   formatStepTable();
 
 }
+
+function handleTableClickComponents(event) {
+
+  /*
+   * Function handleTableClickComponents
+   * Handles click on delete for interpreted component table
+   */
+
+  let specimenIndex = event.target.getAttribute("index");
+  let interpretationIndex = event.target.getAttribute("interpretation");
+
+  if(event.target.cellIndex === 4) {
+    specimens[specimenIndex].interpretations.splice(interpretationIndex - 1, 1);
+  }
+
+  saveLocalStorage();
+  redrawCharts();
+
+}
+
 
 function handleTableClick(event) {
 
@@ -660,7 +718,7 @@ function getSelectedSpecimen() {
 
 }
 
-function updateSpecimenSelect() {
+function updateSpecimenSelect(index) {
 
   /*
    * Function updateSpecimenSelect
@@ -670,6 +728,7 @@ function updateSpecimenSelect() {
   removeOptions(document.getElementById("specimen-select"));
 
   specimens.forEach(addPrototypeSelection);
+  document.getElementById("specimen-select").selectedIndex = index || 0;
   stepSelector.reset();
   saveLocalStorage();
 
