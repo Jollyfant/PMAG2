@@ -225,62 +225,6 @@ function addPrototypeSelection(x, i) {
 
 }
 
-function getCutoffAngle(type) {
-
-  /*
-   * Function getCutoffAngle
-   * Returns the cut off angle based on the requested type
-   */
-
-  switch(type) {
-    case "CUTOFF45":
-      return 45;
-    default:
-      return 0;
-  }
-
-}
-
-function sortSamples(type) {
-
-  /*
-   * Function sortSamples
-   * Mutates the samples array in place sorted by a particular type
-   */
-
-  function getSortFunction(type) {
-
-    /*
-     * Function getSortFunction
-     * Returns the sort fuction based on the requested type
-     */
-
-    function nameSorter(x, y) {
-      return x.name < y.name ? -1 : x.name > y.name ? 1 : 0;
-    }
-
-    function randomSorter(x, y) {
-      return Math.random() < 0.5;
-    }
-
-    switch(type) {
-      case "name":
-        return nameSorter;
-      case "bogo":
-        return randomSorter;
-    }
-
-  }
-
-  // Sort the samples in place
-  collections.sort(getSortFunction(type));
-
-  notify("success", "Succesfully sorted specimens by <b>" + type + "</b>.");
-
-  updateSpecimenSelect();
-
-}
-
 function fileSelectionHandler(event) {
 
   /*

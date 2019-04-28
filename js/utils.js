@@ -1075,15 +1075,21 @@ function importCSV(file) {
     // Extract all
     var [name, dec, inc, coreAzimuth, coreDip, beddingStrike, beddingDip, latitude, longitude, level, age, ageMin, ageMax, coordinates] = line.split(",");
 
+    if(latitude === "") {
+      latitude = null;
+    } 
+    if(longitude === "") {
+      longitude = null;
+    }
     // Longitude within [-180, 180]
-    if(longitude > 180) {
-      longitude = longitude - 360;
-    }
-
-    // Latitude within [-90, 90]
-    if(latitude > 90) {
-      latitude = latitude - 180;
-    }
+    //if(longitude > 180) {
+    //  longitude = longitude - 360;
+    //}
+    //
+    //// Latitude within [-90, 90]
+    //if(latitude > 90) {
+    //  latitude = latitude - 180;
+    //}
 
     // Confirm the reference frame
     if(coordinates !== "specimen" && coordinates !== "geographic" && coordinates !== "tectonic") {
@@ -1097,8 +1103,8 @@ function importCSV(file) {
       "coreDip": Number(coreDip),
       "beddingStrike": Number(beddingStrike),
       "beddingDip": Number(beddingDip),
-      "latitude": Number(latitude),
-      "longitude": Number(longitude),
+      "latitude": latitude,
+      "longitude": longitude,
       "level": Number(level),
       "age": Number(age),
       "ageMin": Number(ageMin),
@@ -1122,6 +1128,62 @@ function importCSV(file) {
     "components": lines.map(parseLine),
     "created": new Date().toISOString()
   });
+
+}
+
+function getCutoffAngle(type) {
+
+  /*
+   * Function getCutoffAngle
+   * Returns the cut off angle based on the requested type
+   */
+
+  switch(type) {
+    case "CUTOFF45":
+      return 45;
+    default:
+      return 0;
+  }
+
+}
+
+function sortCollections(type) {
+
+  /*
+   * Function sortSamples
+   * Mutates the samples array in place sorted by a particular type
+   */
+
+  function getSortFunction(type) {
+
+    /*
+     * Function getSortFunction
+     * Returns the sort fuction based on the requested type
+     */
+
+    function nameSorter(x, y) {
+      return x.name < y.name ? -1 : x.name > y.name ? 1 : 0;
+    }
+
+    function randomSorter(x, y) {
+      return Math.random() < 0.5;
+    }
+
+    switch(type) {
+      case "name":
+        return nameSorter;
+      case "bogo":
+        return randomSorter;
+    }
+
+  }
+
+  // Sort the samples in place
+  collections.sort(getSortFunction(type));
+
+  notify("success", "Succesfully sorted specimens by <b>" + type + "</b>.");
+
+  updateSpecimenSelect();
 
 }
 
