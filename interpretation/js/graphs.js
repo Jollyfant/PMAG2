@@ -982,7 +982,14 @@ function createHemisphereChart(series) {
     },
     "plotOptions": {
       "series": {
-        "animation": false
+        "animation": false,
+        "point": {
+          "events": {
+            "click": function() {
+              swapTo(this.index);
+            }
+          }
+        }
       }
     },
     "series": series
