@@ -2277,7 +2277,7 @@ function transformEllipse(A95Ellipse, dir) {
    */
 
   // Create a fake site at the location of the expected paleolatitude for the transfomration
-  var site = new Site(0, Math.abs(dir.lambda));
+  var site = new Site(0, dir.lambda);
 
   // Go over each point and transform VGP to direction at location
   var a95Ellipse = A95Ellipse.map(function(point) {
