@@ -281,6 +281,9 @@ function redrawInterpretationGraph(fit) {
         // Add fitted components to another series
         if(interpretation.fitted) {
 
+          dataSeriesPlaneNegative = dataSeriesPlaneNegative.concat(getPlaneData(interpretation.pole).negative, null);
+          dataSeriesPlanePositive = dataSeriesPlanePositive.concat(getPlaneData(interpretation.pole).positive, null);
+
           dataSeriesFitted.push({
             "x": direction.dec,
             "y": projectInclination(direction.inc),
@@ -386,9 +389,10 @@ function redrawInterpretationGraph(fit) {
     series.push({
       "name": "t95 Confidence Ellipse",
       "type": "line",
-      "color": HIGHCHARTS_ORANGE,
+      "color": HIGHCHARTS_RED,
       "data": getPlaneData(mean, statistics.t95),
       "enableMouseTracking": false,
+      "dashStyle": "ShortDash",
       "marker": {
         "enabled": false
       }
@@ -401,7 +405,7 @@ function redrawInterpretationGraph(fit) {
       "type": "line",
       "turboThreshold": 0,
       "data": dataSeriesPlanePositive,
-      "color": HIGHCHARTS_ORANGE,
+      "color": IS_FITTED ? HIGHCHARTS_GREY : HIGHCHARTS_ORANGE,
       "lineWidth": 1,
       "enableMouseTracking": false,
       "marker": {
@@ -412,7 +416,7 @@ function redrawInterpretationGraph(fit) {
       "type": "line",
       "turboThreshold": 0,
       "data": dataSeriesPlaneNegative,
-      "color": HIGHCHARTS_ORANGE,
+      "color": IS_FITTED ? HIGHCHARTS_GREY : HIGHCHARTS_ORANGE,
       "dashStyle": "ShortDash",
       "lineWidth": 1,
       "linkedTo": ":previous",
@@ -971,6 +975,7 @@ function getFittedGreatCircles() {
     var interpretation = interpretationPointers[i].interpretation;
 
     // The interpretation type has now become TAU1
+    interpretation.pole = interpretationPointers[i].coordinates.toVector(Direction);
     interpretation.type = "TAU1";           
     interpretation.fitted = true;           
 
