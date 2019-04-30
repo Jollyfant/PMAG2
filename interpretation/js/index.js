@@ -238,14 +238,11 @@ function redrawInterpretationGraph(fit) {
 
   IS_FITTED = fit;
 
-  if(IS_FITTED) {
-    try {
-      var sampless = getFittedGreatCircles();
-    } catch(exception) {
-      return notify("danger", exception);
-    }
-  } else {
-    var sampless = specimens;
+
+  try {
+    var samples = getAllComponents();
+  } catch(exception) {
+    return notify("danger", exception);
   }
 
   var meanVector = new Coordinates(0, 0, 0);
@@ -253,7 +250,7 @@ function redrawInterpretationGraph(fit) {
   var nCircles = 0;
   var nDirections = 0;
 
-  sampless.forEach(function(sample, i) {
+  samples.forEach(function(sample, i) {
 
     sample.interpretations.forEach(function(interpretation, j) {
 
@@ -283,6 +280,7 @@ function redrawInterpretationGraph(fit) {
 
           dataSeriesPlaneNegative = dataSeriesPlaneNegative.concat(getPlaneData(interpretation.pole).negative, null);
           dataSeriesPlanePositive = dataSeriesPlanePositive.concat(getPlaneData(interpretation.pole).positive, null);
+          IS_FITTED = true;
 
           dataSeriesFitted.push({
             "x": direction.dec,
@@ -460,11 +458,19 @@ function updateInterpretationDirectionTable(seriesOne, seriesTwo, dataSeriesPlan
      * Creates an entry in the table
      */
 
-    return "<tr><td onclick='swapTo(" + x.index + 	")'><a href='#'>" + x.sample + "</a></td><td>" + x.x.toFixed(1) + "</td><td>" +  x.inc.toFixed(1) + "</td><td>" + this + "</td><td index='" + x.index + "' interpretation='" + x.interpretation + "' class='text-center text-danger' style='text-align: center; cursor: pointer;'><i style='pointer-events: none;' class='fas fa-times'></i></td>";
+    return new Array(
+      "<tr>",
+      "  <td onclick='swapTo(" + x.index + ")'><a href='#'>" + x.sample + "</a></td>",
+      "  <td>" + x.x.toFixed(1) + "</td>",
+      "  <td>" +  x.inc.toFixed(1) + "</td>",
+      "  <td>" + this + "</td>",
+      "  <td index='" + x.index + "' interpretation='" + x.interpretation + "' class='text-center text-danger' style='cursor: pointer;'><i style='pointer-events: none;' class='fas fa-times'></i></td>",
+      "</tr>"
+    ).join("\n");
 
   }
 
-  // Create a row for each series
+  // Create a row for each series TAU1, TAU3 and TAU3 fitted to TAU1
   let rows = seriesOne.map(createRow.bind("τ1"));
   let rows2 = seriesTwo.map(createRow.bind("τ1 (τ3)"));
   let rows3 = dataSeriesPlane2.map(createRow.bind("τ3"));
@@ -813,6 +819,7 @@ function addPrototypeSelection(x, i) {
 
   option.text = x.name;
   option.value = i;
+  x.index = i;
 
   document.getElementById("specimen-select").add(option);
 
@@ -854,8 +861,7 @@ function getFittedGreatCircles() {
   var nPoints = 0;
 
   // Prevent mutation and create a clone of all samples in memory
-  // using a trick with JSON serialization/deserialization
-  copySamples = JSON.parse(JSON.stringify(specimens));
+  copySamples = memcpy(specimens);
 
   copySamples.forEach(function(sample) {
 
@@ -907,7 +913,7 @@ function getFittedGreatCircles() {
 
   // Confirm the mean vector is valid
   if(!meanVector.isValid()) {
-    throw(new Exception("The directional mean vector is invalid."));
+    throw(new Exception("The suggested mean vector is invalid."));
   }
 
   var fittedCircleCoordinates = new Array();
@@ -1764,6 +1770,21 @@ function getPublicationFromPID() {
 
 }
 
+function getAllComponents() {
+
+  /*
+   * Function getAllComponents
+   * Returns all components (fitted if requested)
+   */
+
+  if(!IS_FITTED) {
+    return specimens;
+  }
+
+  return getFittedGreatCircles();
+
+}
+
 function downloadInterpretations() {
 
   /*
@@ -1774,25 +1795,21 @@ function downloadInterpretations() {
   const MIME_TYPE = "data:application/json;charset=utf-8";
   const FILENAME = "specimens.dir";
 
-  // No samples are loaded
+  // No samples are loaded to the application
   if(specimens.length === 0) {
     return notify("danger", new Exception("No interpretations available to export."));
   }
 
-  if(IS_FITTED) {
-    try {
-      var samples = getFittedGreatCircles();
-    } catch(exception) {
-      return notify("danger", exception);
-    }
-  } else {
-    var samples = specimens;
+  try {
+    var result = getAllComponents();
+  } catch(exception) {
+    return notify("danger", exception);
   }
 
   // Create the payload with some additional metadata
   var payload = encodeURIComponent(JSON.stringify({
-    "hash": forge_sha256(JSON.stringify(samples)),
-    "specimens": specimens,
+    "hash": forge_sha256(JSON.stringify(result)),
+    "specimens": result,
     "version": __VERSION__,
     "created": new Date().toISOString()
   }));
@@ -1826,18 +1843,14 @@ function downloadInterpretationsCSV() {
 
   var rows = new Array(CSV_HEADER.join(","));
 
-  if(IS_FITTED) {
-    try {
-      var sampless = getFittedGreatCircles();
-    } catch(exception) {
-      return notify("danger", exception);
-    }
-  } else {
-    var sampless = specimens;
+  try {
+    var saples = getAllComponents();
+  } catch(exception) {
+    return notify("danger", exception);
   }
 
   // Export the interpreted components as CSV
-  sampless.forEach(function(specimen) {
+  samples.forEach(function(specimen) {
 
     specimen.interpretations.forEach(function(interpretation) {
 
