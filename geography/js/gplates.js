@@ -37,7 +37,7 @@ function parseGPlatesRotationFile(files) {
   }
 
   // Create a hashmap for the plate ID
-  files.pop().data.split(/\r?\n/).slice(1, -1).filter(filterLine).map(parseLine).forEach(function(x) {
+  files.pop().data.split(LINE_REGEXP).filter(filterLine).map(parseLine).forEach(function(x) {
 
     if(!GPlatesData.hasOwnProperty(x.id)) {
       GPlatesData[x.id] = new Array();

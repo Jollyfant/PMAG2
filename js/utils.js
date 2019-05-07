@@ -27,6 +27,10 @@ const ITEM_DELIMITER = ",";
 const TAB_DELIMITER = "\t";
 const LINE_DELIMITER = "\n";
 
+// Regex for splitting lines taken from
+// https://stackoverflow.com/questions/5034781/js-regex-to-split-by-line
+const LINE_REGEXP = new RegExp("(\r\n|[\n\v\f\r\x85\u2028\u2029])");
+
 document.title = "Paleomagnetism.org " + __VERSION__;
 
 window.addEventListener("online",  notify.bind(null, "success", "Your connection to the internet has been recovered."));
