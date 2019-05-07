@@ -5,7 +5,7 @@ function parseGPlatesRotationFile(files) {
    * Parses and loads a selected GPlates rotation file
    */
 
-  function parseLine(line) {
+  function parseLine(line, i) {
 
     /*
      * Function eulerSelectionHandler::parseLine
@@ -13,10 +13,6 @@ function parseGPlatesRotationFile(files) {
      */
 
     var values = line.split(/\s+/);
-
-    if(values.length < 6) {
-      throw(new Exception("Invalid GPlates rotation file."));
-    }
 
     return {
       "id": values[0],
@@ -29,9 +25,19 @@ function parseGPlatesRotationFile(files) {
 
   }
 
+  function filterLine(line) {
+
+    /*
+     * Function eulerSelectionHandler::filterLine
+     * Filters invalid lines with no data
+     */
+
+    return line.trim().length;
+
+  }
 
   // Create a hashmap for the plate ID
-  files.pop().data.split(/\r?\n/).slice(1, -1).map(parseLine).forEach(function(x) {
+  files.pop().data.split(/\r?\n/).slice(1, -1).filter(filterLine).map(parseLine).forEach(function(x) {
 
     if(!GPlatesData.hasOwnProperty(x.id)) {
       GPlatesData[x.id] = new Array();
