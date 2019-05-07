@@ -73,6 +73,8 @@ function addDegmagnetizationFiles(format, files) {
       return files.forEach(importPaleoMac);
     case "OXFORD":
       return files.forEach(importOxford);
+    case "RS3":
+      return files.forEach(importRS3);
     case "BEIJING":
       return files.forEach(importBCN2G);
     case "CENIEH":
