@@ -2,7 +2,9 @@ The MIT License (MIT)
 
 Copyright (c) 2015-2019 The Paleomagnetism.org Team
 
-Disclaimer: this license applies to all code outside of the lib directory. Third-party code included in this project is subject to its respective license and should be treated as such.
+Disclaimer: this license applies to all code outside of the lib directory.
+Third-party code included in this project is subject to its respective
+license and should be treated as such.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
