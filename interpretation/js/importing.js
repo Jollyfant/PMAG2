@@ -50,7 +50,7 @@ function importMagic(file) {
 
   // Get a list of the available tables
   var availableTables = tables.map(function(section) {
-    return section.split(/\r?\n/).filter(Boolean).shift().split(/\t/).pop();
+    return section.split(LINE_REGEXP).filter(Boolean).shift().split(/\t/).pop();
   });
 
   // Check if all required measurements are available
@@ -63,7 +63,7 @@ function importMagic(file) {
   // Go over each table
   tables.forEach(function(section) {
 
-    var lines = section.split(/\r?\n/).filter(Boolean);
+    var lines = section.split(LINE_REGEXP).filter(Boolean);
     var sectionHeader = lines[0].split(/\t/);
     var header = lines[1].split(/\t/);
 
@@ -332,7 +332,7 @@ function importRS3(file) {
    */
 
   // Remove top header
-  var lines = file.data.split(/\r?\n/).slice(1).filter(Boolean);
+  var lines = file.data.split(LINE_REGEXP).slice(1).filter(Boolean);
 
   var header = lines[0];
 
@@ -424,7 +424,7 @@ function importPaleoMac(file) {
    */
 
   // Get lines in the file
-  var lines = file.data.split(/\r?\n/).slice(1).filter(Boolean).filter(x => x.length > 1);
+  var lines = file.data.split(LINE_REGEXP).slice(1).filter(Boolean).filter(x => x.length > 1);
 
   // The line container all the header information
   var header = lines[0];
@@ -494,7 +494,7 @@ function importOxford(file) {
    * Parses files from the Oxford format
    */
 
-  var lines = file.data.split(/\r?\n/).filter(Boolean);
+  var lines = file.data.split(LINE_REGEXP).filter(Boolean);
   var parsedData = new Array();
  
   // Get specimen metadata from the first second line
@@ -571,7 +571,7 @@ function importNGU(file) {
    * Parser for the NGU format
    */
 
-  var lines = file.data.split(/\r?\n/).filter(Boolean);
+  var lines = file.data.split(LINE_REGEXP).filter(Boolean);
   var parsedData = new Array();
 
   for(var i = 0; i < lines.length; i++) {
@@ -644,7 +644,7 @@ function importCenieh(file) {
   // Cenieh samples need to be sorted
   var ceniehSpecimens = new Object();
 
-  var lines = file.data.split(/\r?\n/).filter(Boolean);
+  var lines = file.data.split(LINE_REGEXP).filter(Boolean);
  
   // Skip the header
   lines.slice(1).forEach(function(line) {
@@ -709,7 +709,7 @@ function importMunich(file) {
    * Imports file to the Munich format
    */
 
-  var lines = file.data.split(/\r?\n/).filter(Boolean);
+  var lines = file.data.split(LINE_REGEXP).filter(Boolean);
   var parsedData = new Array();
 
   for(var i = 0; i < lines.length; i++) {
@@ -723,7 +723,7 @@ function importMunich(file) {
     // Get the header
     if(i === 0) {
 		
-      var sampleName = parameters[0];
+      var sampleName = parameters[0].trim();
 				
       // Different convention for core orientation than Utrecht
       // Munich measures the hade angle
@@ -871,7 +871,7 @@ function importCaltech(file) {
    * Parses for Caltech Institute of Technology format
    */
 
-  var lines = file.data.split(/\r?\n/).filter(Boolean);
+  var lines = file.data.split(LINE_REGEXP).filter(Boolean);
 
   // Sample name is specified at the top
   var sampleName = lines[0].trim();
@@ -1092,9 +1092,9 @@ function importUtrecht(file) {
 
     // Slice the file header information
     if(i === 0) { 
-      var blockLines = specimen.split(/\r?\n/).slice(1);
+      var blockLines = specimen.split(LINE_REGEXP).slice(1);
     } else {
-      var blockLines = specimen.split(/\r?\n/).slice(0);
+      var blockLines = specimen.split(LINE_REGEXP).slice(0);
     }
 
     var header = blockLines.shift();
@@ -1151,7 +1151,7 @@ function importHelsinki(file) {
    * Imports demagnetization data in the Helsinki format (plain-text csv)
    */
 
-  var lines = file.data.split(/\r?\n/).filter(Boolean);
+  var lines = file.data.split(LINE_REGEXP).filter(Boolean);
 
   // Get some header metadata
   var sampleName = lines[5].split(";")[1]

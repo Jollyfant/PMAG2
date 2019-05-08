@@ -1133,9 +1133,11 @@ function persistFork() {
    * Writes fork to local storage
    */
 
+  // Force a save to local storage
   saveLocalStorage(true);
 
-  window.location = window.location.pathname
+  // Reload without the persitent identifier
+  window.location = window.location.pathname;
 
 }
 
@@ -1146,7 +1148,7 @@ function __unlock__(json) {
    * Application has initialized and handlers can be registered
    */
 
-  // Loaded from a publication: save the reference pid
+  // Loaded from a publication: save the reference persistent identifier
   if(window.location.search) {
     json.forEach(function(sample, i) {
       sample.reference = window.location.search.slice(1) + "." + i;
@@ -1156,7 +1158,7 @@ function __unlock__(json) {
   if(json.length) {
 
     if(window.location.search) {
-      notify("success", "Succesfully forked <b>" + json.length + "</b> specimen(s). Changes to this session will not be saved (<small><a href='' onclick='persistFork()'><i class='fas fa-code-branch'></i><b> Persist Fork</b></a></small>).");
+      notify("success", "Succesfully forked <b>" + json.length + "</b> specimen(s). Changes to this session will not be saved (<a href='#' onclick='persistFork()'><i class='fas fa-code-branch'></i><b> Persist Fork</b></a>).");
     } else {
       notify("success", "Welcome back! Succesfully loaded <b>" + json.length + "</b> specimen(s).");
     }
@@ -1230,6 +1232,7 @@ function keyboardHandler(event) {
     "ESCAPE_KEY": 27
   });
 
+  // Block all key events when no specimens are loaded
   if(specimens.length === 0) {
     return;
   }
