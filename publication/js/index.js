@@ -153,6 +153,8 @@ function formatCollectionTable(publication) {
     "    <th>Collection</th>",
     "    <th>Type</th>",
     "    <th>Number of Specimens</th>",
+    "    <th>SHA2</th>",
+    "    <th>Version</th>",
     "    <th>Created</th>",
     "  </tr>",
     "</head>"
@@ -188,6 +190,8 @@ function formatSampleRows(collection, i) {
     "<a href='../collection/index.html" + window.location.search + "." + i + "'>" + collection.name + "</a>" + reference,
     locationType,
     collection.data.specimens.length,
+    collection.data.pid.slice(0, 16) + "…",
+    collection.data.version,
     collection.data.created.slice(0, 10),
   ).map(x => "<td>" + x + "</td>").join("\n") + "</tr>";
 

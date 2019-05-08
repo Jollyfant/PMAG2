@@ -106,7 +106,7 @@
 
           <div class="alert alert-light" role="alert">
             <h5> Paleomagnetism.org 2 - Statistics </h5>
-            <p> Data from the Paleomagnetism 2.0.0 .dir format can be imported to the statistics portal. Each selected file will be associated with a new selectable collection.
+            <p> Data from the Paleomagnetism 2.0.0 .dir format can be imported to the statistics portal. Each selected file will be associated with a new selectable collection. An example of the <b>default</b> input file can be found <a href="../resources/formats/default.csv">here</a>.
           </div>
 
           <div class="input-group mb-6">
@@ -427,8 +427,8 @@
           <h5> Sorting Options </h5>
           <p> Collections can be sorted by the following attributes.
           <p>
-          <button onclick="sortSamples('name')" type="button" class="btn btn-sm btn-light"><i class="fas fa-sort"></i> Name</button>
-          <button onclick="sortSamples('bogo')" type="button" class="btn btn-sm btn-light"><i class="fas fa-sort"></i> Randomly</button>
+          <button onclick="sortCollections('name')" type="button" class="btn btn-sm btn-light"><i class="fas fa-sort"></i> Name</button>
+          <button onclick="sortCollections('bogo')" type="button" class="btn btn-sm btn-light"><i class="fas fa-sort"></i> Randomly</button>
 
           <br>
 
@@ -485,6 +485,26 @@
     <footer id="footer-container" class="container text-muted"></footer>
 
     <br>
+
+    <!-- Modal for generic things -->
+    <div class="modal fade" id="map-modal-2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modal-title"></h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+
+          <div class="modal-body">
+            <div id="modal-container">
+          </div>
+
+        </div>
+      </div>
+      </div>
+    </div>
 
     <!-- Modal for saving a site -->
     <div class="modal fade" id="map-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">

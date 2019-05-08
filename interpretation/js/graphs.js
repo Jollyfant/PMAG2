@@ -986,7 +986,7 @@ function createHemisphereChart(series) {
         "point": {
           "events": {
             "click": function() {
-              swapTo(this.index);
+              showSpecimen(this.selectIndex);
             }
           }
         }

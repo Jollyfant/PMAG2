@@ -92,6 +92,7 @@ function updateCardTable(specimen) {
     "    <th>Interpretations</th>",
     "    <th>Steps</th>",
     "    <th>Created</th>",
+    "    <th>Format</th>",
     "  </tr>",
     "</thead>",
     "<tbody>",
@@ -103,6 +104,7 @@ function updateCardTable(specimen) {
     "    <td>" + specimen.interpretations.length + "</td>",
     "    <td>" + specimen.steps.length + "</td>",
     "    <td>" + new Date(specimen.created).toISOString().slice(0, 10) + "</td>",
+    "    <td>" + specimen.format + "</td>",
     "  </tr>",
     "</tbody>"
   ).join("\n");

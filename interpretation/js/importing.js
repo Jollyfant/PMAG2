@@ -50,7 +50,7 @@ function importMagic(file) {
 
   // Get a list of the available tables
   var availableTables = tables.map(function(section) {
-    return section.split(/\r?\n/).filter(Boolean).shift().split(/\t/).pop();
+    return section.split(LINE_REGEXP).filter(Boolean).shift().split(/\t/).pop();
   });
 
   // Check if all required measurements are available
@@ -63,7 +63,7 @@ function importMagic(file) {
   // Go over each table
   tables.forEach(function(section) {
 
-    var lines = section.split(/\r?\n/).filter(Boolean);
+    var lines = section.split(LINE_REGEXP).filter(Boolean);
     var sectionHeader = lines[0].split(/\t/);
     var header = lines[1].split(/\t/);
 
@@ -324,6 +324,98 @@ function importMagic(file) {
 
 }
 
+function importRS3(file) {
+
+  /*
+   * Function importRS3
+   * Import function for Univeristy of Oslo (RS3 file)
+   */
+
+  // Remove top header
+  var lines = file.data.split(LINE_REGEXP).slice(1).filter(Boolean);
+
+  var header = lines[0];
+
+  // Sample name
+  var sampleName = header.slice(0, 8).trim();
+
+  // Try to determine the demagnetization type
+  var demagnetizationText = lines[1].slice(4, 11);
+  var demagnetizationType = demagnetizationText.includes("C") ? "thermal" : "alternating";
+
+  // Extract latitude, longitude
+  var latitude = Number(header.slice(21, 25).trim()) || null;
+  var longitude = Number(header.slice(31, 35).trim()) || null;
+
+  // Orientation parameters
+  let P1 = Number(header.slice(110, 112));
+  let P2 = Number(header.slice(113, 115));
+  let P3 = Number(header.slice(116, 118));
+  let P4 = Number(header.slice(119, 121));
+
+  // P1 P2 P3 P4
+  // 12 00 12 90 
+  // P1 means arrow is measured point to inside core (is fine)
+  // P2 Means dip of frontal side is measured (i.e. hade) (90 when horizontal)
+  // P3 Means measured in field (is fine)
+  // P4 90 means strike (RHR) and dip are measured.. same convention
+  // Confirm AGICO format is supported
+  if(P1 !== 12 || P2 !== 0 || P3 !== 12 || P4 !== 90) {
+    throw(new Exception("The AGICO orientation format is not supported. Supported: {12, 0, 12, 90}."));
+  }
+
+  // Core parameters (dip = hade)
+  var coreAzimuth = Number(header.slice(74, 77).trim())
+  var coreDip = 90 - Number(header.slice(79, 82).trim());
+
+  // Bedding parameters
+  var beddingStrike = Number(header.slice(86, 90).trim());
+  var beddingDip = Number(header.slice(92, 95).trim());
+
+  // Go over each demagnetization step
+  var steps = lines.slice(2).map(function(line) {
+
+    var step = line.slice(3, 6).trim();
+
+    // Intensity is in A/m
+    var intensity = 1E6 * Number(line.slice(15, 27));
+    var declination = Number(line.slice(29, 33));
+    var inclination = Number(line.slice(34, 39));
+    var a95 = Number(line.slice(77, 80))
+
+    var coordinates = new Direction(declination, inclination, intensity).toCartesian();
+
+    return new Measurement(step, coordinates, a95);
+
+  });
+
+  // Add the data to the application
+  specimens.push({
+    "demagnetizationType": demagnetizationType, 
+    "coordinates": "specimen",
+    "format": "RS3",
+    "version": __VERSION__,
+    "created": new Date().toISOString(),
+    "steps": steps,
+    "level": null,
+    "longitude": latitude,
+    "latitude": longitude,
+    "age": null,
+    "ageMin": null,
+    "ageMax": null,
+    "lithology": null,
+    "sample": sampleName,
+    "name": sampleName,
+    "volume": null,
+    "beddingStrike": beddingStrike,
+    "beddingDip": beddingDip,
+    "coreAzimuth": coreAzimuth,
+    "coreDip": coreDip,
+    "interpretations": new Array()
+  });
+
+}
+
 function importPaleoMac(file) {
 
   /*
@@ -332,50 +424,36 @@ function importPaleoMac(file) {
    */
 
   // Get lines in the file
-  var lines = file.data.split(/\r?\n/).slice(1).filter(Boolean);
+  var lines = file.data.split(LINE_REGEXP).slice(1).filter(Boolean).filter(x => x.length > 1);
 
   // The line container all the header information
-  var header = lines[0].split(/[,\s\t]+/);
-  var sampleName = header[0];
-	
-  // Get header values
-  // values will be [a, b, s, d, [v]]
-  var parameters = lines[0].split("=");
-  var values = new Array();
+  var header = lines[0];
+  var sampleName = header.slice(0, 9).trim();
 
-  for(var i = 1; i < parameters.length; i++) {
-    var value = parameters[i].match(/[+-]?\d+(\.\d+)?/g);
-    values.push(value);
-  }
-
-  // Get the sample volume from file or default to 10cc
-  var sampleVolume = Math.abs(Number(values[4][0]) * Math.pow(10, Number(values[4][1])));
+  var coreAzimuth = Number(header.slice(12, 17));
+  var sampleVolume = Number(header.slice(52, 59));
 
   // core hade is measured, we use the plunge (90 - hade)
-  var coreAzimuth = Number(values[0]);	
-  var coreDip = 90 - Number(values[1]);
-  var beddingStrike = Number(values[2]);
-  var beddingDip = Number(values[3]);
+  var coreDip = 90 - Number(header.slice(22, 27));
+  var beddingStrike = Number(header.slice(32, 37));
+  var beddingDip = Number(header.slice(42, 47));
 
   // Skip first two and last line
-  var steps = lines.slice(2, -1).map(function(line) {
+  var steps = lines.slice(2).filter(function(line) {
 
-    // Empty parameters as 0
-    var parameters = line.split(/[,\s\t]+/);
+    // Skip empty intensities..
+    return Number(line.slice(36, 44)) !== 0;
+
+  }).map(function(line) {
 
     // Get the measurement parameters
-    var step = parameters[0];
-    var x = 1E6 * Number(parameters[1]) / sampleVolume;
-    var y = 1E6 * Number(parameters[2]) / sampleVolume;
-    var z = 1E6 * Number(parameters[3]) / sampleVolume;
-    var a95 = Number(parameters[9]);
+    var step = line.slice(0, 5).trim();
+    var x = 1E6 * Number(line.slice(5, 14)) / sampleVolume;
+    var y = 1E6 * Number(line.slice(16, 25)) / sampleVolume;
+    var z = 1E6 * Number(line.slice(25, 34)) / sampleVolume;
+    var a95 = Number(line.slice(69, 73));
 
     var coordinates = new Coordinates(x, y, z);
-
-    // Skip these (intensity = 0)
-    if(Number(parameters[4]) === 0) {
-      return null;
-    }
 
     return new Measurement(step, coordinates, a95);
 
@@ -389,7 +467,7 @@ function importPaleoMac(file) {
     "version": __VERSION__,
     "created": new Date().toISOString(),
     "steps": steps,
-    "level": level,
+    "level": null,
     "longitude": null,
     "latitude": null,
     "age": null,
@@ -416,7 +494,7 @@ function importOxford(file) {
    * Parses files from the Oxford format
    */
 
-  var lines = file.data.split(/\r?\n/).filter(Boolean);
+  var lines = file.data.split(LINE_REGEXP).filter(Boolean);
   var parsedData = new Array();
  
   // Get specimen metadata from the first second line
@@ -493,7 +571,7 @@ function importNGU(file) {
    * Parser for the NGU format
    */
 
-  var lines = file.data.split(/\r?\n/).filter(Boolean);
+  var lines = file.data.split(LINE_REGEXP).filter(Boolean);
   var parsedData = new Array();
 
   for(var i = 0; i < lines.length; i++) {
@@ -566,7 +644,7 @@ function importCenieh(file) {
   // Cenieh samples need to be sorted
   var ceniehSpecimens = new Object();
 
-  var lines = file.data.split(/\r?\n/).filter(Boolean);
+  var lines = file.data.split(LINE_REGEXP).filter(Boolean);
  
   // Skip the header
   lines.slice(1).forEach(function(line) {
@@ -631,7 +709,7 @@ function importMunich(file) {
    * Imports file to the Munich format
    */
 
-  var lines = file.data.split(/\r?\n/).filter(Boolean);
+  var lines = file.data.split(LINE_REGEXP).filter(Boolean);
   var parsedData = new Array();
 
   for(var i = 0; i < lines.length; i++) {
@@ -645,7 +723,7 @@ function importMunich(file) {
     // Get the header
     if(i === 0) {
 		
-      var sampleName = parameters[0];
+      var sampleName = parameters[0].trim();
 				
       // Different convention for core orientation than Utrecht
       // Munich measures the hade angle
@@ -793,7 +871,7 @@ function importCaltech(file) {
    * Parses for Caltech Institute of Technology format
    */
 
-  var lines = file.data.split(/\r?\n/).filter(Boolean);
+  var lines = file.data.split(LINE_REGEXP).filter(Boolean);
 
   // Sample name is specified at the top
   var sampleName = lines[0].trim();
@@ -1014,9 +1092,9 @@ function importUtrecht(file) {
 
     // Slice the file header information
     if(i === 0) { 
-      var blockLines = specimen.split(/\r?\n/).slice(1);
+      var blockLines = specimen.split(LINE_REGEXP).slice(1);
     } else {
-      var blockLines = specimen.split(/\r?\n/).slice(0);
+      var blockLines = specimen.split(LINE_REGEXP).slice(0);
     }
 
     var header = blockLines.shift();
@@ -1073,7 +1151,7 @@ function importHelsinki(file) {
    * Imports demagnetization data in the Helsinki format (plain-text csv)
    */
 
-  var lines = file.data.split(/\r?\n/).filter(Boolean);
+  var lines = file.data.split(LINE_REGEXP).filter(Boolean);
 
   // Get some header metadata
   var sampleName = lines[5].split(";")[1]

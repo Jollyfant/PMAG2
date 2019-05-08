@@ -7,6 +7,7 @@ const PROJECTION_TYPE = "AREA";
 // Color definitions
 const HIGHCHARTS_BLUE = "#7CB5EC";
 const HIGHCHARTS_BLACK = "#434348";
+const HIGHCHARTS_GREY = "#DDDDDD";
 const HIGHCHARTS_GREEN = "#90ED7D";
 const HIGHCHARTS_ORANGE = "#F7A35C";
 const HIGHCHARTS_PURPLE = "#8085E9";
@@ -25,6 +26,10 @@ const ENABLE_CREDITS = false;
 const ITEM_DELIMITER = ",";
 const TAB_DELIMITER = "\t";
 const LINE_DELIMITER = "\n";
+
+// Regex for splitting lines taken from
+// https://stackoverflow.com/questions/5034781/js-regex-to-split-by-line
+const LINE_REGEXP = new RegExp("(\r\n|[\n\v\f\r\x85\u2028\u2029])");
 
 document.title = "Paleomagnetism.org " + __VERSION__;
 
@@ -1075,15 +1080,21 @@ function importCSV(file) {
     // Extract all
     var [name, dec, inc, coreAzimuth, coreDip, beddingStrike, beddingDip, latitude, longitude, level, age, ageMin, ageMax, coordinates] = line.split(",");
 
+    if(latitude === "") {
+      latitude = null;
+    } 
+    if(longitude === "") {
+      longitude = null;
+    }
     // Longitude within [-180, 180]
-    if(longitude > 180) {
-      longitude = longitude - 360;
-    }
-
-    // Latitude within [-90, 90]
-    if(latitude > 90) {
-      latitude = latitude - 180;
-    }
+    //if(longitude > 180) {
+    //  longitude = longitude - 360;
+    //}
+    //
+    //// Latitude within [-90, 90]
+    //if(latitude > 90) {
+    //  latitude = latitude - 180;
+    //}
 
     // Confirm the reference frame
     if(coordinates !== "specimen" && coordinates !== "geographic" && coordinates !== "tectonic") {
@@ -1097,8 +1108,8 @@ function importCSV(file) {
       "coreDip": Number(coreDip),
       "beddingStrike": Number(beddingStrike),
       "beddingDip": Number(beddingDip),
-      "latitude": Number(latitude),
-      "longitude": Number(longitude),
+      "latitude": latitude,
+      "longitude": longitude,
       "level": Number(level),
       "age": Number(age),
       "ageMin": Number(ageMin),
@@ -1122,6 +1133,62 @@ function importCSV(file) {
     "components": lines.map(parseLine),
     "created": new Date().toISOString()
   });
+
+}
+
+function getCutoffAngle(type) {
+
+  /*
+   * Function getCutoffAngle
+   * Returns the cut off angle based on the requested type
+   */
+
+  switch(type) {
+    case "CUTOFF45":
+      return 45;
+    default:
+      return 0;
+  }
+
+}
+
+function sortCollections(type) {
+
+  /*
+   * Function sortSamples
+   * Mutates the samples array in place sorted by a particular type
+   */
+
+  function getSortFunction(type) {
+
+    /*
+     * Function getSortFunction
+     * Returns the sort fuction based on the requested type
+     */
+
+    function nameSorter(x, y) {
+      return x.name < y.name ? -1 : x.name > y.name ? 1 : 0;
+    }
+
+    function randomSorter(x, y) {
+      return Math.random() < 0.5;
+    }
+
+    switch(type) {
+      case "name":
+        return nameSorter;
+      case "bogo":
+        return randomSorter;
+    }
+
+  }
+
+  // Sort the samples in place
+  collections.sort(getSortFunction(type));
+
+  notify("success", "Succesfully sorted specimens by <b>" + type + "</b>.");
+
+  updateSpecimenSelect();
 
 }
 
