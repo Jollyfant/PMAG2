@@ -7,12 +7,14 @@ URL = "https://api.paleomagnetism.org/"
 required_fields = {
   "author": "author",
   "institution": "institution",
-  "description": "description"
+  "description": "description",
+  "name": "name",
+  "doi": "OKE"
 }
 
 # Create a list of collections to submit
-collection_files = {
-  "upload": ("collecion_name", open("specimens.dir", "rb"))
-}
+collection_files = [ 
+  ("collecion_name", open("/Users/Mathijs/Downloads/specimens-4.dir", "rb"))
+]
 
-requests.post(URL, data=required_fields, files=collection_files)
+print requests.post(URL, data=required_fields, files=collection_files).text

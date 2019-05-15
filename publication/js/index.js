@@ -190,7 +190,7 @@ function formatSampleRows(collection, i) {
     "<a href='../collection/index.html" + window.location.search + "." + i + "'>" + collection.name + "</a>" + reference,
     locationType,
     collection.data.specimens.length,
-    collection.data.pid.slice(0, 16) + "…",
+    collection.data.hash.slice(0, 16) + "…",
     collection.data.version,
     collection.data.created.slice(0, 10),
   ).map(x => "<td>" + x + "</td>").join("\n") + "</tr>";
