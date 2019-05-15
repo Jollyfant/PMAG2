@@ -1524,5 +1524,44 @@ function mapTabFocusHandler() {
 
 }
 
+function collectCitation() {
+
+  /*
+   * Function collectCitation
+   * Collects a citation from Crossref based on a submitted DOI
+   */
+
+  const DOI_DISPOSE_TIMEOUT_MS = 3000;
+
+  var submittedDOI = document.getElementById("citation-input").value;
+
+  // Do nothing when empty
+  if(submittedDOI === "") {
+    return;
+  }
+
+  // Confirm that the DOI is valid
+  if(!submittedDOI.startsWith("10") || !submittedDOI.includes("/")) {
+    return notify("warning", new Exception("The submitted DOI is not valid."));
+  }
+
+  // Look up the DOI @ CrossRef
+  doiLookup(submittedDOI, function(citation) {
+
+    if(citation === null) {
+      return;
+    }
+
+    // Parse the string to make a link out of the returned DOI
+    var split = citation.split(" ");
+    var link = split.pop();
+    split.push(createLink(link, link))
+
+    notify("success", "<i class='fas fa-book'></i><b> Found citation: </b>" + split.join(" "));
+
+  });
+
+}
+
 // Add the footer to every page that includes the utils
 addFooter();
