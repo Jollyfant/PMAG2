@@ -83,6 +83,7 @@
       <h5> Contribution Metadata </h5>
       <p> Metadata that describes the contributor of the publication. You may include an optional DOI if this data is related to an existing digital object identifier.
       <div class="form-group">
+
         <div class="row">
           <div class="col">
             <div class="input-group mb-6">
@@ -95,12 +96,13 @@
           <div class="col">
             <div class="input-group mb-6">
               <div class="input-group-prepend">
-                <div class="input-group-text">Citation</div>
+                <div class="input-group-text">E-mail</div>
               </div>
-              <input name="doi" onblur='collectCitation()' id='citation-input' type="text" class="form-control input-sm" placeholder="DOI">
+              <input type="email" name="email" id='email-input' type="text" class="form-control input-sm" placeholder="E-mail address">
             </div>
           </div>
         </div>
+
         <br>
         <div class="row">
           <div class="col">
@@ -123,11 +125,19 @@
         <br>
         <div class="row">
           <div class="col">
-            <div class="input-group mb-4">
+            <div class="input-group mb-6">
               <div class="input-group-prepend">
                 <div class="input-group-text">Description</div>
               </div>
               <input name="description" id='description-input' type="text" class="form-control input-sm" placeholder="Description" required>
+            </div>
+          </div>
+          <div class="col">
+            <div class="input-group mb-6">
+              <div class="input-group-prepend">
+                <div class="input-group-text">Citation</div>
+              </div>
+              <input name="doi" onblur='collectCitation()' id='citation-input' type="text" class="form-control input-sm" placeholder="DOI">
             </div>
           </div>
         </div>
