@@ -1,0 +1,227 @@
+{
+	"id": "paleomagnetism.org-dir-schema",
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"title": "JSON Schema for Paleomagnetism.org interpretation files",
+	"description": "Schema that validates interpretation files",
+	"type": "object",
+	"properties": {
+		"hash": {
+			"type": "string"
+		},
+		"version": {
+			"type": "string"
+		},
+		"created": {
+			"type": "string"
+		},
+		"specimens": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"$ref": "#/definitions/specimen"
+			}
+		}
+	},
+	"definitions": {
+		"specimen": {
+			"type": "object",
+			"properties": {
+				"demagnetizationType": {
+					"type": "string",
+					"enum": ["thermal", "alternating", null]
+				},
+				"coordinates": {
+					"type": "string"
+				},
+				"format": {
+					"type": "string"
+				},
+				"version": {
+					"type": "string"
+				},
+				"created": {
+					"type": "string"
+				},
+				"lithology": {
+					"type": "string"
+				},
+				"geology": {
+					"type": "string"
+				},
+				"sample": {
+					"type": "string"
+				},
+				"name": {
+					"type": "string"
+				},
+				"volume": {
+					"type": "number"
+				},
+				"beddingStrike": {
+					"type": "number"
+				},
+				"beddingDip": {
+					"type": "number"
+				},
+				"coreAzimuth": {
+					"type": "number"
+				},
+				"coreDip": {
+					"type": "number"
+				},
+				"level": {
+					"type": "number"
+				},
+				"longitude": {
+					"type": "number"
+				},
+				"latitude": {
+					"type": "number"
+				},
+				"age": {
+					"type": "number"
+				},
+				"ageMin": {
+					"type": "number"
+				},
+				"ageMax": {
+					"type": "number"
+				},
+				"index": {
+					"type": "integer"
+				},
+				"steps": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/step"
+					}
+				},
+				"interpretations": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/interpretation"
+					}
+
+				}
+			},
+			"additionalProperties": false,
+			"minProperties": 21
+		},
+		"step": {
+			"type": "object",
+			"properties": {
+				"step": {
+					"type": "string"
+				},
+				"x": {
+					"type": "number"
+				},
+				"y": {
+					"type": "number"
+				},
+				"z": {
+					"type": "number"
+				},
+				"error": {
+					"type": "number"
+				},
+				"visible": {
+					"type": "boolean"
+				},
+				"selected": {
+					"type": "boolean"
+				}
+			},
+			"additionalProperties": false,
+			"minProperties": 7
+		},
+		"interpretation": {
+			"type": "object",
+			"properties": {
+				"steps": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					}
+				},
+				"anchored": {
+					"type": "boolean"
+				},
+				"fitted": {
+					"type": "boolean"
+				},
+				"type": {
+					"type": "string",
+					"enum": ["TAU1", "TAU3"]
+				},
+				"version": {
+					"type": "string"
+				},
+				"created": {
+					"type": "string"
+				},
+				"group": {
+					"anyOf": [{
+						"type": "string"
+					}, {
+						"type": "null"
+					}]
+				},
+				"MAD": {
+					"type": "number"
+				},
+				"intensity": {
+					"type": "number"
+				},
+				"comment": {
+					"anyOf": [{
+						"type": "string"
+					}, {
+						"type": "null"
+					}]
+				},
+				"specimen": {
+					"$ref": "#/definitions/coordinate"
+				},
+				"geographic": {
+					"$ref": "#/definitions/coordinate"
+				},
+				"tectonic": {
+					"$ref": "#/definitions/coordinate"
+				}
+			},
+			"additionalProperties": false
+		},
+		"coordinate": {
+			"properties": {
+				"coordinates": {
+					"$ref": "#/definitions/vector"
+				},
+				"centerMass": {
+					"$ref": "#/definitions/vector"
+				}
+			},
+			"additionalProperties": false,
+			"minProperties": 2
+		},
+		"vector": {
+			"type": "object",
+			"properties": {
+				"x": {
+					"type": "number"
+				},
+				"y": {
+					"type": "number"
+				},
+				"z": {
+					"type": "number"
+				},
+				"length": {
+					"type": "number"
+				}
+			},
+			"additionalProperties": false,
+			"minProperties": 4
+		}
+	}
+}
