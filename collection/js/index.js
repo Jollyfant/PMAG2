@@ -156,6 +156,10 @@ function formatPublicationTable(collection) {
   // Initialize the leaflet map
   addMap(collection.data.specimens);
 
+  if(!collection.accepted) {
+    notify("warning", "This collection is pending review and has not yet been accepted.");
+  }
+
   // Add a row for each specimen
   document.getElementById("publication-table").innerHTML = new Array(
     "<head>",

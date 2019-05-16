@@ -139,6 +139,10 @@ function formatCollectionTable(publication) {
   // Initialize the leaflet map
   addMap(publication);
 
+  if(!publication.accepted) {
+    notify("warning", "This publication is pending review and has not yet been accepted.");
+  }
+
   // Load the metadata for this collection
   document.getElementById("card-table").innerHTML = metadataContent(publication);
   document.getElementById("pid-box").innerHTML = publication.pid;

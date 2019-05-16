@@ -197,6 +197,10 @@ function resolvePID(pids) {
       return notify("danger", "A specimen with this persistent identifier could not be found.");
     }
 
+    if(!json.accepted) {
+      notify("warning", "This specimen is pending review and has not yet been accepted.");
+    }
+
     return formatSpecimenTable(pids, json.collections[Number(collection)].data.specimens[Number(sample)]);
 
   });
