@@ -78,7 +78,8 @@
           <p>Collections of specimens exported from the Paleomagnetism.org 2 interpretation portal can be submitted on this page. Every submission will be associated with a single publication in the data library. Please fill in all requested information correctly.
         </div>
     <hr>
-    <form action="https://api.paleomagnetism.org" enctype="multipart/form-data" method="post">
+
+    <form id="form-submission" method="post" enctype="multipart/form-data">
 
       <h5> Contribution Metadata </h5>
       <p> Metadata that describes the contributor of the publication. You may include an optional DOI if this data is related to an existing digital object identifier.
@@ -90,7 +91,7 @@
               <div class="input-group-prepend">
                 <div class="input-group-text">Contributer</div>
               </div>
-              <input name="author" id='contributor-input' type="text" class="form-control input-sm" placeholder="Author" required>
+              <input name="author" type="text" class="form-control input-sm" placeholder="Author" required>
             </div>
           </div>
           <div class="col">
@@ -98,7 +99,7 @@
               <div class="input-group-prepend">
                 <div class="input-group-text">E-mail</div>
               </div>
-              <input type="email" name="email" id='email-input' type="text" class="form-control input-sm" placeholder="E-mail address">
+              <input type="email" name="email" type="text" class="form-control input-sm" placeholder="E-mail address">
             </div>
           </div>
         </div>
@@ -110,7 +111,7 @@
               <div class="input-group-prepend">
                 <div class="input-group-text">Institution</div>
               </div>
-              <input name="institution" id='contributor-input' type="text" class="form-control input-sm" placeholder="Institution" required>
+              <input name="institution" type="text" class="form-control input-sm" placeholder="Institution" required>
             </div>
           </div>
           <div class="col">
@@ -118,7 +119,7 @@
               <div class="input-group-prepend">
                 <div class="input-group-text">Publication Name</div>
               </div>
-              <input name="name" onblur='collectCitation()' id='citation-input' type="text" class="form-control input-sm" placeholder="Publication Name" required>
+              <input name="pubname" id='name-input' type="text" class="form-control input-sm" placeholder="Publication Name">
             </div>
           </div>
         </div>
@@ -129,7 +130,7 @@
               <div class="input-group-prepend">
                 <div class="input-group-text">Description</div>
               </div>
-              <input name="description" id='description-input' type="text" class="form-control input-sm" placeholder="Description" required>
+              <input name="description" type="text" class="form-control input-sm" placeholder="Description" required>
             </div>
           </div>
           <div class="col">
@@ -137,7 +138,7 @@
               <div class="input-group-prepend">
                 <div class="input-group-text">Citation</div>
               </div>
-              <input name="doi" onblur='collectCitation()' id='citation-input' type="text" class="form-control input-sm" placeholder="DOI">
+              <input name="doi" id="citation-input" onblur='collectCitation()' type="text" class="form-control input-sm" placeholder="DOI">
             </div>
           </div>
         </div>
@@ -149,7 +150,7 @@
       <hr>
         <div class="text-center">
 
-      <input class="btn btn-primary" type="submit" value="Submit to the Data Library">
+      <button class="btn btn-primary" onsubmit="send()">Submit to the Data Library</button>
     </form>
         </div>
         </div>

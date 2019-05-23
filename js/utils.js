@@ -760,7 +760,7 @@ function projectInclination(inc) {
 
 }
 
-function HTTPRequest(url, type, callback) {
+function HTTPRequest(url, type, callback, data) {
 
   /*
    * Function HTTPRequest
@@ -768,6 +768,7 @@ function HTTPRequest(url, type, callback) {
    */
 
   const HTTP_OK = 200;
+  const HTTP_BAD_REQUEST = 400;
 
   var xhr = new XMLHttpRequest();
 
@@ -777,16 +778,16 @@ function HTTPRequest(url, type, callback) {
     console.debug(type + " HTTP Request to " + url + " returned with status code " + this.status);
 
     // Ignore HTTP errors
-    if(this.status !== HTTP_OK && this.status !== 0) {
+    if(this.status !== HTTP_OK && this.status !== HTTP_BAD_REQUEST && this.status !== 0) {
       return callback(null);
     }
 
     // Check the content type
     switch(this.getResponseHeader("Content-Type")) {
       case "text/plain":
-        return callback(xhr.response);
+        return callback(xhr.response, this.status);
       default:
-        return callback(JSON.parse(xhr.response));
+        return callback(JSON.parse(xhr.response), this.status);
     }
 
   }
@@ -798,7 +799,12 @@ function HTTPRequest(url, type, callback) {
 
   // Open and finish the request
   xhr.open(type, url);
-  xhr.send();
+
+  if(data === undefined) {
+    xhr.send();
+  } else {
+    xhr.send(data);
+  }
 
 }
 
