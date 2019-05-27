@@ -981,7 +981,7 @@ function getFittedGreatCircles() {
     // Follow the previously saved pointers
     var specimen = interpretationPointers[i].sample;
     var interpretation = interpretationPointers[i].interpretation;
-
+	
     // The interpretation type has now become TAU1
     interpretation.pole = interpretationPointers[i].coordinates.toVector(Direction);
     interpretation.type = "TAU1";           

@@ -172,6 +172,19 @@
                 "version": {
                     "type": "string"
                 },
+				"pole": {
+                    "type": "object",
+            "properties": {
+                "dec": {
+                    "type": "number"
+                },		
+                "inc": {
+                    "type": "number"
+                },	
+                "length": {
+                    "type": "number"
+                }			
+				},
                 "volume": {
                     "anyOf": [
                         {
