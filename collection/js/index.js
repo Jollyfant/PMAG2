@@ -83,7 +83,7 @@ function resolvePID(pid) {
 
     var collectionObject = json.collections[Number(collection)];
 
-    formatPublicationTable(collectionObject);
+    formatPublicationTable(json.accepted, collectionObject);
 
     document.getElementById("card-table").innerHTML = metadataContent(json, collectionObject);
 
@@ -146,7 +146,7 @@ function metadataContent(publication, collection) {
 
 }
 
-function formatPublicationTable(collection) {
+function formatPublicationTable(accepted, collection) {
 
   /*
    * Function formatPublicationTable
@@ -156,7 +156,7 @@ function formatPublicationTable(collection) {
   // Initialize the leaflet map
   addMap(collection.data.specimens);
 
-  if(!collection.accepted) {
+  if(!accepted) {
     notify("warning", "This collection is pending review and has not yet been accepted.");
   }
 
