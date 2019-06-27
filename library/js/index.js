@@ -40,7 +40,7 @@ function addCollectionsToTable(publications) {
       "  <td>" + x.institution + "</td>",
       "  <td>" + x.description + "</td>",
       "  <td><code><a href='../publication/index.html?" + x.pid + "'>" + x.pid.slice(0, 16) + "…</a></code></td>",
-      "  <td>" + (x.doi || "N/A") + "</td>",
+      "  <td>" + ("<a href='https://doi.org/" + x.doi + "'>" + x.doi + "</a>" || "N/A") + "</td>",
       "  <td>" + new Date(x.created).toISOString().slice(0, 10) + "</td>",
       "</tr>"
     ].join("\n");

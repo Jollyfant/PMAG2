@@ -121,7 +121,7 @@ function metadataContent(json) {
     "    <td>" + json.author + "</td>",
     "    <td>" + json.description + "</td>",
     "    <td>" + json.nCollections + "</td>",
-    "    <td>" + (json.doi || "N/A") + "</td>",
+    "  <td>" + ("<a href='https://doi.org/" + json.doi + "'>" + json.doi + "</a>" || "N/A") + "</td>",
     "    <td>" + json.created.slice(0, 10) + "</td>",
     "  </tr>",
     "</tbody>"
