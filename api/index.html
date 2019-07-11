@@ -75,16 +75,25 @@
           <p> The data available from the <a href="../library">Data Library</a> is sourced from the public Paleomagntism.org HTTPS API available at <a href="https://api.paleomagnetism.org">https://api.paleomagnetism.org</a>. This API can be used by your software to access the data holdings of our collective archive in an automated way.
         </div>
 
-        <h5> HTTPS API Specifications </h5>
+        <h5> GET HTTPS API Specifications </h5>
         <p> All requests to the API must be made using HTTPS GET and return JSON (<code>application/json</code>). The implemented methods are:
         <hr>
-        <h5> / <span style="float: right;" class="badge badge-success">200</span></h5>
+        <h5>GET / <span style="float: right;" class="badge badge-success">200</span></h5>
        <small>e.g. <a href="https://api.paleomagnetism.org">https://api.paleomagnetism.org</a></small>
         <p> Returns a list of available publications. Each publication is attributed a persistent identifier that can be used with the API.
         <hr>
-        <h5> / <code>{persistent-identifier}</code> <div style="float: right;"><span class="badge badge-success">200</span> <span class="badge badge-warning">404</span></div></h5> 
+        <h5>GET / <code>{persistent-identifier}</code> <div style="float: right;"><span class="badge badge-success">200</span> <span class="badge badge-warning">404</span></div></h5> 
         <small>e.g. <a href="https://api.paleomagnetism.org/27efedb6cfb0329332521fa5a59cbefee4c5a3016e552e6862a1b235d42c2066">https://api.paleomagnetism.org/27efedb6cfb0329332521fa5a59cbefee4c5a3016e552e6862a1b235d42c2066</a></small>
         <p> Returns the publication related to a particular persistent identifier.
+        <br>
+        <hr>
+        <br>
+        <h5> POST HTTPS API Specifications </h5>
+        <p> All requests to the API must be made using HTTPS POST using MIME type (<code>multipart/form-data</code>). The implemented methods are:
+        <hr>
+        <h5>POST / <div style="float: right;"><span class="badge badge-success">200</span> <span class="badge badge-warning">404</span></div></h5>
+       <small>e.g. <a href="https://api.paleomagnetism.org">https://api.paleomagnetism.org</a></small>
+        <p> Submit a publication to the data library using the command line. Required fields are: "author", "name", "institution", "description", and one or multiple collection files under arbitrary names. An example python implementation can be found <a href="../resources/examples/example-submit-post-api.py">here</a>.
 
 <br>
 

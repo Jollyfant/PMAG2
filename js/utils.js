@@ -761,7 +761,7 @@ function projectInclination(inc) {
 
 }
 
-function HTTPRequest(url, type, callback) {
+function HTTPRequest(url, type, callback, data) {
 
   /*
    * Function HTTPRequest
@@ -769,6 +769,7 @@ function HTTPRequest(url, type, callback) {
    */
 
   const HTTP_OK = 200;
+  const HTTP_BAD_REQUEST = 400;
 
   var xhr = new XMLHttpRequest();
 
@@ -778,16 +779,16 @@ function HTTPRequest(url, type, callback) {
     console.debug(type + " HTTP Request to " + url + " returned with status code " + this.status);
 
     // Ignore HTTP errors
-    if(this.status !== HTTP_OK && this.status !== 0) {
+    if(this.status !== HTTP_OK && this.status !== HTTP_BAD_REQUEST && this.status !== 0) {
       return callback(null);
     }
 
     // Check the content type
     switch(this.getResponseHeader("Content-Type")) {
       case "text/plain":
-        return callback(xhr.response);
+        return callback(xhr.response, this.status);
       default:
-        return callback(JSON.parse(xhr.response));
+        return callback(JSON.parse(xhr.response), this.status);
     }
 
   }
@@ -799,7 +800,12 @@ function HTTPRequest(url, type, callback) {
 
   // Open and finish the request
   xhr.open(type, url);
-  xhr.send();
+
+  if(data === undefined) {
+    xhr.send();
+  } else {
+    xhr.send(data);
+  }
 
 }
 
@@ -1522,6 +1528,45 @@ function mapTabFocusHandler() {
   setTimeout(function() {
     map.fitBounds(new L.featureGroup(markerGroup).getBounds());
   }, TRANSITION_DELAY_MS);
+
+}
+
+function collectCitation() {
+
+  /*
+   * Function collectCitation
+   * Collects a citation from Crossref based on a submitted DOI
+   */
+
+  const DOI_DISPOSE_TIMEOUT_MS = 3000;
+
+  var submittedDOI = document.getElementById("citation-input").value;
+
+  // Do nothing when empty
+  if(submittedDOI === "") {
+    return;
+  }
+
+  // Confirm that the DOI is valid
+  if(!submittedDOI.startsWith("10") || !submittedDOI.includes("/")) {
+    return notify("warning", new Exception("The submitted DOI is not valid."));
+  }
+
+  // Look up the DOI @ CrossRef
+  doiLookup(submittedDOI, function(citation) {
+
+    if(citation === null) {
+      return;
+    }
+
+    // Parse the string to make a link out of the returned DOI
+    var split = citation.split(" ");
+    var link = split.pop();
+    split.push(createLink(link, link))
+
+    notify("success", "<i class='fas fa-book'></i><b> Found citation: </b>" + split.join(" "));
+
+  });
 
 }
 

@@ -369,7 +369,21 @@ function plotPredictedDirections() {
     if(GPlatesData.hasOwnProperty(plate)) {
   
        try {
-         return readGPlatesRotation(plate, pole.age);
+
+         var poleMove = readGPlatesRotation(plate, pole.age);
+         var poleFixed = readGPlatesRotation("701", pole.age);
+
+         // May be null
+         if(poleMove === null || poleFixed === null) {
+           return null;
+         }
+
+         // Reverse rotation angle
+         poleFixed.angle = -poleFixed.angle;
+
+         // Add the Euler poles
+         return convolvePoles(poleMove, poleFixed);
+
        } catch(exception) {
          throw(new Exception("Could not extract Euler pole from GPlates rotation file."));
        }

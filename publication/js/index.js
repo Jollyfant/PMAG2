@@ -121,7 +121,7 @@ function metadataContent(json) {
     "    <td>" + json.author + "</td>",
     "    <td>" + json.description + "</td>",
     "    <td>" + json.nCollections + "</td>",
-    "    <td>" + (json.doi || "N/A") + "</td>",
+    "  <td>" + ("<a href='https://doi.org/" + json.doi + "'>" + json.doi + "</a>" || "N/A") + "</td>",
     "    <td>" + json.created.slice(0, 10) + "</td>",
     "  </tr>",
     "</tbody>"
@@ -138,6 +138,10 @@ function formatCollectionTable(publication) {
 
   // Initialize the leaflet map
   addMap(publication);
+
+  if(!publication.accepted) {
+    notify("warning", "This publication is pending review and has not yet been accepted.");
+  }
 
   // Load the metadata for this collection
   document.getElementById("card-table").innerHTML = metadataContent(publication);
@@ -190,7 +194,7 @@ function formatSampleRows(collection, i) {
     "<a href='../collection/index.html" + window.location.search + "." + i + "'>" + collection.name + "</a>" + reference,
     locationType,
     collection.data.specimens.length,
-    collection.data.pid.slice(0, 16) + "…",
+    collection.data.hash.slice(0, 16) + "…",
     collection.data.version,
     collection.data.created.slice(0, 10),
   ).map(x => "<td>" + x + "</td>").join("\n") + "</tr>";

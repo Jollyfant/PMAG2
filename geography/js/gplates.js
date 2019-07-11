@@ -124,7 +124,7 @@ function readGPlatesRotation(ID, age) {
 
       // Calculate the stage pole
       var stagePole = getStagePole(poleOld, poleYoung);
-      
+
       // Interpolate the stage pole to a given age
       var interPole = getInterPole(poleOld, stagePole, plateData[i].age, plateData[i - 1].age, age);
     
