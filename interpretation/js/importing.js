@@ -324,6 +324,72 @@ function importMagic(file) {
 
 }
 
+function importBlackMnt(file) {
+
+  var lines = file.data.split(LINE_REGEXP).slice(1).filter(Boolean);
+
+  var beddingStrikes = new Set();
+  var beddingDips = new Set();
+  var coreAzimuths = new Set();
+  var coreDips = new Set();
+
+  var steps = lines.map(function(line) {
+
+    var parameters = line.split(/\s+/);
+
+    // Hmm? Southern hemisphere difference?
+    coreAzimuths.add(180 - Number(parameters[19]));
+    coreDips.add(-(90 - Number(parameters[20])));
+
+    beddingStrikes.add(Number(parameters[21]));
+    beddingDips.add(Number(parameters[22]));
+
+    var step = parameters[0];
+
+    // Intensity is in A/m
+    var x = Number(parameters[1]) * 1E9;
+    var y = Number(parameters[2]) * 1E9;
+    var z = Number(parameters[3]) * 1E9;
+
+    var coordinates = new Coordinates(x, y, z);
+
+    // Intensity is in A/m
+    return new Measurement(step, coordinates, null);
+
+  });
+
+  // Confirm that bedding is unique
+  if(beddingStrikes.size > 1 || beddingDips.size > 1 || coreAzimuths.size > 1 || coreDips.size > 1) {
+    throw(new Exception("Core or bedding parameters not unique in input file."));
+  }
+
+  // Add the data to the application
+  specimens.push({
+    "demagnetizationType": null,
+    "coordinates": "specimen",
+    "format": "ANU",
+    "version": __VERSION__,
+    "created": new Date().toISOString(),
+    "steps": steps,
+    "level": null,
+    "longitude": null,
+    "latitude": null,
+    "age": null,
+    "ageMin": null,
+    "ageMax": null,
+    "lithology": null,
+    "sample": file.name,
+    "name": file.name,
+    "volume": null,
+    "beddingStrike": beddingStrikes.values().next().value,
+    "beddingDip": beddingDips.values().next().value,
+    "coreAzimuth": coreAzimuths.values().next().value,
+    "coreDip": coreDips.values().next().value,
+    "interpretations": new Array()
+  });
+
+}
+
 function importRS3(file) {
 
   /*
