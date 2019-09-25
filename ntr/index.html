@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+  <head>
+
+    <!-- Required metadata tags -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Paleomagnetism.org 2 - An online environment for paleomagnetic analysis">
+    <meta name="keywords" content="paleomagnetism, interpretation, zijderveld, pca">
+
+    <meta name="author" content="Mathijs Koymans">
+
+    <link rel="shortcut icon" type="image/x-icon" href="../resources/images/hades-icon.png"/>
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <!-- Bootstrap & Font Awesome CSS -->
+    <link rel="stylesheet" href="../lib/bootstrap-4.3.1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../lib/fontawesome-free-5.7.2-web/css/all.css">
+
+  </head>
+
+  <body>
+
+    <!-- Header -->
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+
+      <a class="navbar-brand" href="http://www.paleomagnetism.org">Paleomagnetism<span class="text-danger">.org</span></a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="../interpretation">Interpretation</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../statistics">Statistics</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../geography">Geography</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="../miscellaneous">Miscellaneous</a>
+          </li>
+          <li class="nav-item">
+            <span class="nav-link disabled" href="#">|</span></li>
+          <li class="nav-item">
+            <a class="nav-link" href="../references">References</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../team">Team & Contact</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../magic">MagIC Interface</a>
+          </li>
+        </ul>
+
+        <form class="form-inline my-2 my-lg-0">
+          <a href="../library" class="btn btn-sm btn-secondary my-2 my-sm-0"><i class="fas fa-book-open"></i><b>&nbsp; Data Library</b></a>
+        </form>
+
+      </div>
+
+    </nav>
+
+    <!-- Main body -->
+    <div class="container">
+
+      <!-- Container for user notifications -->
+      <div id="notification-container"></div>
+
+        <div class="alert alert-light" role="alert">
+          <h5>Paleomagnetism.org 2 - NTR Analysis </h5>
+          <p> The following miscellaneous set of tools can be used for stuff.
+
+			<!-- Tab for NTR Analysis -->
+					<p>The net rotation of a dyke (including any component of tilt and vertical axis rotation) is calculated as a single rotation around an inclined axis, which restores the in situ remanence direction to its initial orientation (reference pole) and the dyke to its initial vertical position. This technique allows the user to calculate the rotation parameters of the deformation experienced by the dyke and its initial orientation. 
+
+						<table class="table table-striped" style="text-align: center;"> 
+							<thead> 
+								<th> Reference Pole 
+								<th> Magnetization Vector 
+								<th> Pole to Dyke 
+							</thead>
+							<tbody>
+								<td>
+  <div class="form-row">
+    <div class="col">
+
+									<select class="form-control" id="refPoleDec">
+										<option value="0">North</option>
+										<option value="180">South</option>
+									</select>
+</div>
+    <div class="col">
+									<input class="form-control" type="text" size="5" id="refPoleInc" placeholder="Inclination"> 
+</div>
+</div>
+								</td>
+								<td>
+  <div class="form-row">
+    <div class="col">
+									<input class="form-control" type="text" size="5" id="magDec" placeholder="Declination">
+</div>
+    <div class="col">
+									<input class="form-control" type="text" size="5" id="magInc" placeholder="Inclination"> 
+</div>
+</div>
+								</td>
+								<td>
+  <div class="form-row">
+    <div class="col">
+									<input class="form-control" type="text" size="5" id="dykeDec" placeholder="Declination">
+</div>
+    <div class="col">
+
+									<input class="form-control" type="text" size="5" id="dykeInc" placeholder="Inclination"> 
+</div>
+</div>
+								</td>
+							</tbody>
+						</table>
+						<p>
+						<button class="btn btn-success" id="initializeNTR"> Initialize NTR Analysis </button>					
+					</div>
+				<p>
+				<div id="NTRInputTable" style="display: none;"></div>
+				<div id="initialPlot" style="margin: 0 auto; display: none;"></div>
+				<p>
+				<div id="NTRSolutionTable" style="display: none;"></div>
+				<p>
+				<div id="interationDiv" style="display: none;">
+				<h5> Iterate over Confidence Intervals </h5>
+				<p> This tool starts an iterative procedure that calculates rotation pole solutions for 75 permutations on the confidence interval of the three input vectors with specified confidence limits (degrees).
+                                <p><input type="checkbox" id="NTRApproach"><label for="NTRApproach"> Use iterative approach by NTR software (for testing) </label>
+
+					<table class="table table-striped text-center">
+						<thead>
+							<th> Reference Pole 
+							<th> Magnetization Vector 
+							<th> Dyke Pole <br> 
+						</thead>
+						<tbody style="text-align: center;">
+  <div class="form-row">
+    <div class="col">
+							<td><input class="form-control" type="text" size="5" id="confRef" placeholder="Reference Pole ΔIx"> </td>
+<td>
+				<input class="form-control" type="text" size="5" id="confMagDec" placeholder="Magnetization Vector ΔDx">
+				<input class="form-control" type="text" size="5" id="confMagInc" placeholder="Magnetization Vector ΔIx"> </td>
+</div>
+    <div class="col">
+
+							<td><input class="form-control" type="text" size="5" id="confDyke" placeholder="Dyke Pole α95"> </td>
+</div>
+</div>
+						</tbody>
+					</table>
+					<button class="btn btn-success" id="iterationButton"> Iterate </button> <div id="iterationBar" style="width: 200px; display: inline-block; vertical-align: middle;"> </div>
+					<p>
+				<hr>
+				<p>
+				
+				<div id="iterationPlot" style="width: 550px; height: 750px; margin: 0 auto; display: none;"></div>
+				<div id="windrosePlot" style="width: 550px; height: 750px; margin: 0 auto; display: none;"></div>
+				
+				<hr>
+			</div>
+			
+		</div>
+
+    </div>
+
+    <footer id="footer-container" class="container text-muted"></footer>
+
+    <br> 
+
+  </body>
+
+  <!-- jQuery slim and bootstrap -->
+  <!-- jQuery slim and bootstrap -->
+  <script src="../lib/jquery-3.3.1/jquery-3.3.1.slim.min.js"></script>
+  <script src="../lib/bootstrap-4.3.1/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../js/utils.js"></script>
+
+  <!-- Highcharts -->
+  <script src="../lib/highcharts-7.0.3/code/highcharts.js"></script>
+  <script src="../lib/highcharts-7.0.3/code/highcharts-more.js"></script>
+  <script src="../lib/highcharts-7.0.3/code/modules/exporting.js"></script>
+  <script src="../lib/highcharts-7.0.3/code/modules/offline-exporting.js"></script>
+
+  <script src="../js/classes/Direction.js"></script>
+  <script src="../js/classes/Coordinates.js"></script>
+  <script src="./js/index.js"></script>
+
+</html>

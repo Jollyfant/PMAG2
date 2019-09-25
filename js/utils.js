@@ -452,7 +452,7 @@ function getPlaneData(direction, angle) {
   var ellipse = getConfidenceEllipse(angle).map(rotateEllipse);
 
   // Flip the ellipse when requested. Never flip great circles..
-  if(angle !== 90 && document.getElementById("flip-ellipse").checked) {
+  if(angle !== 90 && document.getElementById("flip-ellipse") && document.getElementById("flip-ellipse").checked) {
     return flipEllipse(direction.inc, ellipse);
   }
 
