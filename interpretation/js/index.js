@@ -282,8 +282,8 @@ function redrawInterpretationGraph(fit) {
         // Add fitted components to another series
         if(interpretation.fitted) {
 
-          dataSeriesPlaneNegative = dataSeriesPlaneNegative.concat(getPlaneData(interpretation.pole).negative, null);
-          dataSeriesPlanePositive = dataSeriesPlanePositive.concat(getPlaneData(interpretation.pole).positive, null);
+          //dataSeriesPlaneNegative = dataSeriesPlaneNegative.concat(getPlaneData(interpretation.pole).negative, null);
+          //dataSeriesPlanePositive = dataSeriesPlanePositive.concat(getPlaneData(interpretation.pole).positive, null);
           IS_FITTED = true;
 
           dataSeriesFitted.push({
@@ -859,6 +859,8 @@ function getFittedGreatCircles() {
   const ANGLE_CUTOFF = 1E-2;
   const fixedCoordinates = COORDINATES;
 
+  clearFitted();
+
   // Container for pointers to the sample / interpretation objects
   var interpretationPointers = new Array();
   var meanVector = new Coordinates(0, 0, 0);
@@ -882,8 +884,15 @@ function getFittedGreatCircles() {
 
       // Add the set point to the mean vector
       if(interpretation.type === "TAU1") {
+
+        // Skip fitted directions
+        if(interpretation.fitted) {
+          return;
+        }
+
         nPoints++;
         return meanVector = meanVector.add(coordinates);
+
       }
 
       // Save the TAU3 component for fitting
@@ -984,21 +993,24 @@ function getFittedGreatCircles() {
     var specimen = interpretationPointers[i].sample;
     var interpretation = interpretationPointers[i].interpretation;
 	
+    var copy = memcpy(interpretation);
+
     // The interpretation type has now become TAU1
-    interpretation.pole = interpretationPointers[i].coordinates.toVector(Direction);
-    interpretation.type = "TAU1";           
-    interpretation.fitted = true;           
+    copy.type = "TAU1";           
+    copy.fitted = true;           
 
     // Great circles are fitted in a particular reference frame!
     // Backpropogate the direction back to specimen coordinates and update the rotated components
     var specimenCoordinates = fromReferenceCoordinates(fixedCoordinates, specimen, fittedCoordinates);
 
     // Rotate the TAU1 back to the appropriate reference frame
-    interpretation.specimen.coordinates = specimenCoordinates;
-    interpretation.geographic.coordinates = inReferenceCoordinates("geographic", specimen, specimenCoordinates);
-    interpretation.tectonic.coordinates = inReferenceCoordinates("tectonic", specimen, specimenCoordinates);
+    copy.specimen.coordinates = specimenCoordinates;
+    copy.geographic.coordinates = inReferenceCoordinates("geographic", specimen, specimenCoordinates);
+    copy.tectonic.coordinates = inReferenceCoordinates("tectonic", specimen, specimenCoordinates);
 
-    var coordinates = interpretation[fixedCoordinates].coordinates;
+    specimen.interpretations.push(copy);
+
+    var coordinates = copy[fixedCoordinates].coordinates;
 
     // Confirm that the rotation to base specimen coordinates went OK
     if(!fEquals(fittedCoordinates.x, coordinates.x) || !fEquals(fittedCoordinates.y, coordinates.y) || !fEquals(fittedCoordinates.z, coordinates.z)) {
@@ -1014,6 +1026,14 @@ function getFittedGreatCircles() {
 
   // Return the new set of samples
   return copySamples;
+
+}
+
+function clearFitted() {
+
+  specimens.forEach(function(specimen) {
+    specimen.interpretations = specimen.interpretations.filter(x => !x.fitted);
+  });
 
 }
 
