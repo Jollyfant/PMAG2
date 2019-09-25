@@ -227,7 +227,7 @@ function updateInterpretationTable(specimen) {
 
 }
 
-function redrawInterpretationGraph(fit) {
+function redrawInterpretationGraph() {
 
   /*
    * Function redrawInterpretationGraph
@@ -237,11 +237,10 @@ function redrawInterpretationGraph(fit) {
   var dataSeries = new Array();
   var dataSeriesPlaneNegative = new Array();
   var dataSeriesPlanePositive = new Array();
+  var dataSeriesPlaneNegativeFitted = new Array();
+  var dataSeriesPlanePositiveFitted = new Array();
   var dataSeriesFitted = new Array();
   var dataSeriesPlane2 = new Array();
-
-  IS_FITTED = fit;
-
 
   try {
     var samples = getAllComponents();
@@ -282,10 +281,6 @@ function redrawInterpretationGraph(fit) {
         // Add fitted components to another series
         if(interpretation.fitted) {
 
-          //dataSeriesPlaneNegative = dataSeriesPlaneNegative.concat(getPlaneData(interpretation.pole).negative, null);
-          //dataSeriesPlanePositive = dataSeriesPlanePositive.concat(getPlaneData(interpretation.pole).positive, null);
-          IS_FITTED = true;
-
           dataSeriesFitted.push({
             "x": direction.dec,
             "y": projectInclination(direction.inc),
@@ -319,6 +314,7 @@ function redrawInterpretationGraph(fit) {
       }
 
       if(interpretation.type === "TAU3") {
+
         dataSeriesPlane2.push({
           "x": direction.dec,
           "inc": direction.inc,
@@ -327,8 +323,13 @@ function redrawInterpretationGraph(fit) {
           "index": i, 
         });
 
-        dataSeriesPlaneNegative = dataSeriesPlaneNegative.concat(getPlaneData(direction).negative, null);
-        dataSeriesPlanePositive = dataSeriesPlanePositive.concat(getPlaneData(direction).positive, null);
+        if(interpretation.fitted) {
+          dataSeriesPlaneNegativeFitted = dataSeriesPlaneNegativeFitted.concat(getPlaneData(direction).negative, null);
+          dataSeriesPlanePositiveFitted = dataSeriesPlanePositiveFitted.concat(getPlaneData(direction).positive, null);
+        } else {
+          dataSeriesPlaneNegative = dataSeriesPlaneNegative.concat(getPlaneData(direction).negative, null);
+          dataSeriesPlanePositive = dataSeriesPlanePositive.concat(getPlaneData(direction).positive, null);
+        }
 
       }
 
@@ -387,7 +388,7 @@ function redrawInterpretationGraph(fit) {
   }];
 
   // Add t95 confidence ellipse
-  if(IS_FITTED) {
+  if(dataSeriesPlaneNegativeFitted.length) {
     series.push({
       "name": "t95 Confidence Ellipse",
       "type": "line",
@@ -401,13 +402,41 @@ function redrawInterpretationGraph(fit) {
     });
   }
 
+  if(dataSeriesPlaneNegativeFitted.length) {
+    series.push({
+      "name": "Great Circles",
+      "type": "line",
+      "turboThreshold": 0,
+      "data": dataSeriesPlanePositiveFitted,
+      "color": HIGHCHARTS_GREY,
+      "lineWidth": 1,
+      "enableMouseTracking": false,
+      "marker": {
+        "enabled": false
+      }
+    }, {
+      "name": "Great Circles",
+      "type": "line",
+      "turboThreshold": 0,
+      "data": dataSeriesPlaneNegativeFitted,
+      "color": HIGHCHARTS_GREY,
+      "dashStyle": "ShortDash",
+      "lineWidth": 1,
+      "linkedTo": ":previous",
+      "enableMouseTracking": false,
+      "marker": {
+        "enabled": false
+      }
+    });
+  }
+
   if(dataSeriesPlaneNegative.length) {
     series.push({
       "name": "Great Circles",
       "type": "line",
       "turboThreshold": 0,
       "data": dataSeriesPlanePositive,
-      "color": IS_FITTED ? HIGHCHARTS_GREY : HIGHCHARTS_ORANGE,
+      "color": HIGHCHARTS_ORANGE,
       "lineWidth": 1,
       "enableMouseTracking": false,
       "marker": {
@@ -418,7 +447,7 @@ function redrawInterpretationGraph(fit) {
       "type": "line",
       "turboThreshold": 0,
       "data": dataSeriesPlaneNegative,
-      "color": IS_FITTED ? HIGHCHARTS_GREY : HIGHCHARTS_ORANGE,
+      "color": HIGHCHARTS_ORANGE,
       "dashStyle": "ShortDash",
       "lineWidth": 1,
       "linkedTo": ":previous",
@@ -859,6 +888,7 @@ function getFittedGreatCircles() {
   const ANGLE_CUTOFF = 1E-2;
   const fixedCoordinates = COORDINATES;
 
+  // Clear existing fitted great circles
   clearFitted();
 
   // Container for pointers to the sample / interpretation objects
@@ -993,6 +1023,8 @@ function getFittedGreatCircles() {
     var specimen = interpretationPointers[i].sample;
     var interpretation = interpretationPointers[i].interpretation;
 	
+    interpretation.fitted = true;
+
     var copy = memcpy(interpretation);
 
     // The interpretation type has now become TAU1
@@ -1022,17 +1054,25 @@ function getFittedGreatCircles() {
   // Mutate the fitted TAU3 components to become TAU1
   fittedCircleCoordinates.forEach(convertInterpretation);
 
-  notify("success", "Succesfully fitted <b>" + fittedCircleCoordinates.length + "</b> great circle(s) to <b>" + nPoints + "</b> directional component(s) in <b>" + nIterations + "</b> iteration(s).");
+  notify("success", "Succesfully fitted <b>" + fittedCircleCoordinates.length + "</b> great circle(s) to <b>" + nPoints + "</b> directional component(s) in <b>" + nIterations + "</b> iteration(s) in <b>" + COORDINATES + "</b> coordinates .");
 
   // Return the new set of samples
   return copySamples;
 
 }
 
+function clearFittedRefresh() {
+
+  clearFitted();
+  redrawInterpretationGraph();
+
+}
+
 function clearFitted() {
 
   specimens.forEach(function(specimen) {
-    specimen.interpretations = specimen.interpretations.filter(x => !x.fitted);
+    specimen.interpretations = specimen.interpretations.filter(x => x.type !== "TAU1" || !x.fitted)
+    specimen.interpretations.forEach(x => x.fitted = false);
   });
 
 }
@@ -1069,7 +1109,7 @@ function updateInterpretationMeanTable(direction, parameters) {
     "      <td>" + parameters.a95.toFixed(2) + "</td>",
     "      <td>" + parameters.t95.toFixed(2) + "</td>",
     "      <td>" + COORDINATES + "</td>",
-    "      <td>" + (IS_FITTED ? "<i class='fas fa-check text-success'></i>" : "<i class='fas fa-times text-danger'></i>") + "</td>",
+    "      <td><button class='btn btn-sm btn-link' onclick='clearFittedRefresh()'><i class='far fa-trash-alt'></i> Clear</button></td>",
     "    </tr>",
     "  </tbody>"
   ).join("\n");
@@ -1096,7 +1136,7 @@ function redrawCharts(hover) {
   eqAreaProjection(hover);
 
   // Redraw without fitting
-  redrawInterpretationGraph(false);
+  redrawInterpretationGraph();
 
   updateInterpretationTable();
   formatStepTable();
@@ -1209,7 +1249,6 @@ var COORDINATES = "specimen";
 var GROUP = "DEFAULT";
 var UPWEST = true;
 var specimens = new Array();
-var IS_FITTED = false;
 
 function keyboardHandler(event) {
 
@@ -1313,7 +1352,8 @@ function keyboardHandler(event) {
     case CODES.KEYPAD_EIGHT:
       return switchCoordinateReference();
     case CODES.KEYPAD_NINE:
-      return redrawInterpretationGraph(true);
+      specimens = getFittedGreatCircles();
+      return redrawInterpretationGraph();
     case CODES.ESCAPE_KEY:
       return document.getElementById("notification-container").innerHTML = "";
   }
@@ -1804,11 +1844,7 @@ function getAllComponents() {
    * Returns all components (fitted if requested)
    */
 
-  if(!IS_FITTED) {
-    return specimens;
-  }
-
-  return getFittedGreatCircles();
+  return specimens;
 
 }
 
@@ -1871,7 +1907,7 @@ function downloadInterpretationsCSV() {
   var rows = new Array(CSV_HEADER.join(","));
 
   try {
-    var saples = getAllComponents();
+    var samples = getAllComponents();
   } catch(exception) {
     return notify("danger", exception);
   }
