@@ -1433,44 +1433,34 @@ function doCutoff(directions) {
 
 }
 
-function averageGeolocation(coords) {
+function getAverageLocation(site) {
 
   /*
-   * Function averageGeolocation
-   * Returns the average geolocation for a list of latitudes, longitudes
+   * Function getAverageLocation
+   * Returns the average specimen location of a collection
    */
 
-  if(coords.length === 1) {
-    return coords[0];
+  // We can use declination attribute instead of poles.. doens't really matter (both are vectors)
+  var locations = site.components.filter(x => x.latitude !== null && x.longitude !== null).map(function(x) {
+    return new Direction(x.longitude, x.latitude).toCartesian();
+  });
+
+  // No location
+  if(locations.length === 0) {
+    return null;
   }
 
-  let x = 0.0;
-  let y = 0.0;
-  let z = 0.0;
+  var meanLocation = meanDirection(locations);
 
-  for (let coord of coords) {
-    let latitude = coord.lat * Math.PI / 180;
-    let longitude = coord.lng * Math.PI / 180;
-
-    x += Math.cos(latitude) * Math.cos(longitude);
-    y += Math.cos(latitude) * Math.sin(longitude);
-    z += Math.sin(latitude);
+  // Keep longitude within [-180, 180]
+  if(meanLocation.dec > 180) {
+    meanLocation.dec -= 360;
   }
-
-  let total = coords.length;
-
-  x = x / total;
-  y = y / total;
-  z = z / total;
-
-  let centralLongitude = Math.atan2(y, x);
-  let centralSquareRoot = Math.sqrt(x * x + y * y);
-  let centralLatitude = Math.atan2(z, centralSquareRoot);
 
   return {
-    lat: centralLatitude * 180 / Math.PI,
-    lng: centralLongitude * 180 / Math.PI
-  };
+    "lng": meanLocation.dec,
+    "lat": meanLocation.inc
+  }
 
 }
 

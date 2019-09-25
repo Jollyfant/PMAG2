@@ -128,6 +128,11 @@ function keyboardHandler(event) {
     return;
   }
 
+  // An input element is being focused: stop key events
+  if(document.activeElement.nodeName === "INPUT") {
+    return;
+  }
+
   // Override the default handlers
   if(!Object.values(CODES).includes(event.keyCode)) {
     return;

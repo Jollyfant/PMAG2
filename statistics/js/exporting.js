@@ -61,6 +61,7 @@ function exportMeanJSON() {
 
     var cutofC = doCutoff(site.components.map(x => x.inReferenceCoordinates()));
     var statistics = getStatisticalParameters(cutofC.components);
+    var averageLocation = getAverageLocation(site);
 
     // Check if a polarity switch is requested
     if(statistics.dir.mean.inc < 0 && document.getElementById("polarity-selection").value === "NORMAL") {
@@ -74,6 +75,8 @@ function exportMeanJSON() {
 
     statisticsRows.push({
       "collection": site.name,
+      "latitude": averageLocation.lat,
+      "longitude": averageLocation.lng,
       "numberComponentsUsed": Number(cutofC.components.filter(x => !x.rejected).length),
       "numberComponents": Number(cutofC.components.length),
       "cutoff": Number(cutofC.cutoff.toFixed(PRECISION)),
@@ -115,12 +118,13 @@ function exportMeanCSV() {
   }
 
   // Add the header as the first row
-  var statisticsRows = new Array(new Array("collection", "N", "Ns", "Cutoff", "S", "Dec", "Inc", "R", "k", "a95", "K", "A95", "A95Min", "A95Max", "ΔDx", "ΔIx", "λ").join(","));
+  var statisticsRows = new Array(new Array("Collection", "Latitude", "Longitude", "N", "Ns", "Cutoff", "S", "Dec", "Inc", "R", "k", "a95", "K", "A95", "A95Min", "A95Max", "ΔDx", "ΔIx", "λ").join(","));
 
   selectedCollections.forEach(function(site) {
 
     var cutofC = doCutoff(site.components.map(x => x.inReferenceCoordinates()));
     var statistics = getStatisticalParameters(cutofC.components);
+    var averageLocation = getAverageLocation(site);
 
     // Check if a polarity switch is requested
     if(statistics.dir.mean.inc < 0 && document.getElementById("polarity-selection").value === "NORMAL") {
@@ -134,6 +138,8 @@ function exportMeanCSV() {
 
     statisticsRows.push([
       site.name,
+      averageLocation.lat,
+      averageLocation.lng,
       cutofC.components.filter(x => !x.rejected).length,
       cutofC.components.length,
       cutofC.cutoff.toFixed(PRECISION),

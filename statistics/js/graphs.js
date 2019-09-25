@@ -2028,7 +2028,7 @@ function eqAreaProjection() {
       "x": direction.dec, 
       "y": projectInclination(direction.inc), 
       "inc": direction.inc,
-      "name": component.name,
+      "component": component,
       "marker": {
         "fillColor": (direction.inc < 0 ? HIGHCHARTS_WHITE : color),
         "lineWidth": 1,
@@ -2045,7 +2045,7 @@ function eqAreaProjection() {
       "x": pole.lng, 
       "y": projectInclination(pole.lat), 
       "inc": pole.lat, 
-      "name": component.name,
+      "component": component,
       "marker": {
         "fillColor": (pole.lat < 0 ? HIGHCHARTS_WHITE : color),
         "lineWidth": 1,
@@ -2259,6 +2259,7 @@ function saveCombinedCollection() {
  
     notify("success", "Succesfully added collection <b>" + name + "</b> with <b>" + components.length + "</b> components in <b>" + COORDINATES + "</b> coordinates.");
     updateSpecimenSelect();
+    saveLocalStorage();
 
   }
 
@@ -2266,8 +2267,12 @@ function saveCombinedCollection() {
   document.getElementById("modal-confirm").onclick = modalConfirmCallback;
 
   $("#map-modal").modal("show");
-  
+
 }
+
+$("#map-modal").on("shown.bs.modal", function (e) {
+   document.getElementById("modal-name").focus();
+});
 
 function transformEllipse(A95Ellipse, dir) {
 
@@ -2386,10 +2391,23 @@ function eqAreaChart(container, dataSeries, plotBands, tickPositions) {
      * Exports VGP Distribution to CSV file
      */
 
-    const HEADER = new Array("longitude,latitude");
+    const HEADER = new Array("Sample, Pole Longitude, Pole Latitude, Core Azimuth, Core Dip, Bedding Strike, Bedding Dip, Latitude, Longitude, Age, Age Min, Age max");
 
     var csv = HEADER.concat(dataSeries[0].data.map(function(point) {
-      return new Array(point.x.toFixed(PRECISION), point.inc.toFixed(PRECISION)).join(ITEM_DELIMITER) 
+      return new Array(
+        point.component.name,
+        point.x.toFixed(PRECISION),
+        point.inc.toFixed(PRECISION),
+        point.component.coreAzimuth,
+        point.component.coreDip,
+        point.component.beddingStrike,
+        point.component.beddingDip,
+        point.component.latitude,
+        point.component.longitude,
+        point.component.age,
+        point.component.ageMin,
+        point.component.ageMax
+      ).join(ITEM_DELIMITER) 
     })).join(LINE_DELIMITER);
 
     downloadAsCSV("VGP-distribution.csv", csv);
@@ -2403,10 +2421,23 @@ function eqAreaChart(container, dataSeries, plotBands, tickPositions) {
      * Exports ChRM Distribution to CSV file
      */
     
-    const HEADER = new Array("declination,inclination");
+    const HEADER = new Array("Sample, Declination, Inclination, Core Azimuth, Core Dip, Bedding Strike, Bedding Dip, Latitude, Longitude, Age, Age Min, Age Max");
     
     var csv = HEADER.concat(dataSeries[0].data.map(function(point) {
-      return new Array(point.x.toFixed(PRECISION), point.inc.toFixed(PRECISION)).join(ITEM_DELIMITER)
+      return new Array(
+        point.component.name,
+        point.x.toFixed(PRECISION),
+        point.inc.toFixed(PRECISION),
+        point.component.coreAzimuth,
+        point.component.coreDip,
+        point.component.beddingStrike,
+        point.component.beddingDip,
+        point.component.latitude,
+        point.component.longitude,
+        point.component.age,
+        point.component.ageMin,
+        point.component.ageMax
+      ).join(ITEM_DELIMITER)
     })).join(LINE_DELIMITER);
     
     downloadAsCSV("ChRM-distribution.csv", csv);

@@ -629,36 +629,6 @@ function downloadAsKML() {
 
 }
 
-function getAverageLocation(site) {
-
-  /*
-   * Function getAverageLocation
-   * Returns the average specimen location of a collection
-   */
-
-  // We can use declination attribute instead of poles.. doens't really matter (both are vectors)
-  var locations = site.components.filter(x => x.latitude !== null && x.longitude !== null).map(function(x) {
-    return new Direction(x.longitude, x.latitude).toCartesian();
-  });
-
-  if(locations.length === 0) {
-    return null;
-  }
-
-  var meanLocation = meanDirection(locations);
-
-  // Keep longitude within [-180, 180]
-  if(meanLocation.dec > 180) {
-    meanLocation.dec -= 360;
-  }
-
-  return {
-    "lng": meanLocation.dec,
-    "lat": meanLocation.inc
-  }
-
-}
-
 function getAverageAge(collection) {
 
   /*
