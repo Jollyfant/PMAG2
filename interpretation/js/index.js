@@ -124,6 +124,9 @@ function fileSelectionHandler(event) {
 
   });
 
+  // Reset value in case loading the same file
+  this.value = null;
+
 }
 
 function enableInterpretationTabs() {
@@ -159,7 +162,7 @@ function updateInterpretationTable(specimen) {
   }
 
   var tableHeader = new Array(
-    "<table class='table table-sm table-striped'>",
+    "<table class='table text-center table-sm table-striped'>",
     "  <caption>Interpreted Components</caption>",
     "  <tr>",
     "    <td>Declination</td>",
@@ -168,11 +171,12 @@ function updateInterpretationTable(specimen) {
     "    <td>MAD</td>",
     "    <td>Type</td>",
     "    <td>Anchored</td>",
+    "    <td>Fitted</td>",
     "    <td>Steps</td>",
     "    <td>Group</td>",
     "    <td>Comment</td>",
     "    <td>Created</td>",
-    "    <td class='text-center text-danger' style='text-align: center; cursor: pointer;'><b style='pointer-events: none;'>Clear All</b></td>",
+    "    <td><button onclick='deleteAllInterpretations()' class='btn btn-sm btn-link'><i class='far fa-trash-alt'></i> Clear All</button></td>",
     "  </tr>"
   ).join("\n");
 
@@ -209,13 +213,14 @@ function updateInterpretationTable(specimen) {
       "    <td>" + direction.inc.toFixed(2) + "</td>",
       "    <td>" + intensity + "</td>",
       "    <td>" + mad + "</td>",
-      "    <td>" + interpretation.type + "</td>",
-      "    <td>" + interpretation.anchored + "</td>",
+      "    <td>" + tauToMark(interpretation.type) + "</td>",
+      "    <td>" + booleanToCheck(interpretation.anchored) + "</td>",
+      "    <td>" + booleanToCheck(interpretation.fitted) + "</td>",
       "    <td>" + interpretation.steps.length + "</td>",
       "    <td style='cursor: pointer;' class='text-muted'>" + interpretation.group + "</td>",
       "    <td style='cursor: pointer;' title='" + comment + "'>" + ((comment.length < COMMENT_LENGTH) ? comment : comment.slice(0, COMMENT_LENGTH) + "…") + "</td>",
       "    <td>" + interpretation.created + "</td>",
-      "    <td class='text-center text-danger' style='text-align: center; cursor: pointer;'><i style='pointer-events: none;' class='fas fa-times'></i></td>",
+      "    <td><button onclick='deleteAllInterpretations(" + i + ")' class='btn btn-sm btn-link'><i class='far fa-trash-alt'></i></button></td>",
       "  </tr>"
     ].join("\n");
 
@@ -224,6 +229,18 @@ function updateInterpretationTable(specimen) {
   var tableFooter = "</table>";
 
   document.getElementById("interpretation-table-container").innerHTML = tableHeader + rows.join("\n") + tableFooter;
+
+}
+
+function tauToMark(tau) {
+
+  return tau === "TAU3" ? "τ3" : "τ1";
+
+}
+
+function booleanToCheck(bool) {
+
+  return bool ? "Yes" : "No";
 
 }
 
@@ -1054,7 +1071,7 @@ function getFittedGreatCircles() {
   // Mutate the fitted TAU3 components to become TAU1
   fittedCircleCoordinates.forEach(convertInterpretation);
 
-  notify("success", "Succesfully fitted <b>" + fittedCircleCoordinates.length + "</b> great circle(s) to <b>" + nPoints + "</b> directional component(s) in <b>" + nIterations + "</b> iteration(s) in <b>" + COORDINATES + "</b> coordinates .");
+  notify("success", "Succesfully fitted <b>" + fittedCircleCoordinates.length + "</b> great circle(s) to <b>" + nPoints + "</b> directional component(s) in <b>" + nIterations + "</b> iteration(s) in <b>" + COORDINATES + "</b> coordinates.");
 
   // Return the new set of samples
   return copySamples;
@@ -1146,6 +1163,30 @@ function redrawCharts(hover) {
 
 }
 
+function deleteAllInterpretations(index) {
+  
+  /*
+   * Function deleteAllInterpretations
+   * Deletes all interpretations in a specimen
+   */
+
+  var specimen = getSelectedSpecimen();
+
+  // Reset
+  if(index === undefined) {
+    if(!confirm("Are you sure you wish to clear all interpretations in this specimen?")) {
+      return;
+    }
+    specimen.interpretations = new Array();
+  } else {
+    specimen.interpretations.splice(index - 1, 1);
+  } 
+
+  redrawCharts();
+  saveLocalStorage();
+
+}
+
 function interpretationTableClickHandler(event) {
 
   /*
@@ -1158,27 +1199,21 @@ function interpretationTableClickHandler(event) {
   var columnIndex = event.target.cellIndex;
   var rowIndex = event.target.parentElement.rowIndex;
 
-  // Delete all was selected
-  if(rowIndex === 0 && columnIndex === 10 && confirm("Are you sure you wish to delete all interpretations?")) {
-    specimen.interpretations = new Array();
-  }
-
   // A specific component was referenced
   if(rowIndex > 0) {
 
-    if(columnIndex === 7) {
+    if(columnIndex === 8) {
       var comment = prompt("Enter the new group for this interpretation.");
       if(comment === null) return;
       if(comment === "") comment = "DEFAULT";
       specimen.interpretations[rowIndex - 1].group = comment;
     }
 
-    if(columnIndex === 8) {
+    if(columnIndex === 9) {
       var comment = prompt("Enter a comment for this interpretation.");
       if(comment === null) return;
+      if(comment === "") comment = null;
       specimen.interpretations[rowIndex - 1].comment = comment;
-    } else if(columnIndex === 10) {
-      specimen.interpretations.splice(rowIndex - 1, 1);
     }
 
   }
@@ -1352,8 +1387,14 @@ function keyboardHandler(event) {
     case CODES.KEYPAD_EIGHT:
       return switchCoordinateReference();
     case CODES.KEYPAD_NINE:
-      specimens = getFittedGreatCircles();
-      return redrawInterpretationGraph();
+
+      try {
+        specimens = getFittedGreatCircles();
+        return redrawInterpretationGraph();
+      } catch(exception) {
+        return notify("danger", exception);
+      }
+
     case CODES.ESCAPE_KEY:
       return document.getElementById("notification-container").innerHTML = "";
   }

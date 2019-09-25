@@ -643,7 +643,7 @@ function formatInterpretationSeriesArea(interpretations) {
 
     if(interpretation.type === "TAU1" || SHOW_TAU3) {
 
-      var name = "Interpretation (" + interpretation.type + ")";
+      var name = "Interpretation (" + tauToMark(interpretation.type) + ")";
 
       if(interpretation.fitted) {
         name = name + " - fitted";
@@ -764,7 +764,7 @@ function formatInterpretationSeries(intensity, interpretations) {
 
     }
 
-    var name = "Interpretation (TAU1)";
+    var name = "Interpretation (τ1)";
 
     if(interpretation.fitted) {
       name = name + " - fitted";
@@ -775,7 +775,7 @@ function formatInterpretationSeries(intensity, interpretations) {
       "data": linearFitHorizontal,
       "enableMouseTracking": false,
       "lineWidth": 1,
-      "dashStyle": interpretation.fitted ? "ShortDash" : "Solid",
+      "dashStyle": interpretation.fitted ? "LongDash" : "Solid",
       "color": HIGHCHARTS_GREEN,
       "marker": {
         "enabled" : false
@@ -787,7 +787,7 @@ function formatInterpretationSeries(intensity, interpretations) {
       "lineWidth": 1,
       "linkedTo": ":previous",
       "enableMouseTracking": false,
-      "dashStyle": interpretation.fitted ? "ShortDash" : "Solid",
+      "dashStyle": interpretation.fitted ? "LongDash" : "Solid",
       "color": HIGHCHARTS_RED,
       "marker": {
         "enabled": false
