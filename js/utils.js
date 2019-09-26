@@ -341,6 +341,45 @@ Number.prototype.clamp = function(min, max) {
 
 }
 
+function getConfidenceEllipseDouble(dDx, dIx, N) {
+
+  /*
+   * Function getConfidenceEllipse
+   * Returns confidence ellipse around up North
+   */
+
+  // Define the number of discrete points on an ellipse
+  const NUMBER_OF_POINTS = N;
+
+  dDx = dDx * RADIANS;
+  dIx = dIx * RADIANS;
+
+  var vectors = new Array();
+  var iPoint = ((NUMBER_OF_POINTS - 1) / 2);
+
+  // Create a circle around the pole with angle confidence
+  for(var i = 0; i < NUMBER_OF_POINTS; i++) {
+
+    var psi = i * Math.PI / iPoint;
+    var x = Math.sin(dIx) * Math.cos(psi);
+    var y = Math.sin(dDx) * Math.sin(psi);
+
+    // Resulting coordinate
+    var z = Math.sqrt(1 - Math.pow(x, 2) - Math.pow(y, 2));
+
+    if(isNaN(z)) {
+      z = 0;
+    }
+
+    vectors.push(new Coordinates(x, y, z).toVector(Direction));
+
+  }
+
+  // Handle the correct distribution type
+  return vectors;
+
+}
+
 function getConfidenceEllipse(angle) {
 
   /*
@@ -426,7 +465,7 @@ function getSelectedCollections() {
 
 }
 
-function getPlaneData(direction, angle) {
+function getPlaneData(direction, angle, angle2, N) {
 
   /*
    * Function getPlaneData
@@ -444,12 +483,20 @@ function getPlaneData(direction, angle) {
 
   }
 
+  if(N === undefined) {
+    N = 101;
+  }
+
   // No angle is passed: assume a plane (angle = 90)
   if(angle === undefined) {
     angle = 90;
   }
 
-  var ellipse = getConfidenceEllipse(angle).map(rotateEllipse);
+  if(angle2 === undefined) {
+    angle2 = angle;
+  }
+
+  var ellipse = getConfidenceEllipseDouble(angle, angle2, N).map(rotateEllipse);
 
   // Flip the ellipse when requested. Never flip great circles..
   if(angle !== 90 && document.getElementById("flip-ellipse") && document.getElementById("flip-ellipse").checked) {
