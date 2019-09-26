@@ -76,8 +76,6 @@
         <div class="alert alert-light" role="alert">
 
             <h5>Paleomagnetism.org 2 - NTR Analysis </h5>
-          <p> The following miscellaneous set of tools can be used for stuff.</p>
-
                 <!-- Tab for NTR Analysis -->
                 <p>The net rotation of a dyke (including any component of tilt and vertical axis rotation) is calculated as a single rotation around an inclined axis, which restores the in situ remanence direction to its initial orientation (reference pole) and the dyke to its initial vertical position. This technique allows the user to calculate the rotation parameters of the deformation experienced by the dyke and its initial orientation.</p>
 
@@ -125,17 +123,18 @@
                             </div>
                         </td>
 <td>
-                <button class="btn btn-success" id="initializeNTR"> Initialize NTR Analysis </button></td>
+                <button class="btn btn-success" id="initializeNTR"> NTR Analysis </button></td>
                                           </tbody>
                 </table>
         </div>
         <p>
-            <div id="NTRInputTable" style="display: none;"></div>
-            <div id="initialPlot" style="margin: 0 auto; display: none;"></div>
-            <p>
-                <div id="NTRSolutionTable" style="display: none;"></div>
-                <p>
                     <div id="interationDiv" style="display: none;">
+            <div id="NTRInputTable"></div>
+            <p>
+            <div id="initialPlot"></div> 
+                <div id="NTRSolutionTable"></div>
+                <p>
+
                         <hr>
         <div class="alert alert-light" role="alert">
 
@@ -163,7 +162,7 @@
                                         <td>
                                             <input class="form-control" type="text" size="5" id="confDyke" placeholder="Dyke Pole α95"> </td>
                                         <td>
-                                            <button class="btn btn-success" id="iterationButton"> Iterate </button>
+                                            <button class="btn btn-success" id="iterationButton"><i class="fas fa-spinner"></i> Iterate </button>
                                         </td>
                                     </tbody>
                                 </table>
@@ -172,8 +171,15 @@
                                         <div id="ntr-progress" class="progress-bar progress-bar-striped progress-bar-animated" style="width: 0%; transition: none;"></div>
                                     </div>
                                     <p>
-                                        <div id="iterationPlot" style="width: 45%; height: 700px; margin: 0 auto; display: none;"></div>
-                                        <div id="windrosePlot" style="width: 45%; height: 700px; margin: 0 auto; display: none;"></div>
+
+                                    <div class="row">
+                                      <div class="col-xl-6">
+                                        <div id="iterationPlot"></div>
+                                      </div>
+                                      <div class="col-xl-6">
+                                        <div id="windrosePlot"></div>
+                                      </div>
+                                    </div>
 
                                         <footer id="footer-container" class="container text-muted"></footer>
 

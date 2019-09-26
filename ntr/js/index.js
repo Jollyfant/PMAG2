@@ -215,21 +215,21 @@ function updateTable(values) {
     "      <th>Reference Vector </th>",
     "      <th>Site Vector </th>",
     "      <th>Pole to Dyke </th>",
-    "       <th>Beta </th>",
+    "       <th>β </th>",
     "     </tr>",
     "   </thead>",
     "   <tbody>",
     "     <tr>",
     "       <td>",
-    "        <br><b>Declination </b>" + values.referencePole.dec.toFixed(1),
+    "        <b>Declination </b>" + values.referencePole.dec.toFixed(1),
     "        <br><b>Inclination </b>" + values.referencePole.inc.toFixed(1),
     "      </td>",
     "      <td>",
-    "        <br><b>Declination </b>" + values.magnetizationVector.dec.toFixed(1),
+    "        <b>Declination </b>" + values.magnetizationVector.dec.toFixed(1),
     "        <br><b>Inclination </b>" + values.magnetizationVector.inc.toFixed(1),
     "      </td>",
     "      <td>",
-    "        <br><b>Declination </b>" + values.dykePole.dec.toFixed(1),
+    "        <b>Declination </b>" + values.dykePole.dec.toFixed(1),
     "        <br><b>Inclination </b>" + values.dykePole.inc.toFixed(1),
     "      </td>",
     "      <td>" + values.beta.toFixed(1) + "</td>",
@@ -314,7 +314,7 @@ function plotNTRData(values) {
   plotSeries = new Array();
 
   // Draw a small circle around the reference pole with angle beta
-  var sCircle = getPlaneData(values.referencePole, values.beta);
+  betaCircle = flipEllipse(values.referencePole.inc, getPlaneData(values.referencePole, values.beta));
 
   // Get the bisecting planes
   var kPlane = getPlaneData(values.k.toVector(Direction), 90);
@@ -377,7 +377,7 @@ function plotNTRData(values) {
     "name": "Beta",
     "type": "line",
     "turboThreshold": 0,
-    "data": sCircle,
+    "data": betaCircle,
     "color": "grey",
     "dashStyle": "ShortDash",
     "enableMouseTracking": false,
@@ -719,7 +719,7 @@ function finish(results, values) {
   }, {
     "name": "Solution 1 (Confidence Interval)",
     "type": "scatter",
-    "color": HIGHCHARTS_RED,
+    "color": HIGHCHARTS_GREEN,
     "data": intersectionArray1,
     "marker": {
       "symbol": "circle",
@@ -821,24 +821,13 @@ function drawGraph(plotSeries, container) {
   // Specify chart options for equal area projection
   var chartOptions = {
     "chart": {
-      "backgroundColor": "rgba(255, 255, 255, 0)",
       "id": container,
       "polar": true,
       "animation": true,
       "renderTo": container, 
     },
-    "tooltip": {
-      "borderColor": "rgb(119, 152, 191)",
-    },
     "legend": {
-      "title": {
-        "text": "NTR Analysis Legend"
-      },
-      "enabled": true,
-      "align": container === "iterationPlot" ? "middle" : "left",
-      "verticalAlign": container === "iterationPlot" ? "bottom" : "middle",
-      "layout": container === "iterationPlot" ? "horizontal" : "vertical",
-      "floating": container === "iterationPlot" ? true : false
+      "enabled": true
     },
     "title": {
       "text": "NTR Analysis",
@@ -865,9 +854,7 @@ function drawGraph(plotSeries, container) {
     },
     "exporting": { 
       "enabled": true,
-      "sourceWidth": 800,
       "filename": "NTR",
-      "sourceHeight": 800,
       "buttons": {
         "contextButton": {
           "symbolStroke": "#7798BF",
@@ -876,7 +863,7 @@ function drawGraph(plotSeries, container) {
       }
     },
     "credits": {
-      "enabled": true,
+      "enabled": ENABLE_CREDITS,
       "text": "Paleomagnetism.org (NTR Analysis) - <i> after Allerton and Vine, 1987, Morris et al., 1998 </i>",
       "href": ""
     },
@@ -904,8 +891,13 @@ function drawGraph(plotSeries, container) {
     "series": plotSeries,
   };
 
-  chartFoldLeft = new Highcharts.Chart(chartOptions); //Initialize chart with specified options.
-  $("#" + container).show().css("display", "inline-block");
+  if(container !== "iterationPlot") {
+    chartOptions.legend.align = "left";
+    chartOptions.legend.verticalAlign = "middle";
+    chartOptions.legend.layout = "right";
+  }
+
+  chartFoldLeft = new Highcharts.Chart(chartOptions); 
 
 }
 
@@ -995,7 +987,6 @@ function plotWindRose(dataOne, dataTwo, container) {
     },
     "legend": {
       "enabled": true,
-      "floating": true,
     },
     "title": {
       "text": "Original Dyke Pole Density",
@@ -1023,6 +1014,14 @@ function plotWindRose(dataOne, dataTwo, container) {
       "startAngle": 0,
       "endAngle": 360
     },
+    "exporting": {
+      "buttons": {
+        "contextButton": {
+          "symbolStroke": "#7798BF",
+          "align": "right"
+        }
+      }
+    },
     "yAxis": {
       "min": 0,
       "tickPositions": [0, this.max],
@@ -1037,7 +1036,7 @@ function plotWindRose(dataOne, dataTwo, container) {
       }
     },
     "credits": {
-      "enabled": true,
+      "enabled": ENABLE_CREDITS,
       "text": "Paleomagnetism.org (NTR Analysis) - <i> after Allerton and Vine, 1987, Morris et al., 1998 </i>",
       "href": ""
     },
