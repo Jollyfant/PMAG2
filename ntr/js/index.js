@@ -8,6 +8,11 @@ document.getElementById("iterationButton").addEventListener("click", runNTR);
 
 function runNTR() {
 	
+  /*
+   * runNTR
+   * Runs the NTR Algorithm
+   */
+
   // Application is already running
   if(isRunning) {
     return notify("danger", "NTR Analysis is already running.");
@@ -29,14 +34,16 @@ function runNTR() {
     Number(document.getElementById("dykeInc").value)
   ).toCartesian();
 
-  // Do it once, or do iteration
-  if(this.id === "initializeNTR") {
-    results = makeAnalysis({ referencePole, magnetizationVector, dykePole });
-    updateTable(results);
-    $("#interationDiv").show();
-  } else if (this.id === "iterationButton") {
-    iterateNTR(referencePole, magnetizationVector, dykePole);
+  if(this.id === "iterationButton") {
+    return iterateNTR(referencePole, magnetizationVector, dykePole);
   }
+
+  // Get the result from an analysis
+  result = makeAnalysis({ referencePole, magnetizationVector, dykePole });
+  updateTable(result);
+
+  // Show the iteration fields 
+  document.getElementById("interationDiv").style.display = "block";
 
 }
 
@@ -249,7 +256,7 @@ function updateTable(values) {
     "  <tbody>",
     "    <tr>",
     "      <td>",
-    "        <br><b>Declination</b> " + values.intersectionVectorOne.dec.toFixed(1),
+    "        <b>Declination</b> " + values.intersectionVectorOne.dec.toFixed(1),
     "        <br><b>Inclination</b> " + values.intersectionVectorOne.inc.toFixed(1),
     "        <br><b>Angle of Rotation</b> " + values.angleOne.toFixed(1),
     "        <br><b>Sense of Rotation</b> " + values.typeOne,
@@ -258,7 +265,7 @@ function updateTable(values) {
     "        <br><b>Initial Dyke Dip </b> " + (90 - values.interceptVectorOne.inc).toFixed(1),
     "      </td>",
     "      <td>",
-    "        <br><b>Declination</b> " + values.intersectionVectorTwo.dec.toFixed(1),
+    "        <b>Declination</b> " + values.intersectionVectorTwo.dec.toFixed(1),
     "        <br><b>Inclination</b> " + values.intersectionVectorTwo.inc.toFixed(1),
     "        <br><b>Angle of Rotation</b> " + values.angleTwo.toFixed(1),
     "        <br><b>Sense of Rotation</b> " + values.typeTwo,
@@ -374,7 +381,7 @@ function plotNTRData(values) {
       "lineWidth": 1,
     }
   }, {
-    "name": "Beta",
+    "name": "β",
     "type": "line",
     "turboThreshold": 0,
     "data": betaCircle,
@@ -992,7 +999,7 @@ function plotWindRose(dataOne, dataTwo, container) {
       "text": "Original Dyke Pole Density",
     },
     "subtitle": {
-      "text": "Intersections of Beta with the horizontal (single solutions not shown)",
+      "text": "Intersections of β with the horizontal (single solutions not shown)",
     },
     "xAxis": {
       "minorTickPosition": "outside",
