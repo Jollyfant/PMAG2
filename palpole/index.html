@@ -74,43 +74,44 @@
       <div id="notification-container"></div>
 
         <div class="alert alert-light" role="alert">
-          <h5>Paleomagnetism.org 2 - Miscellaneous Portal </h5>
-          <p> The following set of miscellaneous tools do not fit within one of the portals. Tools that are not yet ported to the new application can be found on the <a href="http://old.paleomagnetism.org">old website</a>.
+          <h5> Palpole Implementation </h5>
+          <p> This tool can be used to convert from geomagnetic directions at a particular site to virtual geomagnetic poles and vice versa. Input a site location in decimal notation and declination, inclination (longitude, latitude) pairs separated by a comma. Each pair of values must go on a new line.
         </div>
 
+  <div class="row">
 
-  <div class="card-deck"> 
+<div class="col">
+  <div class="form-group">
+    <label for="exampleFormControlTextarea1">Declination & Inclination pairs</label>
+    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3">10.00, 20.00&#10;20.00, 30.00</textarea>
+  </div>
+  <div class="col">
+    <button id="convert-dir" type="submit" class="btn btn-block btn-primary">Directions to VGP <i class="fas fa-arrow-right"></i></button>
+  </div>
+</div>
 
-    <div class="card" style="border: none;">
-    <img style="" class="card-img-top" src="../resources/images/NTR.png" alt="Card image cap">
-    <div class="card-body">
-      <h5 class="card-title"><a href="../ntr/"><i class="fas fa-undo"></i> Net Tectonic Rotation</a></h5>
-     <hr>
-      <p class="card-text text-muted text-justify">This tool can restore the orientation of dyke with a geomagnetic reference to its original vertical position.</p>
+<div class="col">
+  Site Location
+  <div class="form-row">
+    <div class="col">
+      <input id="latitude" type="text" class="form-control" placeholder="Site Latitude" value="0">
+    </div>
+    <div class="col">
+      <input id="longitude" type="text" class="form-control" placeholder="Site Longitude" value="0">
     </div>
   </div>
-
-    <div class="card" style="border: none;">
-    <img style="" class="card-img-top" src="../resources/images/parametric.png" alt="Card image cap">
-    <div class="card-body">
-      <h5 class="card-title"><a href="../parametric/"><i class="fa fa-dice"></i> Parametric Sampling</a></h5>
-     <hr>
-      <p class="card-text text-muted text-justify">This tool can be used to parametrically sample a Fisherian distribution of poles or directions and generate declination, inclination pairs.</p>
+</div>
+<div class="col">
+  <div class="form-group">
+    <label for="exampleFormControlTextarea2">VGP Longitude & Latitude pairs</label>
+    <textarea class="form-control" id="exampleFormControlTextarea2" rows="3">43.66, 75.67&#10;49.83, 64.53</textarea>
+  </div>
+    <div class="col">
+      <button id="convert-vgp" type="submit" class="btn btn-block btn-primary"><i class="fas fa-arrow-left"></i> VGP to Directions</i></button>
     </div>
   </div>
-
-    <div class="card" style="border: none;">
-    <img style="" class="card-img-top" src="../resources/images/parametric.png" alt="Card image cap">
-    <div class="card-body">
-      <h5 class="card-title"><a href="../palpole/"><i class="fa fa-dice"></i> Directions & Poles</a></h5>
-     <hr>
-      <p class="card-text text-muted text-justify">This tool can be used to parametrically sample a Fisherian distribution of poles or directions and generate declination, inclination pairs.</p>
     </div>
-  </div>
-
-  </div>
-  <br>
-    </div>
+</div>
 
     <footer id="footer-container" class="container text-muted"></footer>
 
@@ -123,11 +124,20 @@
   <script src="../lib/bootstrap-4.3.1/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../js/utils.js"></script>
 
-  <script>
-    document.getElementById("__doi__").innerHTML = "<a href='https://doi.org/" + __DOI__ + "'>" + __DOI__ + "</a>";
-    document.getElementById("__version__").innerHTML = __VERSION__;
-    document.getElementById("__year__").innerHTML = new Date().getFullYear();
-  </script>
-
+  <!-- Highcharts -->
+  <script src="../lib/highcharts-7.0.3/code/highcharts.js"></script>
+  <script src="../lib/highcharts-7.0.3/code/highcharts-more.js"></script>
+  <script src="../lib/highcharts-7.0.3/code/modules/exporting.js"></script>
+  <script src="../lib/highcharts-7.0.3/code/modules/offline-exporting.js"></script>
+  <script src="../js/highcharts-patch.js"></script>
+  
+  <script src="../js/classes/Direction.js"></script>
+  <script src="../js/classes/Location.js"></script>
+  <script src="../js/classes/Coordinates.js"></script>
+  <script src="../js/classes/Exception.js"></script>
+  <script src="../js/classes/Pole.js"></script>
+  <script src="../js/classes/Site.js"></script>
+  <script src="../js/classes/Distribution.js"></script>
+  <script src="./js/index.js"></script>
 
 </html>
