@@ -64,8 +64,10 @@ var ellipseDataZero = function(referencePole, beta) {
    * Finds two points on ellipse with smallest inclination
    */
 
-  // Draw an ellipse
-  var data = getPlaneData(referencePole.toVector(Direction), beta);
+  const PRECISION = 1E3;
+
+  // Draw an ellipse with many points
+  var data = getPlaneData(referencePole.toVector(Direction), beta, beta, PRECISION);
 
   // Get all points
   var incs = data.map(function(x, i) {
@@ -79,7 +81,13 @@ var ellipseDataZero = function(referencePole, beta) {
   // Sort by inclination: get the lowest two and then sort by declination to be consistent
   incs.sort((a, b) => a.inc - b.inc);
   incs = incs.slice(0, 2);
-  incs.sort((a, b) => a.dec - b.dec);
+
+  // Make sure to keep solutions consistent based on position
+  if(referencePole.z < 0) {
+    incs.sort((a, b) => b.dec - a.dec);
+  } else {
+    incs.sort((a, b) => a.dec - b.dec);
+  }
   
   return {
    "one": new Direction(data[incs[0].index].x, data[incs[0].index].inc).toCartesian(),
@@ -220,7 +228,7 @@ function updateTable(values) {
     "  <thead>",
     "    <tr>",
     "      <th>Reference Vector </th>",
-    "      <th>Site Vector </th>",
+    "      <th>Magnetization Vector </th>",
     "      <th>Pole to Dyke </th>",
     "       <th>β </th>",
     "     </tr>",
@@ -926,7 +934,8 @@ function plotWindRose(dataOne, dataTwo, container) {
     for(var i = 0; i < newDatArray.length; i++) {
 
       if(Math.round(newDatArray[i]) % 360 === 0) {
-        return sortedArr["dump"] += 1;
+        sortedArr["dump"] += 1;
+        continue;
       }
 
       // Round to the nearest bin degrees

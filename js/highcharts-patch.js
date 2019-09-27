@@ -78,12 +78,14 @@
         case "zijderveld-container":
         case "declination-container":
         case "magstrat-container-declination":
+        case "hemispherePlot":
           return {"width": 0, "top": 0}
         case "foldtest-tectonic-container":
         case "pole-container":
         case "hemisphere-container":
         case "magstrat-container-inclination":
         case "pole-container":
+        case "hemispherePlot2":
           return {"width": 600, "top": 0}
         case "foldtest-full-container":
         case "ei-cdf-container":

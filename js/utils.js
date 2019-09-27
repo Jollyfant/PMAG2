@@ -3,6 +3,7 @@ const __VERSION__ = "2.0.0-alpha";
 const __DOI__ = "10.5281/zenodo.2649907";
 const RADIANS = Math.PI / 180;
 const PROJECTION_TYPE = "AREA";
+const DEGREE_SYMBOL = "\u00B0";
 
 // Color definitions
 const HIGHCHARTS_BLUE = "#7CB5EC";

@@ -1,4 +1,4 @@
-function showGeographicAndTectonicPlot(geographic, tectonic) {
+
 
   /*
    * Function showGeographicAndTectonicPlot

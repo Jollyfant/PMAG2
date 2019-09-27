@@ -74,19 +74,10 @@
       <div id="notification-container"></div>
 
         <div class="alert alert-light" role="alert">
-          <h5> Parametric Sampling </h5>
-          <p> The following group of people were involved in the development of Paleomagnetism.org. Other contributors can be found under the reference page. Your suggestions, questions, and comments are welcome and the team can be contacted through <a href="mailto:paleomagnetism.org@gmail.com">email</a>.
+          <h5> Fisherian Parametric Sampling </h5>
+          <p> The following tool can be used to draw samples from an arbitrary Fisherian distribution (N, k). The left figure shows the parametrically sampled directions forcing a Fisherian distribution on <b>directions</b> or <b>poles</b>. The right figure shows the virtual geomagnetic poles that belong to a direction and site. The bootstrap button stabilizes the parametric solution for low N distributions.
         </div>
 
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-6">
-              <div id="hemispherePlot"></div>
-            </div>
-            <div class="col-xs-12 col-sm-12 col-md-6">
-              <div id="hemispherePlot2"></div>
-            </div>
-        </div>
-     
             <div class="form-row">
               <div class="form-group col-sm-2">
                 <label for="inputPassword4">Site Longitude</label>
@@ -112,16 +103,41 @@
                 <label for="inputPassword4">K</label>
                 <input type="number" class="form-control" value="25" id="input-dispersion" placeholder="Dispersion (K)">
               </div>
-
-              <select class="form-control" id="input-distribution">
-                <option value="poles">Fisherian Poles</option>
-                <option value="directions">Fisherian Directions</option>
-              </select>
-
-              <button type="button" class="btn btn-primary btn-block" id="button-submit">Sample Distribution</button>
             </div>
-<br>
 
+        <div id="parametric-table"></div>
+
+
+          <div class="input-group mb-3">
+
+            <div class="btn-group-toggle" data-toggle="buttons">
+              <label class="btn btn-sm btn-success active">
+                <input id="sample-bootstrap-checkbox" type="checkbox" checked autocomplete="off"><i class="fas fa-dice"> Stabilize</i>
+              </label>
+            </div>
+&nbsp;
+            <select class="form-control form-control-sm" id="input-distribution">
+              <option value="poles">Fisherian Poles</option>
+              <option value="directions">Fisherian Directions</option>
+            </select>
+&nbsp;
+            <button id="button-submit" type="button" class="btn btn-sm btn-primary"><i class="fas fa-play"></i> <b>Sample Distribution</b></button>
+
+          </div>
+
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-6">
+              <div id="hemispherePlot"></div>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-6">
+              <div id="hemispherePlot2"></div>
+            </div>
+        </div>
+            <div class="text-right">
+                  <button class="btn btn-sm btn-light" id="export-png"><i class="far fa-file-image"></i> PNG</button>
+                  <button class="btn btn-sm btn-light" id="export-svg"><i class="far fa-file-image"></i> SVG</button>
+                  <button class="btn btn-sm btn-light" id="export-pdf"><i class="far fa-file-image"></i> PDF</button>
+            </div>
 
     </div>
 
@@ -141,6 +157,7 @@
   <script src="../lib/highcharts-7.0.3/code/highcharts-more.js"></script>
   <script src="../lib/highcharts-7.0.3/code/modules/exporting.js"></script>
   <script src="../lib/highcharts-7.0.3/code/modules/offline-exporting.js"></script>
+  <script src="../js/highcharts-patch.js"></script>
   
   <script src="../js/classes/Direction.js"></script>
   <script src="../js/classes/Location.js"></script>

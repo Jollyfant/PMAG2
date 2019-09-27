@@ -1,8 +1,13 @@
 "use strict"
 
-const DEGREE_SYMBOL = "\u00B0";
+document.getElementById("button-submit").addEventListener("click", initialize); 
 
-document.getElementById("button-submit").addEventListener("click", function(event) {
+function initialize() {
+
+  /*
+   * Function initialize
+   * Initializes the parametrically sampling procedure
+   */
 
   // Load data from the interface
   var declination = Number(document.getElementById("input-declination").value);
@@ -14,11 +19,111 @@ document.getElementById("button-submit").addEventListener("click", function(even
   var N = Number(document.getElementById("input-number").value);
   var K = Number(document.getElementById("input-dispersion").value);
 
+  // Get the type of the distribution
   var distribution = document.getElementById("input-distribution").value;
 
   var direction = new Direction(declination, inclination);
   var site = new Site(longitude, latitude);
 
+  // Stabilize the results by drawing 1000 bootstraps
+  if(document.getElementById("sample-bootstrap-checkbox").checked) {
+    var loc = bootstrapDistribution(direction, site, N, K, distribution);
+  } else {
+    var loc = getDistribution(direction, site, N, K, distribution); 
+  }
+
+  // Update mean table
+  tableUpdate(loc.directions, loc.poles);
+
+  // Create a plot
+  hemispherePlot("hemispherePlot", loc.directions);
+  hemispherePlot("hemispherePlot2", loc.poles);
+
+}
+
+function tableUpdate(directions, poles) {
+
+  /*
+   * Function tableUpdate
+   * Updates table with distribution parameters
+   */
+
+  document.getElementById("parametric-table").innerHTML = [
+    "<table class='table table-striped text-center'>",
+    "  <thead>",
+    "    <tr>",
+    "      <th>Declination</th>",
+    "      <th>Inclination</th>",
+    "      <th>Longitude<small>VGP</small></th>",
+    "      <th>Latitude<small>VGP</small></th>",
+    "      <th>N</th>",
+    "      <th>R</th>",
+    "      <th>k</th>",
+    "      <th>α95</th>",
+    "      <th>R<small>VGP</small></th>",
+    "      <th>K</th>",
+    "      <th>A95</th>",
+    "      <th>A95<small>min</small></th>",
+    "      <th>A95<small>max</small></th>",
+    "     </tr>",
+    "   </thead>",
+    "   <tbody>",
+    "     <tr>",
+    "       <td>" + directions.mean.dec.toFixed(1) + "</td>",
+    "       <td>" + directions.mean.inc.toFixed(1) + "</td>",
+    "       <td>" + poles.mean.lng.toFixed(1) + "</td>",
+    "       <td>" + poles.mean.lat.toFixed(1) + "</td>",
+    "       <td>" + directions.N + "</td>",
+    "       <td>" + directions.R.toFixed(1) + "</td>",
+    "       <td>" + directions.dispersion.toFixed(1) + "</td>",
+    "       <td>" + directions.confidence.toFixed(1) + "</td>",
+    "       <td>" + poles.R.toFixed(1) + "</td>",
+    "       <td>" + poles.dispersion.toFixed(1) + "</td>",
+    "       <td>" + poles.confidence.toFixed(1) + "</td>",
+    "       <td>" + poles.confidenceMin.toFixed(1) + "</td>",
+    "       <td>" + poles.confidenceMax.toFixed(1) + "</td>",
+    "    </tr>",
+    "  </tbody>",
+    "</table>"
+  ].join("");
+
+}
+
+
+function bootstrapDistribution(direction, site, N, K, distribution) {
+
+  /*
+   * Function bootstrapDistribution
+   * Does a bootstrap for a parametric distribution to stabilize solution
+   */
+
+  const NUMBER_OF_BOOTSTRAPS = 1000;
+
+  var results = new Array();
+
+  // 1000 bootstraps
+  for(var i = 0; i < NUMBER_OF_BOOTSTRAPS; i++) {
+    results.push(getDistribution(direction, site, N, K, distribution));
+  }
+
+  // Sort the bootstraps by angle to requested direction
+  results.sort(function(a, b) {
+    return direction.angle(b.directions.mean) - direction.angle(a.directions.mean);
+  });
+
+  // Return the best result
+  return results.pop();
+
+}
+
+function getDistribution(direction, site, N, K, distribution) {
+
+  /*
+   * Function getDistribution
+   * Samples a single distribution with given parameters
+   */
+
+  // Make a Fisherian distribution on POLES or DIRECTIONS respectively
   if(distribution === "poles") {
     var pole = site.poleFrom(direction);
     var samples = new fisherianDistribution(PoleDistribution, N, K);
@@ -28,16 +133,9 @@ document.getElementById("button-submit").addEventListener("click", function(even
     var rotated = samples.rotateTo(direction.dec, direction.inc);
   }
 
-  var loc = new Location(site, rotated);
+  return new Location(site, rotated);
 
-  hemispherePlot("hemispherePlot", loc.directions);
-  hemispherePlot("hemispherePlot2", loc.poles);
-
-});
-
-document.getElementById("button-submit").click();
-
-"use strict";
+}
 
 function getProjectionDescription() {
 
@@ -184,9 +282,9 @@ function hemispherePlot(id, distribution) {
      */
 
     if(constructor === PoleDistribution) {
-      return "Virtual Geomagnetic Poles";
+      return "Parametric Virtual Geomagnetic Poles";
     } else if(constructor === DirectionDistribution) {
-      return "Directions";
+      return "Parametric Directions";
     } else {
       throw(new Exception("Got unexpected constructor."));
     }
@@ -266,6 +364,35 @@ function hemispherePlot(id, distribution) {
 
   }
 
+  function exportCSV() {
+
+    /*
+     * Function exportCSV
+     * Exports parametrically sampled data to CSV
+     */
+
+    if(this === DirectionDistribution) {
+
+      const HEADER = new Array("Declination, Inclination");
+
+      var csv = HEADER.concat(distribution.vectors.map(function(direction) {
+        return new Array(direction.dec, direction.inc).join(ITEM_DELIMITER);
+      })).join(LINE_DELIMITER);
+
+    } else if(this === PoleDistribution) {
+
+      const HEADER = new Array("Longitude, Latitude");
+
+      var csv = HEADER.concat(distribution.vectors.map(function(pole) {
+        return new Array(pole.lng, pole.lat).join(ITEM_DELIMITER);
+      })).join(LINE_DELIMITER);
+
+    }
+
+    downloadAsCSV("parametric-distribution.csv", csv);
+
+  }
+
   Highcharts.chart(id, {
     "chart": {
       "polar": true,
@@ -273,6 +400,17 @@ function hemispherePlot(id, distribution) {
     },
     "tooltip": {
       "formatter": getTooltip(distribution.constructor)
+    },
+    "exporting": {
+      "getCSV": exportCSV.bind(distribution.constructor),
+      "width": 600,
+      "height": 600,
+      "buttons": {
+        "contextButton": {
+          "symbolStroke": HIGHCHARTS_BLUE,
+          "align": "right"
+        }
+      }
     },
     "subtitle": {
       "text": ""
@@ -321,5 +459,29 @@ function hemispherePlot(id, distribution) {
     },
     "series": series
   });
+
+}
+
+document.getElementById("export-png").addEventListener("click", exportHandler);
+document.getElementById("export-pdf").addEventListener("click", exportHandler);
+document.getElementById("export-svg").addEventListener("click", exportHandler);
+
+function exportHandler(event) {
+
+  /*
+   * Function exportHandler
+   * Export handler for geomagnetic directions & poles
+   */
+
+  var charts = [
+    $("#hemispherePlot").highcharts(),
+    $("#hemispherePlot2").highcharts()
+  ];
+
+  if(charts.includes(undefined)) {
+    return notify("danger", "Could not export unrendered charts.");
+  }
+
+  exportChartsWrapper("geomagnetic-directions", charts, event.target.id);
 
 }
