@@ -18,7 +18,7 @@ function initialize() {
 
   var N = Number(document.getElementById("input-number").value);
   var K = Number(document.getElementById("input-dispersion").value);
-
+  
   // Get the type of the distribution
   var distribution = document.getElementById("input-distribution").value;
 
