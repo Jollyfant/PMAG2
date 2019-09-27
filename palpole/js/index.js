@@ -40,7 +40,7 @@ function getSite() {
   var latitude = Number(document.getElementById("latitude").value);
   var longitude = Number(document.getElementById("longitude").value);
 
-  return new Site(latitude, longitude);
+  return new Site(longitude, latitude);
 
 }
 
