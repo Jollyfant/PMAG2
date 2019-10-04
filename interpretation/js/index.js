@@ -1179,7 +1179,7 @@ function deleteAllInterpretations(index) {
     }
     specimen.interpretations = new Array();
   } else {
-    specimen.interpretations.splice(index - 1, 1);
+    specimen.interpretations.splice(index, 1);
   } 
 
   redrawCharts();
