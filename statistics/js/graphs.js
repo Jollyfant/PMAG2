@@ -1,4 +1,4 @@
-
+function showGeographicAndTectonicPlot() {
 
   /*
    * Function showGeographicAndTectonicPlot

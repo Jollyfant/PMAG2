@@ -129,7 +129,7 @@ function keyboardHandler(event) {
   }
 
   // An input element is being focused: stop key events
-  if(document.activeElement.nodeName === "INPUT") {
+  if(document.activeElement.nodeName === "INPUT" || document.activeElement.nodeName === "TEXTAREA") {
     return;
   }
 
@@ -165,6 +165,20 @@ function registerEventHandlers() {
    * Registers DOM event listeners and handler
    */
 
+  document.getElementById("defer-input").addEventListener("click", function(event) {
+
+    const format = document.getElementById("format-selection").value;
+
+    if(format === "MODAL") {
+      return $("#input-modal").modal("show");
+    }
+
+    document.getElementById("customFile").click()
+
+  });
+
+  document.getElementById("add-site-input").addEventListener("click", addSiteWindow);
+
   // Simple button listeners
   document.getElementById("customFile").addEventListener("change", fileSelectionHandler);
   document.getElementById("specimen-select").addEventListener("change", siteSelectionHandler);
@@ -176,6 +190,116 @@ function registerEventHandlers() {
 
   // The keyboard handler
   document.addEventListener("keydown", keyboardHandler);
+
+}
+
+function parseParameters(parameters) {
+
+  if(parameters.length < 2) {
+    throw("Input at least two parameters (dec, inc)");
+  }
+
+  switch(parameters.length) {
+    case 2:
+      return {
+        "dec": Number(parameters.pop()),
+        "inc": Number(parameters.pop())
+      }
+    case 3:
+      return {
+        "dec": Number(parameters.pop()),
+        "inc": Number(parameters.pop()),
+        "name": parameters.pop()
+      }
+    case 4:
+      return {
+        "dec": Number(parameters.pop()),
+        "inc": Number(parameters.pop()),
+        "strike": Number(parameters.pop()),
+        "dip": Number(parameters.pop())
+      }
+    case 5:
+      return { 
+        "dec": Number(parameters.pop()),
+        "inc": Number(parameters.pop()),
+        "strike": Number(parameters.pop()),
+        "dip": Number(parameters.pop()),
+        "name": parameters.pop()
+      }
+  }
+
+}
+
+function addSiteWindow() {
+
+  try {
+    addSiteWindowWrapper();
+  } catch(exception) {
+    notify("danger", exception);
+  }
+
+}
+
+function addSiteWindowWrapper() {
+
+  /*
+   * Function addSiteWindowWrapper
+   * Wraps site adding function in try / catch block
+   */
+
+  const textAreaContent = document.getElementById("site-input-area").value;
+
+  let lines = textAreaContent.split(LINE_REGEXP);
+  let collectionName = document.getElementById("site-input-name").value;
+
+  if(collectionName === "") {
+    return notify("danger", "Collection name cannot be empty.");
+  }
+
+  let latitude = Number(document.getElementById("site-input-latitude").value);
+  let longitude = Number(document.getElementById("site-input-latitude").value);
+
+  let components = lines.filter(Boolean).map(function(line, i) {
+
+    let parameters = parseParameters(line.split(/[,\t]+/));
+
+    let thing = {
+      "age": 0,
+      "ageMin": 0,
+      "ageMax": 0,
+      "beddingDip": parameters.dip || 0,
+      "beddingStrike": parameters.strike || 90,
+      "coreDip": 0,
+      "coreAzimuth": 0,
+      "coordinates": new Direction(parameters.dec, parameters.inc).toCartesian(),
+      "latitude": latitude,
+      "longitude": longitude,
+      "level": 0,
+      "name": parameters.name || (collectionName + "-" + i),
+      "rejected": false
+    }
+
+    return new Component(thing, thing.coordinates);
+
+  });
+
+  collections.push({
+    "color": null,
+    "name": collectionName,
+    "components": components,
+    "created": new Date().toISOString(),
+    "index": collections.length
+  });
+
+  $("#input-modal").modal("hide");
+
+  enable();
+  saveLocalStorage();
+
+  // Select the newly added collection
+  $(".selectpicker").selectpicker("val", collections.length - 1 + "");
+
+  notify("success", "Succesfully added collection <b>" + collectionName + "</b>.");
 
 }
 

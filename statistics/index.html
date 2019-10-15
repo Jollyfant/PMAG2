@@ -114,8 +114,10 @@
 
           <div class="input-group mb-6">
 
+            <button class="btn btn-secondary" id="defer-input">Select</button>
+
             <!-- File input -->
-            <div class="custom-file">
+            <div class="custom-file" style="display: none;">
               <input type="file" class="custom-file-input" id="customFile" multiple>
               <label class="custom-file-label" for="customFile"><i class="fas fa-search"></i> Select files </label>
             </div>
@@ -134,6 +136,7 @@
                 <option value="PMAG">Paleomagnetism.org (1.0.0 .pmag) </option>
               </optgroup>
               <optgroup label="Text Formats">
+                <option value="MODAL">Input Window</option>
                 <option value="CSV">Default Format (.csv)</option>
               </optgroup>
             </select>
@@ -489,6 +492,39 @@
     <footer id="footer-container" class="container text-muted"></footer>
 
     <br>
+
+    <!-- Modal for input -->
+    <div class="modal fade" id="input-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel3" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Add New Collection</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+
+          <div class="modal-body">
+            <p> Site name <input id="site-input-name">
+            <p> Site Latitude <input id="site-input-latitude">
+            <p> Site Longitude <input id="site-input-longitude">
+
+            <p><small>Metadata for this collection is applied to all components.</small>
+            <hr>
+            <div class="form-group">
+              <label for="exampleFormControlTextarea1">Components</label>
+              <textarea id="site-input-area" class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+            </div>
+            <small>Fill in declination, inclination, bedding strike, bedding dip, and component name.</small>
+
+            <p><button class="btn btn-primary" id="add-site-input">Add Collection</button>
+          </div>
+
+        </div>
+      </div>
+      </div>
+    </div>
+
 
     <!-- Modal for generic things -->
     <div class="modal fade" id="map-modal-2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
