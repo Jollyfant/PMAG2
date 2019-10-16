@@ -832,7 +832,7 @@ function addLithologyOptions() {
    * Loads lithologies from MagIC controlled vocabularies
    */
 
-  HTTPRequest("./db/lithologies.json", "GET", function(lithologies) {
+  HTTPRequest("../db/lithologies.json", "GET", function(lithologies) {
     addOptions(lithologies, "specimen-lithology-input");
   });
 
@@ -1477,7 +1477,7 @@ function addMap() {
   map.on("click", mapClickHandler);
 
   // Listeners 
-  $("#map-modal").on("shown.bs.modal", modalOpenHandler);
+  $("#input-modal").on("shown.bs.modal", modalOpenHandler);
 
 }
 

@@ -1,17 +1,5 @@
 "use strict";
 
-const HIGHCHARTS_BLUE = "#7CB5EC";
-const HIGHCHARTS_BLACK = "#434348";
-const HIGHCHARTS_GREEN = "#90ED7D";
-const HIGHCHARTS_ORANGE = "#F7A35C";
-const HIGHCHARTS_PURPLE = "#8085E9";
-const HIGHCHARTS_CYAN = "#91E8E1";
-const HIGHCHARTS_PINK = "#F15C80";
-const HIGHCHARTS_YELLOW = "#E4D354";
-const HIGHCHARTS_TURQUOISE = "#2B908F";
-const HIGHCHARTS_RED = "#F45B5B";
-const HIGHCHARTS_WHITE = "#FFFFFF";
-
 Highcharts.seriesTypes.line.prototype.requireSorting = false;
 
 function getProjectionDescription() {

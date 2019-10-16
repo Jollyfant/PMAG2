@@ -114,13 +114,13 @@
 
           <div class="input-group mb-6">
 
-            <button class="btn btn-secondary" id="defer-input">Select</button>
+            <div class="custom-file"> 
+              <label class="custom-file-label" for="customFile"><i class="fas fa-search"></i> Select files </label>
+              <input class="custom-file-input" id="defer-input">
+            </div>
 
             <!-- File input -->
-            <div class="custom-file" style="display: none;">
-              <input type="file" class="custom-file-input" id="customFile" multiple>
-              <label class="custom-file-label" for="customFile"><i class="fas fa-search"></i> Select files </label>
-            </div>
+            <input style="display: none;" type="file" class="custom-file-input" id="customFile" multiple>
 
             &nbsp;
 
@@ -505,19 +505,69 @@
           </div>
 
           <div class="modal-body">
-            <p> Site name <input id="site-input-name">
-            <p> Site Latitude <input id="site-input-latitude">
-            <p> Site Longitude <input id="site-input-longitude">
 
-            <p><small>Metadata for this collection is applied to all components.</small>
+            <div class="input-group input-group-sm">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="">Collection Name</span>
+              </div>
+              <input id="site-input-name" class="form-control">
+            </div>
+
+            <p>
+
+            <div id="map" class="map"></div>
+
+            <p>
+
+            <!-- Latitude, Longitude container -->
+            <div class="form-group">
+              <div class="row">
+                <div class="col">
+                  <div class="input-group input-group-sm">
+                  <input id="site-input-latitude" type="text" class="form-control input-sm" placeholder="Latitude">
+                    <div class="input-group-append">
+                      <div class="input-group-text">°N</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="input-group input-group-sm">
+                    <input id="site-input-longitude" type="text" class="form-control input-sm" placeholder="Longitude">
+                    <div class="input-group-append">
+                      <div class="input-group-text">°E</div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+
+            <p>
+
+            <div class="input-group input-group-sm">
+              <select style="width: 25%" id="specimen-age-select" class="form-control custom-select text-center"></select>
+              <div class="input-group-prepend ">
+                <span class="input-group-text" id="">Age</span>
+              </div>
+              <input id="age-input"class="form-control">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="">Min</span>
+              </div>
+              <input id="age-min-input"class="form-control">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="">Max</span>
+              </div>
+              <input id="age-max-input"class="form-control">
+            </div>
+          </div>
+
+            <p><small><b>Note:</b> metadata is applied to all components in collection. To assign more metadata to each component choose an alternative input method.</small>
             <hr>
             <div class="form-group">
               <label for="exampleFormControlTextarea1">Components</label>
               <textarea id="site-input-area" class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
             </div>
-            <small>Fill in declination, inclination, bedding strike, bedding dip, and component name.</small>
-
-            <p><button class="btn btn-primary" id="add-site-input">Add Collection</button>
+            <small>Fill in: declination, inclination, ((bedding strike, dip), and name).</small>
+            <hr>
+            <p><button class="btn btn-sm btn-primary" id="add-site-input">Add Collection</button>
           </div>
 
         </div>
@@ -590,6 +640,9 @@
   <script src="../lib/jquery-3.3.1/jquery-3.3.1.slim.min.js"></script>
   <script src="../lib/bootstrap-4.3.1/dist/js/bootstrap.bundle.min.js"></script>
 
+  <!-- Leaflet -->
+  <script src="../lib/leaflet-1.4.0/leaflet.js"></script>
+
   <!-- Highcharts -->
   <script src="../lib/highcharts-7.0.3/code/highcharts.js"></script>
   <script src="../lib/highcharts-7.0.3/code/modules/highcharts-heatmap.js"></script>
@@ -603,6 +656,7 @@
   <!-- Shared utilities -->
   <script src="../js/utils.js"></script>
   <script src="../js/highcharts-patch.js"></script>
+  <script src="../js/ages.js"></script>
 
   <!-- Shared classes -->
   <script src="../js/classes/Exception.js"></script>

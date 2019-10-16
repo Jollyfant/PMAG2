@@ -9,7 +9,7 @@ function addAges() {
 
   const INDENTATION_CHARACTER = "\xA0";
 
-  HTTPRequest("db/ages.json", "GET", function(ages) {
+  HTTPRequest("../db/ages.json", "GET", function(ages) {
 
     // Save reference
     TIME_SCALE_AGES = ages;

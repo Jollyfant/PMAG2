@@ -2252,6 +2252,7 @@ function saveCombinedCollection() {
     collections.push({ 
       "name": name,
       "dirty": true,
+      "type": "collection",
       "reference": null,
       "components": components,
       "created": new Date().toISOString()

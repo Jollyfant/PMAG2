@@ -2,6 +2,60 @@ var collections = new Array();
 var COORDINATES_COUNTER = 0;
 var COORDINATES = "specimen";
 var A95_CONFIDENCE = true;
+var map;
+
+function addMap() {
+
+  /*
+   * Function addMap
+   * Adds map to the application
+   */
+
+  const MAP_CONTAINER = "map";
+  const TILE_LAYER = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+  const VIEWPORT = new L.latLng(35, 0);
+
+  // Set map options (bounds)
+  var mapOptions = {
+    "minZoom": 1,
+    "maxBounds": new L.latLngBounds(new L.latLng(-90, -180), new L.latLng(90, 180)),
+    "maxBoundsViscosity": 0.5,
+    "attributionControl": true
+  }
+
+  // Create the map and tile layer
+  map = L.map(MAP_CONTAINER, mapOptions).setView(VIEWPORT, 1);
+  L.tileLayer(TILE_LAYER).addTo(map);
+
+  // Attach a click handler
+  map.on("click", mapClickHandler);
+
+  // Listeners 
+  $("#input-modal").on("shown.bs.modal", modalOpenHandler);
+
+}
+
+function mapClickHandler(event) {
+
+  /*
+   * Function mapClickHandler
+   * Handles mouse click event on the map
+   */
+ 
+  const LOCATION_PRECISION = 5;
+ 
+  // Extract the latitude, longitude
+  document.getElementById("site-input-longitude").value = event.latlng.lng.toPrecision(LOCATION_PRECISION);
+  document.getElementById("site-input-latitude").value = event.latlng.lat.toPrecision(LOCATION_PRECISION);
+
+}
+
+function modalOpenHandler() {
+
+  // Resize map to modal
+  map.invalidateSize();
+
+}
 
 function __init__() {
 
@@ -165,12 +219,20 @@ function registerEventHandlers() {
    * Registers DOM event listeners and handler
    */
 
+  document.getElementById("specimen-age-select").addEventListener("change", handleAgeSelection);
+
   document.getElementById("defer-input").addEventListener("click", function(event) {
 
     const format = document.getElementById("format-selection").value;
 
     if(format === "MODAL") {
+
+      if(map === undefined) {
+        addMap();
+      }
+
       return $("#input-modal").modal("show");
+
     }
 
     document.getElementById("customFile").click()
@@ -235,7 +297,7 @@ function addSiteWindow() {
   try {
     addSiteWindowWrapper();
   } catch(exception) {
-    notify("danger", exception);
+    return notify("danger", exception);
   }
 
 }
@@ -244,29 +306,40 @@ function addSiteWindowWrapper() {
 
   /*
    * Function addSiteWindowWrapper
-   * Wraps site adding function in try / catch block
+   * Adds a new collection from the input window
    */
 
-  const textAreaContent = document.getElementById("site-input-area").value;
-
-  let lines = textAreaContent.split(LINE_REGEXP);
+  // Get and check the collection name
   let collectionName = document.getElementById("site-input-name").value;
 
   if(collectionName === "") {
     return notify("danger", "Collection name cannot be empty.");
   }
 
+  // Get the collection position
   let latitude = Number(document.getElementById("site-input-latitude").value);
-  let longitude = Number(document.getElementById("site-input-latitude").value);
+  let longitude = Number(document.getElementById("site-input-longitude").value);
 
+  // Get the collection age
+  let age = Number(document.getElementById("age-input").value);
+  let ageMin = Number(document.getElementById("age-min-input").value);
+  let ageMax = Number(document.getElementById("age-max-input").value);
+
+  const textAreaContent = document.getElementById("site-input-area").value;
+
+  let lines = textAreaContent.split(LINE_REGEXP);
   let components = lines.filter(Boolean).map(function(line, i) {
 
     let parameters = parseParameters(line.split(/[,\t]+/));
 
-    let thing = {
-      "age": 0,
-      "ageMin": 0,
-      "ageMax": 0,
+    if(parameters.dec < 0 || parameters.dec > 360 || parameters.inc < -90 || parameters.inc > 90) {
+      throw("Invalid component.");
+    }
+
+    let thing = new Object({
+      "age": age,
+      "ageMin": ageMin,
+      "ageMax": ageMax,
       "beddingDip": parameters.dip || 0,
       "beddingStrike": parameters.strike || 90,
       "coreDip": 0,
@@ -274,17 +347,24 @@ function addSiteWindowWrapper() {
       "coordinates": new Direction(parameters.dec, parameters.inc).toCartesian(),
       "latitude": latitude,
       "longitude": longitude,
-      "level": 0,
+      "level": null,
       "name": parameters.name || (collectionName + "-" + i),
       "rejected": false
-    }
+    });
 
     return new Component(thing, thing.coordinates);
 
   });
 
+  // Confirm the number of components exceeds 3
+  if(components.length < 3) {
+    throw("At least three components are required.");
+  }
+
+  // Add the collection
   collections.push({
     "color": null,
+    "type": "collection",
     "name": collectionName,
     "components": components,
     "created": new Date().toISOString(),
