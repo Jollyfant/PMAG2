@@ -259,18 +259,12 @@ function redrawInterpretationGraph() {
   var dataSeriesFitted = new Array();
   var dataSeriesPlane2 = new Array();
 
-  try {
-    var samples = getAllComponents();
-  } catch(exception) {
-    return notify("danger", exception);
-  }
-
   var meanVector = new Coordinates(0, 0, 0);
   var rVector = new Coordinates(0, 0, 0);
   var nCircles = 0;
   var nDirections = 0;
 
-  samples.forEach(function(sample, i) {
+  specimens.forEach(function(sample, i) {
 
     sample.interpretations.forEach(function(interpretation, j) {
 
@@ -1878,50 +1872,6 @@ function getPublicationFromPID() {
 
 }
 
-function getAllComponents() {
-
-  /*
-   * Function getAllComponents
-   * Returns all components (fitted if requested)
-   */
-
-  return specimens;
-
-}
-
-function downloadInterpretations() {
-
-  /*
-   * Function downloadInterpretations
-   * Downloads all interpretations
-   */
-
-  const MIME_TYPE = "data:application/json;charset=utf-8";
-  const FILENAME = "specimens.dir";
-
-  // No samples are loaded to the application
-  if(specimens.length === 0) {
-    return notify("danger", new Exception("No interpretations available to export."));
-  }
-
-  try {
-    var result = getAllComponents();
-  } catch(exception) {
-    return notify("danger", exception);
-  }
-
-  // Create the payload with some additional metadata
-  var payload = encodeURIComponent(JSON.stringify({
-    "hash": forge_sha256(JSON.stringify(result)),
-    "specimens": result,
-    "version": __VERSION__,
-    "created": new Date().toISOString()
-  }));
-
-  downloadURIComponent(FILENAME, MIME_TYPE + "," + payload);
-
-}
-
 function downloadInterpretationsCSV() {
 
   /*
@@ -1947,14 +1897,8 @@ function downloadInterpretationsCSV() {
 
   var rows = new Array(CSV_HEADER.join(","));
 
-  try {
-    var samples = getAllComponents();
-  } catch(exception) {
-    return notify("danger", exception);
-  }
-
   // Export the interpreted components as CSV
-  samples.forEach(function(specimen) {
+  specimens.forEach(function(specimen) {
 
     specimen.interpretations.forEach(function(interpretation) {
 
@@ -2405,26 +2349,23 @@ function setActiveGroup() {
 function exportApplicationSave() {
 
   /*
-   * Function downloadAsJSON
+   * Function exportApplicationSave
    * Generates JSON representation of station table
    */
-
-  const MIME_TYPE = "data:application/json;charset=utf-8";
-  const FILENAME = "specimens.dir";
 
   if(specimens.length === 0) {
     return notify("danger", new Exception("No specimens to export"));
   }
 
   // Create the payload with some additional metadata
-  var payload = encodeURIComponent(JSON.stringify({
+  var payload = {
     "hash": forge_sha256(JSON.stringify(specimens)),
     "specimens": specimens,
     "version": __VERSION__,
     "created": new Date().toISOString()
-  }));
+  }
 
-  downloadURIComponent(FILENAME, MIME_TYPE + "," + payload);
+  downloadAsJSON("specimens.col", payload);
 
 }
 

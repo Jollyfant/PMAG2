@@ -1042,7 +1042,14 @@ function exportSelectedCollections() {
    * Exports selected collections by the user
    */
 
-  downloadAsJSON("export.pmag", getSelectedCollections());
+  var payload = {
+    "hash": forge_sha256(JSON.stringify(getSelectedCollections())),
+    "collections": getSelectedCollections(),
+    "version": __VERSION__,
+    "created": new Date().toISOString()
+  }
+
+  downloadAsJSON("export.pub", payload);
   
 }
 
@@ -1292,24 +1299,6 @@ function addData(file) {
 
 }
 
-function exportPMAG() {
-
-  /*
-   * Function exportPMAG
-   * Exports a list of collections as a .pmag database file
-   */
-
-  var payload = {
-    "collections": collections,
-    "version": __VERSION__,
-    "created": new Date().toISOString()
-  }
-
-  // Encode the JSON and download to file
-  downloadAsJSON("database.pmag", payload);
-
-}
-
 function importPMAG2(json) {
 
   /*
@@ -1317,7 +1306,7 @@ function importPMAG2(json) {
    * Imports paleomagnetism database from the PMAG 2.0.0 format
    */
 
-  JSON.parse(json).forEach(function(collection) {
+  JSON.parse(json).collections.forEach(function(collection) {
 
     // Convert all literal coordinates to a class instance
     collection.components = collection.components.map(toComponent);
