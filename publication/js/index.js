@@ -51,13 +51,13 @@ function addMap(publication) {
   // Add collections to map
   publication.collections.forEach(function(collection, i) {
 
-    var averageLocation = averageGeolocation(collection.data.specimens.map(function(x) {
-      return {"lat": x.latitude, "lng": x.longitude}
+    var averageLocation = meanDirection(collection.data.specimens.map(function(x) {
+      return new Direction(x.latitude, x.longitude).toCartesian();
     }));
 
     var markerInformation = createTooltip(publication, collection, i);
 
-    markerGroup.push(new L.Marker(new L.LatLng(averageLocation.lat, averageLocation.lng)).addTo(map).bindPopup(markerInformation));
+    markerGroup.push(new L.Marker(new L.LatLng(averageLocation.dec, averageLocation.inc)).addTo(map).bindPopup(markerInformation));
 
   });
 
