@@ -34,6 +34,7 @@ const LINE_DELIMITER = "\n";
 const LINE_REGEXP = new RegExp("\r?\n");
 
 document.title = "Paleomagnetism.org " + __VERSION__;
+document.getElementById("enable-sound").checked = false;
 
 window.addEventListener("online",  notify.bind(null, "success", "Your connection to the internet has been recovered."));
 window.addEventListener("offline", notify.bind(null, "danger", "Your connection to the internet was dropped."));
