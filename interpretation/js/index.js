@@ -244,6 +244,43 @@ function booleanToCheck(bool) {
 
 }
 
+function switchGroup(name) {
+
+  if(GROUP === name) {
+    return;
+  }
+
+  GROUP = name;
+  notify("success", "Succesfully changed group to <b>" + GROUP + "</b>.");
+
+  // Redraw the intepretation graph (hiding specimens not in group)
+  redrawInterpretationGraph();
+
+}
+
+function showIndividualGroups() {
+
+  /*
+   * Function showIndividualGroups
+   * Shows individual clickable groups for switching @ interpreted components
+   */
+
+  var groups = new Array();
+
+  specimens.forEach(function(sample, i) {
+    sample.interpretations.forEach(function(interpretation, j) {
+      groups.push(interpretation.group);
+    });
+  });
+
+  groups = groups.filter((x, i, a) => a.indexOf(x) == i).sort();
+
+  document.getElementById("group-show").innerHTML = groups.map(function(name) {
+    return "<span style='cursor: pointer;' onclick='switchGroup(" + "\"" + name + "\""  + ")' class='badge badge-" + (name === GROUP ? "secondary" : "light") + "'>" + name + "</span>";
+  }).join(" ");
+
+}
+
 function redrawInterpretationGraph() {
 
   /*
@@ -2334,15 +2371,10 @@ function setActiveGroup() {
 
   // If empty we will reset the group to default
   if(group === "") {
-    GROUP = "DEFAULT";
+    return switchGroup("DEFAULT");
   } else {
-    GROUP = group;
+    return switchGroup(group);
   }
-
-  notify("success", "Succesfully changed group to <b>" + GROUP + "</b>.");
-
-  // Redraw the intepretation graph (hiding specimens not in group)
-  redrawInterpretationGraph();
 
 }
 
