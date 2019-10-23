@@ -56,6 +56,180 @@ function getRotationMatrix(lambda, phi) {
 
 }
 
+function parseParameters(parameters) {
+
+  /*
+   * Function parseParameters
+   * Parses input parameters from the site input window
+   */
+
+  // Must put at least two parameters
+  if(parameters.length < 2) {
+    throw("Input at least two parameters (dec, inc)");
+  }
+
+  // Extract information from each line
+  switch(parameters.length) {
+    case 2:
+      return {
+        "dec": Number(parameters.pop()),
+        "inc": Number(parameters.pop())
+      }
+    case 3:
+      return {
+        "dec": Number(parameters.pop()),
+        "inc": Number(parameters.pop()),
+        "name": parameters.pop()
+      }
+    case 4:
+      return {
+        "dec": Number(parameters.pop()),
+        "inc": Number(parameters.pop()),
+        "strike": Number(parameters.pop()),
+        "dip": Number(parameters.pop())
+      }
+    case 5:
+      return {
+        "dec": Number(parameters.pop()),
+        "inc": Number(parameters.pop()),
+        "strike": Number(parameters.pop()),
+        "dip": Number(parameters.pop()),
+        "name": parameters.pop()
+      }
+  }
+
+}
+
+function addSiteWindow() {
+
+  try {
+    addSiteWindowWrapper();
+  } catch(exception) {
+    return notify("danger", exception);
+  }
+
+}
+
+function addSiteWindowWrapper() {
+
+  /*
+   * Function addSiteWindowWrapper
+   * Adds a new collection from the input window
+   */
+
+  // Get and check the collection name
+  let collectionName = document.getElementById("site-input-name").value;
+
+  if(collectionName === "") {
+    return notify("danger", "Collection name cannot be empty.");
+  }
+
+  // Get the collection position
+  let latitude = Number(document.getElementById("site-input-latitude").value);
+  let longitude = Number(document.getElementById("site-input-longitude").value);
+
+  // Get the collection age
+  let age = Number(document.getElementById("age-input").value);
+  let ageMin = Number(document.getElementById("age-min-input").value);
+  let ageMax = Number(document.getElementById("age-max-input").value);
+
+  const textAreaContent = document.getElementById("site-input-area").value;
+
+  let lines = textAreaContent.split(LINE_REGEXP);
+
+  let components = lines.filter(Boolean).map(function(line, i) {
+
+    let parameters = parseParameters(line.split(/[,\t]+/));
+
+    if(parameters.dec < 0 || parameters.dec > 360 || parameters.inc < -90 || parameters.inc > 90) {
+      throw(new Exception("Invalid component added on line " + i + "."));
+    }
+
+    let thing = new Object({
+      "age": age,
+      "ageMin": ageMin,
+      "ageMax": ageMax,
+      "beddingDip": parameters.dip || 0,
+      "beddingStrike": parameters.strike || 90,
+      "coreDip": 0,
+      "coreAzimuth": 0,
+      "coordinates": new Direction(parameters.dec, parameters.inc).toCartesian(),
+      "latitude": latitude,
+      "longitude": longitude,
+      "level": null,
+      "name": parameters.name || (collectionName + "-" + i),
+      "rejected": false
+    });
+
+    return new Component(thing, thing.coordinates);
+
+  });
+
+  // Confirm the number of components exceeds 3
+  if(components.length < 3) {
+    throw("At least three components are required.");
+  }
+
+  // Add the collection
+  collections.push({
+    "color": null,
+    "type": "collection",
+    "name": collectionName,
+    "components": components,
+    "created": new Date().toISOString(),
+    "index": collections.length
+  });
+
+  $("#input-modal").modal("hide");
+
+  enable();
+  saveLocalStorage();
+
+  // Select the newly added collection
+  $(".selectpicker").selectpicker("val", collections.length - 1 + "");
+
+  notify("success", "Succesfully added collection <b>" + collectionName + "</b>.");
+
+}
+
+function saveLocalStorage(force) {
+
+  /*
+   * Function saveLocalStorage
+   * Saves sample object to local storage
+   */
+
+  if(!force && (!document.getElementById("auto-save").checked || window.location.search)) {
+    return;
+  }
+
+  // Attempt to set local storage
+  try {
+    localStorage.setItem("collections", JSON.stringify(collections));
+  } catch(exception) {
+    notify("danger", "Could not write to local storage. Export your data manually to save it.");
+  }
+
+}
+
+function inputFileWrapper(event) {
+
+  /*
+   * Function inputFileWrapper
+   * Defers input and loads either from file or input window
+   */
+
+  const format = document.getElementById("format-selection").value;
+
+  // Input requested from file: open file selection window
+  if(format !== "MODAL") {
+    return document.getElementById("customFile").click();
+  }
+
+  return $("#input-modal").modal("show");
+
+}
+
 function determineLocationType(latitudes, longitudes, levels) {
 
   /*
@@ -1146,18 +1320,10 @@ function importCSV(file) {
     if(latitude === "") {
       latitude = null;
     } 
+
     if(longitude === "") {
       longitude = null;
     }
-    // Longitude within [-180, 180]
-    //if(longitude > 180) {
-    //  longitude = longitude - 360;
-    //}
-    //
-    //// Latitude within [-90, 90]
-    //if(latitude > 90) {
-    //  latitude = latitude - 180;
-    //}
 
     // Confirm the reference frame
     if(coordinates !== "specimen" && coordinates !== "geographic" && coordinates !== "tectonic") {

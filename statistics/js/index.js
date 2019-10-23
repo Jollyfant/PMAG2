@@ -94,26 +94,6 @@ function __init__() {
 
 }
 
-function saveLocalStorage(force) {
-
-  /*
-   * Function saveLocalStorage
-   * Saves sample object to local storage
-   */
-
-  if(!force && (!document.getElementById("auto-save").checked || window.location.search)) {
-    return;
-  }
-
-  // Attempt to set local storage
-  try {
-    localStorage.setItem("collections", JSON.stringify(collections));
-  } catch(exception) {
-    notify("danger", "Could not write to local storage. Export your data manually to save it.");
-  }
-
-}
-
 function __unlock__() {
 
   /*
@@ -221,24 +201,7 @@ function registerEventHandlers() {
 
   document.getElementById("specimen-age-select").addEventListener("change", handleAgeSelection);
 
-  document.getElementById("defer-input").addEventListener("click", function(event) {
-
-    const format = document.getElementById("format-selection").value;
-
-    if(format === "MODAL") {
-
-      if(map === undefined) {
-        addMap();
-      }
-
-      return $("#input-modal").modal("show");
-
-    }
-
-    document.getElementById("customFile").click()
-
-  });
-
+  document.getElementById("defer-input").addEventListener("click", inputFileWrapper); 
   document.getElementById("add-site-input").addEventListener("click", addSiteWindow);
 
   // Simple button listeners
@@ -252,134 +215,6 @@ function registerEventHandlers() {
 
   // The keyboard handler
   document.addEventListener("keydown", keyboardHandler);
-
-}
-
-function parseParameters(parameters) {
-
-  if(parameters.length < 2) {
-    throw("Input at least two parameters (dec, inc)");
-  }
-
-  switch(parameters.length) {
-    case 2:
-      return {
-        "dec": Number(parameters.pop()),
-        "inc": Number(parameters.pop())
-      }
-    case 3:
-      return {
-        "dec": Number(parameters.pop()),
-        "inc": Number(parameters.pop()),
-        "name": parameters.pop()
-      }
-    case 4:
-      return {
-        "dec": Number(parameters.pop()),
-        "inc": Number(parameters.pop()),
-        "strike": Number(parameters.pop()),
-        "dip": Number(parameters.pop())
-      }
-    case 5:
-      return { 
-        "dec": Number(parameters.pop()),
-        "inc": Number(parameters.pop()),
-        "strike": Number(parameters.pop()),
-        "dip": Number(parameters.pop()),
-        "name": parameters.pop()
-      }
-  }
-
-}
-
-function addSiteWindow() {
-
-  try {
-    addSiteWindowWrapper();
-  } catch(exception) {
-    return notify("danger", exception);
-  }
-
-}
-
-function addSiteWindowWrapper() {
-
-  /*
-   * Function addSiteWindowWrapper
-   * Adds a new collection from the input window
-   */
-
-  // Get and check the collection name
-  let collectionName = document.getElementById("site-input-name").value;
-
-  if(collectionName === "") {
-    return notify("danger", "Collection name cannot be empty.");
-  }
-
-  // Get the collection position
-  let latitude = Number(document.getElementById("site-input-latitude").value);
-  let longitude = Number(document.getElementById("site-input-longitude").value);
-
-  // Get the collection age
-  let age = Number(document.getElementById("age-input").value);
-  let ageMin = Number(document.getElementById("age-min-input").value);
-  let ageMax = Number(document.getElementById("age-max-input").value);
-
-  const textAreaContent = document.getElementById("site-input-area").value;
-
-  let lines = textAreaContent.split(LINE_REGEXP);
-  let components = lines.filter(Boolean).map(function(line, i) {
-
-    let parameters = parseParameters(line.split(/[,\t]+/));
-
-    if(parameters.dec < 0 || parameters.dec > 360 || parameters.inc < -90 || parameters.inc > 90) {
-      throw("Invalid component.");
-    }
-
-    let thing = new Object({
-      "age": age,
-      "ageMin": ageMin,
-      "ageMax": ageMax,
-      "beddingDip": parameters.dip || 0,
-      "beddingStrike": parameters.strike || 90,
-      "coreDip": 0,
-      "coreAzimuth": 0,
-      "coordinates": new Direction(parameters.dec, parameters.inc).toCartesian(),
-      "latitude": latitude,
-      "longitude": longitude,
-      "level": null,
-      "name": parameters.name || (collectionName + "-" + i),
-      "rejected": false
-    });
-
-    return new Component(thing, thing.coordinates);
-
-  });
-
-  // Confirm the number of components exceeds 3
-  if(components.length < 3) {
-    throw("At least three components are required.");
-  }
-
-  // Add the collection
-  collections.push({
-    "color": null,
-    "type": "collection",
-    "name": collectionName,
-    "components": components,
-    "created": new Date().toISOString(),
-    "index": collections.length
-  });
-
-  $("#input-modal").modal("hide");
-
-  enable();
-  saveLocalStorage();
-
-  // Select the newly added collection
-  $(".selectpicker").selectpicker("val", collections.length - 1 + "");
-
-  notify("success", "Succesfully added collection <b>" + collectionName + "</b>.");
 
 }
 
@@ -468,4 +303,3 @@ function fileSelectionHandler(event) {
 
 }
 
-__init__();
