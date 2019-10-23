@@ -1826,13 +1826,13 @@ function generateHemisphereTooltip() {
 
   if(this.series.name === "ChRM Directions" || this.series.name === "Geomagnetic Directions" || this.series.name === "Unflattened Directions") {
     return [
-      "<b>Sample: </b>" + this.point.name,
+      "<b>Sample: </b>" + this.point.component.name,
       "<b>Declination: </b>" + this.x.toFixed(PRECISION),
       "<b>Inclination </b>" + this.point.inc.toFixed(PRECISION)
     ].join("<br>");
   } else if(this.series.name === "VGPs") {
     return [
-      "<b>Sample: </b>" + this.point.name,
+      "<b>Sample: </b>" + this.point.component.name,
       "<b>Longitude: </b>" + this.x.toFixed(PRECISION),
       "<br><b>Latitude: </b>" + this.point.inc.toFixed(PRECISION)
     ].join("<br>");
@@ -1849,10 +1849,6 @@ function generateHemisphereTooltip() {
       "<br><b>Latitude: </b>" + this.point.inc.toFixed(PRECISION)
     ].join("<br>");
   }
-
-}
-
-function getMeanStatistics() {
 
 }
 
