@@ -303,3 +303,4 @@ function fileSelectionHandler(event) {
 
 }
 
+__init__();
