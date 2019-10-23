@@ -152,7 +152,7 @@ function updateInterpretationTable(specimen) {
 
   const COMMENT_LENGTH = 15;
   const ERROR_NO_COMPONENTS = "<div class='text-muted text-center'>No Components Available</div>";
-  const DEFAULT_COMMENT = "Click to add";
+  const ChRM_COMMENT = "Click to add";
 
   var specimen = getSelectedSpecimen();
 
@@ -190,7 +190,7 @@ function updateInterpretationTable(specimen) {
 
     // Handle comments on interpretations
     if(interpretation.comment === null) {
-      comment = DEFAULT_COMMENT;
+      comment = ChRM_COMMENT;
     } else {
       comment = interpretation.comment;
     }
@@ -217,7 +217,7 @@ function updateInterpretationTable(specimen) {
       "    <td>" + booleanToCheck(interpretation.anchored) + "</td>",
       "    <td>" + booleanToCheck(interpretation.fitted) + "</td>",
       "    <td>" + interpretation.steps.length + "</td>",
-      "    <td style='cursor: pointer;' class='text-muted'>" + interpretation.group + "</td>",
+      "    <td style='cursor: pointer;' class='text-muted'><span style='pointer-events: none;' class='badge badge-light'>" + interpretation.group + "</span></td>",
       "    <td style='cursor: pointer;' title='" + comment + "'>" + ((comment.length < COMMENT_LENGTH) ? comment : comment.slice(0, COMMENT_LENGTH) + "…") + "</td>",
       "    <td>" + interpretation.created + "</td>",
       "    <td><button onclick='deleteAllInterpretations(" + i + ")' class='btn btn-sm btn-link'><i class='far fa-trash-alt'></i></button></td>",
@@ -250,11 +250,46 @@ function switchGroup(name) {
     return;
   }
 
+  // Update the global variable
   GROUP = name;
   notify("success", "Succesfully changed group to <b>" + GROUP + "</b>.");
 
   // Redraw the intepretation graph (hiding specimens not in group)
   redrawInterpretationGraph();
+
+}
+
+function mergeGroup(name) {
+
+  /*
+   * Function mergeGroup
+   * Merges the components in one group to another group
+   */
+
+  var group = prompt("Enter the name of the group to merge to. All components in this group will be assigned to the new group.");
+
+  if(group === null) {
+    return;
+  }
+
+  // If empty we will reset the group to default
+  if(group === "") {
+    group = "ChRM";
+  }
+
+  specimens.forEach(function(sample, i) {
+    sample.interpretations.forEach(function(interpretation, j) {
+
+      if(interpretation.group !== name) {
+        return;
+      }
+
+      interpretation.group = group;
+
+    });
+  });
+
+  switchGroup(group);
 
 }
 
@@ -265,18 +300,24 @@ function showIndividualGroups() {
    * Shows individual clickable groups for switching @ interpreted components
    */
 
-  var groups = new Array();
+  var groups = new Object();
 
   specimens.forEach(function(sample, i) {
     sample.interpretations.forEach(function(interpretation, j) {
-      groups.push(interpretation.group);
+
+      if(!groups.hasOwnProperty(interpretation.group)) {
+        groups[interpretation.group] = 0;
+      }
+
+      groups[interpretation.group]++;
+
     });
   });
 
-  groups = groups.filter((x, i, a) => a.indexOf(x) == i).sort();
+  let groupNames = Object.keys(groups).sort();
 
-  document.getElementById("group-show").innerHTML = groups.map(function(name) {
-    return "<span style='cursor: pointer;' onclick='switchGroup(" + "\"" + name + "\""  + ")' class='badge badge-" + (name === GROUP ? "secondary" : "light") + "'>" + name + "</span>";
+  document.getElementById("group-show").innerHTML = groupNames.map(function(name) {
+    return "<span title='Double click to merge with another group' style='cursor: pointer;' ondblclick='mergeGroup(" + "\"" + name + "\""  + ")' onclick='switchGroup(" + "\"" + name + "\""  + ")' class='badge badge-" + (name === GROUP ? "secondary" : "light") + "'>" + name + " (" + groups[name] + ")</span>";
   }).join(" ");
 
 }
@@ -300,6 +341,9 @@ function redrawInterpretationGraph() {
   var rVector = new Coordinates(0, 0, 0);
   var nCircles = 0;
   var nDirections = 0;
+
+  // Show the available groups
+  showIndividualGroups();
 
   specimens.forEach(function(sample, i) {
 
@@ -1234,14 +1278,14 @@ function interpretationTableClickHandler(event) {
   if(rowIndex > 0) {
 
     if(columnIndex === 8) {
-      var comment = prompt("Enter the new group for this interpretation.");
+      var comment = prompt("Enter the new group for this interpretation.", specimen.interpretations[rowIndex - 1].group);
       if(comment === null) return;
-      if(comment === "") comment = "DEFAULT";
+      if(comment === "") comment = "ChRM";
       specimen.interpretations[rowIndex - 1].group = comment;
     }
 
     if(columnIndex === 9) {
-      var comment = prompt("Enter a comment for this interpretation.");
+      var comment = prompt("Enter a comment for this interpretation.", specimen.interpretations[rowIndex - 1].comment);
       if(comment === null) return;
       if(comment === "") comment = null;
       specimen.interpretations[rowIndex - 1].comment = comment;
@@ -1312,7 +1356,7 @@ var leafletMarker;
 var map;
 var COORDINATES_COUNTER = 0;
 var COORDINATES = "specimen";
-var GROUP = "DEFAULT";
+var GROUP = "ChRM";
 var UPWEST = true;
 var specimens = new Array();
 
@@ -2362,7 +2406,7 @@ function setActiveGroup() {
    * Sets an active group
    */
 
-  var group = prompt("Enter a new group identifier! Leave empty for the default group.");
+  var group = prompt("Enter a new group identifier! Leave empty for the default group.", GROUP);
 
   // Cancel was clicked: do nothing
   if(group === null) {
@@ -2371,7 +2415,7 @@ function setActiveGroup() {
 
   // If empty we will reset the group to default
   if(group === "") {
-    return switchGroup("DEFAULT");
+    return switchGroup("ChRM");
   } else {
     return switchGroup(group);
   }
