@@ -3,6 +3,7 @@ const __VERSION__ = "2.0.0-alpha";
 const __DOI__ = "10.5281/zenodo.2649907";
 const RADIANS = Math.PI / 180;
 const PROJECTION_TYPE = "AREA";
+const DEGREE_SYMBOL = "\u00B0";
 
 // Color definitions
 const HIGHCHARTS_BLUE = "#7CB5EC";
@@ -34,8 +35,42 @@ const LINE_REGEXP = new RegExp("\r?\n");
 
 document.title = "Paleomagnetism.org " + __VERSION__;
 
+if(document.getElementById("enable-sound")) {
+  document.getElementById("enable-sound").checked = false;
+}
+
 window.addEventListener("online",  notify.bind(null, "success", "Your connection to the internet has been recovered."));
 window.addEventListener("offline", notify.bind(null, "danger", "Your connection to the internet was dropped."));
+
+function padLeft(nr, n){
+  return Array(n - String(nr).length + 1).join("0") + nr;
+} 
+
+function updateTextAreaCounter() {
+
+  /*
+   * Function updateTextAreaCounter
+   * Adds numbers to text area
+   */
+
+  var size = 24;
+
+  // Get the textarea element
+  var element = document.getElementById("site-input-area");
+  var fract = Math.ceil(element.scrollTop / size);
+
+  // Clamp the size of the scroll
+  element.scrollTop = size * fract;
+
+  var numbers = new Array();
+
+  for(var i = fract; i < fract + 10; i++) {
+    numbers.push(padLeft(i, 4));
+  }
+
+  document.getElementById("numbers").innerHTML = numbers.join("<br>");
+
+}
 
 function getRotationMatrix(lambda, phi) {
 
@@ -51,6 +86,180 @@ function getRotationMatrix(lambda, phi) {
     new Array(Math.sin(phi) * Math.sin(lambda), Math.cos(lambda), Math.sin(lambda) * Math.cos(phi)),
     new Array(-Math.cos(phi), 0, Math.sin(phi))
   );
+
+}
+
+function parseParameters(parameters) {
+
+  /*
+   * Function parseParameters
+   * Parses input parameters from the site input window
+   */
+
+  // Must put at least two parameters
+  if(parameters.length < 2) {
+    throw("Input at least two parameters (dec, inc)");
+  }
+
+  // Extract information from each line
+  switch(parameters.length) {
+    case 2:
+      return {
+        "dec": Number(parameters.pop()),
+        "inc": Number(parameters.pop())
+      }
+    case 3:
+      return {
+        "dec": Number(parameters.pop()),
+        "inc": Number(parameters.pop()),
+        "name": parameters.pop()
+      }
+    case 4:
+      return {
+        "dec": Number(parameters.pop()),
+        "inc": Number(parameters.pop()),
+        "strike": Number(parameters.pop()),
+        "dip": Number(parameters.pop())
+      }
+    case 5:
+      return {
+        "dec": Number(parameters.pop()),
+        "inc": Number(parameters.pop()),
+        "strike": Number(parameters.pop()),
+        "dip": Number(parameters.pop()),
+        "name": parameters.pop()
+      }
+  }
+
+}
+
+function addSiteWindow() {
+
+  try {
+    addSiteWindowWrapper();
+  } catch(exception) {
+    return notify("danger", exception);
+  }
+
+}
+
+function addSiteWindowWrapper() {
+
+  /*
+   * Function addSiteWindowWrapper
+   * Adds a new collection from the input window
+   */
+
+  // Get and check the collection name
+  let collectionName = document.getElementById("site-input-name").value;
+
+  if(collectionName === "") {
+    return notify("danger", "Collection name cannot be empty.");
+  }
+
+  // Get the collection position
+  let latitude = Number(document.getElementById("site-input-latitude").value);
+  let longitude = Number(document.getElementById("site-input-longitude").value);
+
+  // Get the collection age
+  let age = Number(document.getElementById("age-input").value);
+  let ageMin = Number(document.getElementById("age-min-input").value);
+  let ageMax = Number(document.getElementById("age-max-input").value);
+
+  const textAreaContent = document.getElementById("site-input-area").value;
+
+  let lines = textAreaContent.split(LINE_REGEXP);
+
+  let components = lines.filter(Boolean).map(function(line, i) {
+
+    let parameters = parseParameters(line.split(/[,\t]+/));
+
+    if(parameters.dec < 0 || parameters.dec > 360 || parameters.inc < -90 || parameters.inc > 90) {
+      throw(new Exception("Invalid component added on line " + i + "."));
+    }
+
+    let thing = new Object({
+      "age": age,
+      "ageMin": ageMin,
+      "ageMax": ageMax,
+      "beddingDip": parameters.dip || 0,
+      "beddingStrike": parameters.strike || 90,
+      "coreDip": 0,
+      "coreAzimuth": 0,
+      "coordinates": new Direction(parameters.dec, parameters.inc).toCartesian(),
+      "latitude": latitude,
+      "longitude": longitude,
+      "level": null,
+      "name": parameters.name || (collectionName + "-" + i),
+      "rejected": false
+    });
+
+    return new Component(thing, thing.coordinates);
+
+  });
+
+  // Confirm the number of components exceeds 3
+  if(components.length < 3) {
+    throw("At least three components are required.");
+  }
+
+  // Add the collection
+  collections.push({
+    "color": null,
+    "type": "collection",
+    "name": collectionName,
+    "components": components,
+    "created": new Date().toISOString(),
+    "index": collections.length
+  });
+
+  $("#input-modal").modal("hide");
+
+  enable();
+  saveLocalStorage();
+
+  // Select the newly added collection
+  $(".selectpicker").selectpicker("val", collections.length - 1 + "");
+
+  notify("success", "Succesfully added collection <b>" + collectionName + "</b>.");
+
+}
+
+function saveLocalStorage(force) {
+
+  /*
+   * Function saveLocalStorage
+   * Saves sample object to local storage
+   */
+
+  if(!force && (!document.getElementById("auto-save").checked || window.location.search)) {
+    return;
+  }
+
+  // Attempt to set local storage
+  try {
+    localStorage.setItem("collections", JSON.stringify(collections));
+  } catch(exception) {
+    notify("danger", "Could not write to local storage. Export your data manually to save it.");
+  }
+
+}
+
+function inputFileWrapper(event) {
+
+  /*
+   * Function inputFileWrapper
+   * Defers input and loads either from file or input window
+   */
+
+  const format = document.getElementById("format-selection").value;
+
+  // Input requested from file: open file selection window
+  if(format !== "MODAL") {
+    return document.getElementById("customFile").click();
+  }
+
+  return $("#input-modal").modal("show");
 
 }
 
@@ -341,6 +550,45 @@ Number.prototype.clamp = function(min, max) {
 
 }
 
+function getConfidenceEllipseDouble(dDx, dIx, N) {
+
+  /*
+   * Function getConfidenceEllipse
+   * Returns confidence ellipse around up North
+   */
+
+  // Define the number of discrete points on an ellipse
+  const NUMBER_OF_POINTS = N;
+
+  dDx = dDx * RADIANS;
+  dIx = dIx * RADIANS;
+
+  var vectors = new Array();
+  var iPoint = ((NUMBER_OF_POINTS - 1) / 2);
+
+  // Create a circle around the pole with angle confidence
+  for(var i = 0; i < NUMBER_OF_POINTS; i++) {
+
+    var psi = i * Math.PI / iPoint;
+    var x = Math.sin(dIx) * Math.cos(psi);
+    var y = Math.sin(dDx) * Math.sin(psi);
+
+    // Resulting coordinate
+    var z = Math.sqrt(1 - Math.pow(x, 2) - Math.pow(y, 2));
+
+    if(isNaN(z)) {
+      z = 0;
+    }
+
+    vectors.push(new Coordinates(x, y, z).toVector(Direction));
+
+  }
+
+  // Handle the correct distribution type
+  return vectors;
+
+}
+
 function getConfidenceEllipse(angle) {
 
   /*
@@ -426,7 +674,7 @@ function getSelectedCollections() {
 
 }
 
-function getPlaneData(direction, angle) {
+function getPlaneData(direction, angle, angle2, N) {
 
   /*
    * Function getPlaneData
@@ -444,15 +692,23 @@ function getPlaneData(direction, angle) {
 
   }
 
+  if(N === undefined) {
+    N = 101;
+  }
+
   // No angle is passed: assume a plane (angle = 90)
   if(angle === undefined) {
     angle = 90;
   }
 
-  var ellipse = getConfidenceEllipse(angle).map(rotateEllipse);
+  if(angle2 === undefined) {
+    angle2 = angle;
+  }
+
+  var ellipse = getConfidenceEllipseDouble(angle, angle2, N).map(rotateEllipse);
 
   // Flip the ellipse when requested. Never flip great circles..
-  if(angle !== 90 && document.getElementById("flip-ellipse").checked) {
+  if(angle !== 90 && document.getElementById("flip-ellipse") && document.getElementById("flip-ellipse").checked) {
     return flipEllipse(direction.inc, ellipse);
   }
 
@@ -994,7 +1250,14 @@ function exportSelectedCollections() {
    * Exports selected collections by the user
    */
 
-  downloadAsJSON("export.pmag", getSelectedCollections());
+  var payload = {
+    "hash": forge_sha256(JSON.stringify(getSelectedCollections())),
+    "collections": getSelectedCollections(),
+    "version": __VERSION__,
+    "created": new Date().toISOString()
+  }
+
+  downloadAsJSON("export.pub", payload);
   
 }
 
@@ -1090,18 +1353,10 @@ function importCSV(file) {
     if(latitude === "") {
       latitude = null;
     } 
+
     if(longitude === "") {
       longitude = null;
     }
-    // Longitude within [-180, 180]
-    //if(longitude > 180) {
-    //  longitude = longitude - 360;
-    //}
-    //
-    //// Latitude within [-90, 90]
-    //if(latitude > 90) {
-    //  latitude = latitude - 180;
-    //}
 
     // Confirm the reference frame
     if(coordinates !== "specimen" && coordinates !== "geographic" && coordinates !== "tectonic") {
@@ -1218,6 +1473,9 @@ function addData(file) {
   var reference = json.pid;
   var components = new Array();
 
+  var groups = new Object();
+
+  // Sort specimens by groups
   json.specimens.forEach(function(specimen) {
 
      specimen.interpretations.forEach(function(interpretation) {
@@ -1228,37 +1486,30 @@ function addData(file) {
          return;
        }
 
-       components.push(new Component(specimen, interpretation.specimen.coordinates));
+       if(!groups.hasOwnProperty(interpretation.group)) {
+         groups[interpretation.group] = new Array();
+       }
+
+       groups[interpretation.group].push(new Component(specimen, interpretation.specimen.coordinates));
 
      });
 
   });
 
-  collections.push({
-    "color": null,
-    "name": siteName,
-    "reference": reference,
-    "components": components,
-    "created": new Date().toISOString()
+  // Add each group to a different collection
+  Object.keys(groups).forEach(function(group) {
+
+    var components = groups[group];
+
+    collections.push({
+      "color": null,
+      "name": siteName + " - " + group,
+      "reference": reference,
+      "components": components,
+      "created": new Date().toISOString()
+    });
+
   });
-
-}
-
-function exportPMAG() {
-
-  /*
-   * Function exportPMAG
-   * Exports a list of collections as a .pmag database file
-   */
-
-  var payload = {
-    "collections": collections,
-    "version": __VERSION__,
-    "created": new Date().toISOString()
-  }
-
-  // Encode the JSON and download to file
-  downloadAsJSON("database.pmag", payload);
 
 }
 
@@ -1269,7 +1520,7 @@ function importPMAG2(json) {
    * Imports paleomagnetism database from the PMAG 2.0.0 format
    */
 
-  JSON.parse(json).forEach(function(collection) {
+  JSON.parse(json).collections.forEach(function(collection) {
 
     // Convert all literal coordinates to a class instance
     collection.components = collection.components.map(toComponent);
@@ -1433,44 +1684,34 @@ function doCutoff(directions) {
 
 }
 
-function averageGeolocation(coords) {
+function getAverageLocation(site) {
 
   /*
-   * Function averageGeolocation
-   * Returns the average geolocation for a list of latitudes, longitudes
+   * Function getAverageLocation
+   * Returns the average specimen location of a collection
    */
 
-  if(coords.length === 1) {
-    return coords[0];
+  // We can use declination attribute instead of poles.. doens't really matter (both are vectors)
+  var locations = site.components.filter(x => x.latitude !== null && x.longitude !== null).map(function(x) {
+    return new Direction(x.longitude, x.latitude).toCartesian();
+  });
+
+  // No location
+  if(locations.length === 0) {
+    return null;
   }
 
-  let x = 0.0;
-  let y = 0.0;
-  let z = 0.0;
+  var meanLocation = meanDirection(locations);
 
-  for (let coord of coords) {
-    let latitude = coord.lat * Math.PI / 180;
-    let longitude = coord.lng * Math.PI / 180;
-
-    x += Math.cos(latitude) * Math.cos(longitude);
-    y += Math.cos(latitude) * Math.sin(longitude);
-    z += Math.sin(latitude);
+  // Keep longitude within [-180, 180]
+  if(meanLocation.dec > 180) {
+    meanLocation.dec -= 360;
   }
-
-  let total = coords.length;
-
-  x = x / total;
-  y = y / total;
-  z = z / total;
-
-  let centralLongitude = Math.atan2(y, x);
-  let centralSquareRoot = Math.sqrt(x * x + y * y);
-  let centralLatitude = Math.atan2(z, centralSquareRoot);
 
   return {
-    lat: centralLatitude * 180 / Math.PI,
-    lng: centralLongitude * 180 / Math.PI
-  };
+    "lng": meanLocation.dec,
+    "lat": meanLocation.inc
+  }
 
 }
 
@@ -1567,6 +1808,23 @@ function collectCitation() {
     notify("success", "<i class='fas fa-book'></i><b> Found citation: </b>" + split.join(" "));
 
   });
+
+}
+
+function doiLookup(doi, callback) {
+
+  /*
+   * Function doiLookup
+   * Looks up DOI from a registration and returns the citation
+   */
+
+  const DOI_REGISTRATION_URL = "https://crosscite.org/format?" + new Array(
+    "doi=" + doi,
+    "style=apa",
+    "lang=en-US"
+  ).join("&");
+
+  HTTPRequest(DOI_REGISTRATION_URL, "GET", callback);
 
 }
 

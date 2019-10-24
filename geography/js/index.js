@@ -136,34 +136,16 @@ function __init__() {
 
   // Something was returned from local storage
   if(item !== null) {
-    importPMAG2(item);
+    // Convert the saved literals to components
+    collections = JSON.parse(item).map(function(x) {
+      x.components = x.components.map(function(y) {
+        return new Component(y, y.coordinates);
+      });
+      return x;
+    });
   }
 
   __unlock__();
-
-}
-
-function saveLocalStorage(force) {
-
-  /*
-   * Function saveLocalStorage
-   * Saves sample object to local storage
-   */
-
-  if(!force && !document.getElementById("auto-save").checked) {
-    return;
-  }
-
-  if(!force && window.location.search) {
-    return;
-  }
-
-  // Attempt to set local storage
-  try {
-    localStorage.setItem("collections", JSON.stringify(collections));
-  } catch(exception) {
-    notify("danger", "Could not write to local storage. Export your data manually to save it.");
-  }
 
 }
 
@@ -221,6 +203,11 @@ function keyboardHandler(event) {
     return;
   }
 
+  // An input element is being focused: stop key events
+  if(document.activeElement.nodeName === "INPUT" || document.activeElement.nodeName === "TEXTAREA") {
+    return;
+  }
+
   event.preventDefault();
 
   // Delegate to the appropriate handler
@@ -245,6 +232,7 @@ function registerEventHandlers() {
    */
 
   // Simple listeners
+  document.getElementById("site-input-area").addEventListener("scroll", updateTextAreaCounter);
   document.getElementById("euler-upload").addEventListener("change", eulerSelectionHandler);
   document.getElementById("apwp-upload").addEventListener("change", APWPSelectionHandler);
   document.getElementById("kml-upload").addEventListener("change", kmlSelectionHandler);
@@ -256,13 +244,17 @@ function registerEventHandlers() {
   document.getElementById("defaultCheck1").addEventListener("change", toggleGridLayer);
   document.getElementById("calculate-reference").addEventListener("click", plotPredictedDirections);
 
+  document.getElementById("defer-input").addEventListener("click", inputFileWrapper);
+  document.getElementById("add-site-input").addEventListener("click", addSiteWindow);
+  document.getElementById("specimen-age-select").addEventListener("change", handleAgeSelection);
+
   // Always set grid to true
   document.getElementById("defaultCheck1").checked = true;
-  document.getElementById("geology-layer-toggle").checked = true;
 
   // Enable the information popovers
   $(".example-popover").popover({"container": "body"});
 
+  updateTextAreaCounter();
   loadDatabaseFiles();
 
 }
@@ -626,36 +618,6 @@ function downloadAsKML() {
   ].join("\n"));
 
   downloadURIComponent("collections.kml", MIME_TYPE + "," + payload);
-
-}
-
-function getAverageLocation(site) {
-
-  /*
-   * Function getAverageLocation
-   * Returns the average specimen location of a collection
-   */
-
-  // We can use declination attribute instead of poles.. doens't really matter (both are vectors)
-  var locations = site.components.filter(x => x.latitude !== null && x.longitude !== null).map(function(x) {
-    return new Direction(x.longitude, x.latitude).toCartesian();
-  });
-
-  if(locations.length === 0) {
-    return null;
-  }
-
-  var meanLocation = meanDirection(locations);
-
-  // Keep longitude within [-180, 180]
-  if(meanLocation.dec > 180) {
-    meanLocation.dec -= 360;
-  }
-
-  return {
-    "lng": meanLocation.dec,
-    "lat": meanLocation.inc
-  }
 
 }
 

@@ -2,6 +2,60 @@ var collections = new Array();
 var COORDINATES_COUNTER = 0;
 var COORDINATES = "specimen";
 var A95_CONFIDENCE = true;
+var map;
+
+function addMap() {
+
+  /*
+   * Function addMap
+   * Adds map to the application
+   */
+
+  const MAP_CONTAINER = "map";
+  const TILE_LAYER = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+  const VIEWPORT = new L.latLng(35, 0);
+
+  // Set map options (bounds)
+  var mapOptions = {
+    "minZoom": 1,
+    "maxBounds": new L.latLngBounds(new L.latLng(-90, -180), new L.latLng(90, 180)),
+    "maxBoundsViscosity": 0.5,
+    "attributionControl": true
+  }
+
+  // Create the map and tile layer
+  map = L.map(MAP_CONTAINER, mapOptions).setView(VIEWPORT, 1);
+  L.tileLayer(TILE_LAYER).addTo(map);
+
+  // Attach a click handler
+  map.on("click", mapClickHandler);
+
+  // Listeners 
+  $("#input-modal").on("shown.bs.modal", modalOpenHandler);
+
+}
+
+function mapClickHandler(event) {
+
+  /*
+   * Function mapClickHandler
+   * Handles mouse click event on the map
+   */
+ 
+  const LOCATION_PRECISION = 5;
+ 
+  // Extract the latitude, longitude
+  document.getElementById("site-input-longitude").value = event.latlng.lng.toPrecision(LOCATION_PRECISION);
+  document.getElementById("site-input-latitude").value = event.latlng.lat.toPrecision(LOCATION_PRECISION);
+
+}
+
+function modalOpenHandler() {
+
+  // Resize map to modal
+  map.invalidateSize();
+
+}
 
 function __init__() {
 
@@ -37,26 +91,6 @@ function __init__() {
   }
 
   __unlock__();
-
-}
-
-function saveLocalStorage(force) {
-
-  /*
-   * Function saveLocalStorage
-   * Saves sample object to local storage
-   */
-
-  if(!force && (!document.getElementById("auto-save").checked || window.location.search)) {
-    return;
-  }
-
-  // Attempt to set local storage
-  try {
-    localStorage.setItem("collections", JSON.stringify(collections));
-  } catch(exception) {
-    notify("danger", "Could not write to local storage. Export your data manually to save it.");
-  }
 
 }
 
@@ -128,6 +162,11 @@ function keyboardHandler(event) {
     return;
   }
 
+  // An input element is being focused: stop key events
+  if(document.activeElement.nodeName === "INPUT" || document.activeElement.nodeName === "TEXTAREA") {
+    return;
+  }
+
   // Override the default handlers
   if(!Object.values(CODES).includes(event.keyCode)) {
     return;
@@ -160,6 +199,12 @@ function registerEventHandlers() {
    * Registers DOM event listeners and handler
    */
 
+  document.getElementById("site-input-area").addEventListener("scroll", updateTextAreaCounter);
+  document.getElementById("specimen-age-select").addEventListener("change", handleAgeSelection);
+
+  document.getElementById("defer-input").addEventListener("click", inputFileWrapper); 
+  document.getElementById("add-site-input").addEventListener("click", addSiteWindow);
+
   // Simple button listeners
   document.getElementById("customFile").addEventListener("change", fileSelectionHandler);
   document.getElementById("specimen-select").addEventListener("change", siteSelectionHandler);
@@ -171,6 +216,8 @@ function registerEventHandlers() {
 
   // The keyboard handler
   document.addEventListener("keydown", keyboardHandler);
+ 
+  updateTextAreaCounter();
 
 }
 

@@ -51,6 +51,22 @@ Coordinates.prototype.dot = function(coordinates) {
 
 }
 
+Coordinates.prototype.copy = function() {
+
+  return new Coordinates(this.x, this.y, this.z);
+
+}
+
+Coordinates.prototype.cross = function(coordinates) {
+
+  return new Coordinates(
+    this.y * coordinates.z - coordinates.y * this.z,
+    -this.x * coordinates.z + coordinates.x * this.z,
+    this.x * coordinates.y - coordinates.x * this.y
+  );
+
+}
+
 Coordinates.prototype.unit = function() {
 
   /*

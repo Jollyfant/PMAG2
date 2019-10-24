@@ -51,13 +51,13 @@ function addMap(publication) {
   // Add collections to map
   publication.collections.forEach(function(collection, i) {
 
-    var averageLocation = averageGeolocation(collection.data.specimens.map(function(x) {
-      return {"lat": x.latitude, "lng": x.longitude}
+    var averageLocation = meanDirection(collection.data.specimens.map(function(x) {
+      return new Direction(x.latitude, x.longitude).toCartesian();
     }));
 
     var markerInformation = createTooltip(publication, collection, i);
 
-    markerGroup.push(new L.Marker(new L.LatLng(averageLocation.lat, averageLocation.lng)).addTo(map).bindPopup(markerInformation));
+    markerGroup.push(new L.Marker(new L.LatLng(averageLocation.dec, averageLocation.inc)).addTo(map).bindPopup(markerInformation));
 
   });
 
@@ -139,8 +139,12 @@ function formatCollectionTable(publication) {
   // Initialize the leaflet map
   addMap(publication);
 
+  // Create accept & reject links (behind login)
+  let acceptLink = "https://api.paleomagnetism.org/" + publication.pid + "?accept";
+  let rejectLink = "https://api.paleomagnetism.org/" + publication.pid + "?reject";
+
   if(!publication.accepted) {
-    notify("warning", "This publication is pending review and has not yet been accepted.");
+    notify("warning", "This publication is pending review and has not yet been accepted. <br> <small><i class='fas fa-lock'></i> <a href='" + acceptLink + "'>Accept</a> or <a href='" + rejectLink + "'>Reject</a></small>");
   }
 
   // Load the metadata for this collection

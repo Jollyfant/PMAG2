@@ -124,6 +124,9 @@ function fileSelectionHandler(event) {
 
   });
 
+  // Reset value in case loading the same file
+  this.value = null;
+
 }
 
 function enableInterpretationTabs() {
@@ -149,7 +152,7 @@ function updateInterpretationTable(specimen) {
 
   const COMMENT_LENGTH = 15;
   const ERROR_NO_COMPONENTS = "<div class='text-muted text-center'>No Components Available</div>";
-  const DEFAULT_COMMENT = "Click to add";
+  const ChRM_COMMENT = "Click to add";
 
   var specimen = getSelectedSpecimen();
 
@@ -159,7 +162,7 @@ function updateInterpretationTable(specimen) {
   }
 
   var tableHeader = new Array(
-    "<table class='table table-sm table-striped'>",
+    "<table class='table text-center table-sm table-striped'>",
     "  <caption>Interpreted Components</caption>",
     "  <tr>",
     "    <td>Declination</td>",
@@ -168,11 +171,12 @@ function updateInterpretationTable(specimen) {
     "    <td>MAD</td>",
     "    <td>Type</td>",
     "    <td>Anchored</td>",
+    "    <td>Fitted</td>",
     "    <td>Steps</td>",
     "    <td>Group</td>",
     "    <td>Comment</td>",
     "    <td>Created</td>",
-    "    <td class='text-center text-danger' style='text-align: center; cursor: pointer;'><b style='pointer-events: none;'>Clear All</b></td>",
+    "    <td><button onclick='deleteAllInterpretations()' class='btn btn-sm btn-link'><i class='far fa-trash-alt'></i> Clear All</button></td>",
     "  </tr>"
   ).join("\n");
 
@@ -186,7 +190,7 @@ function updateInterpretationTable(specimen) {
 
     // Handle comments on interpretations
     if(interpretation.comment === null) {
-      comment = DEFAULT_COMMENT;
+      comment = ChRM_COMMENT;
     } else {
       comment = interpretation.comment;
     }
@@ -209,13 +213,14 @@ function updateInterpretationTable(specimen) {
       "    <td>" + direction.inc.toFixed(2) + "</td>",
       "    <td>" + intensity + "</td>",
       "    <td>" + mad + "</td>",
-      "    <td>" + interpretation.type + "</td>",
-      "    <td>" + interpretation.anchored + "</td>",
+      "    <td>" + tauToMark(interpretation.type) + "</td>",
+      "    <td>" + booleanToCheck(interpretation.anchored) + "</td>",
+      "    <td>" + booleanToCheck(interpretation.fitted) + "</td>",
       "    <td>" + interpretation.steps.length + "</td>",
-      "    <td style='cursor: pointer;' class='text-muted'>" + interpretation.group + "</td>",
+      "    <td style='cursor: pointer;' class='text-muted'><span style='pointer-events: none;' class='badge badge-light'>" + interpretation.group + "</span></td>",
       "    <td style='cursor: pointer;' title='" + comment + "'>" + ((comment.length < COMMENT_LENGTH) ? comment : comment.slice(0, COMMENT_LENGTH) + "…") + "</td>",
       "    <td>" + interpretation.created + "</td>",
-      "    <td class='text-center text-danger' style='text-align: center; cursor: pointer;'><i style='pointer-events: none;' class='fas fa-times'></i></td>",
+      "    <td><button onclick='deleteAllInterpretations(" + i + ")' class='btn btn-sm btn-link'><i class='far fa-trash-alt'></i></button></td>",
       "  </tr>"
     ].join("\n");
 
@@ -227,7 +232,97 @@ function updateInterpretationTable(specimen) {
 
 }
 
-function redrawInterpretationGraph(fit) {
+function tauToMark(tau) {
+
+  return tau === "TAU3" ? "τ3" : "τ1";
+
+}
+
+function booleanToCheck(bool) {
+
+  return bool ? "Yes" : "No";
+
+}
+
+function switchGroup(name) {
+
+  if(GROUP === name) {
+    return;
+  }
+
+  // Update the global variable
+  GROUP = name;
+  notify("info", "Succesfully changed group to <b>" + GROUP + "</b>.");
+
+  // Redraw the intepretation graph (hiding specimens not in group)
+  redrawInterpretationGraph();
+
+}
+
+function mergeGroup(name) {
+
+  /*
+   * Function mergeGroup
+   * Merges the components in one group to another group
+   */
+
+  var group = prompt("Enter the name of the group to merge to. All components in this group will be assigned to the new group.");
+
+  if(group === null) {
+    return;
+  }
+
+  // If empty we will reset the group to default
+  if(group === "") {
+    group = "ChRM";
+  }
+
+  specimens.forEach(function(sample, i) {
+    sample.interpretations.forEach(function(interpretation, j) {
+
+      if(interpretation.group !== name) {
+        return;
+      }
+
+      interpretation.group = group;
+
+    });
+  });
+
+  switchGroup(group);
+
+}
+
+function showIndividualGroups() {
+
+  /*
+   * Function showIndividualGroups
+   * Shows individual clickable groups for switching @ interpreted components
+   */
+
+  var groups = new Object();
+
+  specimens.forEach(function(sample, i) {
+    sample.interpretations.forEach(function(interpretation, j) {
+
+      if(!groups.hasOwnProperty(interpretation.group)) {
+        groups[interpretation.group] = 0;
+      }
+
+      groups[interpretation.group]++;
+
+    });
+  });
+
+  let groupNames = Object.keys(groups).sort();
+
+  document.getElementById("group-show").innerHTML = groupNames.map(function(name) {
+    return "<span title='Double click to merge with another group' style='cursor: pointer;' ondblclick='mergeGroup(" + "\"" + name + "\""  + ")' onclick='switchGroup(" + "\"" + name + "\""  + ")' class='badge badge-" + (name === GROUP ? "secondary" : "light") + "'>" + name + " (" + groups[name] + ")</span>";
+  }).join(" ");
+
+}
+
+function redrawInterpretationGraph() {
 
   /*
    * Function redrawInterpretationGraph
@@ -237,24 +332,20 @@ function redrawInterpretationGraph(fit) {
   var dataSeries = new Array();
   var dataSeriesPlaneNegative = new Array();
   var dataSeriesPlanePositive = new Array();
+  var dataSeriesPlaneNegativeFitted = new Array();
+  var dataSeriesPlanePositiveFitted = new Array();
   var dataSeriesFitted = new Array();
   var dataSeriesPlane2 = new Array();
-
-  IS_FITTED = fit;
-
-
-  try {
-    var samples = getAllComponents();
-  } catch(exception) {
-    return notify("danger", exception);
-  }
 
   var meanVector = new Coordinates(0, 0, 0);
   var rVector = new Coordinates(0, 0, 0);
   var nCircles = 0;
   var nDirections = 0;
 
-  samples.forEach(function(sample, i) {
+  // Show the available groups
+  showIndividualGroups();
+
+  specimens.forEach(function(sample, i) {
 
     sample.interpretations.forEach(function(interpretation, j) {
 
@@ -281,10 +372,6 @@ function redrawInterpretationGraph(fit) {
 
         // Add fitted components to another series
         if(interpretation.fitted) {
-
-          dataSeriesPlaneNegative = dataSeriesPlaneNegative.concat(getPlaneData(interpretation.pole).negative, null);
-          dataSeriesPlanePositive = dataSeriesPlanePositive.concat(getPlaneData(interpretation.pole).positive, null);
-          IS_FITTED = true;
 
           dataSeriesFitted.push({
             "x": direction.dec,
@@ -319,6 +406,7 @@ function redrawInterpretationGraph(fit) {
       }
 
       if(interpretation.type === "TAU3") {
+
         dataSeriesPlane2.push({
           "x": direction.dec,
           "inc": direction.inc,
@@ -327,8 +415,13 @@ function redrawInterpretationGraph(fit) {
           "index": i, 
         });
 
-        dataSeriesPlaneNegative = dataSeriesPlaneNegative.concat(getPlaneData(direction).negative, null);
-        dataSeriesPlanePositive = dataSeriesPlanePositive.concat(getPlaneData(direction).positive, null);
+        if(interpretation.fitted) {
+          dataSeriesPlaneNegativeFitted = dataSeriesPlaneNegativeFitted.concat(getPlaneData(direction).negative, null);
+          dataSeriesPlanePositiveFitted = dataSeriesPlanePositiveFitted.concat(getPlaneData(direction).positive, null);
+        } else {
+          dataSeriesPlaneNegative = dataSeriesPlaneNegative.concat(getPlaneData(direction).negative, null);
+          dataSeriesPlanePositive = dataSeriesPlanePositive.concat(getPlaneData(direction).positive, null);
+        }
 
       }
 
@@ -387,7 +480,7 @@ function redrawInterpretationGraph(fit) {
   }];
 
   // Add t95 confidence ellipse
-  if(IS_FITTED) {
+  if(dataSeriesPlaneNegativeFitted.length) {
     series.push({
       "name": "t95 Confidence Ellipse",
       "type": "line",
@@ -401,13 +494,41 @@ function redrawInterpretationGraph(fit) {
     });
   }
 
+  if(dataSeriesPlaneNegativeFitted.length) {
+    series.push({
+      "name": "Great Circles",
+      "type": "line",
+      "turboThreshold": 0,
+      "data": dataSeriesPlanePositiveFitted,
+      "color": HIGHCHARTS_GREY,
+      "lineWidth": 1,
+      "enableMouseTracking": false,
+      "marker": {
+        "enabled": false
+      }
+    }, {
+      "name": "Great Circles",
+      "type": "line",
+      "turboThreshold": 0,
+      "data": dataSeriesPlaneNegativeFitted,
+      "color": HIGHCHARTS_GREY,
+      "dashStyle": "ShortDash",
+      "lineWidth": 1,
+      "linkedTo": ":previous",
+      "enableMouseTracking": false,
+      "marker": {
+        "enabled": false
+      }
+    });
+  }
+
   if(dataSeriesPlaneNegative.length) {
     series.push({
       "name": "Great Circles",
       "type": "line",
       "turboThreshold": 0,
       "data": dataSeriesPlanePositive,
-      "color": IS_FITTED ? HIGHCHARTS_GREY : HIGHCHARTS_ORANGE,
+      "color": HIGHCHARTS_ORANGE,
       "lineWidth": 1,
       "enableMouseTracking": false,
       "marker": {
@@ -418,7 +539,7 @@ function redrawInterpretationGraph(fit) {
       "type": "line",
       "turboThreshold": 0,
       "data": dataSeriesPlaneNegative,
-      "color": IS_FITTED ? HIGHCHARTS_GREY : HIGHCHARTS_ORANGE,
+      "color": HIGHCHARTS_ORANGE,
       "dashStyle": "ShortDash",
       "lineWidth": 1,
       "linkedTo": ":previous",
@@ -786,7 +907,7 @@ function addLithologyOptions() {
    * Loads lithologies from MagIC controlled vocabularies
    */
 
-  HTTPRequest("./db/lithologies.json", "GET", function(lithologies) {
+  HTTPRequest("../db/lithologies.json", "GET", function(lithologies) {
     addOptions(lithologies, "specimen-lithology-input");
   });
 
@@ -859,6 +980,9 @@ function getFittedGreatCircles() {
   const ANGLE_CUTOFF = 1E-2;
   const fixedCoordinates = COORDINATES;
 
+  // Clear existing fitted great circles
+  clearFitted();
+
   // Container for pointers to the sample / interpretation objects
   var interpretationPointers = new Array();
   var meanVector = new Coordinates(0, 0, 0);
@@ -882,8 +1006,15 @@ function getFittedGreatCircles() {
 
       // Add the set point to the mean vector
       if(interpretation.type === "TAU1") {
+
+        // Skip fitted directions
+        if(interpretation.fitted) {
+          return;
+        }
+
         nPoints++;
         return meanVector = meanVector.add(coordinates);
+
       }
 
       // Save the TAU3 component for fitting
@@ -984,21 +1115,26 @@ function getFittedGreatCircles() {
     var specimen = interpretationPointers[i].sample;
     var interpretation = interpretationPointers[i].interpretation;
 	
+    interpretation.fitted = true;
+
+    var copy = memcpy(interpretation);
+
     // The interpretation type has now become TAU1
-    interpretation.pole = interpretationPointers[i].coordinates.toVector(Direction);
-    interpretation.type = "TAU1";           
-    interpretation.fitted = true;           
+    copy.type = "TAU1";           
+    copy.fitted = true;           
 
     // Great circles are fitted in a particular reference frame!
     // Backpropogate the direction back to specimen coordinates and update the rotated components
     var specimenCoordinates = fromReferenceCoordinates(fixedCoordinates, specimen, fittedCoordinates);
 
     // Rotate the TAU1 back to the appropriate reference frame
-    interpretation.specimen.coordinates = specimenCoordinates;
-    interpretation.geographic.coordinates = inReferenceCoordinates("geographic", specimen, specimenCoordinates);
-    interpretation.tectonic.coordinates = inReferenceCoordinates("tectonic", specimen, specimenCoordinates);
+    copy.specimen.coordinates = specimenCoordinates;
+    copy.geographic.coordinates = inReferenceCoordinates("geographic", specimen, specimenCoordinates);
+    copy.tectonic.coordinates = inReferenceCoordinates("tectonic", specimen, specimenCoordinates);
 
-    var coordinates = interpretation[fixedCoordinates].coordinates;
+    specimen.interpretations.push(copy);
+
+    var coordinates = copy[fixedCoordinates].coordinates;
 
     // Confirm that the rotation to base specimen coordinates went OK
     if(!fEquals(fittedCoordinates.x, coordinates.x) || !fEquals(fittedCoordinates.y, coordinates.y) || !fEquals(fittedCoordinates.z, coordinates.z)) {
@@ -1010,10 +1146,26 @@ function getFittedGreatCircles() {
   // Mutate the fitted TAU3 components to become TAU1
   fittedCircleCoordinates.forEach(convertInterpretation);
 
-  notify("success", "Succesfully fitted <b>" + fittedCircleCoordinates.length + "</b> great circle(s) to <b>" + nPoints + "</b> directional component(s) in <b>" + nIterations + "</b> iteration(s).");
+  notify("success", "Succesfully fitted <b>" + fittedCircleCoordinates.length + "</b> great circle(s) to <b>" + nPoints + "</b> directional component(s) in <b>" + nIterations + "</b> iteration(s) in <b>" + COORDINATES + "</b> coordinates.");
 
   // Return the new set of samples
   return copySamples;
+
+}
+
+function clearFittedRefresh() {
+
+  clearFitted();
+  redrawInterpretationGraph();
+
+}
+
+function clearFitted() {
+
+  specimens.forEach(function(specimen) {
+    specimen.interpretations = specimen.interpretations.filter(x => x.type !== "TAU1" || !x.fitted)
+    specimen.interpretations.forEach(x => x.fitted = false);
+  });
 
 }
 
@@ -1049,7 +1201,7 @@ function updateInterpretationMeanTable(direction, parameters) {
     "      <td>" + parameters.a95.toFixed(2) + "</td>",
     "      <td>" + parameters.t95.toFixed(2) + "</td>",
     "      <td>" + COORDINATES + "</td>",
-    "      <td>" + (IS_FITTED ? "<i class='fas fa-check text-success'></i>" : "<i class='fas fa-times text-danger'></i>") + "</td>",
+    "      <td><button class='btn btn-sm btn-link' onclick='clearFittedRefresh()'><i class='far fa-trash-alt'></i> Clear</button></td>",
     "    </tr>",
     "  </tbody>"
   ).join("\n");
@@ -1076,13 +1228,37 @@ function redrawCharts(hover) {
   eqAreaProjection(hover);
 
   // Redraw without fitting
-  redrawInterpretationGraph(false);
+  redrawInterpretationGraph();
 
   updateInterpretationTable();
   formatStepTable();
 
   // Reset the scroll position
   window.scrollTo(0, tempScrollTop);
+
+}
+
+function deleteAllInterpretations(index) {
+  
+  /*
+   * Function deleteAllInterpretations
+   * Deletes all interpretations in a specimen
+   */
+
+  var specimen = getSelectedSpecimen();
+
+  // Reset
+  if(index === undefined) {
+    if(!confirm("Are you sure you wish to clear all interpretations in this specimen?")) {
+      return;
+    }
+    specimen.interpretations = new Array();
+  } else {
+    specimen.interpretations.splice(index, 1);
+  } 
+
+  redrawCharts();
+  saveLocalStorage();
 
 }
 
@@ -1098,27 +1274,21 @@ function interpretationTableClickHandler(event) {
   var columnIndex = event.target.cellIndex;
   var rowIndex = event.target.parentElement.rowIndex;
 
-  // Delete all was selected
-  if(rowIndex === 0 && columnIndex === 10 && confirm("Are you sure you wish to delete all interpretations?")) {
-    specimen.interpretations = new Array();
-  }
-
   // A specific component was referenced
   if(rowIndex > 0) {
 
-    if(columnIndex === 7) {
-      var comment = prompt("Enter the new group for this interpretation.");
+    if(columnIndex === 8) {
+      var comment = prompt("Enter the new group for this interpretation.", specimen.interpretations[rowIndex - 1].group);
       if(comment === null) return;
-      if(comment === "") comment = "DEFAULT";
+      if(comment === "") comment = "ChRM";
       specimen.interpretations[rowIndex - 1].group = comment;
     }
 
-    if(columnIndex === 8) {
-      var comment = prompt("Enter a comment for this interpretation.");
+    if(columnIndex === 9) {
+      var comment = prompt("Enter a comment for this interpretation.", specimen.interpretations[rowIndex - 1].comment);
       if(comment === null) return;
+      if(comment === "") comment = null;
       specimen.interpretations[rowIndex - 1].comment = comment;
-    } else if(columnIndex === 10) {
-      specimen.interpretations.splice(rowIndex - 1, 1);
     }
 
   }
@@ -1186,10 +1356,9 @@ var leafletMarker;
 var map;
 var COORDINATES_COUNTER = 0;
 var COORDINATES = "specimen";
-var GROUP = "DEFAULT";
+var GROUP = "ChRM";
 var UPWEST = true;
 var specimens = new Array();
-var IS_FITTED = false;
 
 function keyboardHandler(event) {
 
@@ -1293,7 +1462,14 @@ function keyboardHandler(event) {
     case CODES.KEYPAD_EIGHT:
       return switchCoordinateReference();
     case CODES.KEYPAD_NINE:
-      return redrawInterpretationGraph(true);
+
+      try {
+        specimens = getFittedGreatCircles();
+        return redrawInterpretationGraph();
+      } catch(exception) {
+        return notify("danger", exception);
+      }
+
     case CODES.ESCAPE_KEY:
       return document.getElementById("notification-container").innerHTML = "";
   }
@@ -1487,7 +1663,9 @@ var StepSelector = function() {
   this.reset();
 
   this._container.addEventListener("click", function(event) {
-    this.setActiveStep(Number(event.target.value));
+    if(event.target.nodeName === "TR") {
+      this.setActiveStep(Number(event.target.value));
+    }
   }.bind(this));
 
 }
@@ -1777,54 +1955,6 @@ function getPublicationFromPID() {
 
 }
 
-function getAllComponents() {
-
-  /*
-   * Function getAllComponents
-   * Returns all components (fitted if requested)
-   */
-
-  if(!IS_FITTED) {
-    return specimens;
-  }
-
-  return getFittedGreatCircles();
-
-}
-
-function downloadInterpretations() {
-
-  /*
-   * Function downloadInterpretations
-   * Downloads all interpretations
-   */
-
-  const MIME_TYPE = "data:application/json;charset=utf-8";
-  const FILENAME = "specimens.dir";
-
-  // No samples are loaded to the application
-  if(specimens.length === 0) {
-    return notify("danger", new Exception("No interpretations available to export."));
-  }
-
-  try {
-    var result = getAllComponents();
-  } catch(exception) {
-    return notify("danger", exception);
-  }
-
-  // Create the payload with some additional metadata
-  var payload = encodeURIComponent(JSON.stringify({
-    "hash": forge_sha256(JSON.stringify(result)),
-    "specimens": result,
-    "version": __VERSION__,
-    "created": new Date().toISOString()
-  }));
-
-  downloadURIComponent(FILENAME, MIME_TYPE + "," + payload);
-
-}
-
 function downloadInterpretationsCSV() {
 
   /*
@@ -1850,14 +1980,8 @@ function downloadInterpretationsCSV() {
 
   var rows = new Array(CSV_HEADER.join(","));
 
-  try {
-    var saples = getAllComponents();
-  } catch(exception) {
-    return notify("danger", exception);
-  }
-
   // Export the interpreted components as CSV
-  samples.forEach(function(specimen) {
+  specimens.forEach(function(specimen) {
 
     specimen.interpretations.forEach(function(interpretation) {
 
@@ -2284,7 +2408,7 @@ function setActiveGroup() {
    * Sets an active group
    */
 
-  var group = prompt("Enter a new group identifier! Leave empty for the default group.");
+  var group = prompt("Enter a new group identifier! Leave empty for the default group.", GROUP);
 
   // Cancel was clicked: do nothing
   if(group === null) {
@@ -2293,41 +2417,33 @@ function setActiveGroup() {
 
   // If empty we will reset the group to default
   if(group === "") {
-    GROUP = "DEFAULT";
+    return switchGroup("ChRM");
   } else {
-    GROUP = group;
+    return switchGroup(group);
   }
-
-  notify("success", "Succesfully changed group to <b>" + GROUP + "</b>.");
-
-  // Redraw the intepretation graph (hiding specimens not in group)
-  redrawInterpretationGraph();
 
 }
 
 function exportApplicationSave() {
 
   /*
-   * Function downloadAsJSON
+   * Function exportApplicationSave
    * Generates JSON representation of station table
    */
-
-  const MIME_TYPE = "data:application/json;charset=utf-8";
-  const FILENAME = "specimens.dir";
 
   if(specimens.length === 0) {
     return notify("danger", new Exception("No specimens to export"));
   }
 
   // Create the payload with some additional metadata
-  var payload = encodeURIComponent(JSON.stringify({
+  var payload = {
     "hash": forge_sha256(JSON.stringify(specimens)),
     "specimens": specimens,
     "version": __VERSION__,
     "created": new Date().toISOString()
-  }));
+  }
 
-  downloadURIComponent(FILENAME, MIME_TYPE + "," + payload);
+  downloadAsJSON("specimens.col", payload);
 
 }
 

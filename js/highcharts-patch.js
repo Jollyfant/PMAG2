@@ -8,6 +8,20 @@
   // Highcharts patching
   Highcharts.seriesTypes.line.prototype.requireSorting = false;
 
+  // Marker functions to add 10° markers to equal area projections
+  Highcharts.SVGRenderer.prototype.symbols.vertLine = function (x, y, w, h) {
+    return new Array("M", x + 0.5 * w, y + h, "L", x + 0.5 * w, y - 0.25 * h);
+  };
+
+  Highcharts.SVGRenderer.prototype.symbols.horLine = function (x, y, w, h) {
+    return new Array("M", x + 1.25 * w, y + 0.5 * h, "L", x - 0.25 * w, y + 0.5 * h);
+  };
+
+  if(Highcharts.VMLRenderer) {
+    Highcharts.VMLRenderer.prototype.symbols.vertLine = Highcharts.SVGRenderer.prototype.symbols.vertLine;
+    Highcharts.VMLRenderer.prototype.symbols.horLine = Highcharts.SVGRenderer.prototype.symbols.horLine;
+  }
+
   // SVG combined exporting
   Highcharts.exportCharts = function(charts, options) {
     options = Highcharts.merge(Highcharts.getOptions().exporting, options);
@@ -64,12 +78,14 @@
         case "zijderveld-container":
         case "declination-container":
         case "magstrat-container-declination":
+        case "hemispherePlot":
           return {"width": 0, "top": 0}
         case "foldtest-tectonic-container":
         case "pole-container":
         case "hemisphere-container":
         case "magstrat-container-inclination":
         case "pole-container":
+        case "hemispherePlot2":
           return {"width": 600, "top": 0}
         case "foldtest-full-container":
         case "ei-cdf-container":

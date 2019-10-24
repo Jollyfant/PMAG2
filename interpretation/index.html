@@ -2,540 +2,601 @@
 
 <html lang="en">
 
-  <head>
+   <head>
 
-    <!-- Required metadata tags -->
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="Paleomagnetism.org 2 - An online environment for paleomagnetic analysis">
-    <meta name="keywords" content="paleomagnetism, interpretation, zijderveld, pca">
+      <!-- Required metadata tags -->
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      <meta name="description" content="Paleomagnetism.org 2 - An online environment for paleomagnetic analysis">
+      <meta name="keywords" content="paleomagnetism, interpretation, zijderveld, pca">
+      <meta name="author" content="Mathijs Koymans">
+      <link rel="shortcut icon" type="image/x-icon" href="../resources/images/hades-icon.png" />
+      <link rel="stylesheet" href="../css/style.css">
 
-    <meta name="author" content="Mathijs Koymans">
+      <!-- Bootstrap & Font Awesome CSS & Leaflet -->
+      <link rel="stylesheet" href="../lib/bootstrap-4.3.1/dist/css/bootstrap.min.css">
+      </link>
+      <link rel="stylesheet" href="../lib/fontawesome-free-5.7.2-web/css/all.css">
+      <link rel="stylesheet" href="../lib/leaflet-1.4.0/leaflet.css">
 
-    <link rel="shortcut icon" type="image/x-icon" href="../resources/images/hades-icon.png"/>
+   </head>
 
-    <link rel="stylesheet" href="../css/style.css">
+   <body>
 
-    <!-- Bootstrap & Font Awesome CSS & Leaflet -->
-    <link rel="stylesheet" href="../lib/bootstrap-4.3.1/dist/css/bootstrap.min.css"></link>
-    <link rel="stylesheet" href="../lib/fontawesome-free-5.7.2-web/css/all.css">
-    <link rel="stylesheet" href="../lib/leaflet-1.4.0/leaflet.css">
+      <!-- Site Header -->
+      <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
 
-  </head>
+         <a class="navbar-brand" href="http://www.paleomagnetism.org">Paleomagnetism<span class="text-danger">.org</span></a>
 
-  <body>
+         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+           <span class="navbar-toggler-icon"></span>
+         </button>
 
-    <!-- Header -->
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-
-      <a class="navbar-brand" href="http://www.paleomagnetism.org">Paleomagnetism<span class="text-danger">.org</span></a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
-        <ul class="navbar-nav mr-auto">
-          <li class="nav-item">
-            <a class="nav-link active" href="../interpretation">Interpretation</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="../statistics">Statistics</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="../geography">Geography</a>
-          </li>
-          <li class="nav-item">
-            <span class="nav-link disabled" href="#">|</span></li>
-          <li class="nav-item">
-            <a class="nav-link" href="../references">References</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="../team">Team & Contact</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="../magic">MagIC Interface</a>
-          </li>
-        </ul>
-
-        <form class="form-inline my-2 my-lg-0">
-          <a href="../library/" class="btn btn-sm btn-secondary my-2 my-sm-0"><i class="fas fa-book-open"></i><b>&nbsp; Data Library</b></a>
-        </form>
-
-      </div>
-
-    </nav>
-
-    <!-- Main body -->
-    <div class="container">
-
-      <!-- Container for user notifications -->
-      <div id="notification-container"></div>
-
-      <!-- Tab Headers -->
-      <nav>
-        <div class="nav nav-tabs nav-justified" id="nav-tab" role="tablist">
-          <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Data Import</a>
-          <a class="nav-item nav-link disabled" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Interpretation</a>
-          <a class="nav-item nav-link disabled" id="nav-fitting-tab" data-toggle="tab" href="#nav-fitting" role="tab" aria-controls="nav-profile" aria-selected="false">Fitting & Export</a>
-          <a class="nav-item nav-link" id="nav-settings-tab" data-toggle="tab" href="#nav-settings" role="tab" aria-controls="nav-settings" aria-selected="false">Settings</a>
-        </div>
+         <!-- Header Items -->
+         <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+            <ul class="navbar-nav mr-auto">
+               <li class="nav-item">
+                  <a class="nav-link active" href="../interpretation">Interpretation</a>
+               </li>
+               <li class="nav-item">
+                  <a class="nav-link" href="../statistics">Statistics</a>
+               </li>
+               <li class="nav-item">
+                  <a class="nav-link" href="../geography">Geography</a>
+               </li>
+               <li class="nav-item">
+                  <a class="nav-link" href="../miscellaneous">Miscellaneous</a>
+               </li>
+               <li class="nav-item">
+                  <a class="nav-link" href="../references">References</a>
+               </li>
+               <li class="nav-item">
+                  <a class="nav-link" href="../team">Team & Contact</a>
+               </li>
+               <li class="nav-item">
+                  <a class="nav-link" href="../magic">MagIC Interface</a>
+               </li>
+            </ul>
+            <form class="form-inline my-2 my-lg-0">
+               <a href="../library/" class="btn btn-sm btn-secondary my-2 my-sm-0">
+                 <i class="fas fa-book-open"></i><b>&nbsp; Data Library</b>
+               </a>
+            </form>
+         </div>
       </nav>
 
-      <div class="tab-content">
+      <!-- Main body -->
+      <div class="container">
 
-        <!-- Tab for data importing -->
-        <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+         <!-- Container for user notifications -->
+         <div id="notification-container"></div>
 
-          <br>
+         <!-- Tab Headers -->
+         <nav>
+            <div class="nav nav-tabs nav-justified" id="nav-tab" role="tablist">
+               <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Data Import</a>
+               <a class="nav-item nav-link disabled" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Interpretation</a>
+               <a class="nav-item nav-link disabled" id="nav-fitting-tab" data-toggle="tab" href="#nav-fitting" role="tab" aria-controls="nav-profile" aria-selected="false">Fitting & Export</a>
+               <a class="nav-item nav-link" id="nav-settings-tab" data-toggle="tab" href="#nav-settings" role="tab" aria-controls="nav-settings" aria-selected="false">Settings</a>
+            </div>
+         </nav>
 
-          <div class="alert alert-light" role="alert">
-            <h5> Paleomagnetism.org 2 - Interpretation </h5>
-            <p> Data from various formats can be imported to Paleomagnetism.org. Select the appropriate input format and select one or multiple files to read from disk. New specimens can be appended to an existing by checking the respective checkbox.
-            <p> <b>It is recommended to start your analyis on a logical collection of samples that belong together.</b>
-          </div>
+         <!-- Tab Content -->
+         <div class="tab-content">
 
-          <div class="input-group mb-6">
+            <!-- Tab for data importing -->
+            <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
 
-            <!-- File input -->
-            <div class="custom-file">
-              <input type="file" class="custom-file-input" id="customFile" multiple>
-              <label class="custom-file-label" for="customFile"><i class="fas fa-search"></i> Select files </label>
+               <br>
+
+               <!-- Tab Information -->
+               <div class="alert alert-light" role="alert">
+                  <h5> Paleomagnetism.org 2 - Interpretation </h5>
+                  <p> Demagnetization data from many formats can be imported to Paleomagnetism.org. Select your input format and choose the files to read from your filesystem. Specimens can be appended to an existing collection by checking the respective <i>Append</i> checkbox. The available <b>keyboard shortcuts</b> can be discovered in the settings tab.
+                  <p> <b>It is recommended to start your analyis on a logical collection of specimens that belong together (e.g. a site).</b>
+               </div>
+
+               <div class="input-group">
+
+                  <!-- Options -->
+                  <select class="custom-select" id="format-selection">
+                     <optgroup label="Application Formats">
+                        <option value="PMAGORG2">Paleomagnetism.org (2.0.0 .col)</option>
+                        <option value="PMAGORG">Paleomagnetism.org (1.0.0. .dir)</option>
+                     </optgroup>
+                     <optgroup label="Institution Formats">
+                        <option value="BLACKMNT">Black Mountain Lab</option>
+                        <option value="CALTECH">Caltech Institute of Technology</option>
+                        <option value="CENIEH">Cenieh</option>
+                        <option value="BCN2G">PGL Beijing</option>
+                        <!-- Uses BCN2G -->
+                        <option value="NGU">Geological Survey of Norway</option>
+                        <option value="BCN2G">University of Barcelona</option>
+                        <!-- Uses BCN2G -->
+                        <option value="HELSINKI">University of Helsinki</option>
+                        <option value="OXFORD">University of Oxford</option>
+                        <option value="RS3">University of Oslo</option>
+                        <option value="MUNICH">University of Munich</option>
+                        <option value="UTRECHT">University of Utrecht</option>
+                     </optgroup>
+                     <optgroup label="Software Formats">
+                        <option value="MAGIC">MagIC</option>
+                        <option value="PALEOMAC">PaleoMac</option>
+                        <option value="BCN2G">BCN2G</option>
+                     </optgroup>
+                  </select>
+
+                  <!-- File input -->
+                  <div class="custom-file">
+                     <input type="file" class="custom-file-input" id="customFile" multiple>
+                     <label class="custom-file-label" for="customFile">
+                       <i class="fas fa-search"></i> Select files
+                     </label>
+                  </div>
+
+                  <!-- Toggle for appending -->
+                  <div class="input-group-append">
+                     <div class="input-group-text">
+                        <input id="append-input" type="checkbox" aria-label="Checkbox for following text input">
+                        <label class="form-check-label" for="append-input">
+                        &nbsp; Append
+                        </label>
+                     </div>
+                  </div>
+
+               </div>
+
+               <figcaption class="figure-caption text-right">
+                    <i class="far fa-frown"></i> Your format missing? Write us an <a href='../team'>e-mail</a>.
+               </figcaption>
+
             </div>
 
-            &nbsp;
+            <!-- Tab for data interpretation -->
+            <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
 
-            <!-- Format type selector -->
-            <div class="input-group-prepend">
-              <label class="input-group-text" for="format-selection">Data Format &nbsp; <small><i class="fas fa-angle-right"></i></small></label>
+               <br>
+
+               <!-- Specimen Scroller -->
+               <div class="input-group">
+                  <div class="input-group-prepend">
+                     <button onclick='handleSpecimenScroll(-1)' type="button" class="btn btn-primary btn-lg">
+                         <i class="fas fa-arrow-circle-left"></i>
+                     </button>
+                  </div>
+                  <select class="custom-select custom-select-lg" id="specimen-select"></select>
+                  <div class="input-group-append">
+                     <button onclick='handleSpecimenScroll(1)' type="button" class="btn btn-primary btn-lg">
+                         <i class="fas fa-arrow-circle-right"></i>
+                     </button>
+                  </div>
+               </div>
+
+               <br>
+
+               <!-- Specimen Information Table -->
+               <div class="table-responsive">
+                  <table id="table-container" class="table table-sm table-striped"></table>
+               </div>
+
+               <hr>
+
+               <!-- Main Body -->
+               <div class="container">
+                  <div class="row">
+
+                     <!-- Step Controller -->
+                     <div class="col-md-2">
+
+                        <!-- Demagnetization Type Selector -->
+                        <div style="border: 1px solid lightgrey;" class="btn-group d-flex btn-group-toggle" data-toggle="buttons">
+                           <label title="Thermal Demagnetization" value="thermal" class="demagnetization-type-radio btn btn-sm btn-light w-100 active">
+                           <input type="radio" name="options" id="option1" autocomplete="off" checked> <span style="pointer-events: none;" class='text-danger'><i class="fas fa-fire"></i> <b></b></span>
+                           </label>
+                           <label title="Alternating Field Demagnetization" value="alternating" class="demagnetization-type-radio btn btn-sm btn-light w-100">
+                           <input type="radio" name="options" id="option2" autocomplete="off"> <span style="pointer-events: none;" class='text-warning'><i class="fas fa-bolt"></i> <b></b></span>
+                           </label>
+                           <label title="Unknown Demagnetization" value="null" class="demagnetization-type-radio btn btn-sm btn-light w-100">
+                           <input type="radio" name="options" id="option3" autocomplete="off"> <span style="pointer-events: none;" class='text-success'><i class="fas fa-question"></i> <b></b></span>
+                           </label>
+                        </div>
+
+                        <hr>
+
+                        <!-- Step Table -->
+                        <div class="table-scroll">
+                           <table class="table table-sm" id="step-container"></table>
+                        </div>
+
+                     </div>
+
+                     <!-- Zijderveld & Equal Area Plot -->
+                     <div class="col-md-5">
+                        <div id="zijderveld-container"></div>
+                     </div>
+                     <div class="col-md-5">
+                        <div id="hemisphere-container"></div>
+                     </div>
+
+                  </div>
+
+                  <br>
+
+                  <!-- Table for PCA -->
+                  <div class="row">
+                     <div class="col-md-12">
+                        <hr>
+                        <div id="interpretation-table-container"></div>
+                        <hr>
+                     </div>
+                  </div>
+
+                  <!-- Container for the demagnetization diagram -->
+                  <div class="row">
+                     <div class="col-md-12">
+                        <div id="intensity-container"></div>
+                        <figcaption class="figure-caption">Figure showing the resultant magnetization, vector difference sum, and the unblocking spectrum.</figcaption>
+                     </div>
+                  </div>
+
+                  <!-- Exporting for figures -->
+                  <div class="text-right">
+                     <button class="btn btn-sm btn-light" id="export-png"><i class="far fa-file-image"></i> PNG</button>
+                     <button class="btn btn-sm btn-light" id="export-svg"><i class="far fa-file-image"></i> SVG</button>
+                     <button class="btn btn-sm btn-light" id="export-pdf"><i class="far fa-file-image"></i> PDF</button>
+                  </div>
+
+               </div>
             </div>
 
-            <select class="custom-select" id="format-selection">
-              <optgroup label="Application Formats">
-                <option value="PMAGORG2">Paleomagnetism.org (2.0.0)</option>
-                <option value="PMAGORG">Paleomagnetism.org (1.0.0)</option>
-              </optgroup>
-              <optgroup label="Institution Formats">
-                <option value="BLACKMNT">Black Mountain Lab</option>
-                <option value="CALTECH">Caltech Institute of Technology</option>
-                <option value="CENIEH">Cenieh</option>
-                <option value="BCN2G">PGL Beijing</option> <!-- Uses BCN2G -->
-                <option value="NGU">Geological Survey of Norway</option>
-                <option value="BCN2G">University of Barcelona</option> <!-- Uses BCN2G -->
-                <option value="HELSINKI">University of Helsinki</option>
-                <option value="OXFORD">University of Oxford</option>
-                <option value="RS3">University of Oslo</option>
-                <option value="MUNICH">University of Munich</option>
-                <option value="UTRECHT">University of Utrecht</option>
-              </optgroup>
-              <optgroup label="Software Formats">
-                <option value="MAGIC">MagIC</option>
-                <option value="PALEOMAC">PaleoMac</option>
-                <option value="BCN2G">BCN2G</option>
-              </optgroup>
-            </select>
+            <!-- Tab for fitting great circles to directions -->
+            <div class="tab-pane fade" id="nav-fitting" role="tabpanel" aria-labelledby="nav-settings-tab">
 
-            <div class="input-group-append">
-              <div class="input-group-text">
-                <input id='append-input' type="checkbox" aria-label="Checkbox for following text input">
-                <label class="form-check-label" for="append-input">
-                  &nbsp; Append
-                </label>
-              </div>
+               <br>
+
+               <div class="alert alert-light alert-dismissible fade show" role="alert">
+                 <h5> Interpretation - Great Circle Fitting </h5>
+                 <p> Interpreted great circle components can be fitted to directional set points by pressing <b>9</b>. Components are fitted in the active coordinate system. The algorithm of <a href="../references/">McFadden and McElhinny, 1988</a> is used.
+                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                   <span aria-hidden="true">&times;</span>
+                 </button>
+               </div>
+
+               <!-- Table showing the interpreted components -->
+               <div class="row justify-content-md-center">
+                  <div class="col-md-4" style="max-height: 600px; overflow-y: scroll;">
+
+                     <h5> Interpreted Components </h5>
+
+                     <!-- Show the available groups -->
+                     <p> Groups: <span id='group-show'></span></small>
+
+                     <table class='table table-sm text-center table-striped'>
+                        <thead>
+                           <tr>
+                              <td>Sample</td>
+                              <td>Declination</td>
+                              <td>Inclination</td>
+                              <td>Type</td>
+                              <td></td>
+                           </tr>
+                        </thead>
+                        <tbody id="fitting-container-table-tbody"></tbody>
+                     </table>
+                     <small>Tip! Double click to merge a group </small>
+                     <button style="float: right;" class="btn btn-sm btn-light" onclick="downloadInterpretationsCSV()" type="button"><i class="fas fa-file-download"></i> CSV</button>
+                  </div>
+
+                  <!-- Container showing all interpretations -->
+                  <div class="col-md-8">
+                     <div id="fitting-container" style="height: 600px;"></div>
+                     <figcaption class="figure-caption" style="float: right;">Great circles can be fitted to directional set points by pressing <b>9</b>.</figcaption>
+                  </div>
+
+               </div>
+
+               <br>
+
+               <!-- Summary of all components -->
+               <div class="row justify-content-md-center">
+                  <div class="col-md-12">
+                     <table class="table table-sm text-center table-striped" id="fitted-table-container"></table>
+                  </div>
+               </div>
+
+               <!-- Collection download button -->
+               <div class="row justify-content-md-center">
+                  <div class="col-md-12 ">
+                     <div class='text-center'>
+                        <button class="btn btn-primary" onclick="exportApplicationSave()" type="button"><i class="fas fa-file-download"></i><b> Download Collection</b></button>
+                     </div>
+                  </div>
+               </div>
+
             </div>
 
-          </div>
+            <!-- Tab for settings & preferences -->
+            <div class="tab-pane fade" id="nav-settings" role="tabpanel" aria-labelledby="nav-settings-tab">
 
-          <p><figcaption class="figure-caption text-right"><i class="far fa-frown"></i> Your institution's format not here? Write us an e-mail on the <a href='/team'>contact page</a>.</figcaption>
+               <br>
 
-        </div>
+               <!-- Options for sorting -->
+               <div class="card">
+                  <div class="card-body">
+                     <h5> Sorting Options </h5>
+                     <p>
+                        <button onclick="sortSamples('name')" type="button" class="btn btn-sm btn-light"><i class="fas fa-sort"></i> Name</button>
+                        <button onclick="sortSamples('stratigraphy')" type="button" class="btn btn-sm btn-light"><i class="fas fa-sort"></i> Stratigraphy</button>
+                        <button onclick="sortSamples('lithology')" type="button" class="btn btn-sm btn-light"><i class="fas fa-sort"></i> Lithology</button>
+                        <button onclick="sortSamples('age')" type="button" class="btn btn-sm btn-light"><i class="fas fa-sort"></i> Age</button>
+                        <button onclick="sortSamples('bogo')" type="button" class="btn btn-sm btn-light"><i class="fas fa-sort"></i> Randomly</button>
+                  </div>
+               </div>
 
-        <!-- Tab for data interpretation -->
-        <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+               <p>
 
-          <br>
-          
-          <!-- Specimen Scroller -->
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <button onclick='handleSpecimenScroll(-1)' type="button" class="btn btn-primary btn-lg"><i class="fas fa-arrow-circle-left"></i></button>
+               <!-- Keyboard tips -->
+               <div class="card">
+                  <div class="card-body">
+                     <h5> Keyboard Shortcuts</h5>
+                     <small>
+                        <table class="table table-sm table-striped table-responsive text-center">
+
+                          <thead>
+                             <tr>
+                                <td>Previous Specimen</td>
+                                <td>Next Specimen</td>
+                                <td>Previous Step</td>
+                                <td>Next Step</td>
+                                <td>Select Step</td>
+                                <td>Hide Step</td>
+                                <td>PCA (Direction, Plane)</td>
+                                <td>Anchor Component</td>
+                                <td>Cycle Projection</td>
+                                <td>Cycle Coordinates</td>
+                                <td>Fit Great Circles</td>
+                                <td>Change Group</td>
+                                <td>Set Location</td>
+                                <td>Remove Specimen</td>
+                             </tr>
+                           </thead>
+                           <tbody>
+                              <tr>
+                                 <td>Left, A</td>
+                                 <td>Right, D</td>
+                                 <td>Up, W</td>
+                                 <td>Down, S</td>
+                                 <td>Plus, X</td>
+                                 <td>Minus, Z</td>
+                                 <td>1, 2</td>
+                                 <td>Control</td>
+                                 <td>3</td>
+                                 <td>8</td>
+                                 <td>9</td>
+                                 <td>g</td>
+                                 <td>i</td>
+                                 <td>q</td>
+                              </tr>
+                           </tbody>
+                        </table>
+                     </small>
+                  </div>
+               </div>
+
+               <p>
+
+               <!-- Preferences -->
+               <div class="card">
+                  <div class="card-body">
+
+                     <h5> Preferences </h5>
+
+                     <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="auto-save" value="option1" checked>
+                        <label class="form-check-label" for="auto-save"> Auto-save </label>
+                     </div>
+                     <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="zijderveld-tooltip" value="option1" checked>
+                        <label class="form-check-label" for="zijderveld-tooltip"> Zijderveld tooltip</label>
+                     </div>
+                     <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="normalize-intensities" value="option1" checked>
+                        <label class="form-check-label" for="normalize-intensities"> Normalize intensities</label>
+                     </div>
+                     <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="show-labels" value="option1" checked>
+                        <label class="form-check-label" for="show-labels"> Show labels</label>
+                     </div>
+                     <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="enable-sound" value="option1" checked>
+                        <label class="form-check-label" for="enable-sound"> Sound </label>
+                     </div>
+                     <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="auto-comment" value="option1">
+                        <label class="form-check-label" for="auto-comment"> Auto comment </label>
+                     </div>
+                     <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="confirm-integrity" value="option1">
+                        <label class="form-check-label" for="confirm-integrity"> Confirm file integrity </label>
+                     </div>
+                     <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="flip-ellipse" value="option1" checked>
+                        <label class="form-check-label" for="flip-ellipse"> Flip Confidence Ellipses </label>
+                     </div>
+                  </div>
+               </div>
+
+               <p>
+
+               <!-- Reset the application -->
+               <div class="card">
+                  <div class="card-body">
+
+                     <h5> Application Reset </h5>
+
+                     <p> The application will be reset and data will be cleared from local storage. Remember to export your interpretations to a file.
+                     <hr>
+                     <button onclick="clearLocalStorage('interpretation')" type="button" class="btn btn-sm btn-danger"><i class="fas fa-times"></i>&nbsp; Reset Local Storage</button>
+                  </div>
+               </div>
+
             </div>
-            <select class="custom-select custom-select-lg" id="specimen-select"></select>
-            <div class="input-group-append">
-              <button onclick='handleSpecimenScroll(1)' type="button" class="btn btn-primary btn-lg"><i class="fas fa-arrow-circle-right"></i></button>
-           </div>
-          </div>
-          
-          <br>
-
-          <!-- Specimen information -->
-          <div class="table-responsive"><table id="table-container" class="table table-sm table-striped"></table></div>
-
-          <hr>
-          
-          <div class="container">
-            <div class="row">
-	      <div class="col-md-2">
-                <div style='border: 1px solid lightgrey;' class="btn-group d-flex btn-group-toggle" data-toggle="buttons">
-                  <label title="Thermal Demagnetization" value="thermal" class="demagnetization-type-radio btn btn-sm btn-light w-100 active">
-                    <input type="radio" name="options" id="option1" autocomplete="off" checked> <span style="pointer-events: none;" class='text-danger'><i class="fas fa-fire"></i> <b></b></span>
-                  </label>
-                  <label title="Alternating Field Demagnetization" value="alternating" class="demagnetization-type-radio btn btn-sm btn-light w-100">
-                    <input type="radio" name="options" id="option2" autocomplete="off"> <span style="pointer-events: none;" class='text-warning'><i class="fas fa-bolt"></i> <b></b></span>
-                  </label>
-                  <label title="Unknown Demagnetization" value="null" class="demagnetization-type-radio btn btn-sm btn-light w-100">
-                    <input type="radio" name="options" id="option3" autocomplete="off"> <span style="pointer-events: none;" class='text-success'><i class="fas fa-question"></i> <b></b></span>
-                  </label>
-                </div>
-                <hr>
-                <div class="table-scroll">
-	          <table class="table table-sm" id="step-container"></table>
-                </div>
-	      </div>
-              <div class="col-md-5">
-                <div id="zijderveld-container"></div>
-	      </div>
-	      <div class="col-md-5">
-                <div id="hemisphere-container"></div>
-              </div>
-            </div>
-
-            <br>
-
-            <!-- Table for PCA -->
-            <div class="row">
-              <div class="col-md-12">
-                <hr>
-                <div id="interpretation-table-container"></div>
-                <hr>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-md-12">
-                <div id="intensity-container"></div>
-                <figcaption class="figure-caption">Figure showing the resultant magnetization, vector difference sum, and the unblocking spectrum.</figcaption>
-	       </div>
-	     </div>
-            <div class="text-right">
-	          <button class="btn btn-sm btn-light" id="export-png"><i class="far fa-file-image"></i> PNG</button>
-	          <button class="btn btn-sm btn-light" id="export-svg"><i class="far fa-file-image"></i> SVG</button>
-	          <button class="btn btn-sm btn-light" id="export-pdf"><i class="far fa-file-image"></i> PDF</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Tab for fitting great circles to directions -->
-        <div class="tab-pane fade" id="nav-fitting" role="tabpanel" aria-labelledby="nav-settings-tab">
-
-          <br>
-
-          <div class="row justify-content-md-center">
-
-            <div class="col-md-4" style="max-height: 600px; overflow-y: scroll;">
-              <h5> Interpreted Components </h5>
-              <table class='table table-sm text-center table-striped'>
-                <thead>
-                   <tr>
-                     <td>Sample</td>
-                     <td>Declination</td>
-                     <td>Inclination</td>
-                     <td>Type</td>
-                     <td></td>
-                   </tr>
-                 </thead>
-                 <tbody id="fitting-container-table-tbody"></tbody>
-              </table>
-              <button style="float: right;" class="btn btn-sm btn-light" onclick="downloadInterpretationsCSV()" type="button"><i class="fas fa-file-download"></i> CSV</button>
-            </div>
-
-            <div class="col-md-8">
-              <div id="fitting-container" style="height: 600px;"></div>
-              <figcaption class="figure-caption" style="float: right;">Great circles can be fitted to directional set points by pressing <b>9</b>.</figcaption>
-            </div>
-
-          </div>
-
-          <br>
-
-          <div class="row justify-content-md-center">
-            <div class="col-md-12 ">
-              <table class='table table-sm text-center table-striped' id="fitted-table-container"></table>
-            </div>
-          </div>
-
-          <div class="row justify-content-md-center">
-            <div class="col-md-12 ">
-              <div class='text-center'>
-                <button class="btn btn-primary" onclick="downloadInterpretations()" type="button"><i class="fas fa-file-download"></i><b> Download Interpretations</b></button>
-              </div>
-            </div>
-          </div>
-          
-        </div>
-
-        <!-- Tab for settings & preferences --> 
-        <div class="tab-pane fade" id="nav-settings" role="tabpanel" aria-labelledby="nav-settings-tab">
-
-          <br>
-
-          <!-- Options for sorting -->
-          <h5> Sorting Options </h5>
-          <p> Specimens can be sorted by the following attributes.
-          <p>
-          <button onclick="sortSamples('name')" type="button" class="btn btn-sm btn-light"><i class="fas fa-sort"></i> Name</button>
-          <button onclick="sortSamples('stratigraphy')" type="button" class="btn btn-sm btn-light"><i class="fas fa-sort"></i> Stratigraphy</button>
-          <button onclick="sortSamples('lithology')" type="button" class="btn btn-sm btn-light"><i class="fas fa-sort"></i> Lithology</button>
-          <button onclick="sortSamples('age')" type="button" class="btn btn-sm btn-light"><i class="fas fa-sort"></i> Age</button>
-          <button onclick="sortSamples('bogo')" type="button" class="btn btn-sm btn-light"><i class="fas fa-sort"></i> Randomly</button>
-          <hr>
-
-          <!-- Keyboard tips -->
-          <h5> Keyboard Shortcuts</h5>
-          <small>
-            <table class="table table-sm table-striped table-responsive text-center">
-              <tr>
-                <td>Previous Specimen</td>
-                <td>Next Specimen</td>
-                <td>Previous Step</td>
-                <td>Next Step</td>
-                <td>Select Step</td>
-                <td>Hide Step</td>
-                <td>PCA (Direction)</td>
-                <td>PCA (Plane)</td>
-                <td>Anchor Component</td>
-                <td>Cycle Projection</td>
-                <td>Cycle Coordinates</td>
-                <td>Fit Great Circles</td>
-                <td>Change Group</td>
-                <td>Set Location</td>
-                <td>Remove Specimen</td>
-              </tr>
-                <td>Left, A</td>
-                <td>Right, D</td>
-                <td>Up, W</td>
-                <td>Down, S</td>
-                <td>Plus, X</td>
-                <td>Minus, Z</td>
-                <td>1</td>
-                <td>2</td>
-                <td>Control</td>
-                <td>3</td>
-                <td>8</td>
-                <td>9</td>
-                <td>g</td>
-                <td>i</td>
-                <td>q</td>
-            </table>
-          </small>
-
-          <!-- Preferences -->
-          <h5> Preferences </h5>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" id="auto-save" value="option1" checked>
-            <label class="form-check-label" for="auto-save"> Auto-save </label>
-            &nbsp;
-            &nbsp;
-            <input class="form-check-input" type="checkbox" id="zijderveld-tooltip" value="option1" checked>
-            <label class="form-check-label" for="zijderveld-tooltip"> Zijderveld tooltip</label>
-            &nbsp;
-            &nbsp;
-            <input class="form-check-input" type="checkbox" id="normalize-intensities" value="option1" checked>
-            <label class="form-check-label" for="normalize-intensities"> Normalize intensities</label>
-            &nbsp;
-            &nbsp;
-            <input class="form-check-input" type="checkbox" id="show-labels" value="option1" checked>
-            <label class="form-check-label" for="show-labels"> Show labels</label>
-            &nbsp;
-            &nbsp;
-            <input class="form-check-input" type="checkbox" id="enable-sound" value="option1" checked>
-            <label class="form-check-label" for="enable-sound"> Sound </label>
-            &nbsp;
-            &nbsp;
-            <input class="form-check-input" type="checkbox" id="auto-comment" value="option1">
-            <label class="form-check-label" for="auto-comment"> Auto comment </label>
-            &nbsp;
-            &nbsp;
-            <input class="form-check-input" type="checkbox" id="confirm-integrity" value="option1">
-            <label class="form-check-label" for="confirm-integrity"> Confirm file integrity </label>
-            &nbsp;
-            &nbsp;
-            <input class="form-check-input" type="checkbox" id="flip-ellipse" value="option1" checked>
-            <label class="form-check-label" for="flip-ellipse"> Flip Confidence Ellipses </label>
-          </div>
-          <br>
-          <br>
-
-          <!-- Reset the application -->
-          <h5> Application Reset </h5>
-          <p> The application will be resetted as local storage will be cleared. Export your data manually to save it.
-          <p>
-          <button onclick="clearLocalStorage('interpretation')" type="button" class="btn btn-sm btn-danger"><i class="fas fa-times"></i>&nbsp; Reset Local Storage</button>
-        
-        </div>
-
+         </div>
       </div>
 
-    </div>
+      <!-- Add the footer -->
+      <footer id="footer-container" class="container text-muted"></footer>
 
-    <footer id="footer-container" class="container text-muted"></footer>
-    <br>
+      <br>
 
-    <!-- Leaflet Map Modal -->
-    <div class="modal fade" id="map-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel"></h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-    
-            <div class="input-group input-group-sm">
-              <div class="input-group-prepend">
-                <span class="input-group-text" id="">Specimen</span>
-              </div>
-              <input id="specimen-name-input" class="form-control" disabled>
-              <div class="input-group-prepend">
-                <span class="input-group-text">Sample</span>
-              </div>
-              <input id="specimen-sample-input" title="Specimen belongs to a sample" class="form-control">
-            </div>
-
-            <p>
-
-            <div id="map" class="map"></div>
-
-            <p>
-
-            <!-- Latitude, Longitude container -->
-            <div class="form-group">
-              <div class="row">
-                <div class="col">
-                  <div class="input-group input-group-sm mb-4">
-                  <input id='specimen-latitude-input' type="text" class="form-control input-sm" placeholder="Latitude">
-                    <div class="input-group-append">
-                      <div class="input-group-text">°N</div>
-                    </div>
+      <!-- Leaflet Map Modal -->
+      <div class="modal fade" id="map-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+         <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel"></h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                  </button>
+               </div>
+               <div class="modal-body">
+                  <div class="input-group input-group-sm">
+                     <div class="input-group-prepend">
+                        <span class="input-group-text" id="">Specimen</span>
+                     </div>
+                     <input id="specimen-name-input" class="form-control" disabled>
+                     <div class="input-group-prepend">
+                        <span class="input-group-text">Sample</span>
+                     </div>
+                     <input id="specimen-sample-input" title="Specimen belongs to a sample" class="form-control">
                   </div>
-                </div>
-                <div class="col">
-                  <div class="input-group input-group-sm mb-4">
-                    <input id='specimen-longitude-input' type="text" class="form-control input-sm" placeholder="Longitude">
-                    <div class="input-group-append">
-                      <div class="input-group-text">°E</div>
-                    </div>
+                  <p>
+                  <div id="map" class="map"></div>
+                  <p>
+                     <!-- Latitude, Longitude container -->
+                  <div class="form-group">
+                     <div class="row">
+                        <div class="col">
+                           <div class="input-group input-group-sm mb-4">
+                              <input id='specimen-latitude-input' type="text" class="form-control input-sm" placeholder="Latitude">
+                              <div class="input-group-append">
+                                 <div class="input-group-text">°N</div>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="col">
+                           <div class="input-group input-group-sm mb-4">
+                              <input id='specimen-longitude-input' type="text" class="form-control input-sm" placeholder="Longitude">
+                              <div class="input-group-append">
+                                 <div class="input-group-text">°E</div>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="col">
+                           <div class="input-group input-group-sm mb-4">
+                              <div class="input-group-prepend">
+                                 <div class="input-group-text">Level</div>
+                              </div>
+                              <input id="specimen-level-input" class="form-control">
+                           </div>
+                        </div>
+                     </div>
+                     <div class="form-group">
+                        <div class="row">
+                           <div class="col">
+                              <div class="input-group input-group-sm mb-6">
+                                 <div class="input-group-prepend">
+                                    <span class="input-group-text" id="">Lithology</span>
+                                 </div>
+                                 <select id="specimen-lithology-input" class="form-control custom-select text-left">
+                                    <option value="null">Unknown</option>
+                                    <optgroup label="MagIC Controlled Vocabulary">
+                                    </optgroup>
+                                 </select>
+                              </div>
+                           </div>
+                           <div class="col">
+                              <div class="input-group input-group-sm md-6">
+                                 <div class="input-group-prepend">
+                                    <span class="input-group-text" id="">Geology</span>
+                                 </div>
+                                 <select id="specimen-geology-input" class="form-control custom-select text-left">
+                                    <option value="null">Unknown</option>
+                                    <optgroup label="MagIC Controlled Vocabulary">
+                                    </optgroup>
+                                 </select>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                     <p>
+                     <div class="input-group input-group-sm">
+                        <select style="width: 25%" id="specimen-age-select" class="form-control custom-select text-center"></select>
+                        <div class="input-group-prepend ">
+                           <span class="input-group-text" id="">Age</span>
+                        </div>
+                        <input id="age-input" class="form-control">
+                        <div class="input-group-prepend">
+                           <span class="input-group-text" id="">Min</span>
+                        </div>
+                        <input id="age-min-input" class="form-control">
+                        <div class="input-group-prepend">
+                           <span class="input-group-text" id="">Max</span>
+                        </div>
+                        <input id="age-max-input" class="form-control">
+                     </div>
                   </div>
-                </div>
-                <div class="col">
-                  <div class="input-group input-group-sm mb-4">
-                    <div class="input-group-prepend">
-                      <div class="input-group-text">Level</div>
-                    </div>
-                    <input id="specimen-level-input" class="form-control">
-                </div>
-              </div>
-            </div>
+               </div>
 
-            <div class="form-group">
-              <div class="row">
-                <div class="col">
-                  <div class="input-group input-group-sm mb-6">
-                    <div class="input-group-prepend">
-                      <span class="input-group-text" id="">Lithology</span>
-                    </div>
-                    <select id="specimen-lithology-input" class="form-control custom-select text-left">
-                      <option value="null">Unknown</option>
-                      <optgroup label="MagIC Controlled Vocabulary">
-                      </optgroup>
-                    </select>
+               <!-- Footer for Modal -->
+               <div class="modal-footer">
+                  <div class="mr-auto">
+                     <button id="save-location" type="button" class="btn btn-sm btn-success">Save Metadata</button>
+                     &nbsp;
+                     <div class="form-check form-check-inline">
+                        <input type="checkbox" class="form-check-input" id="location-apply-all">
+                        <label class="form-check-label" for="location-apply-all">Apply to all</label>
+                     </div>
                   </div>
-                </div>
+               </div>
 
-                <div class="col">
-                  <div class="input-group input-group-sm md-6">
-                    <div class="input-group-prepend">
-                      <span class="input-group-text" id="">Geology</span>
-                    </div>
-                    <select id="specimen-geology-input" class="form-control custom-select text-left">
-                      <option value="null">Unknown</option>
-                      <optgroup label="MagIC Controlled Vocabulary">
-                      </optgroup>
-                    </select>
-                  </div>
-                </div>
-              </div>
             </div>
-
-            <p>
-
-            <div class="input-group input-group-sm">
-              <select style="width: 25%" id="specimen-age-select" class="form-control custom-select text-center"></select>
-              <div class="input-group-prepend ">
-                <span class="input-group-text" id="">Age</span>
-              </div>
-              <input id="age-input"class="form-control">
-              <div class="input-group-prepend">
-                <span class="input-group-text" id="">Min</span>
-              </div>
-              <input id="age-min-input"class="form-control">
-              <div class="input-group-prepend">
-                <span class="input-group-text" id="">Max</span>
-              </div>
-              <input id="age-max-input"class="form-control">
-            </div>
-          </div>
-          </div>
-
-          <div class="modal-footer">
-            <div class="mr-auto">
-              <button id="save-location" type="button" class="btn btn-sm btn-success">Save Metadata</button>
-              &nbsp;
-              <div class="form-check form-check-inline">
-                <input type="checkbox" class="form-check-input" id="location-apply-all">
-                <label class="form-check-label" for="location-apply-all">Apply to all</label>
-              </div>
-            </div>
-          </div>
-        </div>
+         </div>
       </div>
-    </div>
 
-    </body>
+   </body>
 
-    <!-- jQuery slim and bootstrap -->
-    <script src="../lib/jquery-3.3.1/jquery-3.3.1.slim.min.js"></script>
-    <script src="../lib/bootstrap-4.3.1/dist/js/bootstrap.bundle.min.js"></script>
+   <!-- jQuery slim and bootstrap -->
+   <script src="../lib/jquery-3.3.1/jquery-3.3.1.slim.min.js"></script>
+   <script src="../lib/bootstrap-4.3.1/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Highcharts -->
-    <script src="../lib/highcharts-7.0.3/code/highcharts.js"></script>
-    <script src="../lib/highcharts-7.0.3/code/highcharts-more.js"></script>
-    <script src="../lib/highcharts-7.0.3/code/modules/exporting.js"></script>
-    <script src="../lib/highcharts-7.0.3/code/modules/offline-exporting.js"></script>
+   <!-- Highcharts -->
+   <script src="../lib/highcharts-7.0.3/code/highcharts.js"></script>
+   <script src="../lib/highcharts-7.0.3/code/highcharts-more.js"></script>
+   <script src="../lib/highcharts-7.0.3/code/modules/exporting.js"></script>
+   <script src="../lib/highcharts-7.0.3/code/modules/offline-exporting.js"></script>
 
-    <!-- Leaflet -->
-    <script src="../lib/leaflet-1.4.0/leaflet.js"></script>
+   <!-- Leaflet -->
+   <script src="../lib/leaflet-1.4.0/leaflet.js"></script>
 
-    <!-- SHA256 & numeric lib for PCA -->
-    <script src="../js/lib/sha.js"></script>
-    <script src="../lib/numeric-js-1.2.6/numeric.js"></script>
+   <!-- SHA256 & numeric lib for PCA -->
+   <script src="../js/lib/sha.js"></script>
+   <script src="../lib/numeric-js-1.2.6/numeric.js"></script>
 
-    <!-- General Utilities -->
-    <script src="../js/utils.js"></script>
-    <script src="../js/highcharts-patch.js"></script>
+   <!-- General Utilities -->
+   <script src="../js/utils.js"></script>
+   <script src="../js/highcharts-patch.js"></script>
+   <script src="../js/ages.js"></script>
 
-    <!-- Shared Classes -->
-    <script src="../js/classes/Exception.js"></script>
-    <script src="../js/classes/Direction.js"></script>
-    <script src="../js/classes/Coordinates.js"></script>
+   <!-- Shared Classes -->
+   <script src="../js/classes/Exception.js"></script>
+   <script src="../js/classes/Direction.js"></script>
+   <script src="../js/classes/Coordinates.js"></script>
 
-    <!-- Intepretation Portal -->
-    <script src="./js/ages.js"></script>
-    <script src="./js/importing.js"></script>
-    <script src="./js/exporting.js"></script>
-    <script src="./js/graphs.js"></script>
-    <script src="./js/index.js"></script>
-
+   <!-- Intepretation Portal -->
+   <script src="./js/importing.js"></script>
+   <script src="./js/exporting.js"></script>
+   <script src="./js/graphs.js"></script>
+   <script src="./js/index.js"></script>
 
 </html>

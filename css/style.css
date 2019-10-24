@@ -1,3 +1,7 @@
+textarea {
+   resize: none;
+}
+ 
 body {
   padding-top: 5rem;
   word-wrap: break-word;
@@ -121,9 +125,9 @@ select {
 }
 
 #step-container tr.current {
-  background-image: linear-gradient(to right, rgba(0,0,0,0), rgba(124,181,236,0.25), rgba(0,0,0,0));
+  background-image: linear-gradient(to right, rgba(124,181,236,0), rgba(124,181,236,0.5), rgba(124,181,236,0));
 }
 
 #step-container tr:hover {
-  background-image: linear-gradient(to right, rgba(0,0,0,0), rgba(124,181,236,0.25), rgba(0,0,0,0));
+  background-image: linear-gradient(to right, rgba(124,181,236,0), rgba(124,181,236,0.25), rgba(124,181,236,0));
 }

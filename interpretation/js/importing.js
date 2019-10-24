@@ -326,8 +326,14 @@ function importMagic(file) {
 
 function importBlackMnt(file) {
 
+  /*
+   * Function importBlackMnt
+   * Imports black mountain format to Paleomagnetism.org 2.0.0
+   */
+
   var lines = file.data.split(LINE_REGEXP).slice(1).filter(Boolean);
 
+  // Bedding parameters are given per line: check if the value is unique
   var beddingStrikes = new Set();
   var beddingDips = new Set();
   var coreAzimuths = new Set();
@@ -337,21 +343,45 @@ function importBlackMnt(file) {
 
     var parameters = line.split(/\s+/);
 
-    // Hmm? Southern hemisphere difference?
-    coreAzimuths.add(180 - Number(parameters[19]));
-    coreDips.add(-(90 - Number(parameters[20])));
+    let coreAzimuth = Number(parameters[19]);
+    // Hmm? Southern hemisphere difference? Core dips are probably flipped (and Hade!)
+    let coreDip = 180 - (90 - Number(parameters[20]));
+    let beddingStrike = Number(parameters[21]);
+    let beddingDip = Number(parameters[22]);
 
-    beddingStrikes.add(Number(parameters[21]));
-    beddingDips.add(Number(parameters[22]));
+    coreAzimuths.add(coreAzimuth);
+    coreDips.add(coreDip);
+
+    beddingStrikes.add(beddingStrike);
+    beddingDips.add(beddingDip);
 
     var step = parameters[0];
 
-    // Intensity is in A/m
-    var x = Number(parameters[1]) * 1E9;
-    var y = Number(parameters[2]) * 1E9;
-    var z = Number(parameters[3]) * 1E9;
-
+    // Intensity is in A/m (assumed)
+    var x = Number(parameters[1]) * 1E6;
+    var y = Number(parameters[2]) * 1E6;
+    var z = Number(parameters[3]) * 1E6;
     var coordinates = new Coordinates(x, y, z);
+
+    // Geographic and tectonic directions are in the file
+    // We can be defensive and check these values against what we calculate
+    var GDec = Number(parameters[10]);
+    var GInc = Number(parameters[11]);
+    var GDirection = coordinates.rotateTo(coreAzimuth, coreDip).toVector(Direction);
+
+    // Check and verify geographic coordinates
+    if(GDec.toFixed(2) !== GDirection.dec.toFixed(2) || GInc.toFixed(2) !== GDirection.inc.toFixed(2)) {
+      throw(new Exception("Inconsistency detected in geographic vector component."));
+    }
+
+    var TDec = Number(parameters[16]);
+    var TInc = Number(parameters[17]);
+    var TDirection = coordinates.rotateTo(coreAzimuth, coreDip).correctBedding(beddingStrike, beddingDip).toVector(Direction);
+
+    // Check and verify tectonic coordinates
+    if(TDec.toFixed(2) !== TDirection.dec.toFixed(2) || TInc.toFixed(2) !== TDirection.inc.toFixed(2)) {
+      throw(new Exception("Inconsistency detected in tectonic vector component."));
+    }
 
     // Intensity is in A/m
     return new Measurement(step, coordinates, null);
@@ -362,6 +392,8 @@ function importBlackMnt(file) {
   if(beddingStrikes.size > 1 || beddingDips.size > 1 || coreAzimuths.size > 1 || coreDips.size > 1) {
     throw(new Exception("Core or bedding parameters not unique in input file."));
   }
+
+  let sampleName = file.name.split(".").shift();
 
   // Add the data to the application
   specimens.push({
@@ -378,8 +410,8 @@ function importBlackMnt(file) {
     "ageMin": null,
     "ageMax": null,
     "lithology": null,
-    "sample": file.name,
-    "name": file.name,
+    "sample": sampleName,
+    "name": sampleName,
     "volume": null,
     "beddingStrike": beddingStrikes.values().next().value,
     "beddingDip": beddingDips.values().next().value,

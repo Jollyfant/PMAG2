@@ -24,7 +24,7 @@ function showGeographicAndTectonicPlot(geographic, tectonic) {
       var direction = literalToCoordinates(component.coordinates).toVector(Direction);
 
       dataSeriesGeographic.push({
-        "name": component.name,
+        "component": component,
         "x": direction.dec,
         "y": projectInclination(direction.inc),
         "inc": direction.inc,
@@ -47,7 +47,7 @@ function showGeographicAndTectonicPlot(geographic, tectonic) {
       var direction = literalToCoordinates(component.coordinates).toVector(Direction);
 
       dataSeriesTectonic.push({
-        "name": component.name,
+        "component": component,
         "x": direction.dec,
         "y": projectInclination(direction.inc),
         "inc": direction.inc,
@@ -468,10 +468,10 @@ function plotUnfoldedData() {
     var direction = literalToCoordinates(component.coordinates).toVector(Direction);
 
     return {
+      "component": component,
       "x": direction.dec,
       "y": projectInclination(direction.inc),
-      "inc": direction.inc,
-      "name": component.name
+      "inc": direction.inc
     }
 
   });
@@ -482,10 +482,10 @@ function plotUnfoldedData() {
     var direction = literalToCoordinates(component.coordinates).correctBedding(component.beddingStrike, 1E-2 * unfolding * component.beddingDip).toVector(Direction);
 
     return {
+      "component": component,
       "x": direction.dec,
       "y": projectInclination(direction.inc),
-      "inc": direction.inc,
-      "name": component.name
+      "inc": direction.inc
     }
 
   });
@@ -554,10 +554,10 @@ function plotUnflattenedData() {
     var uInclination = Math.atan(Math.tan(direction.inc * RADIANS) / flattening) / RADIANS;
 
     return {
+      "component": component,
       "x": direction.dec,
       "y": projectInclination(uInclination),
-      "inc": uInclination,
-      "name": component.name
+      "inc": uInclination
     }
 
   });
@@ -568,10 +568,10 @@ function plotUnflattenedData() {
     var direction = literalToCoordinates(component.coordinates).toVector(Direction);
 
     return {
+      "component": component,
       "x": direction.dec,
       "y": projectInclination(direction.inc),
-      "inc": direction.inc,
-      "name": component.name
+      "inc": direction.inc
     }
 
   });
@@ -1826,13 +1826,13 @@ function generateHemisphereTooltip() {
 
   if(this.series.name === "ChRM Directions" || this.series.name === "Geomagnetic Directions" || this.series.name === "Unflattened Directions") {
     return [
-      "<b>Sample: </b>" + this.point.name,
+      "<b>Sample: </b>" + this.point.component.name,
       "<b>Declination: </b>" + this.x.toFixed(PRECISION),
       "<b>Inclination </b>" + this.point.inc.toFixed(PRECISION)
     ].join("<br>");
   } else if(this.series.name === "VGPs") {
     return [
-      "<b>Sample: </b>" + this.point.name,
+      "<b>Sample: </b>" + this.point.component.name,
       "<b>Longitude: </b>" + this.x.toFixed(PRECISION),
       "<br><b>Latitude: </b>" + this.point.inc.toFixed(PRECISION)
     ].join("<br>");
@@ -1849,10 +1849,6 @@ function generateHemisphereTooltip() {
       "<br><b>Latitude: </b>" + this.point.inc.toFixed(PRECISION)
     ].join("<br>");
   }
-
-}
-
-function getMeanStatistics() {
 
 }
 
@@ -2028,7 +2024,7 @@ function eqAreaProjection() {
       "x": direction.dec, 
       "y": projectInclination(direction.inc), 
       "inc": direction.inc,
-      "name": component.name,
+      "component": component,
       "marker": {
         "fillColor": (direction.inc < 0 ? HIGHCHARTS_WHITE : color),
         "lineWidth": 1,
@@ -2045,7 +2041,7 @@ function eqAreaProjection() {
       "x": pole.lng, 
       "y": projectInclination(pole.lat), 
       "inc": pole.lat, 
-      "name": component.name,
+      "component": component,
       "marker": {
         "fillColor": (pole.lat < 0 ? HIGHCHARTS_WHITE : color),
         "lineWidth": 1,
@@ -2252,6 +2248,7 @@ function saveCombinedCollection() {
     collections.push({ 
       "name": name,
       "dirty": true,
+      "type": "collection",
       "reference": null,
       "components": components,
       "created": new Date().toISOString()
@@ -2259,6 +2256,7 @@ function saveCombinedCollection() {
  
     notify("success", "Succesfully added collection <b>" + name + "</b> with <b>" + components.length + "</b> components in <b>" + COORDINATES + "</b> coordinates.");
     updateSpecimenSelect();
+    saveLocalStorage();
 
   }
 
@@ -2266,8 +2264,12 @@ function saveCombinedCollection() {
   document.getElementById("modal-confirm").onclick = modalConfirmCallback;
 
   $("#map-modal").modal("show");
-  
+
 }
+
+$("#map-modal").on("shown.bs.modal", function (e) {
+   document.getElementById("modal-name").focus();
+});
 
 function transformEllipse(A95Ellipse, dir) {
 
@@ -2386,10 +2388,23 @@ function eqAreaChart(container, dataSeries, plotBands, tickPositions) {
      * Exports VGP Distribution to CSV file
      */
 
-    const HEADER = new Array("longitude,latitude");
+    const HEADER = new Array("Sample, Pole Longitude, Pole Latitude, Core Azimuth, Core Dip, Bedding Strike, Bedding Dip, Latitude, Longitude, Age, Age Min, Age max");
 
     var csv = HEADER.concat(dataSeries[0].data.map(function(point) {
-      return new Array(point.x.toFixed(PRECISION), point.inc.toFixed(PRECISION)).join(ITEM_DELIMITER) 
+      return new Array(
+        point.component.name,
+        point.x.toFixed(PRECISION),
+        point.inc.toFixed(PRECISION),
+        point.component.coreAzimuth,
+        point.component.coreDip,
+        point.component.beddingStrike,
+        point.component.beddingDip,
+        point.component.latitude,
+        point.component.longitude,
+        point.component.age,
+        point.component.ageMin,
+        point.component.ageMax
+      ).join(ITEM_DELIMITER) 
     })).join(LINE_DELIMITER);
 
     downloadAsCSV("VGP-distribution.csv", csv);
@@ -2403,10 +2418,23 @@ function eqAreaChart(container, dataSeries, plotBands, tickPositions) {
      * Exports ChRM Distribution to CSV file
      */
     
-    const HEADER = new Array("declination,inclination");
+    const HEADER = new Array("Sample, Declination, Inclination, Core Azimuth, Core Dip, Bedding Strike, Bedding Dip, Latitude, Longitude, Age, Age Min, Age Max");
     
     var csv = HEADER.concat(dataSeries[0].data.map(function(point) {
-      return new Array(point.x.toFixed(PRECISION), point.inc.toFixed(PRECISION)).join(ITEM_DELIMITER)
+      return new Array(
+        point.component.name,
+        point.x.toFixed(PRECISION),
+        point.inc.toFixed(PRECISION),
+        point.component.coreAzimuth,
+        point.component.coreDip,
+        point.component.beddingStrike,
+        point.component.beddingDip,
+        point.component.latitude,
+        point.component.longitude,
+        point.component.age,
+        point.component.ageMin,
+        point.component.ageMax
+      ).join(ITEM_DELIMITER)
     })).join(LINE_DELIMITER);
     
     downloadAsCSV("ChRM-distribution.csv", csv);

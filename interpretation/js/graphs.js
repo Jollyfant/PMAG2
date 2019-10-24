@@ -632,6 +632,7 @@ function formatInterpretationSeriesArea(interpretations) {
    */
 
   const SHOW_TAU3 = true;
+
   var series = new Array();
 
   // Extract TAU3 interpretations for plotting
@@ -642,13 +643,19 @@ function formatInterpretationSeriesArea(interpretations) {
 
     if(interpretation.type === "TAU1" || SHOW_TAU3) {
 
+      var name = "Interpretation (" + tauToMark(interpretation.type) + ")";
+
+      if(interpretation.fitted) {
+        name = name + " - fitted";
+      }
+
       series.push({
-        "name": "Interpretation (" + interpretation.type + ")",
+        "name": name,
         "type": "scatter",
         "zIndex": 100,
         "color": HIGHCHARTS_ORANGE,
         "marker": {
-          "symbol": "circle",
+          "symbol": interpretation.fitted ? "diamond" : "circle",
           "lineColor": HIGHCHARTS_ORANGE,
           "lineWidth": 1,
           "fillColor": (direction.inc < 0) ? HIGHCHARTS_WHITE : HIGHCHARTS_ORANGE
@@ -757,11 +764,18 @@ function formatInterpretationSeries(intensity, interpretations) {
 
     }
 
+    var name = "Interpretation (τ1)";
+
+    if(interpretation.fitted) {
+      name = name + " - fitted";
+    }
+
     series.push({
-      "name": "Interpretation (TAU1)",
+      "name": name,
       "data": linearFitHorizontal,
       "enableMouseTracking": false,
       "lineWidth": 1,
+      "dashStyle": interpretation.fitted ? "LongDash" : "Solid",
       "color": HIGHCHARTS_GREEN,
       "marker": {
         "enabled" : false
@@ -773,6 +787,7 @@ function formatInterpretationSeries(intensity, interpretations) {
       "lineWidth": 1,
       "linkedTo": ":previous",
       "enableMouseTracking": false,
+      "dashStyle": interpretation.fitted ? "LongDash" : "Solid",
       "color": HIGHCHARTS_RED,
       "marker": {
         "enabled": false

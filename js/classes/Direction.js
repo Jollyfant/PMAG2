@@ -26,6 +26,12 @@ Direction.prototype.unit = function() {
 
 }
 
+Direction.prototype.angle = function(direction) {
+
+  return this.toCartesian().angle(direction.toCartesian());
+
+}
+
 Direction.prototype.asArray = function() {
 
   /*
