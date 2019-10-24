@@ -1811,5 +1811,22 @@ function collectCitation() {
 
 }
 
+function doiLookup(doi, callback) {
+
+  /*
+   * Function doiLookup
+   * Looks up DOI from a registration and returns the citation
+   */
+
+  const DOI_REGISTRATION_URL = "https://crosscite.org/format?" + new Array(
+    "doi=" + doi,
+    "style=apa",
+    "lang=en-US"
+  ).join("&");
+
+  HTTPRequest(DOI_REGISTRATION_URL, "GET", callback);
+
+}
+
 // Add the footer to every page that includes the utils
 addFooter();

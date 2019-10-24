@@ -363,91 +363,124 @@
             </div>
             <!-- Tab for settings & preferences --> 
             <div class="tab-pane fade" id="nav-settings" role="tabpanel" aria-labelledby="nav-settings-tab">
+
                <br>
-               <!-- Cutoff selector -->
-               <h5> Select Cutoff and Polarity</h5>
-               <p> A pole-cutoff can be selected that will be applied in particular modules. Directions can be normalized to a particuar polarity.
-               <div class="input-group mb-6">
-                  <div class="input-group-prepend">
-                     <label class="input-group-text" for="cutoff-selection"><i class="fas fa-cut"></i> &nbsp; Direction Cutoff &nbsp; <small><i class="fas fa-angle-right"></i></small></label>
+
+               <div class="card">
+                  <div class="card-body">
+                     <!-- Cutoff selector -->
+                     <h5> Select Cutoff and Polarity</h5>
+                     <p> A pole-cutoff can be selected that will be applied in particular modules. Directions can be normalized to a particuar polarity.
+                     <div class="input-group mb-6">
+                        <div class="input-group-prepend">
+                           <label class="input-group-text" for="cutoff-selection"><i class="fas fa-cut"></i> &nbsp; Direction Cutoff &nbsp; <small><i class="fas fa-angle-right"></i></small></label>
+                        </div>
+                        <select class="custom-select" id="cutoff-selection">
+                           <optgroup label="Recommended Cutoffs">
+                              <option value="CUTOFF45">45 Cutoff</option>
+                           </optgroup>
+                           <optgroup label="Other Cutoffs">
+                              <option value="VANDAMME">Vandamme</option>
+                              <option value="">None</option>
+                           </optgroup>
+                        </select>
+                        <div class="input-group-prepend">
+                           <label class="input-group-text" for="polarity-selection"><i class="fas fa-adjust"></i> &nbsp; Normalize Polarity &nbsp; <small><i class="fas fa-angle-right"></i></small></label>
+                        </div>
+                        <select class="custom-select" id="polarity-selection">
+                           <option value="">None</option>
+                           <optgroup label="Normalize to">
+                              <option value="NORMAL">Positive Polarity</option>
+                              <option value="REVERSED">Negative Polarity</option>
+                           </optgroup>
+                        </select>
+                     </div>
                   </div>
-                  <select class="custom-select" id="cutoff-selection">
-                     <optgroup label="Recommended Cutoffs">
-                        <option value="CUTOFF45">45 Cutoff</option>
-                     </optgroup>
-                     <optgroup label="Other Cutoffs">
-                        <option value="VANDAMME">Vandamme</option>
-                        <option value="">None</option>
-                     </optgroup>
-                  </select>
-                  <div class="input-group-prepend">
-                     <label class="input-group-text" for="polarity-selection"><i class="fas fa-adjust"></i> &nbsp; Normalize Polarity &nbsp; <small><i class="fas fa-angle-right"></i></small></label>
-                  </div>
-                  <select class="custom-select" id="polarity-selection">
-                     <option value="">None</option>
-                     <optgroup label="Normalize to">
-                        <option value="NORMAL">Positive Polarity</option>
-                        <option value="REVERSED">Negative Polarity</option>
-                     </optgroup>
-                  </select>
                </div>
-               <br>
+
+               <p>
+
                <!-- Options for sorting -->
-               <h5> Sorting Options </h5>
-               <p> Collections can be sorted by the following attributes.
-               <p>
-                  <button onclick="sortCollections('name')" type="button" class="btn btn-sm btn-light"><i class="fas fa-sort"></i> Name</button>
-                  <button onclick="sortCollections('bogo')" type="button" class="btn btn-sm btn-light"><i class="fas fa-sort"></i> Randomly</button>
-                  <br>
-                  <!-- Keyboard tips -->
-               <h5> Keyboard Shortcuts</h5>
-               <small>
-                  <table class="table table-sm table-striped table-responsive text-center">
-                     <tr>
-                        <td>Cycle Confidence Ellipse (α95, A95)</td>
-                        <td>Cycle Coordinates</td>
-                        <td>Save Selected Collections</td>
-                        <td>Remove Selected Collections</td>
-                     </tr>
-                     <td>5</td>
-                     <td>8</td>
-                     <td>s</td>
-                     <td>q</td>
-                  </table>
-               </small>
-               <!-- Preferences -->
-               <h5> Preferences </h5>
-               <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="checkbox" id="auto-save" value="option1" checked>
-                  <label class="form-check-label" for="auto-save"> Auto-save </label>
-                  &nbsp;
-                  &nbsp;
-                  <input class="form-check-input" type="checkbox" id="enable-sound" value="option1" checked>
-                  <label class="form-check-label" for="enable-sound"> Sound </label>
-                  &nbsp;
-                  &nbsp;
-                  <input class="form-check-input" type="checkbox" id="group-collection" value="option1" checked>
-                  <label class="form-check-label" for="group-collection"> Group by Collection </label>
-                  &nbsp;
-                  &nbsp;
-                  <input class="form-check-input" type="checkbox" id="age-scatter" value="option1" checked>
-                  <label class="form-check-label" for="age-scatter"> Age Scatter </label>
-                  &nbsp;
-                  &nbsp;
-                  <input class="form-check-input" type="checkbox" id="magstrat-positive" value="option1" checked>
-                  <label class="form-check-label" for="magstrat-positive"> Use Stratigraphy Axis (0 - 360) </label>
-                  &nbsp;
-                  &nbsp;
-                  <input class="form-check-input" type="checkbox" id="flip-ellipse" value="option1" checked>
-                  <label class="form-check-label" for="flip-ellipse"> Flip Confidence Ellipses </label>
+               <div class="card">
+                  <div class="card-body">
+                     <h5> Sorting Options </h5>
+                     <button onclick="sortCollections('name')" type="button" class="btn btn-sm btn-light"><i class="fas fa-sort"></i> Name</button>
+                     <button onclick="sortCollections('bogo')" type="button" class="btn btn-sm btn-light"><i class="fas fa-sort"></i> Randomly</button>
+                  </div>
                </div>
-               <br>
-               <br>
-               <!-- Reset the application -->
-               <h5> Application Reset </h5>
-               <p> The application will be resetted as local storage will be cleared. Export your data manually to save it.
+
                <p>
-                  <button onclick="clearLocalStorage('statistics')" type="button" class="btn btn-sm btn-danger"><i class="fas fa-times"></i>&nbsp; Reset Local Storage</button>
+
+               <!-- Keyboard tips -->
+               <div class="card">
+                  <div class="card-body">
+                     <h5> Keyboard Shortcuts</h5>
+                     <small>
+                        <div class="table-responsive">
+                           <table class="table table-sm table-striped text-center">
+                              <tr>
+                                 <td>Cycle Confidence Ellipse (α95, A95)</td>
+                                 <td>Cycle Coordinates</td>
+                                 <td>Save Selected Collections</td>
+                                 <td>Remove Selected Collections</td>
+                              </tr>
+                              <td>5</td>
+                              <td>8</td>
+                              <td>s</td>
+                              <td>q</td>
+                           </table>
+                        </div>
+                     </small>
+                  </div>
+               </div>
+
+               <p>
+
+               <!-- Preferences -->
+               <div class="card">
+                  <div class="card-body">
+                     <h5> Preferences </h5>
+                     <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="auto-save" value="option1" checked>
+                        <label class="form-check-label" for="auto-save"> Auto-save </label>
+                     </div>
+                     <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="enable-sound" value="option1" checked>
+                        <label class="form-check-label" for="enable-sound"> Sound </label>
+                     </div>
+                     <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="group-collection" value="option1" checked>
+                        <label class="form-check-label" for="group-collection"> Group by Collection </label>
+                     </div>
+                     <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="age-scatter" value="option1" checked>
+                        <label class="form-check-label" for="age-scatter"> Age Scatter </label>
+                     </div>
+                     <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="magstrat-positive" value="option1" checked>
+                        <label class="form-check-label" for="magstrat-positive"> Use Stratigraphy Axis (0 - 360) </label>
+                     </div>
+                     <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="flip-ellipse" value="option1" checked>
+                        <label class="form-check-label" for="flip-ellipse"> Flip Confidence Ellipses </label>
+                     </div>
+                  </div>
+               </div>
+
+               <p>
+
+               <!-- Preferences -->
+               <div class="card">
+                  <div class="card-body">
+                     <h5> Application Reset </h5>
+                     <p> The application will be resetted as local storage will be cleared. Export your data manually to save it.
+                     <hr>
+                     <button onclick="clearLocalStorage('statistics')" type="button" class="btn btn-sm btn-danger">
+                        <i class="fas fa-times"></i>&nbsp; Reset Local Storage
+                     </button>
+                  </div>
+               </div>
+
             </div>
          </div>
       </div>

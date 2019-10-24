@@ -1663,7 +1663,9 @@ var StepSelector = function() {
   this.reset();
 
   this._container.addEventListener("click", function(event) {
-    this.setActiveStep(Number(event.target.value));
+    if(event.target.nodeName === "TR") {
+      this.setActiveStep(Number(event.target.value));
+    }
   }.bind(this));
 
 }
