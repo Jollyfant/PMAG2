@@ -1443,6 +1443,9 @@ function addData(file) {
   var reference = json.pid;
   var components = new Array();
 
+  var groups = new Object();
+
+  // Sort specimens by groups
   json.specimens.forEach(function(specimen) {
 
      specimen.interpretations.forEach(function(interpretation) {
@@ -1453,18 +1456,29 @@ function addData(file) {
          return;
        }
 
-       components.push(new Component(specimen, interpretation.specimen.coordinates));
+       if(!groups.hasOwnProperty(interpretation.group)) {
+         groups[interpretation.group] = new Array();
+       }
+
+       groups[interpretation.group].push(new Component(specimen, interpretation.specimen.coordinates));
 
      });
 
   });
 
-  collections.push({
-    "color": null,
-    "name": siteName,
-    "reference": reference,
-    "components": components,
-    "created": new Date().toISOString()
+  // Add each group to a different collection
+  Object.keys(groups).forEach(function(group) {
+
+    var components = groups[group];
+
+    collections.push({
+      "color": null,
+      "name": siteName + " - " + group,
+      "reference": reference,
+      "components": components,
+      "created": new Date().toISOString()
+    });
+
   });
 
 }
