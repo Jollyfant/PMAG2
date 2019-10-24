@@ -330,7 +330,7 @@ function exportMagIC(metadata) {
   var contributionHeader = new Array(
     "version",
     "timestamp",
-    "contributer",
+    "contributor",
     "data_model_version",
     "reference",
     "description"
