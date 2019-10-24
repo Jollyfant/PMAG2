@@ -42,6 +42,36 @@ if(document.getElementById("enable-sound")) {
 window.addEventListener("online",  notify.bind(null, "success", "Your connection to the internet has been recovered."));
 window.addEventListener("offline", notify.bind(null, "danger", "Your connection to the internet was dropped."));
 
+function padLeft(nr, n){
+  return Array(n - String(nr).length + 1).join("0") + nr;
+} 
+
+function updateTextAreaCounter() {
+
+  /*
+   * Function updateTextAreaCounter
+   * Adds numbers to text area
+   */
+
+  var size = 24;
+
+  // Get the textarea element
+  var element = document.getElementById("site-input-area");
+  var fract = Math.ceil(element.scrollTop / size);
+
+  // Clamp the size of the scroll
+  element.scrollTop = size * fract;
+
+  var numbers = new Array();
+
+  for(var i = fract; i < fract + 10; i++) {
+    numbers.push(padLeft(i, 4));
+  }
+
+  document.getElementById("numbers").innerHTML = numbers.join("<br>");
+
+}
+
 function getRotationMatrix(lambda, phi) {
 
   /*

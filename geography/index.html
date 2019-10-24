@@ -2,650 +2,581 @@
 
 <html lang="en">
 
-  <head>
+   <head>
 
-    <!-- Required metadata tags -->
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="Paleomagnetism.org 2 - An online environment for paleomagnetic analysis">
-    <meta name="keywords" content="paleomagnetism, interpretation, zijderveld, pca">
-    <meta name="author" content="Mathijs Koymans">
+      <!-- Required metadata tags -->
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      <meta name="description" content="Paleomagnetism.org 2 - An online environment for paleomagnetic analysis">
+      <meta name="keywords" content="paleomagnetism, interpretation, zijderveld, pca">
+      <meta name="author" content="Mathijs Koymans">
+      <link rel="shortcut icon" type="image/x-icon" href="../resources/images/hades-icon.png"/>
 
-    <link rel="shortcut icon" type="image/x-icon" href="../resources/images/hades-icon.png"/>
+      <!-- Paleomagnetism.org 2.0.0 CSS -->
+      <link rel="stylesheet" href="../css/style.css">
 
-    <!-- Paleomagnetism.org 2.0.0 CSS -->
-    <link rel="stylesheet" href="../css/style.css">
+      <!-- Bootstrap & Font Awesome CSS -->
+      <link rel="stylesheet" href="../lib/bootstrap-4.3.1/dist/css/bootstrap.min.css">
+      </link>
+      <link rel="stylesheet" href="../lib/fontawesome-free-5.7.2-web/css/all.css">
+      <link rel="stylesheet" href="../lib/leaflet-1.4.0/leaflet.css">
 
-    <!-- Bootstrap & Font Awesome CSS -->
-    <link rel="stylesheet" href="../lib/bootstrap-4.3.1/dist/css/bootstrap.min.css"></link>
-    <link rel="stylesheet" href="../lib/fontawesome-free-5.7.2-web/css/all.css">
-    <link rel="stylesheet" href="../lib/leaflet-1.4.0/leaflet.css">
+      <!-- Bootstrap Select -->
+      <link rel="stylesheet" href="../lib/bootstrap-select-1.13.6/dist/css/bootstrap-select.min.css">
 
-    <!-- Bootstrap Select -->
-    <link rel="stylesheet" href="../lib/bootstrap-select-1.13.6/dist/css/bootstrap-select.min.css">
+   </head>
 
-  </head>
+   <body>
 
-  <body>
-
-    <!-- Header -->
-
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-      <a class="navbar-brand" href="http://www.paleomagnetism.org">Paleomagnetism<span class="text-danger">.org</span></a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
-        <ul class="navbar-nav mr-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="../interpretation">Interpretation</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="../statistics">Statistics</a>
-          </li>
-          <li class="nav-item active">
-            <a class="nav-link" href="../geography">Geography</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="../miscellaneous">Miscellaneous</a>
-          </li>
-          <li class="nav-item">
-            <span class="nav-link disabled" href="#">|</span></li>
-          <li class="nav-item">
-            <a class="nav-link" href="../references">References</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="../team">Team & Contact</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="../magic">MagIC Interface</a>
-          </li>
-        </ul>
-
-        <form class="form-inline my-2 my-lg-0">
-          <a href="../library" class="btn btn-sm btn-secondary my-2 my-sm-0"><i class="fas fa-book-open"></i><b>&nbsp; Data Library</b></a>
-        </form>
-
-      </div>
-
-    </nav>
-
-    <!-- Main body -->
-    <div class="container">
-
-      <!-- Container for user notifications -->
-      <div id="notification-container"></div>
-
-      <!-- Specimen Scroller -->
-      <div class="input-group">
-        <select class="selectpicker form-control text-center" data-actions-box="true" id="specimen-select" title="Select one or multiple collections" multiple></select>
-      </div>
-
-      <br>
-
-      <!-- Tab Headers -->
-      <nav>
-        <div class="nav nav-tabs nav-justified" id="nav-tab" role="tablist">
-          <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Data Import</a>
-          <a class="nav-item nav-link" id="nav-apwp-tab" data-toggle="tab" href="#nav-apwp" role="tab" aria-controls="nav-apwp" aria-selected="false">Map Overview & APWPs</a>
-          <a class="nav-item nav-link" id="nav-magstrat-tab" data-toggle="tab" href="#nav-magstrat" role="tab" aria-controls="nav-magstrat" aria-selected="false">Magnetostratigraphy</a>
-          <a class="nav-item nav-link" id="nav-settings-tab" data-toggle="tab" href="#nav-settings" role="tab" aria-controls="nav-settings" aria-selected="false">Settings</a>
-
-        </div>
+      <!-- Header -->
+      <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+         <a class="navbar-brand" href="http://www.paleomagnetism.org">Paleomagnetism<span class="text-danger">.org</span></a>
+         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+         <span class="navbar-toggler-icon"></span>
+         </button>
+         <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+            <ul class="navbar-nav mr-auto">
+               <li class="nav-item">
+                  <a class="nav-link" href="../interpretation">Interpretation</a>
+               </li>
+               <li class="nav-item">
+                  <a class="nav-link" href="../statistics">Statistics</a>
+               </li>
+               <li class="nav-item active">
+                  <a class="nav-link" href="../geography">Geography</a>
+               </li>
+               <li class="nav-item">
+                  <a class="nav-link" href="../miscellaneous">Miscellaneous</a>
+               </li>
+               <li class="nav-item">
+                  <a class="nav-link" href="../references">References</a>
+               </li>
+               <li class="nav-item">
+                  <a class="nav-link" href="../team">Team & Contact</a>
+               </li>
+               <li class="nav-item">
+                  <a class="nav-link" href="../magic">MagIC Interface</a>
+               </li>
+            </ul>
+            <form class="form-inline my-2 my-lg-0">
+               <a href="../library" class="btn btn-sm btn-secondary my-2 my-sm-0"><i class="fas fa-book-open"></i><b>&nbsp; Data Library</b></a>
+            </form>
+         </div>
       </nav>
 
+      <!-- Main body -->
+      <div class="container">
 
-      <div class="tab-content">
+         <!-- Container for user notifications -->
+         <div id="notification-container"></div>
 
-        <!-- Tab for data importing -->
-        <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
-
-          <br>
-
-          <div class="alert alert-light" role="alert">
-            <h5> Paleomagnetism.org 2 - Geography </h5>
-            <p> The Geography portal focuses on geographic applications of paleomagnetic directions. Data from various formats can be imported to the geography portal portal. 
-          </div>
-
-          <div class="input-group mb-6">
-
-            <!-- File input -->
-            <div class="custom-file">
-              <label class="custom-file-label" for="customFile"><i class="fas fa-search"></i> Select files </label>
-              <input class="custom-file-input" id="defer-input">
+         <!-- Specimen Scroller -->
+         <div class="input-group">
+            <select class="selectpicker form-control text-center" data-actions-box="true" id="specimen-select" title="Select one or multiple collections" multiple></select>
+         </div>
+         <br>
+         <!-- Tab Headers -->
+         <nav>
+            <div class="nav nav-tabs nav-justified" id="nav-tab" role="tablist">
+               <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Data Import</a>
+               <a class="nav-item nav-link" id="nav-apwp-tab" data-toggle="tab" href="#nav-apwp" role="tab" aria-controls="nav-apwp" aria-selected="false">Map Overview & APWPs</a>
+               <a class="nav-item nav-link" id="nav-magstrat-tab" data-toggle="tab" href="#nav-magstrat" role="tab" aria-controls="nav-magstrat" aria-selected="false">Magnetostratigraphy</a>
+               <a class="nav-item nav-link" id="nav-settings-tab" data-toggle="tab" href="#nav-settings" role="tab" aria-controls="nav-settings" aria-selected="false">Settings</a>
             </div>
+         </nav>
+         <div class="tab-content">
 
-            <!-- File input -->
-            <input style="display: none;" type="file" class="custom-file-input" id="customFile" multiple>
+            <!-- Tab for data importing -->
+            <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
 
-            &nbsp;
+               <br>
 
-            <!-- Format type selector -->
-            <div class="input-group-prepend">
-              <label class="input-group-text" for="format-selection">Data Format &nbsp; <small><i class="fas fa-angle-right"></i></small></label>
-            </div>
+               <div class="alert alert-light" role="alert">
+                  <h5> Paleomagnetism.org 2 - Statistics </h5>
+                  <p> Data from the Paleomagnetism .col format can be imported to the statistics portal. Each selected file and group will be associated with a new selectable collection. An alternative example of the <b>default</b> input file can be found <a href="../resources/formats/default.csv">here</a>.
+               </div>
 
-            <select class="custom-select" id="format-selection">
-              <optgroup label="Application Formats">
-                <option value="PMAG2">Paleomagnetism.org (2.0.0 .pub) </option>
-                <option value="DIR2">Paleomagnetism.org (2.0.0 .col)</option>
-                <option value="PMAG">Paleomagnetism.org (1.0.0 .pmag) </option>
-              </optgroup>
-              <optgroup label="Text Formats">
-                <option value="MODAL">Input Window</option>
-                <option value="CSV">Default Format (.csv)</option>
-              </optgroup>
-            </select>
+               <div class="input-group">
 
-            <div class="input-group-append">
-              <div class="input-group-text">
-                <input id='append-input' type="checkbox" aria-label="Checkbox for following text input">
-                <label class="form-check-label" for="append-input">
-                  &nbsp; Append
-                </label>
-              </div>
-            </div>
+                  <!-- Hidden File input -->
+                  <input style="display: none;" type="file" class="custom-file-input" id="customFile" multiple>
 
-            &nbsp;
+                  <!-- Format type selector -->
+                  <select class="custom-select" id="format-selection">
 
-          </div>
+                     <optgroup label="Application Formats">
+                        <option value="PMAG2">Paleomagnetism.org (2.0.0 .pub) </option>
+                        <option value="DIR2">Paleomagnetism.org (2.0.0 .col)</option>
+                        <option value="PMAG">Paleomagnetism.org (1.0.0 .pmag) </option>
+                     </optgroup>
+                     <optgroup label="Text Formats">
+                        <option value="MODAL">Input Window</option>
+                        <option value="CSV">Default Format (.csv)</option>
+                     </optgroup>
+                  </select>
 
-        </div>
-
-        <!-- Tab for magnetostratigraphy -->
-        <div class="tab-pane fade" id="nav-magstrat" role="tabpanel" aria-labelledby="nav-magstrat-tab">
-
-          <br>
-
-          <div class="alert alert-light" role="alert">
-            <h5> Paleomagnetism.org 2 - Magnetostratigraphy </h5>
-            <p> The Magnetostratigraphy tool will plot declination & inclination versus stratigraphic level. The polarity is determined by coloring reversed directions with a negative inclination black midway between two adjacent points.
-            <p> <button onclick="plotStrat()" type="button" class="btn btn-sm pull-right btn-primary"><i class="fas fa-play"></i> <b>Initialize</b></button>
-          </div>
-
-          <div class="row justify-content-center">
-	     <div class="col-md-3">
-              <div id="magstrat-container-declination"></div>
-            </div>
-	        <div class="col-md-2">
-              <div id="magstrat-container-binary"></div>
-            </div>
-	        <div class="col-md-3">
-              <div id="magstrat-container-inclination"></div>
-            </div>
-          </div>
-
-          <div class="text-right">
-            <button class="btn btn-sm btn-light" id="export-magstrat-png"><i class="far fa-file-image"></i> PNG</button>
-            <button class="btn btn-sm btn-light" id="export-magstrat-svg"><i class="far fa-file-image"></i> SVG</button>
-            <button class="btn btn-sm btn-light" id="export-magstrat-pdf"><i class="far fa-file-image"></i> PDF</button>
-          </div>
-
-        </div>
-
-        <!-- Tab for data interpretation -->
-        <div class="tab-pane fade" id="nav-apwp" role="tabpanel" aria-labelledby="nav-profile-tab">
-
-          <br>
-
-          <div class="alert alert-light" role="alert">
-            <h5> Geography - Map Overview & APWPs </h5>
-            <p> This map overview illustrates vertical-axis rotations for the selected sites including confidence parachutes (ΔDx). Declinations, inclinations, paleolatitudes, and apparant polar wander paths can be plotted for major plates.
-          </div>
-
-	      <div id="wrapper">
-
-            <div id="location-information-wrapper2">
-                <button class="btn btn-sm btn-light" onclick="downloadAsKML()"><i class="far fa-file-image"></i> KML</button>
-                <button class="btn btn-sm btn-light" onclick="downloadAsGeoJSON()"><i class="far fa-file-image"></i> GeoJSON</button>
-            </div>
-
-            <div id="location-information-wrapper">
-
-              <div id="accordion">
-                <div class="card">
-                  <div class="card-header" id="headingOne" style='padding: 0px'>
-                    <h5 class="mb-0">
-                    <button class="btn btn-link btn-sm" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                      Map Settings <small>(expand)</small>
-                    </button>
-                    </h5>
+                  <div class="custom-file">
+                     <label class="custom-file-label" for="customFile"><i class="fas fa-search"></i> Select files </label>
+                     <input class="custom-file-input" id="defer-input">
                   </div>
-            
-                  <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
-                    <div class="card-body" style='text-align: left;'>
 
-                      <div class="form-check text-center">
-                        <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" checked>
-                        <label class="form-check-label" for="defaultCheck1">
-                          Enable grid
+                  <div class="input-group-append">
+                     <div class="input-group-text">
+                        <input id="append-input" type="checkbox" aria-label="Checkbox for following text input">
+                        <label class="form-check-label" for="append-input">
+                        &nbsp; Append
                         </label>
-                        &nbsp;
-                        &nbsp;
-                        &nbsp;
-                        <input class="form-check-input" type="checkbox" value="" id="geology-layer-toggle" checked>
-                        <label class="form-check-label" for="geology-layer-toggle">
-                          Enable Geology
-                        </label>
-                      </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
 
-                      <br>
+            <!-- Tab for magnetostratigraphy -->
+            <div class="tab-pane fade" id="nav-magstrat" role="tabpanel" aria-labelledby="nav-magstrat-tab">
+               <br>
+               <div class="alert alert-light alert-dismissible fade show" role="alert">
+                  <h5> Paleomagnetism.org 2 - Magnetostratigraphy </h5>
+                  <p> The Magnetostratigraphy tool will plot declination & inclination versus stratigraphic level. The polarity is determined by coloring reversed directions with a negative inclination black midway between two adjacent points.
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                     <span aria-hidden="true">&times;</span>
+                  </button>
+               </div>
+               <p> <button onclick="plotStrat()" type="button" class="btn btn-sm pull-right btn-primary"><i class="fas fa-play"></i> <b>Initialize</b></button>
+               <div class="row justify-content-center">
+                  <div class="col-md-3">
+                     <div id="magstrat-container-declination"></div>
+                  </div>
+                  <div class="col-md-2">
+                     <div id="magstrat-container-binary"></div>
+                  </div>
+                  <div class="col-md-3">
+                     <div id="magstrat-container-inclination"></div>
+                  </div>
+               </div>
+               <div class="text-right">
+                  <button class="btn btn-sm btn-light" id="export-magstrat-png"><i class="far fa-file-image"></i> PNG</button>
+                  <button class="btn btn-sm btn-light" id="export-magstrat-svg"><i class="far fa-file-image"></i> SVG</button>
+                  <button class="btn btn-sm btn-light" id="export-magstrat-pdf"><i class="far fa-file-image"></i> PDF</button>
+               </div>
+            </div>
 
-                      <div class="form-group">
-                        <div class="row">
-                          <div class="col">
-                            <div class="input-group mb-6">
-                              <input id='site-longitude-input' type="text" class="form-control input-sm" placeholder="Longitude">
-                              <div class="input-group-append">
-                                <div class="input-group-text">°E</div>
+            <!-- Tab for data interpretation -->
+            <div class="tab-pane fade" id="nav-apwp" role="tabpanel" aria-labelledby="nav-profile-tab">
+               <br>
+               <div class="alert alert-light alert-dismissible fade show" role="alert">
+                  <h5> Geography - Map Overview & APWPs </h5>
+                  <p> This map overview illustrates vertical-axis rotations for the selected sites including confidence parachutes (ΔDx). Declinations, inclinations, paleolatitudes, and apparant polar wander paths can be plotted for major plates.
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                     <span aria-hidden="true">&times;</span>
+                  </button>
+               </div>
+
+               <!-- Wrapping overlay over map -->
+               <div id="wrapper">
+
+                  <!-- Marker exporting -->
+                  <div id="location-information-wrapper2">
+                     <button class="btn btn-sm btn-light" onclick="downloadAsKML()"><i class="far fa-file-image"></i> KML</button>
+                     <button class="btn btn-sm btn-light" onclick="downloadAsGeoJSON()"><i class="far fa-file-image"></i> GeoJSON</button>
+                  </div>
+
+                  <!-- Information selector -->
+                  <div id="location-information-wrapper">
+                     <div id="accordion">
+                        <div class="card">
+                           <div class="card-header" id="headingOne" style='padding: 0px'>
+                              <h5 class="mb-0">
+                                 <button class="btn btn-link btn-sm" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                 Map Settings <small>(expand)</small>
+                                 </button>
+                              </h5>
+                           </div>
+                           <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+                              <div class="card-body" style='text-align: left;'>
+                                 <div class="form-check text-center">
+                                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" checked>
+                                    <label class="form-check-label" for="defaultCheck1">
+                                      Enable grid
+                                    </label>
+                                 </div>
+                                 <br>
+                                 <div class="form-group">
+                                    <div class="row">
+                                       <div class="col">
+                                          <div class="input-group mb-6">
+                                             <input id='site-longitude-input' type="text" class="form-control input-sm" placeholder="Longitude">
+                                             <div class="input-group-append">
+                                                <div class="input-group-text">°E</div>
+                                             </div>
+                                          </div>
+                                       </div>
+                                       <div class="col">
+                                          <div class="input-group mb-6">
+                                             <input id='site-latitude-input' type="text" class="form-control input-sm" placeholder="Latitude">
+                                             <div class="input-group-append">
+                                                <div class="input-group-text">°N</div>
+                                             </div>
+                                          </div>
+                                       </div>
+                                    </div>
+                                 </div>
+                                 <div class="input-group">
+                                    <div class="input-group-prepend">
+                                       <div class="input-group-text">Age </div>
+                                    </div>
+                                    <input id='site-age-min-input' type="text" class="form-control input-sm" placeholder="Minimum">
+                                    <div class="input-group-append">
+                                       <div class="input-group-text">to</div>
+                                    </div>
+                                    <input id='site-age-max-input' type="text" class="form-control input-sm" placeholder="Maximum">
+                                    <div class="input-group-append">
+                                       <div class="input-group-text">Ma</div>
+                                    </div>
+                                 </div>
+                                 <hr>
+                                 <div class="input-group">
+                                    <div class="input-group-prepend">
+                                       <button onClick="removeKMLLayers()" id="kml-remove" class="btn btn-danger"><i class="fas fa-ban"></i></button>
+                                    </div>
+                                    <div class="custom-file">
+                                       <input type="file" class="custom-file-input" id="kml-upload" multiple>
+                                       <label class="custom-file-label" for="kml-upload">Custom KML Overlay</label>
+                                    </div>
+                                 </div>
+                                 <p>
+                                    <!-- Euler poles upload handler -->
+                                 <div class="input-group">
+                                    <div class="input-group-prepend">
+                                       <button type="button" class="btn btn-primary example-popover" data-toggle="popover" data-placement="left" title="Add Euler Rotations" data-content="Select a custom GPlates file (.rot) from disk to add to the application."><i class="fas fa-info-circle"></i></button>
+                                    </div>
+                                    <div class="custom-file">
+                                       <input type="file" class="custom-file-input" id="euler-upload">
+                                       <label class="custom-file-label" for="euler-upload">Custom Euler Rotations</label>
+                                    </div>
+                                 </div>
+                                 <p>
+                                    <!-- APWP upload handler -->
+                                 <div class="input-group">
+                                    <div class="input-group-prepend">
+                                       <button type="button" class="btn btn-primary example-popover" data-toggle="popover" data-placement="left" title="Add Custom APWPs" data-content="Select a custom APWP file (.csv) from disk to add to the application. Each row of the input file must contain four pole parameters delimited by a comma: longitude, latitude, A95, age"><i class="fas fa-info-circle"></i></button>
+                                    </div>
+                                    <div class="custom-file">
+                                       <input type="file" class="custom-file-input" id="apwp-upload" multiple>
+                                       <label class="custom-file-label" for="apwp-upload">Custom APWP</label>
+                                    </div>
+                                 </div>
                               </div>
-                            </div>
-                          </div>
-                          <div class="col">
-                            <div class="input-group mb-6">
-                            <input id='site-latitude-input' type="text" class="form-control input-sm" placeholder="Latitude">
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+
+                  <!-- Container for the map -->
+                  <div id="map" class="map" style="z-index: 1; height: 500px;"></div>
+
+               </div>
+
+               <figcaption class="figure-caption text-right">
+                  Map showing mean declinations and confidence parachutes for the selected collections. Normal and reversed polarities are shown in black and white respectively.
+               </figcaption>
+
+               <br>
+
+               <!-- Predicated Values -->
+               <h5> Predicted Directions <small class="text-muted"> Select a site on the map above </small> </h5>
+
+               <!-- Input for reference frame -->
+               <div class="input-group">
+
+                  <select class="selectpicker form-control text-center" data-actions-box="true" id="reference-select" title="Select one or multiple reference frames" multiple>
+                     <option value="torsvik2012">Torsvik et al., 2012</option>
+                     <option value="besse2002">Besse and Courtillot, 2002</option>
+                     <option value="kent2010">Kent and Irving, 2010</option>
+                  </select>
+                  <button type="button" class="btn btn-primary" id="calculate-reference">Calculate Predicted Directions</button>
+                  <select data-size="5" class="selectpicker form-control text-center" data-actions-box="true" id="plate-select" title="Select one or multiple plates" multiple>
+                     <optgroup label="Default Rotations">
+                        <option value="AF" data-type="default">Africa</option>
+                        <option value="AR" data-type="default">Arabia</option>
+                        <option value="AU" data-type="default">Australia</option>
+                        <option value="CA" data-type="default">Caribbean</option>
+                        <option value="EA" data-type="default">East Antarctica</option>
+                        <option value="EU" data-type="default">Eurasia</option>
+                        <option value="GR" data-type="default">Greenland</option>
+                        <option value="IB" data-type="default">Iberia</option>
+                        <option value="IN" data-type="default">India</option>
+                        <option value="MA" data-type="default">Madagascar</option>
+                        <option value="NA" data-type="default">North America</option>
+                        <option value="PA" data-type="default">Pacific</option>
+                        <option value="SA" data-type="default">South America</option>
+                     </optgroup>
+                  </select>
+               </div>
+               <br>
+               <nav>
+                  <div class="nav nav-tabs nav-justified" id="nav-predicted" role="tablist">
+                     <a class="nav-item nav-link active" id="nav-declination-tab" data-toggle="tab" href="#nav-declination" role="tab" aria-controls="nav-declination" aria-selected="true">Declination</a>
+                     <a class="nav-item nav-link" id="nav-inclination-tab" data-toggle="tab" href="#nav-inclination" role="tab" aria-controls="nav-inclination" aria-selected="false">Inclination</a>
+                     <a class="nav-item nav-link" id="nav-paleolatitude-tab" data-toggle="tab" href="#nav-paleolatitude" role="tab" aria-controls="nav-paleolatitude" aria-selected="false">Paleolatitude</a>
+                     <a class="nav-item nav-link" id="nav-poles-tab" data-toggle="tab" href="#nav-poles" role="tab" aria-controls="nav-poles" aria-selected="false">Poles</a>
+                  </div>
+               </nav>
+               <div class="tab-content">
+                  <div class="tab-pane fade show active" id="nav-declination" role="tabpanel" aria-labelledby="nav-declination-tab">
+                     <br>
+                     <div class="row">
+                        <div class="col-lg-12">
+                           <div id="declination-container"></div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="tab-pane fade" id="nav-inclination" role="tabpanel" aria-labelledby="nav-inclination-tab">
+                     <br>
+                     <div class="row">
+                        <div class="col-lg-12">
+                           <div id="inclination-container"></div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="tab-pane fade" id="nav-paleolatitude" role="tabpanel" aria-labelledby="nav-paleolatitude-tab">
+                     <br>
+                     <div class="row">
+                        <div class="col-lg-12">
+                           <div id="paleolatitude-container"></div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="tab-pane fade" id="nav-poles" role="tabpanel" aria-labelledby="nav-poles-tab">
+                     <br>
+                     <div class="row">
+                        <div class="col-lg-12">
+                           <div id="poles-container"></div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+               <div class="text-right">
+                  <button class="btn btn-sm btn-light" id="export-predicted-png"><i class="far fa-file-image"></i> PNG</button>
+                  <button class="btn btn-sm btn-light" id="export-predicted-svg"><i class="far fa-file-image"></i> SVG</button>
+                  <button class="btn btn-sm btn-light" id="export-predicted-pdf"><i class="far fa-file-image"></i> PDF</button>
+               </div>
+            </div>
+            <!-- Tab for settings & preferences --> 
+            <div class="tab-pane fade" id="nav-settings" role="tabpanel" aria-labelledby="nav-settings-tab">
+               <br>
+               <!-- Cutoff selector -->
+               <h5> Select Cutoff and Polarity</h5>
+               <p> A pole-cutoff can be selected that will be applied in particular modules. Directions can be normalized to a particuar polarity.
+               <div class="input-group mb-6">
+                  <div class="input-group-prepend">
+                     <label class="input-group-text" for="cutoff-selection"><i class="fas fa-cut"></i> &nbsp; Direction Cutoff &nbsp; <small><i class="fas fa-angle-right"></i></small></label>
+                  </div>
+                  <select class="custom-select" id="cutoff-selection">
+                     <optgroup label="Recommended Cutoffs">
+                        <option value="CUTOFF45">45 Cutoff</option>
+                     </optgroup>
+                     <optgroup label="Other Cutoffs">
+                        <option value="VANDAMME">Vandamme</option>
+                        <option value="">None</option>
+                     </optgroup>
+                  </select>
+                  <div class="input-group-prepend">
+                     <label class="input-group-text" for="polarity-selection"><i class="fas fa-adjust"></i> &nbsp; Normalize Polarity &nbsp; <small><i class="fas fa-angle-right"></i></small></label>
+                  </div>
+                  <select class="custom-select" id="polarity-selection">
+                     <option value="">None</option>
+                     <optgroup label="Normalize to">
+                        <option value="NORMAL">Positive Polarity</option>
+                        <option value="REVERSED">Negative Polarity</option>
+                     </optgroup>
+                  </select>
+               </div>
+               <br>
+               <!-- Options for sorting -->
+               <h5> Sorting Options </h5>
+               <p> Collections can be sorted by the following attributes.
+               <p>
+                  <button onclick="sortCollections('name')" type="button" class="btn btn-sm btn-light"><i class="fas fa-sort"></i> Name</button>
+                  <button onclick="sortCollections('bogo')" type="button" class="btn btn-sm btn-light"><i class="fas fa-sort"></i> Randomly</button>
+                  <br>
+                  <!-- Keyboard tips -->
+               <h5> Keyboard Shortcuts</h5>
+               <small>
+                  <table class="table table-sm table-striped table-responsive text-center">
+                     <tr>
+                        <td>Cycle Confidence Ellipse (α95, A95)</td>
+                        <td>Cycle Coordinates</td>
+                        <td>Save Selected Collections</td>
+                        <td>Remove Selected Collections</td>
+                     </tr>
+                     <td>5</td>
+                     <td>8</td>
+                     <td>s</td>
+                     <td>q</td>
+                  </table>
+               </small>
+               <!-- Preferences -->
+               <h5> Preferences </h5>
+               <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="checkbox" id="auto-save" value="option1" checked>
+                  <label class="form-check-label" for="auto-save"> Auto-save </label>
+                  &nbsp;
+                  &nbsp;
+                  <input class="form-check-input" type="checkbox" id="enable-sound" value="option1" checked>
+                  <label class="form-check-label" for="enable-sound"> Sound </label>
+                  &nbsp;
+                  &nbsp;
+                  <input class="form-check-input" type="checkbox" id="group-collection" value="option1" checked>
+                  <label class="form-check-label" for="group-collection"> Group by Collection </label>
+                  &nbsp;
+                  &nbsp;
+                  <input class="form-check-input" type="checkbox" id="age-scatter" value="option1" checked>
+                  <label class="form-check-label" for="age-scatter"> Age Scatter </label>
+                  &nbsp;
+                  &nbsp;
+                  <input class="form-check-input" type="checkbox" id="magstrat-positive" value="option1" checked>
+                  <label class="form-check-label" for="magstrat-positive"> Use Stratigraphy Axis (0 - 360) </label>
+                  &nbsp;
+                  &nbsp;
+                  <input class="form-check-input" type="checkbox" id="flip-ellipse" value="option1" checked>
+                  <label class="form-check-label" for="flip-ellipse"> Flip Confidence Ellipses </label>
+               </div>
+               <br>
+               <br>
+               <!-- Reset the application -->
+               <h5> Application Reset </h5>
+               <p> The application will be resetted as local storage will be cleared. Export your data manually to save it.
+               <p>
+                  <button onclick="clearLocalStorage('statistics')" type="button" class="btn btn-sm btn-danger"><i class="fas fa-times"></i>&nbsp; Reset Local Storage</button>
+            </div>
+         </div>
+      </div>
+      <!-- Modal for input -->
+      <div class="modal fade" id="input-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel3" aria-hidden="true">
+         <div class="modal-dialog" role="document">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <h5 class="modal-title">Add New Collection</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                  </button>
+               </div>
+               <div class="modal-body">
+                  <div class="input-group input-group-sm">
+                     <div class="input-group-prepend">
+                        <span class="input-group-text" id="">Collection Name</span>
+                     </div>
+                     <input id="site-input-name" class="form-control">
+                  </div>
+                  <p>
+                     <!-- Latitude, Longitude container -->
+                  <div class="form-group">
+                     <div class="row">
+                        <div class="col">
+                           <div class="input-group input-group-sm">
+                              <input id="site-input-latitude" type="text" class="form-control input-sm" placeholder="Latitude">
                               <div class="input-group-append">
-                                <div class="input-group-text">°N</div>
+                                 <div class="input-group-text">°N</div>
                               </div>
-                            </div>
-                          </div>
+                           </div>
                         </div>
-                      </div>
-
-                      <div class="input-group">
-                          <div class="input-group-prepend">
-                            <div class="input-group-text">Age </div>
-                          </div>
-                          <input id='site-age-min-input' type="text" class="form-control input-sm" placeholder="Minimum">
-                          <div class="input-group-append">
-                            <div class="input-group-text">to</div>
-                          </div>
-                          <input id='site-age-max-input' type="text" class="form-control input-sm" placeholder="Maximum">
-                          <div class="input-group-append">
-                            <div class="input-group-text">Ma</div>
-                          </div>
-                      </div>
-
-                      <hr>
- 
-                      <div class="input-group">
+                        <div class="col">
+                           <div class="input-group input-group-sm">
+                              <input id="site-input-longitude" type="text" class="form-control input-sm" placeholder="Longitude">
+                              <div class="input-group-append">
+                                 <div class="input-group-text">°E</div>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                     <p>
+                     <div class="input-group input-group-sm">
+                        <select style="width: 25%" id="specimen-age-select" class="form-control custom-select text-center"></select>
+                        <div class="input-group-prepend ">
+                           <span class="input-group-text" id="">Age</span>
+                        </div>
+                        <input id="age-input"class="form-control">
                         <div class="input-group-prepend">
-                          <button onClick="removeKMLLayers()" id="kml-remove" class="btn btn-danger"><i class="fas fa-ban"></i></button>
+                           <span class="input-group-text" id="">Min</span>
                         </div>
-                        <div class="custom-file">
-                          <input type="file" class="custom-file-input" id="kml-upload" multiple>
-                          <label class="custom-file-label" for="kml-upload">Custom KML Overlay</label>
-                        </div>
-                      </div>
-
-                      <p>
-
-                      <!-- Euler poles upload handler -->
-                      <div class="input-group">
+                        <input id="age-min-input"class="form-control">
                         <div class="input-group-prepend">
-                          <button type="button" class="btn btn-primary example-popover" data-toggle="popover" data-placement="left" title="Add Euler Rotations" data-content="Select a custom GPlates file (.rot) from disk to add to the application."><i class="fas fa-info-circle"></i></button>
+                           <span class="input-group-text" id="">Max</span>
                         </div>
-                        <div class="custom-file">
-                          <input type="file" class="custom-file-input" id="euler-upload">
-                          <label class="custom-file-label" for="euler-upload">Custom Euler Rotations</label>
-                        </div>
-                      </div>
-
-                      <p>
-
-                      <!-- APWP upload handler -->
-                      <div class="input-group">
+                        <input id="age-max-input"class="form-control">
+                     </div>
+                  </div>
+                  <p><small><b>Note:</b> metadata is applied to all components in collection. To assign more metadata to each component choose an alternative input method.</small>
+                  <hr>
+                  <div class="form-group">
+                     <label for="exampleFormControlTextarea1">Components</label>
+                     <div class="input-group">
+                     
                         <div class="input-group-prepend">
-                          <button type="button" class="btn btn-primary example-popover" data-toggle="popover" data-placement="left" title="Add Custom APWPs" data-content="Select a custom APWP file (.csv) from disk to add to the application. Each row of the input file must contain four pole parameters delimited by a comma: longitude, latitude, A95, age"><i class="fas fa-info-circle"></i></button>
+                           <span class="input-group-text" id="numbers"></span>
                         </div>
-                        <div class="custom-file">
-                          <input type="file" class="custom-file-input" id="apwp-upload" multiple>
-                          <label class="custom-file-label" for="apwp-upload">Custom APWP</label>
-                        </div>
-                      </div>
-
-                    </div>
+                        <textarea style="height: 254px; resize: none;" id="site-input-area" class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                     </div>
                   </div>
-                </div>
-              </div>
+                  <small>Fill in: declination, inclination, ((bedding strike, dip), and name).</small>
+                  <hr>
+                  <p><button class="btn btn-sm btn-primary" id="add-site-input">Add Collection</button>
+               </div>
             </div>
-            <div id="map" class="map" style="z-index: 1; height: 500px;"></div>
-          </div>
-          <figcaption class="figure-caption text-right">Map showing mean declinations and confidence parachutes for the selected collections. Normal and reversed polarities are shown in black and white respectively.</figcaption>
-
-          <br>
-
-          <h5> Predicted Directions <small class="text-muted"> Select a site on the map above </small> </h5>
-          <div class="input-group">
-
-            <select class="selectpicker form-control text-center" data-actions-box="true" id="reference-select" title="Select one or multiple reference frames" multiple>
-                <option value="torsvik2012">Torsvik et al., 2012</option>
-                <option value="besse2002">Besse and Courtillot, 2002</option>
-                <option value="kent2010">Kent and Irving, 2010</option>
-            </select>
-            &nbsp;
-            <button type="button" class="btn btn-info" id="calculate-reference">Calculate Predicted Directions</button>
-            &nbsp;
-            <select data-size="5" class="selectpicker form-control text-center" data-actions-box="true" id="plate-select" title="Select one or multiple plates" multiple>
-              <optgroup label="Default Rotations">
-		        <option value="AF" data-type="default">Africa</option>
-		        <option value="AR" data-type="default">Arabia</option>
-		        <option value="AU" data-type="default">Australia</option>
-		        <option value="CA" data-type="default">Caribbean</option>
-		        <option value="EA" data-type="default">East Antarctica</option>
-		        <option value="EU" data-type="default">Eurasia</option>
-		        <option value="GR" data-type="default">Greenland</option>
-		        <option value="IB" data-type="default">Iberia</option>
-		        <option value="IN" data-type="default">India</option>
-		        <option value="MA" data-type="default">Madagascar</option>
-		        <option value="NA" data-type="default">North America</option>
-		        <option value="PA" data-type="default">Pacific</option>
-		        <option value="SA" data-type="default">South America</option>
-              </optgroup>
-            </select>
-
-          </div>
-          <br>
-
-          <nav>
-            <div class="nav nav-tabs nav-justified" id="nav-predicted" role="tablist">
-              <a class="nav-item nav-link active" id="nav-declination-tab" data-toggle="tab" href="#nav-declination" role="tab" aria-controls="nav-declination" aria-selected="true">Declination</a>
-              <a class="nav-item nav-link" id="nav-inclination-tab" data-toggle="tab" href="#nav-inclination" role="tab" aria-controls="nav-inclination" aria-selected="false">Inclination</a>
-              <a class="nav-item nav-link" id="nav-paleolatitude-tab" data-toggle="tab" href="#nav-paleolatitude" role="tab" aria-controls="nav-paleolatitude" aria-selected="false">Paleolatitude</a>
-              <a class="nav-item nav-link" id="nav-poles-tab" data-toggle="tab" href="#nav-poles" role="tab" aria-controls="nav-poles" aria-selected="false">Poles</a>
-            </div>
-          </nav>
-
-          <div class="tab-content">
-            <div class="tab-pane fade show active" id="nav-declination" role="tabpanel" aria-labelledby="nav-declination-tab">
-          
-             <br>
-             <div class="row">
-               <div class="col-lg-12">
-                 <div id="declination-container"></div>
-                </div>
-             </div>
-             </div>
-          
-            <div class="tab-pane fade" id="nav-inclination" role="tabpanel" aria-labelledby="nav-inclination-tab">
-          
-             <br>
-             <div class="row">
-               <div class="col-lg-12">
-                 <div id="inclination-container"></div>
-                </div>
-             </div>
-             </div>
-          
-            <div class="tab-pane fade" id="nav-paleolatitude" role="tabpanel" aria-labelledby="nav-paleolatitude-tab">
-          
-              <br>
-              <div class="row">
-                <div class="col-lg-12">
-                  <div id="paleolatitude-container"></div>
-                </div>
-              </div>
-            </div>
-          
-            <div class="tab-pane fade" id="nav-poles" role="tabpanel" aria-labelledby="nav-poles-tab">
-             <br>
-             <div class="row">
-               <div class="col-lg-12">
-                 <div id="poles-container"></div>
-                </div>
-             </div>
-            </div>
-
-          </div>
-
-            <div class="text-right">
-                <button class="btn btn-sm btn-light" id="export-predicted-png"><i class="far fa-file-image"></i> PNG</button>
-                <button class="btn btn-sm btn-light" id="export-predicted-svg"><i class="far fa-file-image"></i> SVG</button>
-                <button class="btn btn-sm btn-light" id="export-predicted-pdf"><i class="far fa-file-image"></i> PDF</button>
-            </div>
-          
-        </div>
-
-        <!-- Tab for settings & preferences --> 
-        <div class="tab-pane fade" id="nav-settings" role="tabpanel" aria-labelledby="nav-settings-tab">
-
-          <br>
-
-          <!-- Cutoff selector -->
-          <h5> Select Cutoff and Polarity</h5>
-          <p> A pole-cutoff can be selected that will be applied in particular modules. Directions can be normalized to a particuar polarity.
-          <div class="input-group mb-6">
-
-            <div class="input-group-prepend">
-              <label class="input-group-text" for="cutoff-selection"><i class="fas fa-cut"></i> &nbsp; Direction Cutoff &nbsp; <small><i class="fas fa-angle-right"></i></small></label>
-            </div>
-
-            <select class="custom-select" id="cutoff-selection">
-              <optgroup label="Recommended Cutoffs">
-                <option value="CUTOFF45">45 Cutoff</option>
-              </optgroup>
-              <optgroup label="Other Cutoffs">
-                <option value="VANDAMME">Vandamme</option>
-                <option value="">None</option>
-              </optgroup>
-            </select>
-
-            <div class="input-group-prepend">
-              <label class="input-group-text" for="polarity-selection"><i class="fas fa-adjust"></i> &nbsp; Normalize Polarity &nbsp; <small><i class="fas fa-angle-right"></i></small></label>
-            </div>
-
-            <select class="custom-select" id="polarity-selection">
-              <option value="">None</option>
-              <optgroup label="Normalize to">
-                <option value="NORMAL">Positive Polarity</option>
-                <option value="REVERSED">Negative Polarity</option>
-              </optgroup>
-            </select>
-
-          </div>
-
-          <br>
-
-          <!-- Options for sorting -->
-          <h5> Sorting Options </h5>
-          <p> Collections can be sorted by the following attributes.
-          <p>
-          <button onclick="sortCollections('name')" type="button" class="btn btn-sm btn-light"><i class="fas fa-sort"></i> Name</button>
-          <button onclick="sortCollections('bogo')" type="button" class="btn btn-sm btn-light"><i class="fas fa-sort"></i> Randomly</button>
-
-          <br>
-
-          <!-- Keyboard tips -->
-          <h5> Keyboard Shortcuts</h5>
-          <small>
-            <table class="table table-sm table-striped table-responsive text-center">
-              <tr>
-                <td>Cycle Confidence Ellipse (α95, A95)</td>
-                <td>Cycle Coordinates</td>
-                <td>Save Selected Collections</td>
-                <td>Remove Selected Collections</td>
-              </tr>
-                <td>5</td>
-                <td>8</td>
-                <td>s</td>
-                <td>q</td>
-            </table>
-          </small>
-
-          <!-- Preferences -->
-          <h5> Preferences </h5>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="checkbox" id="auto-save" value="option1" checked>
-            <label class="form-check-label" for="auto-save"> Auto-save </label>
-            &nbsp;
-            &nbsp;
-            <input class="form-check-input" type="checkbox" id="enable-sound" value="option1" checked>
-            <label class="form-check-label" for="enable-sound"> Sound </label>
-            &nbsp;
-            &nbsp;
-            <input class="form-check-input" type="checkbox" id="group-collection" value="option1" checked>
-            <label class="form-check-label" for="group-collection"> Group by Collection </label>
-            &nbsp;
-            &nbsp;
-            <input class="form-check-input" type="checkbox" id="age-scatter" value="option1" checked>
-            <label class="form-check-label" for="age-scatter"> Age Scatter </label>
-            &nbsp;
-            &nbsp;
-            <input class="form-check-input" type="checkbox" id="magstrat-positive" value="option1" checked>
-            <label class="form-check-label" for="magstrat-positive"> Use Stratigraphy Axis (0 - 360) </label>
-            &nbsp;
-            &nbsp;
-            <input class="form-check-input" type="checkbox" id="flip-ellipse" value="option1" checked>
-            <label class="form-check-label" for="flip-ellipse"> Flip Confidence Ellipses </label>
-          </div>
-          <br>
-          <br>
-
-          <!-- Reset the application -->
-          <h5> Application Reset </h5>
-          <p> The application will be resetted as local storage will be cleared. Export your data manually to save it.
-          <p>
-          <button onclick="clearLocalStorage('statistics')" type="button" class="btn btn-sm btn-danger"><i class="fas fa-times"></i>&nbsp; Reset Local Storage</button>
-        
-        </div>
-
-      </div>
-
-    </div>
-
- <!-- Modal for input -->
-    <div class="modal fade" id="input-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel3" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Add New Collection</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-
-          <div class="modal-body">
-
-            <div class="input-group input-group-sm">
-              <div class="input-group-prepend">
-                <span class="input-group-text" id="">Collection Name</span>
-              </div>
-              <input id="site-input-name" class="form-control">
-            </div>
-
-            <p>
-
-            <!-- Latitude, Longitude container -->
-            <div class="form-group">
-              <div class="row">
-                <div class="col">
-                  <div class="input-group input-group-sm">
-                  <input id="site-input-latitude" type="text" class="form-control input-sm" placeholder="Latitude">
-                    <div class="input-group-append">
-                      <div class="input-group-text">°N</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col">
-                  <div class="input-group input-group-sm">
-                    <input id="site-input-longitude" type="text" class="form-control input-sm" placeholder="Longitude">
-                    <div class="input-group-append">
-                      <div class="input-group-text">°E</div>
-                    </div>
-                  </div>
-                </div>
-            </div>
-
-            <p>
-
-            <div class="input-group input-group-sm">
-              <select style="width: 25%" id="specimen-age-select" class="form-control custom-select text-center"></select>
-              <div class="input-group-prepend ">
-                <span class="input-group-text" id="">Age</span>
-              </div>
-              <input id="age-input"class="form-control">
-              <div class="input-group-prepend">
-                <span class="input-group-text" id="">Min</span>
-              </div>
-              <input id="age-min-input"class="form-control">
-              <div class="input-group-prepend">
-                <span class="input-group-text" id="">Max</span>
-              </div>
-              <input id="age-max-input"class="form-control">
-            </div>
-          </div>
-
-            <p><small><b>Note:</b> metadata is applied to all components in collection. To assign more metadata to each component choose an alternative input method.</small>
-            <hr>
-            <div class="form-group">
-              <label for="exampleFormControlTextarea1">Components</label>
-              <textarea id="site-input-area" class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-            </div>
-            <small>Fill in: declination, inclination, ((bedding strike, dip), and name).</small>
-            <hr>
-            <p><button class="btn btn-sm btn-primary" id="add-site-input">Add Collection</button>
-          </div>
-
-        </div>
+         </div>
       </div>
       </div>
-    </div>
+      <footer id="footer-container" class="container text-muted"></footer>
+      <br>
+   </body>
 
+   <!-- jQuery slim and bootstrap -->
+   <script src="../lib/jquery-3.3.1/jquery-3.3.1.slim.min.js"></script>
+   <script src="../lib/bootstrap-4.3.1/dist/js/bootstrap.bundle.min.js"></script>
 
-    <footer id="footer-container" class="container text-muted"></footer>
+   <!-- Highcharts -->
+   <script src="../lib/highcharts-7.0.3/code/highcharts.js"></script>
+   <script src="../lib/highcharts-7.0.3/code/highcharts-more.js"></script>
+   <script src="../lib/highcharts-7.0.3/code/modules/exporting.js"></script>
+   <script src="../lib/highcharts-7.0.3/code/modules/offline-exporting.js"></script>
 
-    <br>
+   <!-- Library for multi-select -->
+   <script src="../lib/bootstrap-select-1.13.6/dist/js/bootstrap-select.min.js"></script>
 
-  </body>
+   <!-- Leaflet -->
+   <script src="../lib/leaflet-1.4.0/leaflet.js"></script>
 
-  <!-- jQuery slim and bootstrap -->
-  <script src="../lib/jquery-3.3.1/jquery-3.3.1.slim.min.js"></script>
-  <script src="../lib/bootstrap-4.3.1/dist/js/bootstrap.bundle.min.js"></script>
+   <!-- Sha -->
+   <script src="../js/lib/sha.js"></script>
 
-  <!-- Highcharts -->
-  <script src="../lib/highcharts-7.0.3/code/highcharts.js"></script>
-  <script src="../lib/highcharts-7.0.3/code/highcharts-more.js"></script>
-  <script src="../lib/highcharts-7.0.3/code/modules/exporting.js"></script>
-  <script src="../lib/highcharts-7.0.3/code/modules/offline-exporting.js"></script>
+   <!-- toGeoJSON -->
+   <script src="../lib/togeojson-0.16.0/togeojson.js"></script>
 
-  <!-- Library for multi-select -->
-  <script src="../lib/bootstrap-select-1.13.6/dist/js/bootstrap-select.min.js"></script>
+   <!-- Grid -->
+   <script src="../js/lib/grid.js"></script>
 
-  <!-- Leaflet -->
-  <script src="../lib/leaflet-1.4.0/leaflet.js"></script>
+   <!-- Shared utilities -->
+   <script src="../js/utils.js"></script>
+   <script src="../js/ages.js"></script>
+   <script src="../js/highcharts-patch.js"></script>
 
-  <!-- Sha -->
-  <script src="../js/lib/sha.js"></script>
+   <!-- Shared classes -->
+   <script src="../js/classes/Exception.js"></script>
+   <script src="../js/classes/Direction.js"></script>
+   <script src="../js/classes/Pole.js"></script>
+   <script src="../js/classes/EulerPole.js"></script>
+   <script src="../js/classes/Location.js"></script>
+   <script src="../js/classes/Coordinates.js"></script>
+   <script src="../js/classes/Site.js"></script>
+   <script src="../js/classes/Distribution.js"></script>
+   <script src="../js/classes/Component.js"></script>
 
-  <!-- toGeoJSON -->
-  <script src="../lib/togeojson-0.16.0/togeojson.js"></script>
-
-  <!-- Grid -->
-  <script src="../js/lib/grid.js"></script>
-
-  <!-- Shared utilities -->
-  <script src="../js/utils.js"></script>
-  <script src="../js/ages.js"></script>
-  <script src="../js/highcharts-patch.js"></script>
-
-  <!-- Shared classes -->
-  <script src="../js/classes/Exception.js"></script>
-  <script src="../js/classes/Direction.js"></script>
-  <script src="../js/classes/Pole.js"></script>
-  <script src="../js/classes/EulerPole.js"></script>
-  <script src="../js/classes/Location.js"></script>
-  <script src="../js/classes/Coordinates.js"></script>
-  <script src="../js/classes/Site.js"></script>
-  <script src="../js/classes/Distribution.js"></script>
-  <script src="../js/classes/Component.js"></script>
-
-  <!-- Geography Portal -->
-  <script src="./js/graphs.js"></script>
-  <script src="./js/index.js"></script>
-  <script src="./js/euler.js"></script>
-  <script src="./js/gplates.js"></script>
-  <script src="./js/magstrat.js"></script>
-  <script src="./js/exporting.js"></script>
+   <!-- Geography Portal -->
+   <script src="./js/graphs.js"></script>
+   <script src="./js/index.js"></script>
+   <script src="./js/euler.js"></script>
+   <script src="./js/gplates.js"></script>
+   <script src="./js/magstrat.js"></script>
+   <script src="./js/exporting.js"></script>
 
 </html>

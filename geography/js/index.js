@@ -203,6 +203,11 @@ function keyboardHandler(event) {
     return;
   }
 
+  // An input element is being focused: stop key events
+  if(document.activeElement.nodeName === "INPUT" || document.activeElement.nodeName === "TEXTAREA") {
+    return;
+  }
+
   event.preventDefault();
 
   // Delegate to the appropriate handler
@@ -227,6 +232,7 @@ function registerEventHandlers() {
    */
 
   // Simple listeners
+  document.getElementById("site-input-area").addEventListener("scroll", updateTextAreaCounter);
   document.getElementById("euler-upload").addEventListener("change", eulerSelectionHandler);
   document.getElementById("apwp-upload").addEventListener("change", APWPSelectionHandler);
   document.getElementById("kml-upload").addEventListener("change", kmlSelectionHandler);
@@ -244,11 +250,11 @@ function registerEventHandlers() {
 
   // Always set grid to true
   document.getElementById("defaultCheck1").checked = true;
-  document.getElementById("geology-layer-toggle").checked = true;
 
   // Enable the information popovers
   $(".example-popover").popover({"container": "body"});
 
+  updateTextAreaCounter();
   loadDatabaseFiles();
 
 }

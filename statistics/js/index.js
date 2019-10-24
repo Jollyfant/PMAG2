@@ -199,6 +199,7 @@ function registerEventHandlers() {
    * Registers DOM event listeners and handler
    */
 
+  document.getElementById("site-input-area").addEventListener("scroll", updateTextAreaCounter);
   document.getElementById("specimen-age-select").addEventListener("change", handleAgeSelection);
 
   document.getElementById("defer-input").addEventListener("click", inputFileWrapper); 
@@ -215,6 +216,8 @@ function registerEventHandlers() {
 
   // The keyboard handler
   document.addEventListener("keydown", keyboardHandler);
+ 
+  updateTextAreaCounter();
 
 }
 
