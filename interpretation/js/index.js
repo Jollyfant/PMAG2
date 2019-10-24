@@ -252,7 +252,7 @@ function switchGroup(name) {
 
   // Update the global variable
   GROUP = name;
-  notify("success", "Succesfully changed group to <b>" + GROUP + "</b>.");
+  notify("info", "Succesfully changed group to <b>" + GROUP + "</b>.");
 
   // Redraw the intepretation graph (hiding specimens not in group)
   redrawInterpretationGraph();
@@ -1552,7 +1552,7 @@ function addMap() {
   map.on("click", mapClickHandler);
 
   // Listeners 
-  $("#input-modal").on("shown.bs.modal", modalOpenHandler);
+  $("#map-modal").on("shown.bs.modal", modalOpenHandler);
 
 }
 

@@ -1,4 +1,4 @@
-function showGeographicAndTectonicPlot() {
+function showGeographicAndTectonicPlot(geographic, tectonic) {
 
   /*
    * Function showGeographicAndTectonicPlot
@@ -24,7 +24,7 @@ function showGeographicAndTectonicPlot() {
       var direction = literalToCoordinates(component.coordinates).toVector(Direction);
 
       dataSeriesGeographic.push({
-        "name": component.name,
+        "component": component,
         "x": direction.dec,
         "y": projectInclination(direction.inc),
         "inc": direction.inc,
@@ -47,7 +47,7 @@ function showGeographicAndTectonicPlot() {
       var direction = literalToCoordinates(component.coordinates).toVector(Direction);
 
       dataSeriesTectonic.push({
-        "name": component.name,
+        "component": component,
         "x": direction.dec,
         "y": projectInclination(direction.inc),
         "inc": direction.inc,
@@ -468,10 +468,10 @@ function plotUnfoldedData() {
     var direction = literalToCoordinates(component.coordinates).toVector(Direction);
 
     return {
+      "component": component,
       "x": direction.dec,
       "y": projectInclination(direction.inc),
-      "inc": direction.inc,
-      "name": component.name
+      "inc": direction.inc
     }
 
   });
@@ -482,10 +482,10 @@ function plotUnfoldedData() {
     var direction = literalToCoordinates(component.coordinates).correctBedding(component.beddingStrike, 1E-2 * unfolding * component.beddingDip).toVector(Direction);
 
     return {
+      "component": component,
       "x": direction.dec,
       "y": projectInclination(direction.inc),
-      "inc": direction.inc,
-      "name": component.name
+      "inc": direction.inc
     }
 
   });
@@ -554,10 +554,10 @@ function plotUnflattenedData() {
     var uInclination = Math.atan(Math.tan(direction.inc * RADIANS) / flattening) / RADIANS;
 
     return {
+      "component": component,
       "x": direction.dec,
       "y": projectInclination(uInclination),
-      "inc": uInclination,
-      "name": component.name
+      "inc": uInclination
     }
 
   });
@@ -568,10 +568,10 @@ function plotUnflattenedData() {
     var direction = literalToCoordinates(component.coordinates).toVector(Direction);
 
     return {
+      "component": component,
       "x": direction.dec,
       "y": projectInclination(direction.inc),
-      "inc": direction.inc,
-      "name": component.name
+      "inc": direction.inc
     }
 
   });
