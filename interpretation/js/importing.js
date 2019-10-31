@@ -324,6 +324,141 @@ function importMagic(file) {
 
 }
 
+function importUnknown(file) {
+
+  /*
+   * function importUnknown
+   * Imports an unknown file format to the
+   */
+
+  function getDemagnetizationType(lines) {
+
+    /*
+     * function getDemagnetizationType
+     * Determines which column has the "step" attribute: each demagnetization step
+     * has an T, AFD, ARM, and IRM entry but one only "changes"
+     * So we look for the one with the most change
+     */
+
+    var sets = new Array(
+      new Set(),
+      new Set(),
+      new Set(),
+      new Set()
+    );
+
+    // Go over the four columns (T, AFD, ARM, IRM)
+    for(var i = 0; i < 4; i++) {
+
+      var set = new Set();
+
+      lines.forEach(function(line) {
+
+        var parameters = line.split(/\s+/);
+        sets[i].add(parameters[i + 1]);
+        
+      });
+
+    }
+
+    // Get the sizes from the map
+    sizes = sets.map(x => x.size);
+
+    // Return the index of the column
+    return sizes.indexOf(Math.max.apply(null, sizes)) + 1;
+
+  }
+
+  var lines = file.data.split(LINE_REGEXP).slice(1).filter(Boolean);
+
+  // Bedding parameters are given per line: check if the value is unique
+  var beddingStrikes = new Set();
+  var beddingDips = new Set();
+  var coreAzimuths = new Set();
+  var coreDips = new Set();
+
+  // Determine the type of demagnetization
+  var degmagnetizationTypeIndex = getDemagnetizationType(lines);
+
+  var steps = lines.map(function(line) {
+
+    var parameters = line.split(/\s+/);
+
+    let coreAzimuth = Number(parameters[7]);
+    // Hmm? Southern hemisphere difference? Core dips are probably flipped (and Hade!)
+    let coreDip = 180 - (90 - Number(parameters[8]));
+    let beddingStrike = Number(parameters[9]);
+    let beddingDip = Number(parameters[10]);
+
+    coreAzimuths.add(coreAzimuth);
+    coreDips.add(coreDip);
+
+    beddingStrikes.add(beddingStrike);
+    beddingDips.add(beddingDip);
+
+    var step = parameters[degmagnetizationTypeIndex];
+
+    // Intensity is in Am2 (assumed) correct for 10CC sample volume
+    var x = Number(parameters[21]) * 1E9;
+    var y = Number(parameters[22]) * 1E9;
+    var z = Number(parameters[23]) * 1E9;
+    var coordinates = new Coordinates(x, y, z);
+
+    // Geographic and tectonic directions are in the file
+    // We can be defensive and check these values against what we calculate
+    var GDec = Number(parameters[37]);
+    var GInc = Number(parameters[38]);
+    var GDirection = coordinates.rotateTo(coreAzimuth, coreDip).toVector(Direction);
+
+    // Check and verify geographic coordinates
+    if(GDec.toFixed(2) !== GDirection.dec.toFixed(2) || GInc.toFixed(2) !== GDirection.inc.toFixed(2)) {
+      throw(new Exception("Inconsistency detected in geographic vector component."));
+    }
+
+    var TDec = Number(parameters[43]);
+    var TInc = Number(parameters[44]);
+    var TDirection = coordinates.rotateTo(coreAzimuth, coreDip).correctBedding(beddingStrike, beddingDip).toVector(Direction);
+
+    // Check and verify tectonic coordinates
+    if(TDec.toFixed(2) !== TDirection.dec.toFixed(2) || TInc.toFixed(2) !== TDirection.inc.toFixed(2)) {
+      throw(new Exception("Inconsistency detected in tectonic vector component."));
+    }
+
+    // Intensity is in A/m
+    return new Measurement(step, coordinates, null);
+
+  });
+
+  let sampleName = lines[0].split(/\s+/)[0];
+  let volume = lines[0].split(/\s+/)[5];
+
+  // Add the data to the application
+  specimens.push({
+    "demagnetizationType": (degmagnetizationTypeIndex === 1 ? "thermal" : "alternating"),
+    "coordinates": "specimen",
+    "format": "UNKNOWN",
+    "version": __VERSION__,
+    "created": new Date().toISOString(),
+    "steps": steps,
+    "level": null,
+    "longitude": null,
+    "latitude": null,
+    "age": null,
+    "ageMin": null,
+    "ageMax": null,
+    "lithology": null,
+    "sample": sampleName,
+    "name": sampleName,
+    "volume": volume,
+    "beddingStrike": beddingStrikes.values().next().value,
+    "beddingDip": beddingDips.values().next().value,
+    "coreAzimuth": coreAzimuths.values().next().value,
+    "coreDip": coreDips.values().next().value,
+    "interpretations": new Array()
+  });
+
+}
+
 function importBlackMnt(file) {
 
   /*

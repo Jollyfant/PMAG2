@@ -2260,6 +2260,9 @@ function saveCombinedCollection() {
 
   }
 
+  var pol = document.getElementById("polarity-selection");
+  document.getElementById("selected-norm").innerHTML = pol.options[pol.selectedIndex].text;
+
   // Attach callback to the click event
   document.getElementById("modal-confirm").onclick = modalConfirmCallback;
 

@@ -53,6 +53,8 @@ function addDegmagnetizationFiles(format, files) {
    */
 
   switch(format) {
+    case "UNKNOWN":
+      return files.forEach(importUnknown);
     case "BLACKMNT":
       return files.forEach(importBlackMnt);
     case "UTRECHT":
@@ -89,6 +91,34 @@ function addDegmagnetizationFiles(format, files) {
 
 }
 
+function loadCollectionFileCallback(files) {
+
+  const format = document.getElementById("format-selection").value;
+
+  // Drop the samples if not appending
+  if(!document.getElementById("append-input").checked) {
+    specimens = new Array();
+  }
+
+  var nSamples = specimens.length;
+
+  // Try adding the demagnetization data
+  try {
+    addDegmagnetizationFiles(format, files);
+  } catch(exception) {
+    return notify("danger", exception);
+  }
+
+  updateSpecimenSelect();
+
+  if(specimens.length) {
+    enableInterpretationTabs();
+  }
+
+  notify("success", "Succesfully added <b>" + (specimens.length - nSamples) + "</b> specimen(s) (" + format + ").");
+
+}
+
 function fileSelectionHandler(event) {
 
   /*
@@ -96,33 +126,7 @@ function fileSelectionHandler(event) {
    * Callback fired when input files are selected
    */
 
-  const format = document.getElementById("format-selection").value;
-
-  readMultipleFiles(Array.from(event.target.files), function(files) {
-
-    // Drop the samples if not appending
-    if(!document.getElementById("append-input").checked) {
-      specimens = new Array();
-    }
-
-    var nSamples = specimens.length;
-
-    // Try adding the demagnetization data
-    try {
-      addDegmagnetizationFiles(format, files);
-    } catch(exception) {
-      return notify("danger", exception);
-    }
-
-    updateSpecimenSelect();
-
-    if(specimens.length) {
-      enableInterpretationTabs();
-    }
-
-    notify("success", "Succesfully added <b>" + (specimens.length - nSamples) + "</b> specimen(s) (" + format + ").");
-
-  });
+  readMultipleFiles(Array.from(event.target.files), loadCollectionFileCallback);
 
   // Reset value in case loading the same file
   this.value = null;

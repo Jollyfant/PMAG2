@@ -23,7 +23,7 @@
 
    </head>
 
-   <body>
+   <body id="drop_zone" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
       <!-- Header -->
       <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
          <a class="navbar-brand" href="http://www.paleomagnetism.org">Paleomagnetism<span class="text-danger">.org</span></a>
@@ -351,6 +351,7 @@
                            <optgroup label="Normalize to">
                               <option value="NORMAL">Positive Polarity</option>
                               <option value="REVERSED">Negative Polarity</option>
+                              <option value="EQUATOR">Mirror Polarity</option>
                            </optgroup>
                         </select>
                      </div>
@@ -382,11 +383,13 @@
                                  <td>Cycle Coordinates</td>
                                  <td>Save Selected Collections</td>
                                  <td>Remove Selected Collections</td>
+                                 <td>Copy selected collection to clipboard</td>
                               </tr>
                               <td>5</td>
                               <td>8</td>
                               <td>s</td>
                               <td>q</td>
+                              <td>e</td>
                            </table>
                         </div>
                      </small>
@@ -547,7 +550,7 @@
                   </button>
                </div>
                <div class="modal-body">
-                  <p> A new collection can be saved from the currently combined selection.
+                  <p> A new collection can be saved from the currently combined selection. The selected normalization <b><span id="selected-norm"></span></b> will be applied to the new site.
                   <div class="input-group mb-3">
                      <div class="input-group-prepend">
                         <span class="input-group-text" id="basic-addon1">Collection Name</span>

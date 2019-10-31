@@ -105,29 +105,29 @@ function parseParameters(parameters) {
   switch(parameters.length) {
     case 2:
       return {
+        "inc": Number(parameters.pop()),
         "dec": Number(parameters.pop()),
-        "inc": Number(parameters.pop())
       }
     case 3:
       return {
-        "dec": Number(parameters.pop()),
+        "name": parameters.pop(),
         "inc": Number(parameters.pop()),
-        "name": parameters.pop()
+        "dec": Number(parameters.pop())
       }
     case 4:
       return {
-        "dec": Number(parameters.pop()),
-        "inc": Number(parameters.pop()),
+        "dip": Number(parameters.pop()),
         "strike": Number(parameters.pop()),
-        "dip": Number(parameters.pop())
+        "inc": Number(parameters.pop()),
+        "dec": Number(parameters.pop())
       }
     case 5:
       return {
-        "dec": Number(parameters.pop()),
-        "inc": Number(parameters.pop()),
-        "strike": Number(parameters.pop()),
+        "name": parameters.pop(),
         "dip": Number(parameters.pop()),
-        "name": parameters.pop()
+        "strike": Number(parameters.pop()),
+        "inc": Number(parameters.pop()),
+        "dec": Number(parameters.pop())
       }
   }
 
@@ -184,7 +184,7 @@ function addSiteWindowWrapper() {
       "ageMax": ageMax,
       "beddingDip": parameters.dip || 0,
       "beddingStrike": parameters.strike || 90,
-      "coreDip": 0,
+      "coreDip": 90,
       "coreAzimuth": 0,
       "coordinates": new Direction(parameters.dec, parameters.inc).toCartesian(),
       "latitude": latitude,
@@ -635,7 +635,7 @@ function getSelectedComponents() {
 
     // Nothing to do
     var sign = Math.sign(getStatisticalParameters(comp).dir.mean.inc);
-    if((sign === 1 && polarity === "NORMAL") || (sign === -1 && polarity === "REVERSED")) {
+    if(polariy !== "EQUATOR" && ((sign === 1 && polarity === "NORMAL") || (sign === -1 && polarity === "REVERSED"))) {
       return components = components.concat(comp);
     }
 
@@ -965,6 +965,58 @@ function downloadAsJSON(filename, json) {
   const MIME_TYPE = "data:application/json;charset=utf-8";
 
   downloadURIComponent(filename, MIME_TYPE + "," + encodeURIComponent(JSON.stringify(json)));
+
+}
+
+function clipboardCopy(text) {
+
+  /*
+   * Function clipboardCopy
+   * Copies text to the clipboard
+   */
+
+  // Create a temporary area
+  const textArea = document.createElement("textarea");
+  textArea.value = text;
+  document.body.appendChild(textArea);
+  textArea.select();
+  document.execCommand("Copy");
+  textArea.remove();
+
+  notify("info", "Collection information CSV copied to clipboard.");
+
+}
+
+document.addEventListener("mouseout", function() {
+  document.body.classList.remove("blurry");
+});
+
+function dragOverHandler(ev) {
+
+  // Prevent default behavior (Prevents file from being opened)
+  ev.preventDefault();
+
+  document.body.classList.add("blurry");
+
+}
+
+function dropHandler(ev) {
+
+  document.body.classList.remove("blurry");
+
+  // Prevent default behavior (Prevent file from being opened)
+  ev.preventDefault();
+
+  if(!ev.dataTransfer.items) {
+    return;
+  }
+
+  // Use DataTransferItemList interface to access the file(s)
+  files = Array.from(ev.dataTransfer.items).map(function(item) {
+    return item.getAsFile();
+  });
+
+  readMultipleFiles(files, loadCollectionFileCallback);
 
 }
 
@@ -1322,6 +1374,32 @@ function deleteSelectedCollections() {
 
 }
 
+function loadCollectionFileCallback(files) {
+
+  const format = document.getElementById("format-selection").value;
+
+  // Drop the existing collections if not appending
+  if(!document.getElementById("append-input").checked) {
+    collections = new Array();
+  } 
+
+  var nCollections = collections.length;
+
+  // Try adding the demagnetization data
+  try {
+    addCollectionData(files, format);
+  } catch(exception) {
+    return notify("danger", exception);
+  }
+
+  enable();
+  saveLocalStorage();
+
+  notify("success", "Succesfully added <b>" + (collections.length - nCollections) + "</b> collection(s).");
+
+
+}
+
 function importCSV(file) {
 
   /*
@@ -1348,7 +1426,7 @@ function importCSV(file) {
      */
 
     // Extract all
-    var [name, dec, inc, coreAzimuth, coreDip, beddingStrike, beddingDip, latitude, longitude, level, age, ageMin, ageMax, coordinates] = line.split(",");
+    var [name, dec, inc, coreAzimuth, coreDip, beddingStrike, beddingDip, latitude, longitude, level, age, ageMin, ageMax, coordinates] = line.split(/[,;]/);
 
     if(latitude === "") {
       latitude = null;

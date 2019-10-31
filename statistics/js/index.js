@@ -154,6 +154,7 @@ function keyboardHandler(event) {
     "KEYPAD_FIVE": 53,
     "KEYPAD_EIGHT": 56,
     "ESCAPE_KEY": 27,
+    "E_KEY": 69,
     "Q_KEY": 81,
     "S_KEY": 83
   }
@@ -180,6 +181,8 @@ function keyboardHandler(event) {
       return switchCoordinateReference();
     case CODES.ESCAPE_KEY:
       return document.getElementById("notification-container").innerHTML = "";
+    case CODES.E_KEY:
+      return editSelectedCollection();
     case CODES.S_KEY:
       return exportSelectedCollections();
     case CODES.Q_KEY:
@@ -189,6 +192,44 @@ function keyboardHandler(event) {
       notify("info", "Switched to <b>" + (A95_CONFIDENCE ? "A95" : "α95") + "</b> confidence interval.");
       return redrawCharts();
   }
+
+}
+
+function editSelectedCollection() {
+
+  var collections = getSelectedCollections();
+
+  // Can only edit a single collection
+  if(collections.length !== 1) {
+    return notify("warning", "Select a single collection to edit.");
+  }
+
+  var text = ["#Name", "Declination", "Inclination", "Core Azimuth", "Core Dip", "Bedding Strike", "Bedding Dip", "Latitude", "Longitude", "Stratigraphic Level", "Age", "Minimum Age", "Maximum Age", "Coordinates"].join(",") + "\n";
+
+  text += collections[0].components.map(function(component) {
+
+    var direction = component.coordinates.toVector(Direction);
+
+    return [
+      component.name,
+      direction.dec.toFixed(2),
+      direction.inc.toFixed(2),
+      component.coreAzimuth,
+      component.coreDip,
+      component.beddingStrike,
+      component.beddingDip,
+      component.latitude,
+      component.longitude,
+      component.level,
+      component.age,
+      component.ageMin,
+      component.ageMax,
+      "specimen"
+    ].join(",");
+
+  }).join("\n");
+
+  clipboardCopy(text);
 
 }
 
@@ -279,30 +320,10 @@ function fileSelectionHandler(event) {
    * Callback fired when input files are selected
    */
 
-  const format = document.getElementById("format-selection").value;
+  readMultipleFiles(Array.from(event.target.files), loadCollectionFileCallback);
 
-  readMultipleFiles(Array.from(event.target.files), function(files) {
-
-    // Drop the existing collections if not appending
-    if(!document.getElementById("append-input").checked) {
-      collections = new Array();
-    }
-
-    var nCollections = collections.length;
-
-    // Try adding the demagnetization data
-    try {
-      addCollectionData(files, format);
-    } catch(exception) {
-      return notify("danger", exception);
-    }
-
-    enable();
-    saveLocalStorage();
-
-    notify("success", "Succesfully added <b>" + (collections.length - nCollections) + "</b> collection(s).");
-
-  });
+  // Reset value in case loading the same file
+  this.value = null;
 
 }
 

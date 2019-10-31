@@ -21,7 +21,7 @@
 
    </head>
 
-   <body>
+   <body id="drop_zone" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
 
       <!-- Site Header -->
       <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
@@ -105,6 +105,7 @@
                         <option value="PMAGORG">Paleomagnetism.org (1.0.0. .dir)</option>
                      </optgroup>
                      <optgroup label="Institution Formats">
+                        <option value="UNKNOWN">Unknown</option>
                         <option value="BLACKMNT">Black Mountain Lab</option>
                         <option value="CALTECH">Caltech Institute of Technology</option>
                         <option value="CENIEH">Cenieh</option>

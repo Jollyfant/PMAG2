@@ -993,29 +993,10 @@ function fileSelectionHandler(event) {
    * Callback fired when input files are selected
    */
 
-  const format = document.getElementById("format-selection").value;
+  readMultipleFiles(Array.from(event.target.files), loadCollectionFileCallback);
 
-  readMultipleFiles(Array.from(event.target.files), function(files) {
-
-    // Drop the samples if not appending
-    if(!document.getElementById("append-input").checked) {
-      collections = new Array();
-    }
-
-    var nCollections = collections.length;
-
-    // Try adding the demagnetization data
-    try {
-      addCollectionData(files, format);
-    } catch(exception) {
-      return notify("danger", exception);
-    }
-
-    enable();
-    saveLocalStorage();
-    notify("success", "Succesfully added <b>" + (collections.length - nCollections) + "</b> specimen(s).");
-
-  });
+  // Reset value in case loading the same file
+  this.value = null;
 
 }
 
