@@ -968,6 +968,44 @@ function downloadAsJSON(filename, json) {
 
 }
 
+function editSelectedCollection() {
+
+  var collections = getSelectedCollections();
+
+  // Can only edit a single collection
+  if(collections.length !== 1) {
+    return notify("warning", "Select a single collection to copy.");
+  }
+
+  var text = ["#Name", "Declination", "Inclination", "Core Azimuth", "Core Dip", "Bedding Strike", "Bedding Dip", "Latitude", "Longitude", "Stratigraphic Level", "Age", "Minimum Age", "Maximum Age", "Coordinates"].join(",") + "\n";
+
+  text += collections[0].components.map(function(component) {
+
+    var direction = component.coordinates.toVector(Direction);
+
+    return [
+      component.name,
+      direction.dec.toFixed(2),
+      direction.inc.toFixed(2),
+      component.coreAzimuth,
+      component.coreDip,
+      component.beddingStrike,
+      component.beddingDip,
+      component.latitude,
+      component.longitude,
+      component.level,
+      component.age,
+      component.ageMin,
+      component.ageMax,
+      "specimen"
+    ].join(",");
+
+  }).join("\n");
+
+  clipboardCopy(text);
+
+}
+
 function clipboardCopy(text) {
 
   /*
