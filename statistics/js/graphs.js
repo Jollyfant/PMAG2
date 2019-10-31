@@ -2260,8 +2260,7 @@ function saveCombinedCollection() {
 
   }
 
-  var pol = document.getElementById("polarity-selection");
-  document.getElementById("selected-norm").innerHTML = pol.options[pol.selectedIndex].text;
+  updatePolarityText();
 
   // Attach callback to the click event
   document.getElementById("modal-confirm").onclick = modalConfirmCallback;
@@ -2269,10 +2268,6 @@ function saveCombinedCollection() {
   $("#map-modal").modal("show");
 
 }
-
-$("#map-modal").on("shown.bs.modal", function (e) {
-   document.getElementById("modal-name").focus();
-});
 
 function transformEllipse(A95Ellipse, dir) {
 
