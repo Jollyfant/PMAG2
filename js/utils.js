@@ -46,27 +46,6 @@ function padLeft(nr, n){
   return Array(n - String(nr).length + 1).join("0") + nr;
 } 
 
-function loopPolarities() {
-
-  var pol = document.getElementById("polarity-selection");
-  pol.selectedIndex = (pol.selectedIndex + 1) % 4
-
-  updatePolarityText();
-
-}
-
-function updatePolarityText() {
-
-  var pol = document.getElementById("polarity-selection");
-  var text = pol.options[pol.selectedIndex].text;
-  notify("info", "Changed normalization polarity to <b>" + text + "</b>");
-
-  if(document.getElementById("selected-norm") !== null) {
-    return document.getElementById("selected-norm").innerHTML = text;
-  }
-
-}
-
 function updateTextAreaCounter() {
 
   /*

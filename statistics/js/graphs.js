@@ -1262,29 +1262,11 @@ function getSelectedComponents() {
 
   var components = new Array();
 
-  // Get the requested polarity from the DOM
-  var polarity = document.getElementById("polarity-selection").value || null;
-
   getSelectedCollections().forEach(function(collection) {
 
     // Get the components in the correct coordinate system
     var collectionComponents = collection.components.map(x => x.inReferenceCoordinates());
-
-    // Nothing to do
-    if(polarity === null) {
-      return components = components.concat(collectionComponents);
-    }
-
-    // Check sign of the mean inclination: nothing to do
-    var sign = Math.sign(getStatisticalParameters(collectionComponents).dir.mean.inc);
-    if((sign === 1 && polarity === "NORMAL") || (sign === -1 && polarity === "REVERSED")) {
-      return components = components.concat(collectionComponents);
-    }
-
-    // Otherwise reflect the individual component
-    collectionComponents.forEach(function(x) {
-      components.push(new Component(x, x.coordinates.reflect()));
-    });
+    components = components.concat(collectionComponents);
 
   });
 
@@ -1880,15 +1862,6 @@ function eqAreaProjectionMean() {
     var statistics = getStatisticalParameters(cutofC.components);
 
     // Check if a polarity switch is requested
-    if(statistics.dir.mean.inc < 0 && document.getElementById("polarity-selection").value === "NORMAL") {
-      statistics.dir.mean.inc = -statistics.dir.mean.inc;
-      statistics.dir.mean.dec = (statistics.dir.mean.dec + 180) % 360;
-    }
-    if(statistics.dir.mean.inc > 0 && document.getElementById("polarity-selection").value === "REVERSED") {
-      statistics.dir.mean.inc = -statistics.dir.mean.inc;
-      statistics.dir.mean.dec = (statistics.dir.mean.dec + 180) % 360;
-    }
-
     var A95Ellipse = getConfidenceEllipse(statistics.pole.confidence);
 
     if(A95_CONFIDENCE) {
@@ -2241,6 +2214,10 @@ function saveCombinedCollection() {
       components = doCutoff(components).components.filter(x => !x.rejected);
     }
 
+    if(document.getElementById("modal-mirror-components").checked) {
+      components = components.map(x => new Component(x, x.coordinates.reflect()));
+    }
+
     // Make sure the coordinates are set back to specimen coordinates
     // A user may complete a cutoff in a particular reference frame
     components = components.map(x => new Component(x, fromReferenceCoordinates(COORDINATES, x, x.coordinates)));
@@ -2259,8 +2236,6 @@ function saveCombinedCollection() {
     saveLocalStorage();
 
   }
-
-  updatePolarityText();
 
   // Attach callback to the click event
   document.getElementById("modal-confirm").onclick = modalConfirmCallback;

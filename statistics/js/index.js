@@ -102,8 +102,6 @@ function __unlock__() {
    */
 
   // Set the default selector to NULL
-  document.getElementById("polarity-selection").value = "";
-
   if(collections.length) {
     notify("success", "Welcome back! Succesfully loaded <b>" + collections.length + "</b> collection(s).");
     enable();
@@ -155,7 +153,6 @@ function keyboardHandler(event) {
     "KEYPAD_EIGHT": 56,
     "ESCAPE_KEY": 27,
     "E_KEY": 69,
-    "P_KEY": 80,
     "Q_KEY": 81,
     "S_KEY": 83
   }
@@ -182,8 +179,6 @@ function keyboardHandler(event) {
       return switchCoordinateReference();
     case CODES.ESCAPE_KEY:
       return document.getElementById("notification-container").innerHTML = "";
-    case CODES.P_KEY:
-      return loopPolarities();
     case CODES.E_KEY:
       return editSelectedCollection();
     case CODES.S_KEY:
@@ -217,7 +212,6 @@ function registerEventHandlers() {
 
   // Settings
   document.getElementById("cutoff-selection").addEventListener("change", redrawCharts);
-  document.getElementById("polarity-selection").addEventListener("change", redrawCharts);
   document.getElementById("enable-deenen").addEventListener("change", redrawCharts);
 
   // The keyboard handler

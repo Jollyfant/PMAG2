@@ -191,7 +191,6 @@ function keyboardHandler(event) {
     "KEYPAD_EIGHT": 56,
     "ESCAPE_KEY": 27,
     "E_KEY": 69,
-    "P_KEY": 80,
     "Q_KEY": 81,
     "S_KEY": 83
   }
@@ -220,8 +219,6 @@ function keyboardHandler(event) {
       return document.getElementById("notification-container").innerHTML = "";
     case CODES.E_KEY:
       return editSelectedCollection();
-    case CODES.P_KEY:
-      return loopPolarities();
     case CODES.S_KEY:
       return exportSelectedCollections();
     case CODES.Q_KEY:
@@ -245,7 +242,6 @@ function registerEventHandlers() {
   document.getElementById("customFile").addEventListener("change", fileSelectionHandler);
   document.getElementById("specimen-select").addEventListener("change", showCollectionsOnMap);
   document.getElementById("cutoff-selection").addEventListener("change", redrawCharts);
-  document.getElementById("polarity-selection").addEventListener("change", redrawCharts);
   document.addEventListener("keydown", keyboardHandler);
   document.getElementById("defaultCheck1").addEventListener("change", toggleGridLayer);
   document.getElementById("calculate-reference").addEventListener("click", plotPredictedDirections);
@@ -354,8 +350,6 @@ function showCollectionsOnMap() {
   const MARKER_SIZE = 100;
   const MARKER_OPACITY = 0.5;
 
-  var polarity = document.getElementById("polarity-selection").value || null;
-
   // Drop references to old markers
   resetMarkers();
  
@@ -418,12 +412,6 @@ function showCollectionsOnMap() {
 
     if(averageLocation === null) {
       return;
-    }
-
-    // Flip polarity if requested
-    if((polarity === "REVERSED" && statistics.dir.mean.inc > 0) || (polarity === "NORMAL" && statistics.dir.mean.inc < 0)) {
-      statistics.dir.mean.inc = -statistics.dir.mean.inc
-      statistics.dir.mean.dec = (statistics.dir.mean.dec + 180) % 360; 
     }
 
     if(collection.color) {
