@@ -557,6 +557,82 @@ function importBlackMnt(file) {
 
 }
 
+function importJR6(file) {
+
+  var specimenSortObject = new Object();
+
+  var lines = file.data.split(LINE_REGEXP).filter(Boolean);
+
+  lines.forEach(function(line) {
+
+    var sampleName = line.slice(0, 10);
+    var step = line.slice(10, 18).trim();
+    var x = Number(line.slice(18, 24));
+    var y = Number(line.slice(24, 30));
+    var z = Number(line.slice(30, 36));
+    var exp = 1E6 * Math.pow(10, Number(line.slice(36, 40)));
+    var coreAzimuth = Number(line.slice(40, 44));
+    var coreDip = Number(line.slice(44, 48));
+    var beddingStrike = Number(line.slice(48, 52));
+    var beddingDip = Number(line.slice(56, 60));
+    var a95 = Number(line.slice(76, 80));
+    var coordinates = new Coordinates(x * exp, y * exp, z * exp);
+
+    var P1 = Number(line.slice(64, 67));
+    var P2 = Number(line.slice(68, 71));
+    var P3 = Number(line.slice(71, 74));
+    var P4 = Number(line.slice(74, 77));
+
+    // Support for these orientation parameters
+    if(P1 !== 12 || P2 !== 0 || P3 !== 12) {
+      throw(new Exception("The AGICO orientation format is not supported. Supported: {12, 0, 12, *}."));
+    }
+
+    // P4 0 means (dip direction / dip) notation is used
+    // We use bedding strike so subtract 90
+    if(P4 === 0) {
+      beddingStrike -= 90;
+    }
+
+    if(!specimenSortObject.hasOwnProperty(sampleName)) {
+      specimenSortObject[sampleName] = {
+        "demagnetizationType": null,
+        "coordinates": "specimen",
+        "format": "JR6",
+        "version": __VERSION__,
+        "created": new Date().toISOString(),
+        "steps": new Array(),
+        "level": null,
+        "longitude": null,
+        "latitude": null,
+        "age": null,
+        "ageMin": null,
+        "ageMax": null,
+        "lithology": null,
+        "sample": sampleName,
+        "name": sampleName,
+        "volume": null,
+        "beddingStrike": 0,
+        "beddingDip": 0,
+        "coreAzimuth": coreAzimuth,
+        "coreDip": coreDip,
+        "interpretations": new Array()
+      }
+
+    }
+
+    specimenSortObject[sampleName].steps.push(
+      new Measurement(step, coordinates, a95)
+    );
+
+  });
+
+  Object.values(specimenSortObject).forEach(function(specimen) {
+    specimens.push(specimen);
+  });
+
+}
+
 function importRS3(file) {
 
   /*
