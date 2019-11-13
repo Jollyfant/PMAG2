@@ -557,6 +557,60 @@ function importBlackMnt(file) {
 
 }
 
+function importJR5(file) {
+
+  var lines = file.data.split(LINE_REGEXP).filter(Boolean);
+  var sampleName;
+  var coreAzimuth;
+  var coreDip;
+  var beddingStrike;
+  var beddingDip;
+
+  steps = lines.map(function(line) {
+
+    sampleName = line.slice(0, 10).trim();
+    var step = line.slice(10, 18).trim();
+    var x = Number(line.slice(18, 24));
+    var y = Number(line.slice(24, 30));
+    var z = Number(line.slice(30, 36));
+    var exp = 1E6 * Math.pow(10, Number(line.slice(36, 40)));
+    coreAzimuth = Number(line.slice(40, 44));
+    coreDip = Number(line.slice(44, 48));
+    beddingStrike = Number(line.slice(48, 52));
+    beddingDip = Number(line.slice(56, 60));
+
+    var coordinates = new Coordinates(x * exp, y * exp, z * exp);
+
+    return new Measurement(step, coordinates, null);
+
+  });
+
+  specimens.push({
+    "demagnetizationType": null,
+    "coordinates": "specimen",
+    "format": "JR5",
+    "version": __VERSION__,
+    "created": new Date().toISOString(),
+    "steps": steps,
+    "level": null,
+    "longitude": null,
+    "latitude": null,
+    "age": null,
+    "ageMin": null,
+    "ageMax": null,
+    "lithology": null,
+    "sample": sampleName,
+    "name": sampleName,
+    "volume": null,
+    "beddingStrike": beddingStrike,
+    "beddingDip": beddingDip,
+    "coreAzimuth": coreAzimuth,
+    "coreDip": coreDip,
+    "interpretations": new Array()
+  });
+
+}
+
 function importJR6(file) {
 
   var specimenSortObject = new Object();
@@ -565,7 +619,7 @@ function importJR6(file) {
 
   lines.forEach(function(line) {
 
-    var sampleName = line.slice(0, 10);
+    var sampleName = line.slice(0, 10).trim();
     var step = line.slice(10, 18).trim();
     var x = Number(line.slice(18, 24));
     var y = Number(line.slice(24, 30));

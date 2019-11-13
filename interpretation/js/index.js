@@ -85,6 +85,8 @@ function addDegmagnetizationFiles(format, files) {
       return files.forEach(importCenieh);
     case "MAGIC":
       return files.forEach(importMagic);
+    case "JR5":
+      return files.forEach(importJR5);
     case "JR6":
       return files.forEach(importJR6);
     default:
