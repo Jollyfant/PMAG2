@@ -7,6 +7,14 @@ var Site = function(lng, lat) {
    * Container class for site locations
    */
 
+  // Keep latitude and longitude between [-90, 90] and [-180, 180]
+  if(lng > 180) {
+    lng = lng - 360;
+  }
+  if(lat > 90) {
+    lat = lat - 180;
+  }
+
   this.lng = lng;
   this.lat = lat;
 
