@@ -605,7 +605,7 @@ function plotUnflattenedData() {
   eqAreaChart(CHART_CONTAINER, plotData);
 
   // Show the modal
-  $("#map-modal").modal("show");
+  $("#map-modal-2").modal("show");
 
 }
 
@@ -848,6 +848,8 @@ function unflattenDirections(data) {
    * Unflatted a list of directions towards the TK03.GAD polynomial
    */
 
+  data = data.map(x => x.coordinates.toVector(Direction));
+
   // Get the tan of the observed inclinations (equivalent of tan(Io))
   var tanInclinations = data.map(x => Math.tan(x.inc * RADIANS));
 
@@ -864,14 +866,14 @@ function unflattenDirections(data) {
     // (tanIo = f tanIf) where tanIo is observed and tanIf is recorded.
     // Create unflattenedData containing (dec, inc) pair for a particular f
     var unflattenedData = tanInclinations.map(function(x, i) {
-      return new Direction(data[i].dec, Math.atan(x / f) / RADIANS);
+      return new Direction(data[i].dec, Math.atan(x / f) / RADIANS)
     });
 
     // Calculate mean inclination for unflattenedData and get eigenvalues
-    var meanInc = meanDirection(unflattenedData).inc;
+    var meanInc = meanDirection(unflattenedData.map(x => x.toCartesian())).inc;
     var eigenvalues = getEigenvaluesFast(TMatrix(unflattenedData.map(x => x.toCartesian().toArray())));
     var elongation = eigenvalues.t2 / eigenvalues.t3;
-    
+
     results.push({
       "flattening": f,
       "elongation": elongation,
@@ -886,6 +888,7 @@ function unflattenDirections(data) {
     // If there is more than 1 consecutive flattening factor in the array
     // This means we have a line under the TK03.GAD Polynomial
     // So we can return our parameters
+
     if(TK03Polynomial(meanInc) <= elongation) {
 
       if(results.length === 1) {
@@ -1792,7 +1795,6 @@ function drawBootstrap(data) {
 
   }
 
-  // Do not include rejected components
   return data.map(randomSample);
 
 }
