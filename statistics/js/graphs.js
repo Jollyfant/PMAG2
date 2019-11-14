@@ -15,11 +15,6 @@ function showGeographicAndTectonicPlot(geographic, tectonic) {
 
     components.forEach(function(component) {
 
-      // Skip rejected components
-      if(component.rejected) {
-        return;
-      }
-
       // Go over each step
       var direction = literalToCoordinates(component.coordinates).toVector(Direction);
 
@@ -37,11 +32,6 @@ function showGeographicAndTectonicPlot(geographic, tectonic) {
   tectonic.forEach(function(components) {
 
     components.forEach(function(component) {
-
-      // Skip rejected components
-      if(component.rejected) {
-        return;
-      }
 
       // Go over each step
       var direction = literalToCoordinates(component.coordinates).toVector(Direction);
@@ -204,6 +194,8 @@ function bootstrapShallowing() {
 
   // Get the vector in the reference coordinates
   var dirs = doCutoff(collections[0].components.map(x => x.inReferenceCoordinates())).components;
+
+  dirs = dirs.filter(x => !x.rejected);
 
   if(dirs.length < NUMBER_OF_COMPONENTS_REQUIRED) {
     notify("warning", "A minimum of " + NUMBER_OF_COMPONENTS_REQUIRED + " components is recommended.");
@@ -491,6 +483,13 @@ function plotUnfoldedData() {
   });
 
   var plotData = [{
+    "name": "Unfolded Directions",
+    "data": unfoldedData,
+    "type": "scatter",
+    "marker": {
+      "symbol": "circle"
+    }
+  }, {
     "name": "Original Directions",
     "type": "scatter",
     "data": originalData,
@@ -505,13 +504,6 @@ function plotUnfoldedData() {
       "enabled": false
     },
     "enableMouseTracking": false,
-  }, {
-    "name": "Unflattened Directions",
-    "data": unfoldedData,
-    "type": "scatter",
-    "marker": {
-      "symbol": "circle"
-    }
   }];
 
 
@@ -544,6 +536,7 @@ function plotUnflattenedData() {
 
   // Get the vector in the reference coordinates
   var dirs = doCutoff(collections[0].components.map(x => x.inReferenceCoordinates())).components;
+  dirs = dirs.filter(x => !x.rejected);
 
   // Apply the King, 1966 flattening factor
   var unflattenData = dirs.map(function(component) {
@@ -577,6 +570,13 @@ function plotUnflattenedData() {
   });
 
   var plotData = [{
+    "name": "Unflattened Directions",
+    "data": unflattenData,
+    "type": "scatter",
+    "marker": {
+      "symbol": "circle"
+    }
+  }, {
     "name": "Original Directions",
     "type": "scatter",
     "data": originalData,
@@ -591,13 +591,6 @@ function plotUnflattenedData() {
       "enabled": false
     },
     "enableMouseTracking": false,
-  }, {
-    "name": "Unflattened Directions",
-    "data": unflattenData,
-    "type": "scatter",
-    "marker": {
-      "symbol": "circle"
-    }
   }];
 
   // Update the chart title
@@ -1491,6 +1484,9 @@ function simulateCTMD(one, two) {
   var yTwo = new Array();
   var zOne = new Array();
   var zTwo = new Array();
+
+  one = one.filter(x => !x.rejected);
+  two = one.filter(x => !x.rejected);
 
   // Complete N bootstraps
   for(var i = 0; i < NUMBER_OF_BOOTSTRAPS; i++) {
