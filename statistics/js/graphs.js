@@ -376,7 +376,8 @@ function plotEIBootstraps(bootstraps, totalBootstraps) {
 
   new Highcharts.chart(CHART_CONTAINER, {
     "chart": {
-      "id": "EI-bootstraps"
+      "id": "EI-bootstraps",
+      "zoomType": "x"
     },
     "title": {
       "text": "Bootstrapped E-I Pairs",
@@ -784,6 +785,9 @@ function plotEICDF(inclinations, originalInclination, unflattenedInclination) {
   });
 
   new Highcharts.chart(CHART_CONTAINER, {
+    "chart": {
+      "zoomType": "x"
+    },
     "title": {
       "text": "Cumulative Distribution of bootstrapped TK03.GAD intersections",
     },
@@ -1042,6 +1046,7 @@ function plotFoldtestCDF(untilt, savedBootstraps) {
     "chart": {
       "id": "foldtest",
       "renderTo": "container5",
+      "zoomType": "x"
     },
     "title": {
       "text": "Bootstrapped foldtest",
