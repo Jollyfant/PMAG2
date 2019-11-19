@@ -484,7 +484,6 @@ function importBlackMnt(file) {
     let beddingStrike = Number(parameters[21]);
     let beddingDip = Number(parameters[22]);
 
-    console.log(coreDip);
     coreAzimuths.add(coreAzimuth);
     coreDips.add(coreDip);
 
