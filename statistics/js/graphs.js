@@ -1486,7 +1486,7 @@ function simulateCTMD(one, two) {
   var zTwo = new Array();
 
   one = one.filter(x => !x.rejected);
-  two = one.filter(x => !x.rejected);
+  two = two.filter(x => !x.rejected);
 
   // Complete N bootstraps
   for(var i = 0; i < NUMBER_OF_BOOTSTRAPS; i++) {
