@@ -15,11 +15,6 @@ function showGeographicAndTectonicPlot(geographic, tectonic) {
 
     components.forEach(function(component) {
 
-      // Skip rejected components
-      if(component.rejected) {
-        return;
-      }
-
       // Go over each step
       var direction = literalToCoordinates(component.coordinates).toVector(Direction);
 
@@ -37,11 +32,6 @@ function showGeographicAndTectonicPlot(geographic, tectonic) {
   tectonic.forEach(function(components) {
 
     components.forEach(function(component) {
-
-      // Skip rejected components
-      if(component.rejected) {
-        return;
-      }
 
       // Go over each step
       var direction = literalToCoordinates(component.coordinates).toVector(Direction);
@@ -204,6 +194,8 @@ function bootstrapShallowing() {
 
   // Get the vector in the reference coordinates
   var dirs = doCutoff(collections[0].components.map(x => x.inReferenceCoordinates())).components;
+
+  dirs = dirs.filter(x => !x.rejected);
 
   if(dirs.length < NUMBER_OF_COMPONENTS_REQUIRED) {
     notify("warning", "A minimum of " + NUMBER_OF_COMPONENTS_REQUIRED + " components is recommended.");
@@ -491,6 +483,13 @@ function plotUnfoldedData() {
   });
 
   var plotData = [{
+    "name": "Unfolded Directions",
+    "data": unfoldedData,
+    "type": "scatter",
+    "marker": {
+      "symbol": "circle"
+    }
+  }, {
     "name": "Original Directions",
     "type": "scatter",
     "data": originalData,
@@ -505,13 +504,6 @@ function plotUnfoldedData() {
       "enabled": false
     },
     "enableMouseTracking": false,
-  }, {
-    "name": "Unflattened Directions",
-    "data": unfoldedData,
-    "type": "scatter",
-    "marker": {
-      "symbol": "circle"
-    }
   }];
 
 
@@ -544,6 +536,7 @@ function plotUnflattenedData() {
 
   // Get the vector in the reference coordinates
   var dirs = doCutoff(collections[0].components.map(x => x.inReferenceCoordinates())).components;
+  dirs = dirs.filter(x => !x.rejected);
 
   // Apply the King, 1966 flattening factor
   var unflattenData = dirs.map(function(component) {
@@ -577,6 +570,13 @@ function plotUnflattenedData() {
   });
 
   var plotData = [{
+    "name": "Unflattened Directions",
+    "data": unflattenData,
+    "type": "scatter",
+    "marker": {
+      "symbol": "circle"
+    }
+  }, {
     "name": "Original Directions",
     "type": "scatter",
     "data": originalData,
@@ -591,13 +591,6 @@ function plotUnflattenedData() {
       "enabled": false
     },
     "enableMouseTracking": false,
-  }, {
-    "name": "Unflattened Directions",
-    "data": unflattenData,
-    "type": "scatter",
-    "marker": {
-      "symbol": "circle"
-    }
   }];
 
   // Update the chart title
@@ -605,7 +598,7 @@ function plotUnflattenedData() {
   eqAreaChart(CHART_CONTAINER, plotData);
 
   // Show the modal
-  $("#map-modal").modal("show");
+  $("#map-modal-2").modal("show");
 
 }
 
@@ -848,6 +841,8 @@ function unflattenDirections(data) {
    * Unflatted a list of directions towards the TK03.GAD polynomial
    */
 
+  data = data.map(x => x.coordinates.toVector(Direction));
+
   // Get the tan of the observed inclinations (equivalent of tan(Io))
   var tanInclinations = data.map(x => Math.tan(x.inc * RADIANS));
 
@@ -864,14 +859,14 @@ function unflattenDirections(data) {
     // (tanIo = f tanIf) where tanIo is observed and tanIf is recorded.
     // Create unflattenedData containing (dec, inc) pair for a particular f
     var unflattenedData = tanInclinations.map(function(x, i) {
-      return new Direction(data[i].dec, Math.atan(x / f) / RADIANS);
+      return new Direction(data[i].dec, Math.atan(x / f) / RADIANS)
     });
 
     // Calculate mean inclination for unflattenedData and get eigenvalues
-    var meanInc = meanDirection(unflattenedData).inc;
+    var meanInc = meanDirection(unflattenedData.map(x => x.toCartesian())).inc;
     var eigenvalues = getEigenvaluesFast(TMatrix(unflattenedData.map(x => x.toCartesian().toArray())));
     var elongation = eigenvalues.t2 / eigenvalues.t3;
-    
+
     results.push({
       "flattening": f,
       "elongation": elongation,
@@ -886,6 +881,7 @@ function unflattenDirections(data) {
     // If there is more than 1 consecutive flattening factor in the array
     // This means we have a line under the TK03.GAD Polynomial
     // So we can return our parameters
+
     if(TK03Polynomial(meanInc) <= elongation) {
 
       if(results.length === 1) {
@@ -1489,6 +1485,9 @@ function simulateCTMD(one, two) {
   var zOne = new Array();
   var zTwo = new Array();
 
+  one = one.filter(x => !x.rejected);
+  two = one.filter(x => !x.rejected);
+
   // Complete N bootstraps
   for(var i = 0; i < NUMBER_OF_BOOTSTRAPS; i++) {
 
@@ -1792,7 +1791,6 @@ function drawBootstrap(data) {
 
   }
 
-  // Do not include rejected components
   return data.map(randomSample);
 
 }
