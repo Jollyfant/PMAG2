@@ -41,7 +41,6 @@ function plotExpected(container, dataSeries, site) {
 
   var title = getTitle(container);
 
-
   // Plotting options
   var PLOT_SPECIMENS = !document.getElementById("group-collection").checked;
   var AGE_SCATTER = document.getElementById("age-scatter").checked;
@@ -51,6 +50,9 @@ function plotExpected(container, dataSeries, site) {
 
     // Cutoff and statistics
     var cutofC = doCutoff(collection.components.map(x => x.inReferenceCoordinates()));
+
+    // Remove rejected components
+    cutofC.components = cutofC.components.filter(x => !x.rejected);
 
     // Convert each direction to a pole and get the direction at the reference point
     var convertedComps = cutofC.components.filter(x => x.latitude !== null && x.longitude !== null).map(function(x) {
@@ -90,7 +92,8 @@ function plotExpected(container, dataSeries, site) {
         "type": "scatter",
         "data": data,
         "marker": {
-          "symbol": "circle"
+          "symbol": "circle",
+          "color": collection.color
         }
       });
 
@@ -117,7 +120,7 @@ function plotExpected(container, dataSeries, site) {
 
       dataSeries.push({
         "name": collection.name,
-        "color": HIGHCHARTS_ORANGE,
+        "color": collection.color || HIGHCHARTS_ORANGE,
         "data": [{
           "x": avAge.value,
           "y": statistics.dir.mean.dec,
@@ -130,7 +133,7 @@ function plotExpected(container, dataSeries, site) {
         "linkedTo": ":previous",
         "enableMouseTracking": false,
         "lineWidth": 1,
-        "color": HIGHCHARTS_ORANGE,
+        "color": collection.color || HIGHCHARTS_ORANGE,
         "marker": {
           "enabled": false
         },
@@ -156,7 +159,7 @@ function plotExpected(container, dataSeries, site) {
 
       dataSeries.push({
         "name": collection.name,
-        "color": HIGHCHARTS_ORANGE,
+        "color": collection.color || HIGHCHARTS_ORANGE,
         "data": [{
           "x": avAge.value,
           "y": statistics.dir.mean.inc,
@@ -169,7 +172,7 @@ function plotExpected(container, dataSeries, site) {
         "linkedTo": ":previous",
         "enableMouseTracking": false,
         "lineWidth": 1,
-        "color": HIGHCHARTS_ORANGE,
+        "color": collection.color || HIGHCHARTS_ORANGE,
         "marker": {
           "enabled": false
         },
@@ -199,7 +202,7 @@ function plotExpected(container, dataSeries, site) {
 
       dataSeries.push({
         "name": collection.name,
-        "color": HIGHCHARTS_ORANGE,
+        "color": collection.color || HIGHCHARTS_ORANGE,
         "data": [{
           "x": avAge.value,
           "y": statistics.dir.lambda,
@@ -212,7 +215,7 @@ function plotExpected(container, dataSeries, site) {
         "linkedTo": ":previous",
         "enableMouseTracking": false,
         "lineWidth": 1,
-        "color": HIGHCHARTS_ORANGE,
+        "color": collection.color || HIGHCHARTS_ORANGE,
         "marker": {
           "enabled": false
         },
