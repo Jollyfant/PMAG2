@@ -143,6 +143,12 @@ function addSiteWindow() {
 
 }
 
+function NullNumber(value) {
+
+  return (value === "" ? null : Number(value));
+
+}
+
 function addSiteWindowWrapper() {
 
   /*
@@ -158,13 +164,13 @@ function addSiteWindowWrapper() {
   }
 
   // Get the collection position
-  let latitude = Number(document.getElementById("site-input-latitude").value);
-  let longitude = Number(document.getElementById("site-input-longitude").value);
+  let latitude = NullNumber(document.getElementById("site-input-latitude").value);
+  let longitude = NullNumber(document.getElementById("site-input-longitude").value);
 
   // Get the collection age
-  let age = Number(document.getElementById("age-input").value);
-  let ageMin = Number(document.getElementById("age-min-input").value);
-  let ageMax = Number(document.getElementById("age-max-input").value);
+  let age = NullNumber(document.getElementById("age-input").value);
+  let ageMin = NullNumber(document.getElementById("age-min-input").value);
+  let ageMax = NullNumber(document.getElementById("age-max-input").value);
 
   const textAreaContent = document.getElementById("site-input-area").value;
 
