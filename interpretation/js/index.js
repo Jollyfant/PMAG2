@@ -89,6 +89,8 @@ function addDegmagnetizationFiles(format, files) {
       return files.forEach(importJR5);
     case "JR6":
       return files.forEach(importJR6);
+    case "CJONES":
+      return files.forEach(importPaleoMag);
     default:
       throw(new Exception("Unknown importing format requested."));
   }

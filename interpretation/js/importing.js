@@ -324,6 +324,67 @@ function importMagic(file) {
 
 }
 
+function importPaleoMag(file) {
+
+  var lines = file.data.split(LINE_REGEXP).filter(Boolean);
+  var sampleName = lines[0].trim();
+  var parameters = lines[1].split(/\s+/).slice(1);
+
+  var level = Number(parameters[0]);
+
+  // CIT Convention?
+  // Not working!
+  var coreAzimuth = ((Number(parameters[1]) + 270) % 360);
+  var coreDip = 90 - Number(parameters[2]);
+  var beddingStrike = (Number(parameters[3]))
+  var beddingDip = Number(parameters[4]);
+  var volume = Number(parameters[5]);
+
+  var steps = lines.slice(2).map(function(line) {
+
+    var stepType = line.slice(0, 2);
+    var step = line.slice(2, 6).trim() || "0";
+    var dec = Number(line.slice(46, 51));
+    var inc = Number(line.slice(52, 57));
+
+    // Intensity in emu/cm3 -> convert to micro A/m (1E9)
+    var intensity = 1E9 * Number(line.slice(31, 39));
+    var a95 = Number(line.slice(40, 45));
+    var info = line.slice(85, 113).trim();
+
+    var coordinates = new Direction(dec, inc, intensity).toCartesian();
+
+    return new Measurement(step, coordinates, null);
+
+  });
+
+  // Add the data to the application
+  specimens.push({
+    "demagnetizationType": null,
+    "coordinates": "specimen",
+    "format": "UNKNOWN",
+    "version": __VERSION__,
+    "created": new Date().toISOString(),
+    "steps": steps,
+    "level": level,
+    "longitude": null,
+    "latitude": null,
+    "age": null,
+    "ageMin": null,
+    "ageMax": null,
+    "lithology": null,
+    "sample": sampleName,
+    "name": sampleName,
+    "volume": volume,
+    "beddingStrike": beddingStrike,
+    "beddingDip": beddingDip,
+    "coreAzimuth": coreAzimuth,
+    "coreDip": coreDip, 
+    "interpretations": new Array()
+  });
+
+}
+
 function importUnknown(file) {
 
   /*
@@ -812,7 +873,7 @@ function importPaleoMac(file) {
     // Get the measurement parameters
     var step = line.slice(0, 5).trim();
     var x = 1E6 * Number(line.slice(5, 14)) / sampleVolume;
-    var y = 1E6 * Number(line.slice(16, 25)) / sampleVolume;
+    var y = 1E6 * Number(line.slice(15, 25)) / sampleVolume;
     var z = 1E6 * Number(line.slice(25, 34)) / sampleVolume;
     var a95 = Number(line.slice(69, 73));
 
@@ -907,7 +968,7 @@ function importOxford(file) {
     "version": __VERSION__,
     "created": new Date().toISOString(),
     "steps": steps,
-    "level": level,
+    "level": null,
     "longitude": null,
     "latitude": null,
     "age": null,
@@ -1273,7 +1334,7 @@ function importCaltech(file) {
   }
 
   specimens.push({
-    "demagnetizationType": null,
+    "demanull,gnetizationType": null,
     "coordinates": "specimen",
     "format": "CALTECH",
     "version": __VERSION__,
