@@ -79,6 +79,8 @@ function getRotationMatrix(lambda, phi) {
    * Returns the rotation matrix (parameters are poorly named)
    * but this function is re-used througouth the application. It may be azimuth, plunge
    * or co-latitude, longitude of Euler pole
+   * Note: we use actual core dip: Tauxe A3.12 uses the plunge of the lab arrow which is x - 90
+   * Rewritten some of the cos -> sin using trig. identities and replacing (x - 90) with x
    */
 
   return new Array(

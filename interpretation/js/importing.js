@@ -344,6 +344,8 @@ function importPaleoMag(file) {
 
     var stepType = line.slice(0, 2);
     var step = line.slice(2, 6).trim() || "0";
+
+    // This is core plate or something!?!?
     var dec = Number(line.slice(46, 51));
     var inc = Number(line.slice(52, 57));
 
