@@ -5,6 +5,7 @@
 
 const DEMAGNETIZATION_THERMAL = "LP-DIR-T";
 const DEMAGNETIZATION_ALTERNATING = "LP-DIR-AF";
+const MAGIC_TABLE_DELIMITER = ">>>>>>>>>>";
 
 var data = null;
 
@@ -315,13 +316,10 @@ function exportMagIC(metadata) {
      * Creates a single table from a table name, header and body
      */
   
-    const MAGIC_TABLE_DELIMITER = ">>>>>>>>>>";
-  
     return new Array(
       "tab delimited\t" + name,
       header.join(TAB_DELIMITER),
-      body.join(LINE_DELIMITER),
-      MAGIC_TABLE_DELIMITER
+      body.join(LINE_DELIMITER)
     );
     
   }
@@ -423,7 +421,7 @@ function exportMagIC(metadata) {
   var locationHeader = new Array(
     // Names
     "location",
-    "location_type",
+    //"location_type",
     // Geology
     "geological_classes",
     "lithologies",
@@ -435,7 +433,8 @@ function exportMagIC(metadata) {
     // Age
     "age_low",
     "age_high",
-    "age_unit"
+    "age_unit",
+    "citations"
   );
 
   // Create a new contribution
@@ -447,7 +446,7 @@ function exportMagIC(metadata) {
       metadata.version,
       metadata.reference,
       metadata.description
-    ).join("\t")
+    ).join(TAB_DELIMITER)
   );
 
   var magicSpecimens = new Array();
@@ -455,6 +454,7 @@ function exportMagIC(metadata) {
   var magicSamples = new Array();
   var magicMeasurements = new Array();
   var magicLocations = new Array();
+  var experimentCounter = 0;
 
   data.forEach(function(file, i) {
 
@@ -501,7 +501,7 @@ function exportMagIC(metadata) {
       magicSites.push([
         specimen.name,
         "location-" + i,
-        "s",
+        "i",
         "g",
         demagnetizationType,
         metadata.reference,
@@ -514,7 +514,7 @@ function exportMagIC(metadata) {
         specimen.ageMin,
         specimen.ageMax,
         "Ma"
-      ].join("\t"));
+      ].join(TAB_DELIMITER));
 
       magicSamples.push([
         specimen.name,
@@ -529,7 +529,7 @@ function exportMagIC(metadata) {
         specimen.beddingDip,
         specimen.latitude,
         specimen.longitude
-      ].join("\t"));
+      ].join(TAB_DELIMITER));
 
       // Determine minimum and maximum step in correct units
       var minimumStep = (demagnetizationType === DEMAGNETIZATION_ALTERNATING ? toTesla(specimen.steps[0].step) : toKelvin(specimen.steps[0].step));
@@ -546,7 +546,7 @@ function exportMagIC(metadata) {
         getStepUnit(demagnetizationType),
         specimen.coreAzimuth,
         specimen.coreDip
-      ].join("\t"));
+      ].join(TAB_DELIMITER));
 
       // Add all measurement steps
       specimen.steps.forEach(function(step, i) {
@@ -558,22 +558,22 @@ function exportMagIC(metadata) {
         // Our values are in μA/m. (1E6 * intensity) / (1E6 * volume) = intensity / volume
         magicMeasurements.push([
           specimen.name + "_" + i,
-          "experiment-" + demagnetizationType,
+          specimen.name + "_" + i + "_" + demagnetizationType,
           specimen.name,
-          i,
-          "s",
+          experimentCounter++,
+          "u",
           "g",
           demagnetizationType,
           metadata.reference,
           (demagnetizationType === DEMAGNETIZATION_ALTERNATING ? toTesla(step.step) : 0),
           (demagnetizationType === DEMAGNETIZATION_THERMAL ? toKelvin(step.step) : 293),
-          step.x / volume,
-          step.y / volume,
-          step.z / volume,
+          step.x,
+          step.y,
+          step.z,
           direction.dec,
           direction.inc,
-          volume
-        ].join("\t"));
+          Math.sqrt(step.x * step.x + step.y * step.y + step.z * step.z)
+        ].join(TAB_DELIMITER));
 
       });
 
@@ -586,7 +586,7 @@ function exportMagIC(metadata) {
 
     magicLocations.push([
       "location-" + i,
-      determineLocationType(latitudes, longitudes, levels),
+      //determineLocationType(latitudes, longitudes, levels),
       Array.from(geologies.values()).join(":"),
       Array.from(lithologies.values()).join(":"),
       latitudes[0],
@@ -595,8 +595,9 @@ function exportMagIC(metadata) {
       longitudes[longitudes.length - 1],
       ages[0],
       ages[ages.length - 1],
-      "Ma"
-    ]);
+      "Ma",
+      "This study"
+    ].join(TAB_DELIMITER));
 
   });
 
@@ -608,7 +609,7 @@ function exportMagIC(metadata) {
     createTable("samples", sampleHeader, magicSamples),
     createTable("specimens", specimensHeader, magicSpecimens),
     createTable("measurements", measurementHeader, magicMeasurements)
-  ).map(table => table.join(LINE_DELIMITER)).join(LINE_DELIMITER);
+  ).map(table => table.join(LINE_DELIMITER)).join(LINE_DELIMITER + MAGIC_TABLE_DELIMITER + LINE_DELIMITER);
 
   downloadMagICTXT(lines);
 
