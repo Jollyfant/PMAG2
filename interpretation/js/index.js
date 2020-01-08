@@ -752,7 +752,8 @@ function handleTableClick(event) {
   const CORE_DIP_COLUMN = 7;
   const BEDDING_STRIKE_COLUMN = 8;
   const BEDDING_DIP_COLUMN = 9;
-  const INFO_COLUMN = 10;
+  const VOLUME_COLUMN = 10;
+  const INFO_COLUMN = 11;
 
   var specimen = getSelectedSpecimen();
 
@@ -792,6 +793,14 @@ function handleTableClick(event) {
         return;
       }
       specimen.beddingDip = Number(response);
+      break;
+
+    case VOLUME_COLUMN:
+      var response = prompt("Enter a value for the specimen volume in cubic centimeters.");
+      if(response === null) {
+        return;
+      }
+      specimen.volume = Number(response);
       break;
 
     // Location change requested
@@ -1813,6 +1822,7 @@ function formatStepTable() {
     "      <td>Core Dip</td>",
     "      <td>Bedding Strike</td>",
     "      <td>Bedding Dip</td>",
+    "      <td>Volume</td>",
     "      <td class='text-primary' title='Specimen location'><i class='fas fa-map-marker-alt'></i> Metadata</td>",
     "    </tr>",
     "  </thead>",
@@ -1828,6 +1838,7 @@ function formatStepTable() {
     "      <td style='cursor: pointer;'>" + specimen.coreDip + "</td>",
     "      <td style='cursor: pointer;'>" + specimen.beddingStrike + "</td>",
     "      <td style='cursor: pointer;'>" + specimen.beddingDip + "</td>",
+    "      <td style='cursor: pointer;'>" + specimen.volume + "</td>",
     "      <td style='cursor: pointer;'>" + specimenLocation + "</td>",
     "    </tr>",
     "  </tbody>"

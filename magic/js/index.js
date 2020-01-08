@@ -251,6 +251,10 @@ function checkSpecimen(specimen) {
       throw("Geology is not set.");
     }
 
+    if(specimen.volume === null) {
+      throw("Volume is not set.");
+    }
+
   } catch(exception) {
     throw(new Exception(specimen.name + " " + exception));
   }
@@ -554,6 +558,11 @@ function exportMagIC(metadata) {
         // Convert x, y, z in specimen coordinates to a direction
         var direction = new Coordinates(step.x, step.y, step.z).toVector(Direction);
 
+        //Must be in Am^2
+        var x = step.x * specimen.volume;
+        var y = step.y * specimen.volume;
+        var z = step.z * specimen.volume;
+
         // Intensities are in Am^2 in MagIC.
         // Our values are in μA/m. (1E6 * intensity) / (1E6 * volume) = intensity / volume
         magicMeasurements.push([
@@ -567,12 +576,12 @@ function exportMagIC(metadata) {
           metadata.reference,
           (demagnetizationType === DEMAGNETIZATION_ALTERNATING ? toTesla(step.step) : 0),
           (demagnetizationType === DEMAGNETIZATION_THERMAL ? toKelvin(step.step) : 293),
-          step.x,
-          step.y,
-          step.z,
+          x,
+          y,
+          z,
           direction.dec,
           direction.inc,
-          Math.sqrt(step.x * step.x + step.y * step.y + step.z * step.z)
+          Math.sqrt(x * x + y * y + z * z)
         ].join(TAB_DELIMITER));
 
       });
