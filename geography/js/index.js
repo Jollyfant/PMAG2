@@ -380,7 +380,7 @@ function showCollectionsOnMap() {
         "iconSize": MARKER_SIZE
       });
 
-      mapMakers.push(L.marker([component.latitude, component.longitude], {"icon": markerIcon}).addTo(map));
+      mapMakers.push(L.marker([component.latitude, component.longitude], {"icon": markerIcon, "name": null}).addTo(map));
 
     });
 
@@ -438,7 +438,7 @@ function showCollectionsOnMap() {
       "<hr><div id='color-picker'>" + generateColorPalette() + "</div>",
     ].join("<br>");
 
-    mapMakers.push(L.marker([averageLocation.lat, averageLocation.lng], {"icon": markerIcon, "index": collection.index}).bindPopup(markerPopupContent).addTo(map));
+    mapMakers.push(L.marker([averageLocation.lat, averageLocation.lng], {"icon": markerIcon, "index": collection.index, "name": collection.name}).bindPopup(markerPopupContent).addTo(map));
 
   });
 
@@ -584,6 +584,7 @@ function downloadAsKML() {
       "  </IconStyle>",
       "</Style>",
       "<Placemark>",
+      "  <name>" + marker.options.name + "</name>",
       "  <Point>",
       "    <styleUrl>#" + i + "</styleUrl>",
       "    <coordinates>" + marker.getLatLng().lng + "," + marker.getLatLng().lat + "</coordinates>",
@@ -607,9 +608,13 @@ function downloadAsKML() {
   var payload = encodeURIComponent([
     "<?xml version='" + XML_VERSION + "' encoding='" + XML_ENCODING + "'?>",
     "<kml xmlns='http://earth.google.com/kml/" + KML_VERSION + "'>",
+    "<Document>",
     mapMakers.map(generateKMLPlacemark).join("\n"),
+    "</Document>",
     "</kml>"
   ].join("\n"));
+
+  console.log(payload);
 
   downloadURIComponent("collections.kml", MIME_TYPE + "," + payload);
 
