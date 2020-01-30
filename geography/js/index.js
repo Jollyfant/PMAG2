@@ -614,8 +614,6 @@ function downloadAsKML() {
     "</kml>"
   ].join("\n"));
 
-  console.log(payload);
-
   downloadURIComponent("collections.kml", MIME_TYPE + "," + payload);
 
 }

@@ -182,6 +182,11 @@ function addSiteWindowWrapper() {
 
     let parameters = parseParameters(line.split(/[,\t]+/));
 
+    // Negative declinations to positive
+    if(parameters.dec < 0) {
+      parameters.dec += 360;
+    }
+
     if(parameters.dec < 0 || parameters.dec > 360 || parameters.inc < -90 || parameters.inc > 90) {
       throw(new Exception("Invalid component added on line " + i + "."));
     }
