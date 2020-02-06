@@ -23,7 +23,7 @@
 
    </head>
 
-   <body>
+   <body id="drop_zone" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
       <!-- Header -->
       <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
          <a class="navbar-brand" href="http://www.paleomagnetism.org">Paleomagnetism<span class="text-danger">.org</span></a>
@@ -327,8 +327,8 @@
                <div class="card">
                   <div class="card-body">
 
-                     <h5> Select Cutoff and Polarity</h5>
-                     <p> A pole-cutoff can be selected that will be applied to the polar distribution. Directions can be normalized to a particuar polarity. If the mean polarity of a collection is opposite of the request polarity, all individual directions are reflected.
+                     <h5> Select Cutoff </h5>
+                     <p> A pole-cutoff can be selected that will be applied to the polar distribution.
                      <div class="input-group mb-6">
                         <div class="input-group-prepend">
                            <label class="input-group-text" for="cutoff-selection"><i class="fas fa-cut"></i> &nbsp; Cutoff &nbsp; <small><i class="fas fa-angle-right"></i></small></label>
@@ -341,16 +341,6 @@
                               <option value="VANDAMME">Vandamme Cutoff</option>
                               <!-- <option value="KRIJGSMAN">Krijgsman</option> -->
                               <option value="">None</option>
-                           </optgroup>
-                        </select>
-                        <div class="input-group-prepend">
-                           <label class="input-group-text" for="polarity-selection"><i class="fas fa-adjust"></i> &nbsp; Normalize Polarity &nbsp; <small><i class="fas fa-angle-right"></i></small></label>
-                        </div>
-                        <select class="custom-select" id="polarity-selection">
-                           <option value="">None</option>
-                           <optgroup label="Normalize to">
-                              <option value="NORMAL">Positive Polarity</option>
-                              <option value="REVERSED">Negative Polarity</option>
                            </optgroup>
                         </select>
                      </div>
@@ -382,11 +372,13 @@
                                  <td>Cycle Coordinates</td>
                                  <td>Save Selected Collections</td>
                                  <td>Remove Selected Collections</td>
+                                 <td>Copy selected collection to clipboard</td>
                               </tr>
                               <td>5</td>
                               <td>8</td>
                               <td>s</td>
                               <td>q</td>
+                              <td>e</td>
                            </table>
                         </div>
                      </small>
@@ -547,20 +539,30 @@
                   </button>
                </div>
                <div class="modal-body">
-                  <p> A new collection can be saved from the currently combined selection.
+                  <p> A new collection can be saved from the currently combined selection. Rejected components can be discarded and all components can be reversed.
                   <div class="input-group mb-3">
                      <div class="input-group-prepend">
                         <span class="input-group-text" id="basic-addon1">Collection Name</span>
                      </div>
                      <input id="modal-name" type="text" class="form-control" placeholder="My Collection" aria-label="Username" aria-describedby="basic-addon1">
                   </div>
+
                   <!-- Discard rejected component checkbox -->
-                  <div class="form-check">
+                  <div class="form-check form-check-inline">
                      <input id="modal-discard-rejected" class="form-check-input" type="checkbox" value=""> 
                      <label class="form-check-label" for="modal-discard-rejected">
                      Discard rejected components
                      </label>
                   </div>
+
+                  <!-- Mirror -->
+                  <div class="form-check form-check-inline">
+                     <input id="modal-mirror-components" class="form-check-input" type="checkbox" value="">
+                     <label class="form-check-label" for="modal-mirror-components">
+                     Mirror components
+                     </label>
+                  </div>
+
                </div>
                <div class="modal-footer">
                   <button id="modal-confirm" type="button" class="btn btn-success" data-dismiss="modal">Save Collection</button>

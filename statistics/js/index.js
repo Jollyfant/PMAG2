@@ -102,8 +102,6 @@ function __unlock__() {
    */
 
   // Set the default selector to NULL
-  document.getElementById("polarity-selection").value = "";
-
   if(collections.length) {
     notify("success", "Welcome back! Succesfully loaded <b>" + collections.length + "</b> collection(s).");
     enable();
@@ -154,6 +152,7 @@ function keyboardHandler(event) {
     "KEYPAD_FIVE": 53,
     "KEYPAD_EIGHT": 56,
     "ESCAPE_KEY": 27,
+    "E_KEY": 69,
     "Q_KEY": 81,
     "S_KEY": 83
   }
@@ -180,6 +179,8 @@ function keyboardHandler(event) {
       return switchCoordinateReference();
     case CODES.ESCAPE_KEY:
       return document.getElementById("notification-container").innerHTML = "";
+    case CODES.E_KEY:
+      return editSelectedCollection();
     case CODES.S_KEY:
       return exportSelectedCollections();
     case CODES.Q_KEY:
@@ -211,7 +212,6 @@ function registerEventHandlers() {
 
   // Settings
   document.getElementById("cutoff-selection").addEventListener("change", redrawCharts);
-  document.getElementById("polarity-selection").addEventListener("change", redrawCharts);
   document.getElementById("enable-deenen").addEventListener("change", redrawCharts);
 
   // The keyboard handler
@@ -279,30 +279,10 @@ function fileSelectionHandler(event) {
    * Callback fired when input files are selected
    */
 
-  const format = document.getElementById("format-selection").value;
+  readMultipleFiles(Array.from(event.target.files), loadCollectionFileCallback);
 
-  readMultipleFiles(Array.from(event.target.files), function(files) {
-
-    // Drop the existing collections if not appending
-    if(!document.getElementById("append-input").checked) {
-      collections = new Array();
-    }
-
-    var nCollections = collections.length;
-
-    // Try adding the demagnetization data
-    try {
-      addCollectionData(files, format);
-    } catch(exception) {
-      return notify("danger", exception);
-    }
-
-    enable();
-    saveLocalStorage();
-
-    notify("success", "Succesfully added <b>" + (collections.length - nCollections) + "</b> collection(s).");
-
-  });
+  // Reset value in case loading the same file
+  this.value = null;
 
 }
 

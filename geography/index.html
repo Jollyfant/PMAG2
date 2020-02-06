@@ -26,7 +26,7 @@
 
    </head>
 
-   <body>
+   <body id="drop_zone" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
 
       <!-- Header -->
       <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
@@ -369,8 +369,8 @@
                <div class="card">
                   <div class="card-body">
                      <!-- Cutoff selector -->
-                     <h5> Select Cutoff and Polarity</h5>
-                     <p> A pole-cutoff can be selected that will be applied in particular modules. Directions can be normalized to a particuar polarity.
+                     <h5> Select Cutoff </h5>
+                     <p> A pole-cutoff can be selected that will be applied in particular modules.
                      <div class="input-group mb-6">
                         <div class="input-group-prepend">
                            <label class="input-group-text" for="cutoff-selection"><i class="fas fa-cut"></i> &nbsp; Direction Cutoff &nbsp; <small><i class="fas fa-angle-right"></i></small></label>
@@ -382,16 +382,6 @@
                            <optgroup label="Other Cutoffs">
                               <option value="VANDAMME">Vandamme</option>
                               <option value="">None</option>
-                           </optgroup>
-                        </select>
-                        <div class="input-group-prepend">
-                           <label class="input-group-text" for="polarity-selection"><i class="fas fa-adjust"></i> &nbsp; Normalize Polarity &nbsp; <small><i class="fas fa-angle-right"></i></small></label>
-                        </div>
-                        <select class="custom-select" id="polarity-selection">
-                           <option value="">None</option>
-                           <optgroup label="Normalize to">
-                              <option value="NORMAL">Positive Polarity</option>
-                              <option value="REVERSED">Negative Polarity</option>
                            </optgroup>
                         </select>
                      </div>
@@ -423,11 +413,13 @@
                                  <td>Cycle Coordinates</td>
                                  <td>Save Selected Collections</td>
                                  <td>Remove Selected Collections</td>
+                                 <td>Copy selected collection to clipboard</td>
                               </tr>
                               <td>5</td>
                               <td>8</td>
                               <td>s</td>
                               <td>q</td>
+                              <td>e</td>
                            </table>
                         </div>
                      </small>

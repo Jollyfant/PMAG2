@@ -1,5 +1,5 @@
 let __DEBUG__ = false;
-const __VERSION__ = "2.0.0-alpha";
+const __VERSION__ = "2.0.0";
 const __DOI__ = "10.5281/zenodo.2649907";
 const RADIANS = Math.PI / 180;
 const PROJECTION_TYPE = "AREA";
@@ -79,6 +79,8 @@ function getRotationMatrix(lambda, phi) {
    * Returns the rotation matrix (parameters are poorly named)
    * but this function is re-used througouth the application. It may be azimuth, plunge
    * or co-latitude, longitude of Euler pole
+   * Note: we use actual core dip: Tauxe A3.12 uses the plunge of the lab arrow which is x - 90
+   * Rewritten some of the cos -> sin using trig. identities and replacing (x - 90) with x
    */
 
   return new Array(
@@ -105,29 +107,29 @@ function parseParameters(parameters) {
   switch(parameters.length) {
     case 2:
       return {
+        "inc": Number(parameters.pop()),
         "dec": Number(parameters.pop()),
-        "inc": Number(parameters.pop())
       }
     case 3:
       return {
-        "dec": Number(parameters.pop()),
+        "name": parameters.pop(),
         "inc": Number(parameters.pop()),
-        "name": parameters.pop()
+        "dec": Number(parameters.pop())
       }
     case 4:
       return {
-        "dec": Number(parameters.pop()),
-        "inc": Number(parameters.pop()),
+        "dip": Number(parameters.pop()),
         "strike": Number(parameters.pop()),
-        "dip": Number(parameters.pop())
+        "inc": Number(parameters.pop()),
+        "dec": Number(parameters.pop())
       }
     case 5:
       return {
-        "dec": Number(parameters.pop()),
-        "inc": Number(parameters.pop()),
-        "strike": Number(parameters.pop()),
+        "name": parameters.pop(),
         "dip": Number(parameters.pop()),
-        "name": parameters.pop()
+        "strike": Number(parameters.pop()),
+        "inc": Number(parameters.pop()),
+        "dec": Number(parameters.pop())
       }
   }
 
@@ -140,6 +142,12 @@ function addSiteWindow() {
   } catch(exception) {
     return notify("danger", exception);
   }
+
+}
+
+function NullNumber(value) {
+
+  return (value === "" ? null : Number(value));
 
 }
 
@@ -158,13 +166,13 @@ function addSiteWindowWrapper() {
   }
 
   // Get the collection position
-  let latitude = Number(document.getElementById("site-input-latitude").value);
-  let longitude = Number(document.getElementById("site-input-longitude").value);
+  let latitude = NullNumber(document.getElementById("site-input-latitude").value);
+  let longitude = NullNumber(document.getElementById("site-input-longitude").value);
 
   // Get the collection age
-  let age = Number(document.getElementById("age-input").value);
-  let ageMin = Number(document.getElementById("age-min-input").value);
-  let ageMax = Number(document.getElementById("age-max-input").value);
+  let age = NullNumber(document.getElementById("age-input").value);
+  let ageMin = NullNumber(document.getElementById("age-min-input").value);
+  let ageMax = NullNumber(document.getElementById("age-max-input").value);
 
   const textAreaContent = document.getElementById("site-input-area").value;
 
@@ -173,6 +181,11 @@ function addSiteWindowWrapper() {
   let components = lines.filter(Boolean).map(function(line, i) {
 
     let parameters = parseParameters(line.split(/[,\t]+/));
+
+    // Negative declinations to positive
+    if(parameters.dec < 0) {
+      parameters.dec += 360;
+    }
 
     if(parameters.dec < 0 || parameters.dec > 360 || parameters.inc < -90 || parameters.inc > 90) {
       throw(new Exception("Invalid component added on line " + i + "."));
@@ -184,7 +197,7 @@ function addSiteWindowWrapper() {
       "ageMax": ageMax,
       "beddingDip": parameters.dip || 0,
       "beddingStrike": parameters.strike || 90,
-      "coreDip": 0,
+      "coreDip": 90,
       "coreAzimuth": 0,
       "coordinates": new Direction(parameters.dec, parameters.inc).toCartesian(),
       "latitude": latitude,
@@ -635,7 +648,7 @@ function getSelectedComponents() {
 
     // Nothing to do
     var sign = Math.sign(getStatisticalParameters(comp).dir.mean.inc);
-    if((sign === 1 && polarity === "NORMAL") || (sign === -1 && polarity === "REVERSED")) {
+    if(polariy !== "EQUATOR" && ((sign === 1 && polarity === "NORMAL") || (sign === -1 && polarity === "REVERSED"))) {
       return components = components.concat(comp);
     }
 
@@ -965,6 +978,96 @@ function downloadAsJSON(filename, json) {
   const MIME_TYPE = "data:application/json;charset=utf-8";
 
   downloadURIComponent(filename, MIME_TYPE + "," + encodeURIComponent(JSON.stringify(json)));
+
+}
+
+function editSelectedCollection() {
+
+  var collections = getSelectedCollections();
+
+  // Can only edit a single collection
+  if(collections.length !== 1) {
+    return notify("warning", "Select a single collection to copy.");
+  }
+
+  var text = ["#Name", "Declination", "Inclination", "Core Azimuth", "Core Dip", "Bedding Strike", "Bedding Dip", "Latitude", "Longitude", "Stratigraphic Level", "Age", "Minimum Age", "Maximum Age", "Coordinates"].join(",") + "\n";
+
+  text += collections[0].components.map(function(component) {
+
+    var direction = component.coordinates.toVector(Direction);
+
+    return [
+      component.name,
+      direction.dec.toFixed(2),
+      direction.inc.toFixed(2),
+      component.coreAzimuth,
+      component.coreDip,
+      component.beddingStrike,
+      component.beddingDip,
+      component.latitude,
+      component.longitude,
+      component.level,
+      component.age,
+      component.ageMin,
+      component.ageMax,
+      "specimen"
+    ].join(",");
+
+  }).join("\n");
+
+  clipboardCopy(text);
+
+}
+
+function clipboardCopy(text) {
+
+  /*
+   * Function clipboardCopy
+   * Copies text to the clipboard
+   */
+
+  // Create a temporary area
+  const textArea = document.createElement("textarea");
+  textArea.value = text;
+  document.body.appendChild(textArea);
+  textArea.select();
+  document.execCommand("Copy");
+  textArea.remove();
+
+  notify("info", "Collection information CSV copied to clipboard.");
+
+}
+
+document.addEventListener("mouseout", function() {
+  document.body.classList.remove("blurry");
+});
+
+function dragOverHandler(ev) {
+
+  // Prevent default behavior (Prevents file from being opened)
+  ev.preventDefault();
+
+  document.body.classList.add("blurry");
+
+}
+
+function dropHandler(ev) {
+
+  document.body.classList.remove("blurry");
+
+  // Prevent default behavior (Prevent file from being opened)
+  ev.preventDefault();
+
+  if(!ev.dataTransfer.items) {
+    return;
+  }
+
+  // Use DataTransferItemList interface to access the file(s)
+  files = Array.from(ev.dataTransfer.items).map(function(item) {
+    return item.getAsFile();
+  });
+
+  readMultipleFiles(files, loadCollectionFileCallback);
 
 }
 
@@ -1322,6 +1425,32 @@ function deleteSelectedCollections() {
 
 }
 
+function loadCollectionFileCallback(files) {
+
+  const format = document.getElementById("format-selection").value;
+
+  // Drop the existing collections if not appending
+  if(!document.getElementById("append-input").checked) {
+    collections = new Array();
+  } 
+
+  var nCollections = collections.length;
+
+  // Try adding the demagnetization data
+  try {
+    addCollectionData(files, format);
+  } catch(exception) {
+    return notify("danger", exception);
+  }
+
+  enable();
+  saveLocalStorage();
+
+  notify("success", "Succesfully added <b>" + (collections.length - nCollections) + "</b> collection(s).");
+
+
+}
+
 function importCSV(file) {
 
   /*
@@ -1348,7 +1477,7 @@ function importCSV(file) {
      */
 
     // Extract all
-    var [name, dec, inc, coreAzimuth, coreDip, beddingStrike, beddingDip, latitude, longitude, level, age, ageMin, ageMax, coordinates] = line.split(",");
+    var [name, dec, inc, coreAzimuth, coreDip, beddingStrike, beddingDip, latitude, longitude, level, age, ageMin, ageMax, coordinates] = line.split(/[,;]/);
 
     if(latitude === "") {
       latitude = null;

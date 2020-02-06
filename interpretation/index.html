@@ -21,7 +21,7 @@
 
    </head>
 
-   <body>
+   <body id="drop_zone" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
 
       <!-- Site Header -->
       <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
@@ -105,7 +105,8 @@
                         <option value="PMAGORG">Paleomagnetism.org (1.0.0. .dir)</option>
                      </optgroup>
                      <optgroup label="Institution Formats">
-                        <option value="BLACKMNT">Black Mountain Lab</option>
+                        <option value="BLACKMNT">Black Mountain Lab (.xPCA)</option>
+                        <option value="UNKNOWN">Black Mountain Lab (.dms)</option>
                         <option value="CALTECH">Caltech Institute of Technology</option>
                         <option value="CENIEH">Cenieh</option>
                         <option value="BCN2G">PGL Beijing</option>
@@ -121,8 +122,11 @@
                      </optgroup>
                      <optgroup label="Software Formats">
                         <option value="MAGIC">MagIC</option>
+                        <option value="CJONES">PaleoMag (orientation error: don't use)</option>
                         <option value="PALEOMAC">PaleoMac</option>
                         <option value="BCN2G">BCN2G</option>
+                        <option value="JR5">JR5 (experimental)</option>
+                        <option value="JR6">JR6 (experimental)</option>
                      </optgroup>
                   </select>
 

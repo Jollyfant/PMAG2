@@ -324,6 +324,204 @@ function importMagic(file) {
 
 }
 
+function importPaleoMag(file) {
+
+  var lines = file.data.split(LINE_REGEXP).filter(Boolean);
+  var sampleName = lines[0].trim();
+  var parameters = lines[1].split(/\s+/).slice(1);
+
+  var level = Number(parameters[0]);
+
+  // CIT Convention?
+  // Not working!
+  var coreAzimuth = ((Number(parameters[1]) + 270) % 360);
+  var coreDip = 90 - Number(parameters[2]);
+  var beddingStrike = (Number(parameters[3]))
+  var beddingDip = Number(parameters[4]);
+  var volume = Number(parameters[5]);
+
+  var steps = lines.slice(2).map(function(line) {
+
+    var stepType = line.slice(0, 2);
+    var step = line.slice(2, 6).trim() || "0";
+
+    // This is core plate or something!?!?
+    var dec = Number(line.slice(46, 51));
+    var inc = Number(line.slice(52, 57));
+
+    // Intensity in emu/cm3 -> convert to micro A/m (1E9)
+    var intensity = 1E9 * Number(line.slice(31, 39));
+    var a95 = Number(line.slice(40, 45));
+    var info = line.slice(85, 113).trim();
+
+    var coordinates = new Direction(dec, inc, intensity).toCartesian();
+
+    return new Measurement(step, coordinates, null);
+
+  });
+
+  // Add the data to the application
+  specimens.push({
+    "demagnetizationType": null,
+    "coordinates": "specimen",
+    "format": "UNKNOWN",
+    "version": __VERSION__,
+    "created": new Date().toISOString(),
+    "steps": steps,
+    "level": level,
+    "longitude": null,
+    "latitude": null,
+    "age": null,
+    "ageMin": null,
+    "ageMax": null,
+    "lithology": null,
+    "sample": sampleName,
+    "name": sampleName,
+    "volume": volume,
+    "beddingStrike": beddingStrike,
+    "beddingDip": beddingDip,
+    "coreAzimuth": coreAzimuth,
+    "coreDip": coreDip, 
+    "interpretations": new Array()
+  });
+
+}
+
+function importUnknown(file) {
+
+  /*
+   * function importUnknown
+   * Imports an unknown file format to the
+   */
+
+  function getDemagnetizationType(lines) {
+
+    /*
+     * function getDemagnetizationType
+     * Determines which column has the "step" attribute: each demagnetization step
+     * has an T, AFD, ARM, and IRM entry but one only "changes"
+     * So we look for the one with the most change
+     */
+
+    var sets = new Array(
+      new Set(),
+      new Set(),
+      new Set(),
+      new Set()
+    );
+
+    // Go over the four columns (T, AFD, ARM, IRM)
+    for(var i = 0; i < 4; i++) {
+
+      var set = new Set();
+
+      lines.forEach(function(line) {
+
+        var parameters = line.split(/\s+/);
+        sets[i].add(parameters[i + 1]);
+        
+      });
+
+    }
+
+    // Get the sizes from the map
+    sizes = sets.map(x => x.size);
+
+    // Return the index of the column
+    return sizes.indexOf(Math.max.apply(null, sizes)) + 1;
+
+  }
+
+  var lines = file.data.split(LINE_REGEXP).slice(1).filter(Boolean);
+
+  // Bedding parameters are given per line: check if the value is unique
+  var beddingStrikes = new Set();
+  var beddingDips = new Set();
+  var coreAzimuths = new Set();
+  var coreDips = new Set();
+
+  // Determine the type of demagnetization
+  var degmagnetizationTypeIndex = getDemagnetizationType(lines);
+
+  var steps = lines.map(function(line) {
+
+    var parameters = line.split(/\s+/);
+
+    let coreAzimuth = Number(parameters[7]);
+    // Hmm? Southern hemisphere difference? Core dips are probably flipped (and Hade!)
+    let coreDip = 180 - (90 - Number(parameters[8]));
+    let beddingStrike = Number(parameters[9]);
+    let beddingDip = Number(parameters[10]);
+
+    coreAzimuths.add(coreAzimuth);
+    coreDips.add(coreDip);
+
+    beddingStrikes.add(beddingStrike);
+    beddingDips.add(beddingDip);
+
+    var step = parameters[degmagnetizationTypeIndex];
+
+    // Intensity is in Am2 (assumed) correct for 10CC sample volume
+    var x = Number(parameters[21]) * 1E9;
+    var y = Number(parameters[22]) * 1E9;
+    var z = Number(parameters[23]) * 1E9;
+    var coordinates = new Coordinates(x, y, z);
+
+    // Geographic and tectonic directions are in the file
+    // We can be defensive and check these values against what we calculate
+    var GDec = Number(parameters[37]);
+    var GInc = Number(parameters[38]);
+    var GDirection = coordinates.rotateTo(coreAzimuth, coreDip).toVector(Direction);
+
+    // Check and verify geographic coordinates
+    if(GDec.toFixed(2) !== GDirection.dec.toFixed(2) || GInc.toFixed(2) !== GDirection.inc.toFixed(2)) {
+      throw(new Exception("Inconsistency detected in geographic vector component."));
+    }
+
+    var TDec = Number(parameters[43]);
+    var TInc = Number(parameters[44]);
+    var TDirection = coordinates.rotateTo(coreAzimuth, coreDip).correctBedding(beddingStrike, beddingDip).toVector(Direction);
+
+    // Check and verify tectonic coordinates
+    if(TDec.toFixed(2) !== TDirection.dec.toFixed(2) || TInc.toFixed(2) !== TDirection.inc.toFixed(2)) {
+      throw(new Exception("Inconsistency detected in tectonic vector component."));
+    }
+
+    // Intensity is in A/m
+    return new Measurement(step, coordinates, null);
+
+  });
+
+  let sampleName = lines[0].split(/\s+/)[0];
+  let volume = lines[0].split(/\s+/)[5];
+
+  // Add the data to the application
+  specimens.push({
+    "demagnetizationType": (degmagnetizationTypeIndex === 1 ? "thermal" : "alternating"),
+    "coordinates": "specimen",
+    "format": "UNKNOWN",
+    "version": __VERSION__,
+    "created": new Date().toISOString(),
+    "steps": steps,
+    "level": null,
+    "longitude": null,
+    "latitude": null,
+    "age": null,
+    "ageMin": null,
+    "ageMax": null,
+    "lithology": null,
+    "sample": sampleName,
+    "name": sampleName,
+    "volume": volume,
+    "beddingStrike": beddingStrikes.values().next().value,
+    "beddingDip": beddingDips.values().next().value,
+    "coreAzimuth": coreAzimuths.values().next().value,
+    "coreDip": coreDips.values().next().value,
+    "interpretations": new Array()
+  });
+
+}
+
 function importBlackMnt(file) {
 
   /*
@@ -412,12 +610,142 @@ function importBlackMnt(file) {
     "lithology": null,
     "sample": sampleName,
     "name": sampleName,
-    "volume": null,
+    "volume": 10.0,
     "beddingStrike": beddingStrikes.values().next().value,
     "beddingDip": beddingDips.values().next().value,
     "coreAzimuth": coreAzimuths.values().next().value,
     "coreDip": coreDips.values().next().value,
     "interpretations": new Array()
+  });
+
+}
+
+function importJR5(file) {
+
+  var lines = file.data.split(LINE_REGEXP).filter(Boolean);
+  var sampleName;
+  var coreAzimuth;
+  var coreDip;
+  var beddingStrike;
+  var beddingDip;
+
+  steps = lines.map(function(line) {
+
+    sampleName = line.slice(0, 10).trim();
+    var step = line.slice(10, 18).trim();
+    var x = Number(line.slice(18, 24));
+    var y = Number(line.slice(24, 30));
+    var z = Number(line.slice(30, 36));
+    var exp = 1E6 * Math.pow(10, Number(line.slice(36, 40)));
+    coreAzimuth = Number(line.slice(40, 44));
+    coreDip = Number(line.slice(44, 48));
+    beddingStrike = Number(line.slice(48, 52));
+    beddingDip = Number(line.slice(56, 60));
+
+    var coordinates = new Coordinates(x * exp, y * exp, z * exp);
+
+    return new Measurement(step, coordinates, null);
+
+  });
+
+  specimens.push({
+    "demagnetizationType": null,
+    "coordinates": "specimen",
+    "format": "JR5",
+    "version": __VERSION__,
+    "created": new Date().toISOString(),
+    "steps": steps,
+    "level": null,
+    "longitude": null,
+    "latitude": null,
+    "age": null,
+    "ageMin": null,
+    "ageMax": null,
+    "lithology": null,
+    "sample": sampleName,
+    "name": sampleName,
+    "volume": 10.0,
+    "beddingStrike": beddingStrike,
+    "beddingDip": beddingDip,
+    "coreAzimuth": coreAzimuth,
+    "coreDip": coreDip,
+    "interpretations": new Array()
+  });
+
+}
+
+function importJR6(file) {
+
+  var specimenSortObject = new Object();
+
+  var lines = file.data.split(LINE_REGEXP).filter(Boolean);
+
+  lines.forEach(function(line) {
+
+    var sampleName = line.slice(0, 10).trim();
+    var step = line.slice(10, 18).trim();
+    var x = Number(line.slice(18, 24));
+    var y = Number(line.slice(24, 30));
+    var z = Number(line.slice(30, 36));
+    var exp = 1E6 * Math.pow(10, Number(line.slice(36, 40)));
+    var coreAzimuth = Number(line.slice(40, 44));
+    var coreDip = Number(line.slice(44, 48));
+    var beddingStrike = Number(line.slice(48, 52));
+    var beddingDip = Number(line.slice(56, 60));
+    var a95 = Number(line.slice(76, 80));
+    var coordinates = new Coordinates(x * exp, y * exp, z * exp);
+
+    var P1 = Number(line.slice(64, 67));
+    var P2 = Number(line.slice(68, 71));
+    var P3 = Number(line.slice(71, 74));
+    var P4 = Number(line.slice(74, 77));
+
+    // Support for these orientation parameters
+    if(P1 !== 12 || P2 !== 0 || P3 !== 12) {
+      throw(new Exception("The AGICO orientation format is not supported. Supported: {12, 0, 12, *}."));
+    }
+
+    // P4 0 means (dip direction / dip) notation is used
+    // We use bedding strike so subtract 90
+    if(P4 === 0) {
+      beddingStrike -= 90;
+    }
+
+    if(!specimenSortObject.hasOwnProperty(sampleName)) {
+      specimenSortObject[sampleName] = {
+        "demagnetizationType": null,
+        "coordinates": "specimen",
+        "format": "JR6",
+        "version": __VERSION__,
+        "created": new Date().toISOString(),
+        "steps": new Array(),
+        "level": null,
+        "longitude": null,
+        "latitude": null,
+        "age": null,
+        "ageMin": null,
+        "ageMax": null,
+        "lithology": null,
+        "sample": sampleName,
+        "name": sampleName,
+        "volume": 10.0,
+        "beddingStrike": 0,
+        "beddingDip": 0,
+        "coreAzimuth": coreAzimuth,
+        "coreDip": coreDip,
+        "interpretations": new Array()
+      }
+
+    }
+
+    specimenSortObject[sampleName].steps.push(
+      new Measurement(step, coordinates, a95)
+    );
+
+  });
+
+  Object.values(specimenSortObject).forEach(function(specimen) {
+    specimens.push(specimen);
   });
 
 }
@@ -504,7 +832,7 @@ function importRS3(file) {
     "lithology": null,
     "sample": sampleName,
     "name": sampleName,
-    "volume": null,
+    "volume": 10.0,
     "beddingStrike": beddingStrike,
     "beddingDip": beddingDip,
     "coreAzimuth": coreAzimuth,
@@ -547,7 +875,7 @@ function importPaleoMac(file) {
     // Get the measurement parameters
     var step = line.slice(0, 5).trim();
     var x = 1E6 * Number(line.slice(5, 14)) / sampleVolume;
-    var y = 1E6 * Number(line.slice(16, 25)) / sampleVolume;
+    var y = 1E6 * Number(line.slice(15, 25)) / sampleVolume;
     var z = 1E6 * Number(line.slice(25, 34)) / sampleVolume;
     var a95 = Number(line.slice(69, 73));
 
@@ -642,7 +970,7 @@ function importOxford(file) {
     "version": __VERSION__,
     "created": new Date().toISOString(),
     "steps": steps,
-    "level": level,
+    "level": null,
     "longitude": null,
     "latitude": null,
     "age": null,
@@ -764,7 +1092,7 @@ function importCenieh(file) {
         "created": new Date().toISOString(),
         "steps": new Array(),
         "name": sampleName,
-        "volume": null,
+        "volume": 10.0,
         "longitude": null,
         "latitude": null,
         "age": null,
@@ -869,7 +1197,7 @@ function importMunich(file) {
     "created": new Date().toISOString(),
     "steps": parsedData,
     "name": sampleName,
-    "volume": null,
+    "volume": 10.0,
     "longitude": null,
     "latitude": null,
     "age": null,
@@ -1008,7 +1336,7 @@ function importCaltech(file) {
   }
 
   specimens.push({
-    "demagnetizationType": null,
+    "demanull,gnetizationType": null,
     "coordinates": "specimen",
     "format": "CALTECH",
     "version": __VERSION__,
@@ -1079,7 +1407,7 @@ function importApplicationSaveOld(file) {
       "lithology": null,
       "sample": specimen.name,
       "name": specimen.name,
-      "volume": null,
+      "volume": 10.0,
       "beddingStrike": Number(specimen.bedStrike),
       "beddingDip": Number(specimen.bedDip),
       "coreAzimuth": Number(specimen.coreAzi),

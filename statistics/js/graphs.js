@@ -15,11 +15,6 @@ function showGeographicAndTectonicPlot(geographic, tectonic) {
 
     components.forEach(function(component) {
 
-      // Skip rejected components
-      if(component.rejected) {
-        return;
-      }
-
       // Go over each step
       var direction = literalToCoordinates(component.coordinates).toVector(Direction);
 
@@ -37,11 +32,6 @@ function showGeographicAndTectonicPlot(geographic, tectonic) {
   tectonic.forEach(function(components) {
 
     components.forEach(function(component) {
-
-      // Skip rejected components
-      if(component.rejected) {
-        return;
-      }
 
       // Go over each step
       var direction = literalToCoordinates(component.coordinates).toVector(Direction);
@@ -204,6 +194,8 @@ function bootstrapShallowing() {
 
   // Get the vector in the reference coordinates
   var dirs = doCutoff(collections[0].components.map(x => x.inReferenceCoordinates())).components;
+
+  dirs = dirs.filter(x => !x.rejected);
 
   if(dirs.length < NUMBER_OF_COMPONENTS_REQUIRED) {
     notify("warning", "A minimum of " + NUMBER_OF_COMPONENTS_REQUIRED + " components is recommended.");
@@ -384,7 +376,8 @@ function plotEIBootstraps(bootstraps, totalBootstraps) {
 
   new Highcharts.chart(CHART_CONTAINER, {
     "chart": {
-      "id": "EI-bootstraps"
+      "id": "EI-bootstraps",
+      "zoomType": "x"
     },
     "title": {
       "text": "Bootstrapped E-I Pairs",
@@ -491,6 +484,13 @@ function plotUnfoldedData() {
   });
 
   var plotData = [{
+    "name": "Unfolded Directions",
+    "data": unfoldedData,
+    "type": "scatter",
+    "marker": {
+      "symbol": "circle"
+    }
+  }, {
     "name": "Original Directions",
     "type": "scatter",
     "data": originalData,
@@ -505,13 +505,6 @@ function plotUnfoldedData() {
       "enabled": false
     },
     "enableMouseTracking": false,
-  }, {
-    "name": "Unflattened Directions",
-    "data": unfoldedData,
-    "type": "scatter",
-    "marker": {
-      "symbol": "circle"
-    }
   }];
 
 
@@ -544,6 +537,7 @@ function plotUnflattenedData() {
 
   // Get the vector in the reference coordinates
   var dirs = doCutoff(collections[0].components.map(x => x.inReferenceCoordinates())).components;
+  dirs = dirs.filter(x => !x.rejected);
 
   // Apply the King, 1966 flattening factor
   var unflattenData = dirs.map(function(component) {
@@ -577,6 +571,13 @@ function plotUnflattenedData() {
   });
 
   var plotData = [{
+    "name": "Unflattened Directions",
+    "data": unflattenData,
+    "type": "scatter",
+    "marker": {
+      "symbol": "circle"
+    }
+  }, {
     "name": "Original Directions",
     "type": "scatter",
     "data": originalData,
@@ -591,13 +592,6 @@ function plotUnflattenedData() {
       "enabled": false
     },
     "enableMouseTracking": false,
-  }, {
-    "name": "Unflattened Directions",
-    "data": unflattenData,
-    "type": "scatter",
-    "marker": {
-      "symbol": "circle"
-    }
   }];
 
   // Update the chart title
@@ -605,7 +599,7 @@ function plotUnflattenedData() {
   eqAreaChart(CHART_CONTAINER, plotData);
 
   // Show the modal
-  $("#map-modal").modal("show");
+  $("#map-modal-2").modal("show");
 
 }
 
@@ -791,6 +785,9 @@ function plotEICDF(inclinations, originalInclination, unflattenedInclination) {
   });
 
   new Highcharts.chart(CHART_CONTAINER, {
+    "chart": {
+      "zoomType": "x"
+    },
     "title": {
       "text": "Cumulative Distribution of bootstrapped TK03.GAD intersections",
     },
@@ -848,6 +845,8 @@ function unflattenDirections(data) {
    * Unflatted a list of directions towards the TK03.GAD polynomial
    */
 
+  data = data.map(x => x.coordinates.toVector(Direction));
+
   // Get the tan of the observed inclinations (equivalent of tan(Io))
   var tanInclinations = data.map(x => Math.tan(x.inc * RADIANS));
 
@@ -864,14 +863,14 @@ function unflattenDirections(data) {
     // (tanIo = f tanIf) where tanIo is observed and tanIf is recorded.
     // Create unflattenedData containing (dec, inc) pair for a particular f
     var unflattenedData = tanInclinations.map(function(x, i) {
-      return new Direction(data[i].dec, Math.atan(x / f) / RADIANS);
+      return new Direction(data[i].dec, Math.atan(x / f) / RADIANS)
     });
 
     // Calculate mean inclination for unflattenedData and get eigenvalues
-    var meanInc = meanDirection(unflattenedData).inc;
+    var meanInc = meanDirection(unflattenedData.map(x => x.toCartesian())).inc;
     var eigenvalues = getEigenvaluesFast(TMatrix(unflattenedData.map(x => x.toCartesian().toArray())));
     var elongation = eigenvalues.t2 / eigenvalues.t3;
-    
+
     results.push({
       "flattening": f,
       "elongation": elongation,
@@ -886,6 +885,7 @@ function unflattenDirections(data) {
     // If there is more than 1 consecutive flattening factor in the array
     // This means we have a line under the TK03.GAD Polynomial
     // So we can return our parameters
+
     if(TK03Polynomial(meanInc) <= elongation) {
 
       if(results.length === 1) {
@@ -1046,6 +1046,7 @@ function plotFoldtestCDF(untilt, savedBootstraps) {
     "chart": {
       "id": "foldtest",
       "renderTo": "container5",
+      "zoomType": "x"
     },
     "title": {
       "text": "Bootstrapped foldtest",
@@ -1262,29 +1263,11 @@ function getSelectedComponents() {
 
   var components = new Array();
 
-  // Get the requested polarity from the DOM
-  var polarity = document.getElementById("polarity-selection").value || null;
-
   getSelectedCollections().forEach(function(collection) {
 
     // Get the components in the correct coordinate system
     var collectionComponents = collection.components.map(x => x.inReferenceCoordinates());
-
-    // Nothing to do
-    if(polarity === null) {
-      return components = components.concat(collectionComponents);
-    }
-
-    // Check sign of the mean inclination: nothing to do
-    var sign = Math.sign(getStatisticalParameters(collectionComponents).dir.mean.inc);
-    if((sign === 1 && polarity === "NORMAL") || (sign === -1 && polarity === "REVERSED")) {
-      return components = components.concat(collectionComponents);
-    }
-
-    // Otherwise reflect the individual component
-    collectionComponents.forEach(function(x) {
-      components.push(new Component(x, x.coordinates.reflect()));
-    });
+    components = components.concat(collectionComponents);
 
   });
 
@@ -1506,6 +1489,9 @@ function simulateCTMD(one, two) {
   var yTwo = new Array();
   var zOne = new Array();
   var zTwo = new Array();
+
+  one = one.filter(x => !x.rejected);
+  two = two.filter(x => !x.rejected);
 
   // Complete N bootstraps
   for(var i = 0; i < NUMBER_OF_BOOTSTRAPS; i++) {
@@ -1810,7 +1796,6 @@ function drawBootstrap(data) {
 
   }
 
-  // Do not include rejected components
   return data.map(randomSample);
 
 }
@@ -1880,15 +1865,6 @@ function eqAreaProjectionMean() {
     var statistics = getStatisticalParameters(cutofC.components);
 
     // Check if a polarity switch is requested
-    if(statistics.dir.mean.inc < 0 && document.getElementById("polarity-selection").value === "NORMAL") {
-      statistics.dir.mean.inc = -statistics.dir.mean.inc;
-      statistics.dir.mean.dec = (statistics.dir.mean.dec + 180) % 360;
-    }
-    if(statistics.dir.mean.inc > 0 && document.getElementById("polarity-selection").value === "REVERSED") {
-      statistics.dir.mean.inc = -statistics.dir.mean.inc;
-      statistics.dir.mean.dec = (statistics.dir.mean.dec + 180) % 360;
-    }
-
     var A95Ellipse = getConfidenceEllipse(statistics.pole.confidence);
 
     if(A95_CONFIDENCE) {
@@ -2241,6 +2217,10 @@ function saveCombinedCollection() {
       components = doCutoff(components).components.filter(x => !x.rejected);
     }
 
+    if(document.getElementById("modal-mirror-components").checked) {
+      components = components.map(x => new Component(x, x.coordinates.reflect()));
+    }
+
     // Make sure the coordinates are set back to specimen coordinates
     // A user may complete a cutoff in a particular reference frame
     components = components.map(x => new Component(x, fromReferenceCoordinates(COORDINATES, x, x.coordinates)));
@@ -2266,10 +2246,6 @@ function saveCombinedCollection() {
   $("#map-modal").modal("show");
 
 }
-
-$("#map-modal").on("shown.bs.modal", function (e) {
-   document.getElementById("modal-name").focus();
-});
 
 function transformEllipse(A95Ellipse, dir) {
 

@@ -190,6 +190,7 @@ function keyboardHandler(event) {
   const CODES = {
     "KEYPAD_EIGHT": 56,
     "ESCAPE_KEY": 27,
+    "E_KEY": 69,
     "Q_KEY": 81,
     "S_KEY": 83
   }
@@ -216,6 +217,8 @@ function keyboardHandler(event) {
       return switchCoordinateReference();
     case CODES.ESCAPE_KEY:
       return document.getElementById("notification-container").innerHTML = "";
+    case CODES.E_KEY:
+      return editSelectedCollection();
     case CODES.S_KEY:
       return exportSelectedCollections();
     case CODES.Q_KEY:
@@ -239,7 +242,6 @@ function registerEventHandlers() {
   document.getElementById("customFile").addEventListener("change", fileSelectionHandler);
   document.getElementById("specimen-select").addEventListener("change", showCollectionsOnMap);
   document.getElementById("cutoff-selection").addEventListener("change", redrawCharts);
-  document.getElementById("polarity-selection").addEventListener("change", redrawCharts);
   document.addEventListener("keydown", keyboardHandler);
   document.getElementById("defaultCheck1").addEventListener("change", toggleGridLayer);
   document.getElementById("calculate-reference").addEventListener("click", plotPredictedDirections);
@@ -348,8 +350,6 @@ function showCollectionsOnMap() {
   const MARKER_SIZE = 100;
   const MARKER_OPACITY = 0.5;
 
-  var polarity = document.getElementById("polarity-selection").value || null;
-
   // Drop references to old markers
   resetMarkers();
  
@@ -380,7 +380,7 @@ function showCollectionsOnMap() {
         "iconSize": MARKER_SIZE
       });
 
-      mapMakers.push(L.marker([component.latitude, component.longitude], {"icon": markerIcon}).addTo(map));
+      mapMakers.push(L.marker([component.latitude, component.longitude], {"icon": markerIcon, "name": null}).addTo(map));
 
     });
 
@@ -414,12 +414,6 @@ function showCollectionsOnMap() {
       return;
     }
 
-    // Flip polarity if requested
-    if((polarity === "REVERSED" && statistics.dir.mean.inc > 0) || (polarity === "NORMAL" && statistics.dir.mean.inc < 0)) {
-      statistics.dir.mean.inc = -statistics.dir.mean.inc
-      statistics.dir.mean.dec = (statistics.dir.mean.dec + 180) % 360; 
-    }
-
     if(collection.color) {
       var color = collection.color;
     } else {
@@ -444,7 +438,7 @@ function showCollectionsOnMap() {
       "<hr><div id='color-picker'>" + generateColorPalette() + "</div>",
     ].join("<br>");
 
-    mapMakers.push(L.marker([averageLocation.lat, averageLocation.lng], {"icon": markerIcon, "index": collection.index}).bindPopup(markerPopupContent).addTo(map));
+    mapMakers.push(L.marker([averageLocation.lat, averageLocation.lng], {"icon": markerIcon, "index": collection.index, "name": collection.name}).bindPopup(markerPopupContent).addTo(map));
 
   });
 
@@ -590,6 +584,7 @@ function downloadAsKML() {
       "  </IconStyle>",
       "</Style>",
       "<Placemark>",
+      "  <name>" + marker.options.name + "</name>",
       "  <Point>",
       "    <styleUrl>#" + i + "</styleUrl>",
       "    <coordinates>" + marker.getLatLng().lng + "," + marker.getLatLng().lat + "</coordinates>",
@@ -613,7 +608,9 @@ function downloadAsKML() {
   var payload = encodeURIComponent([
     "<?xml version='" + XML_VERSION + "' encoding='" + XML_ENCODING + "'?>",
     "<kml xmlns='http://earth.google.com/kml/" + KML_VERSION + "'>",
+    "<Document>",
     mapMakers.map(generateKMLPlacemark).join("\n"),
+    "</Document>",
     "</kml>"
   ].join("\n"));
 
@@ -993,29 +990,10 @@ function fileSelectionHandler(event) {
    * Callback fired when input files are selected
    */
 
-  const format = document.getElementById("format-selection").value;
+  readMultipleFiles(Array.from(event.target.files), loadCollectionFileCallback);
 
-  readMultipleFiles(Array.from(event.target.files), function(files) {
-
-    // Drop the samples if not appending
-    if(!document.getElementById("append-input").checked) {
-      collections = new Array();
-    }
-
-    var nCollections = collections.length;
-
-    // Try adding the demagnetization data
-    try {
-      addCollectionData(files, format);
-    } catch(exception) {
-      return notify("danger", exception);
-    }
-
-    enable();
-    saveLocalStorage();
-    notify("success", "Succesfully added <b>" + (collections.length - nCollections) + "</b> specimen(s).");
-
-  });
+  // Reset value in case loading the same file
+  this.value = null;
 
 }
 
