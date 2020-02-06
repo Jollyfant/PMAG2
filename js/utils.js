@@ -1,6 +1,6 @@
 let __DEBUG__ = false;
 const __VERSION__ = "2.0.0";
-const __DOI__ = "10.5281/zenodo.2649907";
+const __DOI__ = "10.5281/zenodo.3647864"
 const RADIANS = Math.PI / 180;
 const PROJECTION_TYPE = "AREA";
 const DEGREE_SYMBOL = "\u00B0";
