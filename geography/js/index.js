@@ -24,8 +24,6 @@ function addMap() {
   // Set map options (bounds)
   var mapOptions = {
     "minZoom": 2,
-    "maxBounds": new L.latLngBounds(new L.latLng(-90, -180), new L.latLng(90, 180)),
-    "maxBoundsViscosity": 0.5,
     "attributionControl": true
   }
 
