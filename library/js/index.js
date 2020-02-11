@@ -39,9 +39,9 @@ function addCollectionsToTable(publications) {
       "  <td>" + x.author + "</td>",
       "  <td>" + x.institution + "</td>",
       "  <td>" + x.description + "</td>",
-      "  <td><code><a href='../publication/index.html?" + x.pid + "'>" + x.pid.slice(0, 16) + "…</a></code></td>",
+      "  <td><code><a href='../publication/index.html?" + x.pid + "'>" + x.pid.slice(0, 6) + "…</a></code></td>",
       "  <td>" + ("<a href='https://doi.org/" + x.doi + "'>" + x.doi + "</a>" || "N/A") + "</td>",
-      "  <td>" + new Date(x.created).toISOString().slice(0, 10) + "</td>",
+      "  <td style='width: 100px;'>" + new Date(x.created).toISOString().slice(0, 10) + "</td>",
       "</tr>"
     ].join("\n");
   });
@@ -54,7 +54,7 @@ function addCollectionsToTable(publications) {
     "    <th>Author</th>",
     "    <th>Institution</th>",
     "    <th>Description</th>",
-    "    <th>Persistent Identifier</th>",
+    "    <th>Identifier</th>",
     "    <th>DOI</th>",
     "    <th>Created</th>",
     "  </tr>",
