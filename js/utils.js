@@ -1278,9 +1278,15 @@ function addFooter() {
    * Adds footer to all HTML pages
    */
 
+  var isBetaVersion = window.location.href.includes("beta");
+
+  if(isBetaVersion) {
+    document.getElementsByClassName("navbar-brand")[0].innerHTML += " <span title='This is a preview version of the application for testing features and bug fixes. It is recommended to use the production application at https://www.paleomagnetism.org.'>BETA*</span>";
+  }
+
   document.getElementById("footer-container").innerHTML = new Array(
     "<hr>",
-    "<b>Paleomagnetism<span class='text-danger'>.org</span></b> &copy; " + new Date().getFullYear() + ". All Rights Reserved.",
+    "<b>Paleomagnetism<span class='text-danger'>.org</span>" + (isBetaVersion ? " BETA" : "" ) + "</b> &copy; " + new Date().getFullYear() + ". All Rights Reserved.",
     "<div style='float: right;' class='text-muted'><small>Version v" + __VERSION__ + " (<a href='https://doi.org/" + __DOI__ + "'>" + __DOI__ + "</a>)</small></div>",
     "&nbsp; <i class='fab fa-github'></i> <a href='https://github.com/Jollyfant/PMAG2'><b>Source Code</b></a>",
     "&nbsp; <i class='fas fa-balance-scale'></i> Licensed under <a href='https://opensource.org/licenses/MIT'><b>MIT</b>.</a>",
