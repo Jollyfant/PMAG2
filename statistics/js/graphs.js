@@ -1837,6 +1837,28 @@ function generateHemisphereTooltip() {
 
 }
 
+function addCollectionMetadata(index) {
+
+  let value = prompt("Enter a new DOI for this collection.");
+
+  if(value === null) {
+    return;
+  }
+
+  if(value === "") {
+    value = null;
+  } else if(!value.startsWith("10.")) {
+    return notify("danger", "The input <b>" + value + "</b> is not a valid DOI.");
+  } else {
+    notify("success", "The DOI <b>" + value + "</b> has succesfully been assigned.");
+  }
+
+  collections[index].doi = value;
+  eqAreaProjectionMean();
+  saveLocalStorage();
+  
+}
+
 function eqAreaProjectionMean() {
 
   /*
@@ -1897,6 +1919,12 @@ function eqAreaProjectionMean() {
       }
     });
 
+    if(site.doi) {
+      var icon = "<span class='text-success'><i class='fas fa-id-card'></i></span>";
+    } else {
+      var icon = "<span class='text-danger'><i class='fas fa-id-card'></i></span>";
+    }
+
     statisticsRows.push([
       "<tr>",
       "  <td>" + site.name + "</td>",
@@ -1916,6 +1944,7 @@ function eqAreaProjectionMean() {
       "  <td>" + statistics.butler.dDx.toFixed(PRECISION) + "</td>",
       "  <td>" + statistics.butler.dIx.toFixed(PRECISION) + "</td>",
       "  <td>" + statistics.dir.lambda.toFixed(PRECISION) + "</td>",
+      "  <td onclick='addCollectionMetadata(" + site.index + ");' style='cursor: pointer;'>" + icon + "</td>",
       "</tr>"
     ].join("\n"));
 
@@ -1947,6 +1976,7 @@ function eqAreaProjectionMean() {
     "    <td>ΔDx</td>",
     "    <td>ΔIx</td>",
     "    <td>λ</td>",
+    "    <td>DOI</td>",
     "  </tr>",
     "  </thead>",
     "  <tbody>",

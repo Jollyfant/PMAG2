@@ -221,6 +221,7 @@ function addSiteWindowWrapper() {
     "color": null,
     "type": "collection",
     "name": collectionName,
+    "doi": null,
     "components": components,
     "created": new Date().toISOString(),
     "index": collections.length
