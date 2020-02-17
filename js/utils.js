@@ -1199,7 +1199,7 @@ function readMultipleFiles(files, callback) {
     }
 
     // Next queued file: create a new filereader instance
-    file = files.pop();
+    file = files.shift();
     reader = new FileReader();
 
     // XML should be readable as text
