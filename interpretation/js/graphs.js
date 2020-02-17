@@ -108,6 +108,7 @@ function plotIntensityDiagram(hover) {
   var specimen = getSelectedSpecimen();
 
   var intensities = new Array();
+  var categories = new Array();
   var hoverIndex = null;
 
   specimen.steps.forEach(function(step, i) {
@@ -122,11 +123,10 @@ function plotIntensityDiagram(hover) {
       hoverIndex = intensities.length;
     }
 
-    // Get the treatment step as a number
-    var treatmentStep = extractNumbers(step.step);
+    // Use categories to stop mixing AF / TH
+    categories.push(step.step)
 
     intensities.push({
-      "x": treatmentStep,
       "y": new Coordinates(step.x, step.y, step.z).length,
       "stepIndex": i
     });
@@ -217,7 +217,7 @@ function plotIntensityDiagram(hover) {
     "zIndex": 0
   });
 
-  createIntensityDiagram(hover, plotSeries);
+  createIntensityDiagram(hover, plotSeries, categories);
 
 }
 
@@ -834,7 +834,7 @@ function resetMarkerSize() {
 
 }
 
-function createIntensityDiagram(hover, series) {
+function createIntensityDiagram(hover, series, categories) {
 
   /*
    * Function createIntensityDiagram
@@ -895,6 +895,7 @@ function createIntensityDiagram(hover, series) {
       "formatter": intensityTooltip
     },
     "xAxis": {
+      "categories": categories,
       "title": {
         "text": "Demagnetization steps"
       }
