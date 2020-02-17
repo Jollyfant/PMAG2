@@ -447,6 +447,7 @@ function plotZijderveldDiagram(hover) {
     "chart": {
     "animation": false,
     "id": "zijderveld-container",
+    "height": 500,
     "zoomType": "xy",
       "events": {
         "load": resetMarkerSize
@@ -1099,6 +1100,7 @@ function eqAreaProjection(hover) {
   Highcharts.chart(CHART_CONTAINER, {
     "chart": {
       "polar": true,
+      "height": 500,
       "events": {
         "load": resetMarkerSize
       },
