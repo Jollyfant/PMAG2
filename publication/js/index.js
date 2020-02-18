@@ -16,10 +16,10 @@ function addMap(publication) {
      */
 
     return new Array(
-      "<b>" + collection.name + "</b>",
+      "<b>Collection " + collection.name + "</b>",
       "<i>" + publication.description + "</i>",
       "",
-      "Collections contains " + publication.nSpecimens + " specimens",
+      "Collection contains <b>" + collection.data.specimens.length + "</b> specimens.",
       "",
       "<b>Author</b>: " + publication.author,
       "<b>Published</b>: " + publication.created,
