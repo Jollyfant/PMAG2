@@ -3,6 +3,7 @@ var GPlatesData = new Object();
 var KMLLayers = new Array();
 var APWPs, PLATE_NAMES;
 var mapMakers = new Array();
+var openedCollection;
 
 $(".selectpicker").selectpicker("show");
 

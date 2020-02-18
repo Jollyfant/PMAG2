@@ -158,7 +158,8 @@ function formatCollectionTable(publication) {
     "  <tr>",
     "    <th>Collection</th>",
     "    <th>Type</th>",
-    "    <th>Number of Specimens</th>",
+    "    <th># Specimens</th>",
+    "    <th># Components</th>",
     "    <th>SHA2</th>",
     "    <th>Version</th>",
     "    <th>Created</th>",
@@ -191,15 +192,25 @@ function formatSampleRows(collection, i) {
     reference = "";
   }
 
+  console.log(collection.data);
   // Format the row
   return "<tr>" + new Array(
     "<a href='../collection/index.html" + window.location.search + "." + i + "'>" + collection.name + "</a>" + reference,
     locationType,
     collection.data.specimens.length,
+    countComponents(collection.data.specimens),
     collection.data.hash.slice(0, 16) + "…",
     collection.data.version,
     collection.data.created.slice(0, 10),
   ).map(x => "<td>" + x + "</td>").join("\n") + "</tr>";
+
+}
+
+function countComponents(specimens) {
+
+   return specimens.map(function(specimen) {
+     return specimen.interpretations.length;
+   }).reduce((a, b) => a + b, 0);
 
 }
 
