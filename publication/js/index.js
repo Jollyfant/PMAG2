@@ -137,14 +137,6 @@ function formatCollectionTable(publication) {
   // Initialize the leaflet map
   addMap(publication);
 
-  // Create accept & reject links (behind login)
-  let acceptLink = "https://api.paleomagnetism.org/" + publication.pid + "?accept";
-  let rejectLink = "https://api.paleomagnetism.org/" + publication.pid + "?reject";
-
-  if(!publication.accepted) {
-    notify("warning", "This publication is pending review and has not yet been accepted. <br> <small><i class='fas fa-lock'></i> <a href='" + acceptLink + "'>Accept</a> or <a href='" + rejectLink + "'>Reject</a></small>");
-  }
-
   // Load the metadata for this collection
   document.getElementById("card-table").innerHTML = metadataContent(publication);
   document.getElementById("pid-box").innerHTML = publication.pid;
