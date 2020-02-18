@@ -137,13 +137,22 @@ function formatCollectionTable(publication) {
   // Initialize the leaflet map
   addMap(publication);
 
+  // Add a row for each collection
+  var rows = publication.collections.map(createSampleRows);
+
+  // Count the components
+  var componentSum = rows.reduce((a, b) => a + b[3], 0);
+
   // Load the metadata for this collection
   document.getElementById("card-table").innerHTML = metadataContent(publication);
   document.getElementById("pid-box").innerHTML = publication.pid;
-  document.getElementById("fork-link").innerHTML = createForkLink(publication.pid);
 
-  // Add a row for each collection
-  var rows = publication.collections.map(formatSampleRows);
+  // Check if there are components: offer to fork in the application
+  if(componentSum === 0) {
+    document.getElementById("fork-link").innerHTML = "<small><span class='text-danger'><i class='fas fa-ban'></i> No interpretated components to show.</span></small>";
+  } else {
+    document.getElementById("fork-link").innerHTML = createForkLink(publication.pid);
+  }
 
   document.getElementById("publication-table").innerHTML = new Array(
     "<head>",
@@ -157,14 +166,14 @@ function formatCollectionTable(publication) {
     "    <th>Created</th>",
     "  </tr>",
     "</head>"
-  ).concat(rows).join("\n");
+  ).concat(rows.map(formatSampleRows)).join("\n");
 
 }
 
-function formatSampleRows(collection, i) {
+function createSampleRows(collection, i) {
 
   /*
-   * Function formatSampleRows
+   * Function createSampleRows
    * Creates HTML for rows of the collection table
    */
 
@@ -184,9 +193,7 @@ function formatSampleRows(collection, i) {
     reference = "";
   }
 
-  console.log(collection.data);
-  // Format the row
-  return "<tr>" + new Array(
+  return new Array(
     "<a href='../collection/index.html" + window.location.search + "." + i + "'>" + collection.name + "</a>" + reference,
     locationType,
     collection.data.specimens.length,
@@ -194,7 +201,19 @@ function formatSampleRows(collection, i) {
     collection.data.hash.slice(0, 16) + "…",
     collection.data.version,
     collection.data.created.slice(0, 10),
-  ).map(x => "<td>" + x + "</td>").join("\n") + "</tr>";
+  );
+
+}
+
+function formatSampleRows(x) {
+
+  /*
+   * Function formatSampleRows
+   * Creates HTML for rows of the collection table
+   */
+
+  // Format the row
+  return "<tr>" + x.map(x => "<td>" + x + "</td>").join("\n") + "</tr>";
 
 }
 
