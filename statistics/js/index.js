@@ -200,6 +200,7 @@ function registerEventHandlers() {
    * Registers DOM event listeners and handler
    */
 
+  document.getElementById("modal-confirm-metadata").addEventListener("click", updateCollectionMetadata);
   document.getElementById("site-input-area").addEventListener("scroll", updateTextAreaCounter);
   document.getElementById("specimen-age-select").addEventListener("change", handleAgeSelection);
 

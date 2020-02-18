@@ -42,6 +42,8 @@ if(document.getElementById("enable-sound")) {
 window.addEventListener("online",  notify.bind(null, "success", "Your connection to the internet has been recovered."));
 window.addEventListener("offline", notify.bind(null, "danger", "Your connection to the internet was dropped."));
 
+var openedCollection;
+
 function padLeft(nr, n){
   return Array(n - String(nr).length + 1).join("0") + nr;
 } 
@@ -1961,6 +1963,47 @@ function doiLookup(doi, callback) {
   ).join("&");
 
   HTTPRequest(DOI_REGISTRATION_URL, "GET", callback);
+
+}
+
+function generateColorPalette() {
+
+  /*
+   * Function generateColorPalette
+   * Generates the color palette for site color picking
+   */
+
+  function createColorItem(color) {
+
+    /*
+     * Function generateColorPalette::createColorItem
+     * Generates a div for a particular color that can be clicked
+     */
+
+    return "<div style='background-color: " + color + ";' class='color-item' onclick='changeColor(\"" + color + "\")'></div>";
+
+  }
+
+  // Choose from a nice saturated gradient
+  const COLOR_PALETTE = new Array(
+    // First row
+    "#F55", "#FA5", "#FF5",
+    "#AF5", "#5F5", "#5FA",
+    "#5FF", "#5AF", "#55F",
+    "#A5F", "#F5F", "#F5A",
+    // Second row
+    "#A00", "#A50", "#AA0",
+    "#5A0", "#0A0", "#0A5",
+    "#0AA", "#05A", "#00A",
+    "#50A", "#A0A", "#A05",
+    // Third row
+    "#FFF", "#DDD", "#AAA",
+    "#888", "#555", "#222",
+    "#000"
+  );
+
+  // Create color bar
+  return COLOR_PALETTE.map(createColorItem).join("");
 
 }
 

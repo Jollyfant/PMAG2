@@ -1839,21 +1839,65 @@ function generateHemisphereTooltip() {
 
 function addCollectionMetadata(index) {
 
-  let value = prompt("Enter a new DOI for this collection.");
+  // Reference the collection
+  openedCollection = collections[index]
 
-  if(value === null) {
-    return;
+  document.getElementById("metadata-modal-title").innerHTML = "Metadata for collection <b>" + openedCollection.name + "</b>";
+  document.getElementById("color-preview").style.backgroundColor = openedCollection.color || "grey";
+
+  document.getElementById("metadata-comments").value = openedCollection.comments || "";
+  document.getElementById("metadata-authors").value = openedCollection.authors || "";
+  document.getElementById("metadata-reference").value = openedCollection.doi || "";
+  document.getElementById("metadata-year").value = openedCollection.year || "";
+  
+  $("#metadata-modal").modal("show");
+
+}
+
+
+function changeColor(color) {
+
+  /*
+   * Function changeColor
+   * Changes the color of the selected collection
+   */
+
+  // Set the new color
+  openedCollection.color = color;
+  document.getElementById("color-preview").style.backgroundColor = openedCollection.color || "grey";
+  
+}
+
+
+function updateCollectionMetadata() {
+
+  /*
+   * function updateCollectionMetadata
+   * Updates metadata from input window
+   */
+
+  let comments = document.getElementById("metadata-comments").value;
+  let authors = document.getElementById("metadata-authors").value;
+  let reference = document.getElementById("metadata-reference").value;
+  let year = document.getElementById("metadata-year").value;
+
+  if(reference !== "" && !reference.startsWith("10.")) {
+    return notify("danger", "The submitted DOI: <b>" + reference + "</b> is invalid.")
   }
 
-  if(value === "") {
-    value = null;
-  } else if(!value.startsWith("10.")) {
-    return notify("danger", "The input <b>" + value + "</b> is not a valid DOI.");
+  openedCollection.comments = comments || null;
+  openedCollection.doi = reference || null;
+  openedCollection.authors = authors || null;
+
+  if(year !== "") {
+    openedCollection.year = Number(year);
   } else {
-    notify("success", "The DOI <b>" + value + "</b> has succesfully been assigned.");
+    openedCollection.year = null;
   }
 
-  collections[index].doi = value;
+  // Deference
+  openedCollection = null;
+  notify("success", "Metadata for collection <b>" + openedCollection.name + "</b> has been succesfully updated.");
   eqAreaProjectionMean();
   saveLocalStorage();
   
@@ -1976,7 +2020,7 @@ function eqAreaProjectionMean() {
     "    <td>ΔDx</td>",
     "    <td>ΔIx</td>",
     "    <td>λ</td>",
-    "    <td>DOI</td>",
+    "    <td>Metadata</td>",
     "  </tr>",
     "  </thead>",
     "  <tbody>",
