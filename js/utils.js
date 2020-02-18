@@ -1905,6 +1905,7 @@ function mapTabFocusHandler() {
   map.invalidateSize();
 
   setTimeout(function() {
+console.log(markerGroup);
     map.fitBounds(new L.featureGroup(markerGroup).getBounds());
   }, TRANSITION_DELAY_MS);
 

@@ -39,8 +39,6 @@ function addMap(publication) {
   var mapOptions = {
     "minZoom": 1,
     "maxZoom": 13,
-    "maxBounds": new L.latLngBounds(new L.latLng(-90, -180), new L.latLng(90, 180)),
-    "maxBoundsViscosity": 0.5,
     "attributionControl": true
   }
 
@@ -52,12 +50,12 @@ function addMap(publication) {
   publication.collections.forEach(function(collection, i) {
 
     var averageLocation = meanDirection(collection.data.specimens.map(function(x) {
-      return new Direction(x.latitude, x.longitude).toCartesian();
+      return new Direction(x.longitude, x.latitude).toCartesian();
     }));
 
     var markerInformation = createTooltip(publication, collection, i);
 
-    markerGroup.push(new L.Marker(new L.LatLng(averageLocation.dec, averageLocation.inc)).addTo(map).bindPopup(markerInformation));
+    markerGroup.push(new L.Marker(new L.LatLng(averageLocation.inc, averageLocation.dec)).addTo(map).bindPopup(markerInformation));
 
   });
 
