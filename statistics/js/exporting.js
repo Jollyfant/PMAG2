@@ -64,15 +64,6 @@ function exportMeanJSON() {
     var averageLocation = getAverageLocation(site);
 
     // Check if a polarity switch is requested
-    if(statistics.dir.mean.inc < 0 && document.getElementById("polarity-selection").value === "NORMAL") {
-      statistics.dir.mean.inc = -statistics.dir.mean.inc;
-      statistics.dir.mean.dec = (statistics.dir.mean.dec + 180) % 360;
-    }
-    if(statistics.dir.mean.inc > 0 && document.getElementById("polarity-selection").value === "REVERSED") {
-      statistics.dir.mean.inc = -statistics.dir.mean.inc;
-      statistics.dir.mean.dec = (statistics.dir.mean.dec + 180) % 360;
-    }
-
     statisticsRows.push({
       "collection": site.name,
       "latitude": averageLocation.lat,
