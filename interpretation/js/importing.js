@@ -837,7 +837,7 @@ function importRS3(file) {
 
     // Intensity is in A/m
     var intensity = 1E6 * Number(line.slice(15, 27));
-    var declination = Number(line.slice(29, 33));
+    var declination = Number(line.slice(28, 33));
     var inclination = Number(line.slice(34, 39));
     var a95 = Number(line.slice(77, 80))
 
