@@ -30,36 +30,27 @@ function addCollectionsToTable(publications) {
    * Adds the returned publications to a table
    */
 
-  const TABLE_CONTAINER = "publication-table";
+  var TABLE_HEADER = new Array("Name", "Author", "Institution", "Description", "Country", "Identifier", "DOI", "Created");
 
   var rows = publications.map(function(x) {
-    return [
-      "<tr>",
-      "  <td>" + x.name + "</td>",
-      "  <td>" + x.author + "</td>",
-      "  <td>" + x.institution + "</td>",
-      "  <td>" + x.description + "</td>",
-      "  <td><code><a href='../publication/index.html?" + x.pid + "'>" + x.pid.slice(0, 6) + "…</a></code></td>",
-      "  <td>" + ("<a href='https://doi.org/" + x.doi + "'>" + x.doi + "</a>" || "N/A") + "</td>",
-      "  <td style='width: 100px;'>" + new Date(x.created).toISOString().slice(0, 10) + "</td>",
-      "</tr>"
-    ].join("\n");
+    return new Array(
+      "<a href='../publication/index.html?" + x.pid + "'>"  + x.name + "</a>",
+      x.author,
+      x.institution,
+      x.description, 
+      x.country || "Unconstrained",
+      "<code><a href='../publication/index.html?" + x.pid + "'>" + x.pid.slice(0, 8) + "</a></code>", 
+      "<a href='https://doi.org/" + x.doi + "'>" + x.doi + "</a>" || "N/A",
+      new Date(x.created).toISOString().slice(0, 10)
+    );
   });
 
-  // Update the table container
-  document.getElementById(TABLE_CONTAINER).innerHTML = [
-    "<head>",
-    "  <tr>",
-    "    <th>Name</th>",
-    "    <th>Author</th>",
-    "    <th>Institution</th>",
-    "    <th>Description</th>",
-    "    <th>Identifier</th>",
-    "    <th>DOI</th>",
-    "    <th>Created</th>",
-    "  </tr>",
-    "</head>",
-  ].concat(rows).join("\n");
+  new Table({
+      "id": "publication-table",
+      "search": true,
+      "header": TABLE_HEADER,
+      "body": rows
+  });
 
 }
 

@@ -127,6 +127,7 @@ function plotIntensityDiagram(hover) {
     categories.push(step.step)
 
     intensities.push({
+      "x": i,
       "y": new Coordinates(step.x, step.y, step.z).length,
       "stepIndex": i
     });

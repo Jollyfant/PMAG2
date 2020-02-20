@@ -137,41 +137,43 @@ function formatCollectionTable(publication) {
   // Initialize the leaflet map
   addMap(publication);
 
-  // Create accept & reject links (behind login)
-  let acceptLink = "https://api.paleomagnetism.org/" + publication.pid + "?accept";
-  let rejectLink = "https://api.paleomagnetism.org/" + publication.pid + "?reject";
+  // Add a row for each collection
+  var rows = publication.collections.map(createSampleRows);
 
-  if(!publication.accepted) {
-    notify("warning", "This publication is pending review and has not yet been accepted. <br> <small><i class='fas fa-lock'></i> <a href='" + acceptLink + "'>Accept</a> or <a href='" + rejectLink + "'>Reject</a></small>");
-  }
+  // Count the components
+  var componentSum = rows.reduce((a, b) => a + b[3], 0);
 
   // Load the metadata for this collection
   document.getElementById("card-table").innerHTML = metadataContent(publication);
   document.getElementById("pid-box").innerHTML = publication.pid;
-  document.getElementById("fork-link").innerHTML = createForkLink(publication.pid);
 
-  // Add a row for each collection
-  var rows = publication.collections.map(formatSampleRows);
+  // Check if there are components: offer to fork in the application
+  if(componentSum === 0) {
+    document.getElementById("fork-link").innerHTML = "<small><span class='text-danger'><i class='fas fa-ban'></i> No interpretated components to show.</span></small>";
+  } else {
+    document.getElementById("fork-link").innerHTML = createForkLink(publication.pid);
+  }
 
   document.getElementById("publication-table").innerHTML = new Array(
     "<head>",
     "  <tr>",
     "    <th>Collection</th>",
     "    <th>Type</th>",
-    "    <th>Number of Specimens</th>",
+    "    <th># Specimens</th>",
+    "    <th># Components</th>",
     "    <th>SHA2</th>",
     "    <th>Version</th>",
     "    <th>Created</th>",
     "  </tr>",
     "</head>"
-  ).concat(rows).join("\n");
+  ).concat(rows.map(formatSampleRows)).join("\n");
 
 }
 
-function formatSampleRows(collection, i) {
+function createSampleRows(collection, i) {
 
   /*
-   * Function formatSampleRows
+   * Function createSampleRows
    * Creates HTML for rows of the collection table
    */
 
@@ -191,15 +193,35 @@ function formatSampleRows(collection, i) {
     reference = "";
   }
 
-  // Format the row
-  return "<tr>" + new Array(
+  return new Array(
     "<a href='../collection/index.html" + window.location.search + "." + i + "'>" + collection.name + "</a>" + reference,
     locationType,
     collection.data.specimens.length,
+    countComponents(collection.data.specimens),
     collection.data.hash.slice(0, 16) + "…",
     collection.data.version,
     collection.data.created.slice(0, 10),
-  ).map(x => "<td>" + x + "</td>").join("\n") + "</tr>";
+  );
+
+}
+
+function formatSampleRows(x) {
+
+  /*
+   * Function formatSampleRows
+   * Creates HTML for rows of the collection table
+   */
+
+  // Format the row
+  return "<tr>" + x.map(x => "<td>" + x + "</td>").join("\n") + "</tr>";
+
+}
+
+function countComponents(specimens) {
+
+   return specimens.map(function(specimen) {
+     return specimen.interpretations.length;
+   }).reduce((a, b) => a + b, 0);
 
 }
 

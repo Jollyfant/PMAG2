@@ -1,5 +1,5 @@
 let __DEBUG__ = false;
-const __VERSION__ = "2.0.0";
+let __VERSION__ = "2.0.0";
 const __DOI__ = "10.5281/zenodo.3647864"
 const RADIANS = Math.PI / 180;
 const PROJECTION_TYPE = "AREA";
@@ -1284,6 +1284,8 @@ function addFooter() {
 
   if(isBetaVersion) {
     document.getElementsByClassName("navbar-brand")[0].innerHTML += " <span title='This is a preview version of the application for testing features and bug fixes. It is recommended to use the production application at https://www.paleomagnetism.org.'>BETA*</span>";
+    // Modify the version
+    __VERSION__ += "-beta";
   }
 
   document.getElementById("footer-container").innerHTML = new Array(
@@ -1905,7 +1907,6 @@ function mapTabFocusHandler() {
   map.invalidateSize();
 
   setTimeout(function() {
-console.log(markerGroup);
     map.fitBounds(new L.featureGroup(markerGroup).getBounds());
   }, TRANSITION_DELAY_MS);
 

@@ -700,16 +700,8 @@ function importJR6(file) {
     var P3 = Number(line.slice(71, 74));
     var P4 = Number(line.slice(74, 77));
 
-    // Support for these orientation parameters
-    if(P1 !== 12 || P2 !== 0 || P3 !== 12) {
-      throw(new Exception("The AGICO orientation format is not supported. Supported: {12, 0, 12, *}."));
-    }
-
-    // P4 0 means (dip direction / dip) notation is used
-    // We use bedding strike so subtract 90
-    if(P4 === 0) {
-      beddingStrike -= 90;
-    }
+    // Convert AGICO orientations
+    orientations = convertAgico(P1, P2, P3, P4, coreAzimuth, coreDip, beddingStrike, beddingDip);
 
     if(!specimenSortObject.hasOwnProperty(sampleName)) {
       specimenSortObject[sampleName] = {
@@ -729,10 +721,10 @@ function importJR6(file) {
         "sample": sampleName,
         "name": sampleName,
         "volume": 10.0,
-        "beddingStrike": 0,
-        "beddingDip": 0,
-        "coreAzimuth": coreAzimuth,
-        "coreDip": coreDip,
+        "beddingStrike": orientations.beddingStrike,
+        "beddingDip": orientations.beddingDip,
+        "coreAzimuth": orientations.coreAzimuth,
+        "coreDip": orientations.coreDip,
         "interpretations": new Array()
       }
 
@@ -747,6 +739,55 @@ function importJR6(file) {
   Object.values(specimenSortObject).forEach(function(specimen) {
     specimens.push(specimen);
   });
+
+}
+
+function convertAgico(P1, P2, P3, P4, coreAzimuth, coreDip, beddingStrike, beddingDip) {
+
+  /*
+   * function convertAgico
+   * Converts AGICO orientation parameters to paleomagnetism.org parameters.
+   *
+   * P1 P2 P3 P4
+   * 12 00 12 90 
+   * P1 means arrow is measured point to inside core (is fine)
+   * P2 0 Means dip of frontal side is measured (i.e. hade) (90 when horizontal)
+   * P3 Means measured in field (is fine)
+   * P4 90 means strike (RHR) and dip are measured.. same convention
+   */
+
+  if(P1 !== 12) {
+    throw("P1 parameter " + P1 + " not supported. Only the value {12} is supported.");
+  }
+
+  // Is measuring 
+  if(P2 === 0) {
+    coreDip = 90 - coreDip
+  } else if(P2 === 90) {
+    coreDip = coreDip;
+  } else {
+    throw("P2 parameter not supported. Only the values {0, 90} are supported.");
+  }
+
+  if(P3 !== 12) {
+    throw("P3 parameter " + P3 + " not supported. Only the value {12} is supported.");
+  }
+
+  // P4 90 means RHR.. otherwise dip direction so take - 90
+  if(P4 === 0) {
+    beddingStrike = beddingStrike - 90;	
+  } else if(P4 === 90) {
+    beddingStrike = beddingStrike;
+  } else {
+    throw("P4 parameter not supported. Only the values {0, 90} are supported.");
+  }
+
+  return {
+    "coreAzimuth": coreAzimuth,
+    "coreDip": coreDip,
+    "beddingStrike": beddingStrike,
+    "beddingDip": beddingDip
+  }
 
 }
 
@@ -779,24 +820,15 @@ function importRS3(file) {
   let P3 = Number(header.slice(116, 118));
   let P4 = Number(header.slice(119, 121));
 
-  // P1 P2 P3 P4
-  // 12 00 12 90 
-  // P1 means arrow is measured point to inside core (is fine)
-  // P2 Means dip of frontal side is measured (i.e. hade) (90 when horizontal)
-  // P3 Means measured in field (is fine)
-  // P4 90 means strike (RHR) and dip are measured.. same convention
-  // Confirm AGICO format is supported
-  if(P1 !== 12 || P2 !== 0 || P3 !== 12 || P4 !== 90) {
-    throw(new Exception("The AGICO orientation format is not supported. Supported: {12, 0, 12, 90}."));
-  }
-
   // Core parameters (dip = hade)
   var coreAzimuth = Number(header.slice(74, 77).trim())
-  var coreDip = 90 - Number(header.slice(79, 82).trim());
+  var coreDip = Number(header.slice(79, 82).trim());
 
   // Bedding parameters
   var beddingStrike = Number(header.slice(86, 90).trim());
   var beddingDip = Number(header.slice(92, 95).trim());
+
+  var orientations = convertAgico(P1, P2, P3, P4, coreAzimuth, coreDip, beddingStrike, beddingDip);
 
   // Go over each demagnetization step
   var steps = lines.slice(2).map(function(line) {
@@ -805,7 +837,7 @@ function importRS3(file) {
 
     // Intensity is in A/m
     var intensity = 1E6 * Number(line.slice(15, 27));
-    var declination = Number(line.slice(29, 33));
+    var declination = Number(line.slice(28, 33));
     var inclination = Number(line.slice(34, 39));
     var a95 = Number(line.slice(77, 80))
 
@@ -832,11 +864,11 @@ function importRS3(file) {
     "lithology": null,
     "sample": sampleName,
     "name": sampleName,
-    "volume": 10.0,
-    "beddingStrike": beddingStrike,
-    "beddingDip": beddingDip,
-    "coreAzimuth": coreAzimuth,
-    "coreDip": coreDip,
+    "volume": null,
+    "beddingStrike": orientations.beddingStrike,
+    "beddingDip": orientations.beddingDip,
+    "coreAzimuth": orientations.coreAzimuth,
+    "coreDip": orientations.coreDip,
     "interpretations": new Array()
   });
 

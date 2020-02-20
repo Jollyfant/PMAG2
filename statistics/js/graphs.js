@@ -1508,6 +1508,11 @@ function simulateCTMD(one, two) {
     var coordinatesOne = statisticsOne.dir.mean.unit().toCartesian();
     var coordinatesTwo = statisticsTwo.dir.mean.unit().toCartesian();
 
+    // Make it a reversal test!
+    if(coordinatesOne.angle(coordinatesTwo) > 90) {
+      coordinatesOne = coordinatesOne.reflect();
+    }
+
     // Save the coordinates
     xOne.push(coordinatesOne.x);
     yOne.push(coordinatesOne.y);
