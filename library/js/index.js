@@ -30,7 +30,7 @@ function addCollectionsToTable(publications) {
    * Adds the returned publications to a table
    */
 
-  var TABLE_HEADER = new Array("Name", "Author", "Institution", "Description", "Country", "Identifier", "DOI", "Created");
+  var TABLE_HEADER = new Array("Name", "Author", "Institution", "Description", "Country", "Age", "Created", "DOI");
 
   var rows = publications.map(function(x) {
     return new Array(
@@ -39,9 +39,10 @@ function addCollectionsToTable(publications) {
       x.institution,
       x.description, 
       x.country || "Unconstrained",
-      "<code><a href='../publication/index.html?" + x.pid + "'>" + x.pid.slice(0, 8) + "</a></code>", 
-      "<a href='https://doi.org/" + x.doi + "'>" + x.doi + "</a>" || "N/A",
-      new Date(x.created).toISOString().slice(0, 10)
+      x.age,
+      //"<code><a href='../publication/index.html?" + x.pid + "'>" + x.pid.slice(0, 8) + "</a></code>", 
+      new Date(x.created).toISOString().slice(0, 10),
+      "<a href='https://doi.org/" + x.doi + "'><span class='badge badge-primary'>" + "DOI" + "</span></a>" || "N/A"
     );
   });
 
