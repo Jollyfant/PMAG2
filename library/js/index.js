@@ -15,6 +15,12 @@ function loadDigitalObjects() {
       return notify("danger", "Could not load the list of publications.");
     }
 
+    var nPublications = publications.length;
+    var nCollections = publications.map(x => x.nCollections).reduce((a, b) => a + b, 0);
+    var nSpecimens = publications.map(x => x.nSpecimens).reduce((a, b) => a + b, 0);
+
+    document.getElementById("counter").innerHTML = "<b>" + nPublications + "</b> publications containing <b>" + nCollections + "</b> collections and <b>" + nSpecimens + "</b> specimens"; 
+
     // Update the map and table with the returned collections
     addCollectionsToMap(publications);
     addCollectionsToTable(publications);
