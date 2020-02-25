@@ -19,7 +19,7 @@ function addMap(publication) {
       "<b>" + collection.name + "</b>",
       "<i>" + publication.description + "</i>",
       "",
-      "Collections contains " + publication.nSpecimens + " specimens",
+      "Collection contains " + collection.data.specimens.length + " specimens",
       "",
       "<b>Author</b>: " + publication.author,
       "<b>Published</b>: " + publication.created,
@@ -133,6 +133,11 @@ function formatCollectionTable(publication) {
    * Function formatCollectionTable
    * Formats the table containing all collections from this collection
    */
+
+  // Show warning
+  if(!publication.accepted) {
+    notify("warning", "This specimen is pending review and has not yet been accepted.");
+  }
 
   // Initialize the leaflet map
   addMap(publication);

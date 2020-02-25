@@ -1900,9 +1900,11 @@ function updateCollectionMetadata() {
     openedCollection.year = null;
   }
 
+  notify("success", "Metadata for collection <b>" + openedCollection.name + "</b> has been succesfully updated.");
+
   // Deference
   openedCollection = null;
-  notify("success", "Metadata for collection <b>" + openedCollection.name + "</b> has been succesfully updated.");
+
   eqAreaProjectionMean();
   saveLocalStorage();
   
