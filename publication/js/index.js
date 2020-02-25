@@ -16,10 +16,10 @@ function addMap(publication) {
      */
 
     return new Array(
-      "<b>" + collection.name + "</b>",
+      "<b>Collection " + collection.name + "</b>",
       "<i>" + publication.description + "</i>",
       "",
-      "Collections contains " + publication.nSpecimens + " specimens",
+      "Collection contains <b>" + collection.data.specimens.length + "</b> specimens.",
       "",
       "<b>Author</b>: " + publication.author,
       "<b>Published</b>: " + publication.created,
@@ -39,8 +39,6 @@ function addMap(publication) {
   var mapOptions = {
     "minZoom": 1,
     "maxZoom": 13,
-    "maxBounds": new L.latLngBounds(new L.latLng(-90, -180), new L.latLng(90, 180)),
-    "maxBoundsViscosity": 0.5,
     "attributionControl": true
   }
 
@@ -52,12 +50,12 @@ function addMap(publication) {
   publication.collections.forEach(function(collection, i) {
 
     var averageLocation = meanDirection(collection.data.specimens.map(function(x) {
-      return new Direction(x.latitude, x.longitude).toCartesian();
+      return new Direction(x.longitude, x.latitude).toCartesian();
     }));
 
     var markerInformation = createTooltip(publication, collection, i);
 
-    markerGroup.push(new L.Marker(new L.LatLng(averageLocation.dec, averageLocation.inc)).addTo(map).bindPopup(markerInformation));
+    markerGroup.push(new L.Marker(new L.LatLng(averageLocation.inc, averageLocation.dec)).addTo(map).bindPopup(markerInformation));
 
   });
 
@@ -136,44 +134,51 @@ function formatCollectionTable(publication) {
    * Formats the table containing all collections from this collection
    */
 
+  // Show warning
+  if(!publication.accepted) {
+    notify("warning", "This specimen is pending review and has not yet been accepted.");
+  }
+
   // Initialize the leaflet map
   addMap(publication);
 
-  // Create accept & reject links (behind login)
-  let acceptLink = "https://api.paleomagnetism.org/" + publication.pid + "?accept";
-  let rejectLink = "https://api.paleomagnetism.org/" + publication.pid + "?reject";
+  // Add a row for each collection
+  var rows = publication.collections.map(createSampleRows);
 
-  if(!publication.accepted) {
-    notify("warning", "This publication is pending review and has not yet been accepted. <br> <small><i class='fas fa-lock'></i> <a href='" + acceptLink + "'>Accept</a> or <a href='" + rejectLink + "'>Reject</a></small>");
-  }
+  // Count the components
+  var componentSum = rows.reduce((a, b) => a + b[3], 0);
 
   // Load the metadata for this collection
   document.getElementById("card-table").innerHTML = metadataContent(publication);
   document.getElementById("pid-box").innerHTML = publication.pid;
-  document.getElementById("fork-link").innerHTML = createForkLink(publication.pid);
 
-  // Add a row for each collection
-  var rows = publication.collections.map(formatSampleRows);
+  // Check if there are components: offer to fork in the application
+  if(componentSum === 0) {
+    document.getElementById("fork-link").innerHTML = "<small><span class='text-danger'><i class='fas fa-ban'></i> No interpreted components to show.</span></small>";
+  } else {
+    document.getElementById("fork-link").innerHTML = createForkLink(publication.pid);
+  }
 
   document.getElementById("publication-table").innerHTML = new Array(
     "<head>",
     "  <tr>",
     "    <th>Collection</th>",
     "    <th>Type</th>",
-    "    <th>Number of Specimens</th>",
+    "    <th># Specimens</th>",
+    "    <th># Components</th>",
     "    <th>SHA2</th>",
     "    <th>Version</th>",
     "    <th>Created</th>",
     "  </tr>",
     "</head>"
-  ).concat(rows).join("\n");
+  ).concat(rows.map(formatSampleRows)).join("\n");
 
 }
 
-function formatSampleRows(collection, i) {
+function createSampleRows(collection, i) {
 
   /*
-   * Function formatSampleRows
+   * Function createSampleRows
    * Creates HTML for rows of the collection table
    */
 
@@ -193,15 +198,35 @@ function formatSampleRows(collection, i) {
     reference = "";
   }
 
-  // Format the row
-  return "<tr>" + new Array(
+  return new Array(
     "<a href='../collection/index.html" + window.location.search + "." + i + "'>" + collection.name + "</a>" + reference,
     locationType,
     collection.data.specimens.length,
+    countComponents(collection.data.specimens),
     collection.data.hash.slice(0, 16) + "…",
     collection.data.version,
     collection.data.created.slice(0, 10),
-  ).map(x => "<td>" + x + "</td>").join("\n") + "</tr>";
+  );
+
+}
+
+function formatSampleRows(x) {
+
+  /*
+   * Function formatSampleRows
+   * Creates HTML for rows of the collection table
+   */
+
+  // Format the row
+  return "<tr>" + x.map(x => "<td>" + x + "</td>").join("\n") + "</tr>";
+
+}
+
+function countComponents(specimens) {
+
+   return specimens.map(function(specimen) {
+     return specimen.interpretations.length;
+   }).reduce((a, b) => a + b, 0);
 
 }
 

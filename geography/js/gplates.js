@@ -99,12 +99,12 @@ function readGPlatesRotation(ID, age) {
   }
 
   // Continue when we are referencing the fixed plate ID
-  while(ID !== "000") {
+  while(parseInt(ID) !== 0) {
 
     var plateData = GPlatesData[ID];
 
     // Search input for matching plateID & age
-    for(var i = 0; i < plateData.length; i++) {
+    for(var i = 1; i < plateData.length; i++) {
      
       if(plateData[i].age < age) {
   

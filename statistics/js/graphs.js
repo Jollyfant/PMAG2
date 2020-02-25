@@ -1508,6 +1508,11 @@ function simulateCTMD(one, two) {
     var coordinatesOne = statisticsOne.dir.mean.unit().toCartesian();
     var coordinatesTwo = statisticsTwo.dir.mean.unit().toCartesian();
 
+    // Make it a reversal test!
+    if(coordinatesOne.angle(coordinatesTwo) > 90) {
+      coordinatesOne = coordinatesOne.reflect();
+    }
+
     // Save the coordinates
     xOne.push(coordinatesOne.x);
     yOne.push(coordinatesOne.y);
@@ -1837,6 +1842,74 @@ function generateHemisphereTooltip() {
 
 }
 
+function addCollectionMetadata(index) {
+
+  // Reference the collection
+  openedCollection = collections[index]
+
+  document.getElementById("metadata-modal-title").innerHTML = "Metadata for collection <b>" + openedCollection.name + "</b>";
+  document.getElementById("color-preview").style.backgroundColor = openedCollection.color || "grey";
+
+  document.getElementById("metadata-comments").value = openedCollection.comments || "";
+  document.getElementById("metadata-authors").value = openedCollection.authors || "";
+  document.getElementById("metadata-reference").value = openedCollection.doi || "";
+  document.getElementById("metadata-year").value = openedCollection.year || "";
+  
+  $("#metadata-modal").modal("show");
+
+}
+
+
+function changeColor(color) {
+
+  /*
+   * Function changeColor
+   * Changes the color of the selected collection
+   */
+
+  // Set the new color
+  openedCollection.color = color;
+  document.getElementById("color-preview").style.backgroundColor = openedCollection.color || "grey";
+  
+}
+
+
+function updateCollectionMetadata() {
+
+  /*
+   * function updateCollectionMetadata
+   * Updates metadata from input window
+   */
+
+  let comments = document.getElementById("metadata-comments").value;
+  let authors = document.getElementById("metadata-authors").value;
+  let reference = document.getElementById("metadata-reference").value;
+  let year = document.getElementById("metadata-year").value;
+
+  if(reference !== "" && !reference.startsWith("10.")) {
+    return notify("danger", "The submitted DOI: <b>" + reference + "</b> is invalid.")
+  }
+
+  openedCollection.comments = comments || null;
+  openedCollection.doi = reference || null;
+  openedCollection.authors = authors || null;
+
+  if(year !== "") {
+    openedCollection.year = Number(year);
+  } else {
+    openedCollection.year = null;
+  }
+
+  notify("success", "Metadata for collection <b>" + openedCollection.name + "</b> has been succesfully updated.");
+
+  // Deference
+  openedCollection = null;
+
+  eqAreaProjectionMean();
+  saveLocalStorage();
+  
+}
+
 function eqAreaProjectionMean() {
 
   /*
@@ -1897,6 +1970,12 @@ function eqAreaProjectionMean() {
       }
     });
 
+    if(site.doi) {
+      var icon = "<span class='text-success'><i class='fas fa-id-card'></i></span>";
+    } else {
+      var icon = "<span class='text-danger'><i class='fas fa-id-card'></i></span>";
+    }
+
     statisticsRows.push([
       "<tr>",
       "  <td>" + site.name + "</td>",
@@ -1916,6 +1995,7 @@ function eqAreaProjectionMean() {
       "  <td>" + statistics.butler.dDx.toFixed(PRECISION) + "</td>",
       "  <td>" + statistics.butler.dIx.toFixed(PRECISION) + "</td>",
       "  <td>" + statistics.dir.lambda.toFixed(PRECISION) + "</td>",
+      "  <td onclick='addCollectionMetadata(" + site.index + ");' style='cursor: pointer;'>" + icon + "</td>",
       "</tr>"
     ].join("\n"));
 
@@ -1947,6 +2027,7 @@ function eqAreaProjectionMean() {
     "    <td>ΔDx</td>",
     "    <td>ΔIx</td>",
     "    <td>λ</td>",
+    "    <td>Metadata</td>",
     "  </tr>",
     "  </thead>",
     "  <tbody>",

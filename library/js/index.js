@@ -15,6 +15,12 @@ function loadDigitalObjects() {
       return notify("danger", "Could not load the list of publications.");
     }
 
+    var nPublications = publications.length;
+    var nCollections = publications.map(x => x.nCollections).reduce((a, b) => a + b, 0);
+    var nSpecimens = publications.map(x => x.nSpecimens).reduce((a, b) => a + b, 0);
+
+    document.getElementById("counter").innerHTML = "<b>" + nPublications + "</b> publications containing <b>" + nCollections + "</b> collections and <b>" + nSpecimens + "</b> specimens"; 
+
     // Update the map and table with the returned collections
     addCollectionsToMap(publications);
     addCollectionsToTable(publications);
@@ -30,36 +36,35 @@ function addCollectionsToTable(publications) {
    * Adds the returned publications to a table
    */
 
-  const TABLE_CONTAINER = "publication-table";
+  var TABLE_HEADER = new Array("Name", "Author", "Institution", "Description", "Country", "Age", "Created", "DOI");
 
   var rows = publications.map(function(x) {
-    return [
-      "<tr>",
-      "  <td>" + x.name + "</td>",
-      "  <td>" + x.author + "</td>",
-      "  <td>" + x.institution + "</td>",
-      "  <td>" + x.description + "</td>",
-      "  <td><code><a href='../publication/index.html?" + x.pid + "'>" + x.pid.slice(0, 16) + "…</a></code></td>",
-      "  <td>" + ("<a href='https://doi.org/" + x.doi + "'>" + x.doi + "</a>" || "N/A") + "</td>",
-      "  <td>" + new Date(x.created).toISOString().slice(0, 10) + "</td>",
-      "</tr>"
-    ].join("\n");
+
+    if(x.doiInfo) {
+      var author = x.doiInfo.entryTags.author.split(" and ")[0] + " et al., (" + x.doiInfo.entryTags.journal + ", " +  x.doiInfo.entryTags.year + ")";
+    } else {
+      var author = x.author;
+    }
+
+    return new Array(
+      "<a href='../publication/index.html?" + x.pid + "'>"  + x.name + "</a>",
+      author,
+      x.institution,
+      x.description, 
+      x.country || "Unconstrained",
+      x.age,
+      //"<code><a href='../publication/index.html?" + x.pid + "'>" + x.pid.slice(0, 8) + "</a></code>", 
+      new Date(x.created).toISOString().slice(0, 10),
+      "<a href='https://doi.org/" + x.doi + "'><span class='badge badge-primary'>" + "DOI" + "</span></a>" || "N/A"
+    );
   });
 
-  // Update the table container
-  document.getElementById(TABLE_CONTAINER).innerHTML = [
-    "<head>",
-    "  <tr>",
-    "    <th>Name</th>",
-    "    <th>Author</th>",
-    "    <th>Institution</th>",
-    "    <th>Description</th>",
-    "    <th>Persistent Identifier</th>",
-    "    <th>DOI</th>",
-    "    <th>Created</th>",
-    "  </tr>",
-    "</head>",
-  ].concat(rows).join("\n");
+  new Table({
+      "id": "publication-table",
+      "search": true,
+      "header": TABLE_HEADER,
+      "body": rows
+  });
 
 }
 
@@ -77,8 +82,6 @@ function addMap() {
   // Set map options (bounds)
   var mapOptions = {
     "minZoom": 1,
-    "maxBounds": new L.latLngBounds(new L.latLng(-90, -180), new L.latLng(90, 180)),
-    "maxBoundsViscosity": 0.5,
     "attributionControl": true
   }
 

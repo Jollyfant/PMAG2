@@ -1,5 +1,5 @@
 let __DEBUG__ = false;
-const __VERSION__ = "2.0.0";
+let __VERSION__ = "2.0.1";
 const __DOI__ = "10.5281/zenodo.3647864"
 const RADIANS = Math.PI / 180;
 const PROJECTION_TYPE = "AREA";
@@ -41,6 +41,8 @@ if(document.getElementById("enable-sound")) {
 
 window.addEventListener("online",  notify.bind(null, "success", "Your connection to the internet has been recovered."));
 window.addEventListener("offline", notify.bind(null, "danger", "Your connection to the internet was dropped."));
+
+var openedCollection;
 
 function padLeft(nr, n){
   return Array(n - String(nr).length + 1).join("0") + nr;
@@ -221,6 +223,7 @@ function addSiteWindowWrapper() {
     "color": null,
     "type": "collection",
     "name": collectionName,
+    "doi": null,
     "components": components,
     "created": new Date().toISOString(),
     "index": collections.length
@@ -1198,7 +1201,7 @@ function readMultipleFiles(files, callback) {
     }
 
     // Next queued file: create a new filereader instance
-    file = files.pop();
+    file = files.shift();
     reader = new FileReader();
 
     // XML should be readable as text
@@ -1277,9 +1280,17 @@ function addFooter() {
    * Adds footer to all HTML pages
    */
 
+  var isBetaVersion = window.location.href.includes("beta");
+
+  if(isBetaVersion) {
+    document.getElementsByClassName("navbar-brand")[0].innerHTML += " <span title='This is a preview version of the application for testing features and bug fixes. It is recommended to use the production application at https://www.paleomagnetism.org.'>BETA*</span>";
+    // Modify the version
+    __VERSION__ += "-beta";
+  }
+
   document.getElementById("footer-container").innerHTML = new Array(
     "<hr>",
-    "<b>Paleomagnetism<span class='text-danger'>.org</span></b> &copy; " + new Date().getFullYear() + ". All Rights Reserved.",
+    "<b>Paleomagnetism<span class='text-danger'>.org</span>" + (isBetaVersion ? " BETA" : "" ) + "</b> &copy; " + new Date().getFullYear() + ". All Rights Reserved.",
     "<div style='float: right;' class='text-muted'><small>Version v" + __VERSION__ + " (<a href='https://doi.org/" + __DOI__ + "'>" + __DOI__ + "</a>)</small></div>",
     "&nbsp; <i class='fab fa-github'></i> <a href='https://github.com/Jollyfant/PMAG2'><b>Source Code</b></a>",
     "&nbsp; <i class='fas fa-balance-scale'></i> Licensed under <a href='https://opensource.org/licenses/MIT'><b>MIT</b>.</a>",
@@ -1954,6 +1965,47 @@ function doiLookup(doi, callback) {
   ).join("&");
 
   HTTPRequest(DOI_REGISTRATION_URL, "GET", callback);
+
+}
+
+function generateColorPalette() {
+
+  /*
+   * Function generateColorPalette
+   * Generates the color palette for site color picking
+   */
+
+  function createColorItem(color) {
+
+    /*
+     * Function generateColorPalette::createColorItem
+     * Generates a div for a particular color that can be clicked
+     */
+
+    return "<div style='background-color: " + color + ";' class='color-item' onclick='changeColor(\"" + color + "\")'></div>";
+
+  }
+
+  // Choose from a nice saturated gradient
+  const COLOR_PALETTE = new Array(
+    // First row
+    "#F55", "#FA5", "#FF5",
+    "#AF5", "#5F5", "#5FA",
+    "#5FF", "#5AF", "#55F",
+    "#A5F", "#F5F", "#F5A",
+    // Second row
+    "#A00", "#A50", "#AA0",
+    "#5A0", "#0A0", "#0A5",
+    "#0AA", "#05A", "#00A",
+    "#50A", "#A0A", "#A05",
+    // Third row
+    "#FFF", "#DDD", "#AAA",
+    "#888", "#555", "#222",
+    "#000"
+  );
+
+  // Create color bar
+  return COLOR_PALETTE.map(createColorItem).join("");
 
 }
 

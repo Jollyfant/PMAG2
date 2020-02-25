@@ -18,20 +18,22 @@ function addMap() {
    */
 
   const MAP_CONTAINER = "map";
-  const TILE_LAYER = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+  const TILE_LAYER_DEFAULT = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+  const TILE_LAYER_ARCGIS = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
   const VIEWPORT = new L.latLng(35, 0);
 
   // Set map options (bounds)
   var mapOptions = {
     "minZoom": 2,
-    "maxBounds": new L.latLngBounds(new L.latLng(-90, -180), new L.latLng(90, 180)),
-    "maxBoundsViscosity": 0.5,
     "attributionControl": true
   }
 
   // Create the map and tile layer
   map = L.map(MAP_CONTAINER, mapOptions).setView(VIEWPORT, 1);
-  L.tileLayer(TILE_LAYER).addTo(map);
+
+  window.defaultLayer = L.tileLayer(TILE_LAYER_DEFAULT);
+  window.arcgisLayer = L.tileLayer(TILE_LAYER_ARCGIS);
+  toggleSatelliteLayer();
 
   // Reload the map when the tab is focussed on
   $("#nav-apwp-tab").on("shown.bs.tab", map.invalidateSize.bind(map));
@@ -65,10 +67,10 @@ function createGridLayer(map) {
    */
 
   return L.latlngGraticule({
-    "opacity": 0.5,
+    "opacity": 1,
     "color": HIGHCHARTS_WHITE,
-    "fontColor": HIGHCHARTS_BLACK,
-    "font": "12px Helvetica",
+    "fontColor": HIGHCHARTS_WHITE,
+    "font": "12px Sans-Serif",
     "showLabel": true,
     "zoomInterval": [
       {"start": 2, "end": 3, "interval": 30},
@@ -78,6 +80,18 @@ function createGridLayer(map) {
       {"start": 10, "end": 12, "interval": 0.25}
     ]
   }).addTo(map);
+
+}
+
+function toggleSatelliteLayer() {
+
+  if(document.getElementById("enable-satellite").checked) {
+    map.removeLayer(window.defaultLayer);
+    map.addLayer(window.arcgisLayer);
+  } else {
+    map.removeLayer(window.arcgisLayer);
+    map.addLayer(window.defaultLayer);
+  }
 
 }
 
@@ -244,6 +258,7 @@ function registerEventHandlers() {
   document.getElementById("cutoff-selection").addEventListener("change", redrawCharts);
   document.addEventListener("keydown", keyboardHandler);
   document.getElementById("defaultCheck1").addEventListener("change", toggleGridLayer);
+  document.getElementById("enable-satellite").addEventListener("change", toggleSatelliteLayer);
   document.getElementById("calculate-reference").addEventListener("click", plotPredictedDirections);
 
   document.getElementById("defer-input").addEventListener("click", inputFileWrapper);

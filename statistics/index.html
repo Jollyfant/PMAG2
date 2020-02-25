@@ -511,6 +511,87 @@
          </div>
       </div>
       </div>
+
+      <!-- Modal for generic things -->
+      <div class="modal fade" id="metadata-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+         <div class="modal-dialog" role="document">
+            <div class="modal-content">
+               <div class="modal-header">
+                 <div id="color-preview" style="width: 16px; margin: auto; margin-left: 10px; margin-right: 10px; background-color: red; height: 16px; border: 1px solid black;"> </div>
+                  <h5 class="modal-title" id="metadata-modal-title"></h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                  </button>
+               </div>
+               <div class="modal-body">
+
+                  <div class="input-group mb-3">
+                     <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1">DOI</span>
+                     </div>
+                     <input id="metadata-reference" type="text" class="form-control" placeholder="10.1016/j.cageo.2016.05.007" aria-label="Username" aria-describedby="basic-addon1">
+                  </div>
+
+                  <div class="input-group mb-3">
+                     <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1">Authors</span>
+                     </div>
+                     <input id="metadata-authors" type="text" class="form-control" placeholder="Author et al." aria-label="Username" aria-describedby="basic-addon1">
+
+                     <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1">Year</span>
+                     </div>
+                     <input id="metadata-year" type="text" class="form-control" placeholder="2020" aria-label="Username" aria-describedby="basic-addon1">
+                  </div>
+
+                 <div class="form-group">
+                   <label for="exampleFormControlTextarea1">Comments</label>
+                   <div class="input-group">
+                     <textarea style="height: 100px; resize: none;" class="form-control" id="metadata-comments" placeholder="Additional comments" rows="3"></textarea>
+                   </div>
+                 </div>
+
+                 <div id="color-picker" style="width: 200px; margin: auto;">
+                   <div style="background-color: #F55;" class="color-item" onclick="changeColor(&quot;#F55&quot;)"></div>
+                   <div style="background-color: #FA5;" class="color-item" onclick="changeColor(&quot;#FA5&quot;)"></div>
+                   <div style="background-color: #FF5;" class="color-item" onclick="changeColor(&quot;#FF5&quot;)"></div>
+                   <div style="background-color: #AF5;" class="color-item" onclick="changeColor(&quot;#AF5&quot;)"></div>
+                   <div style="background-color: #5F5;" class="color-item" onclick="changeColor(&quot;#5F5&quot;)"></div>
+                   <div style="background-color: #5FA;" class="color-item" onclick="changeColor(&quot;#5FA&quot;)"></div>
+                   <div style="background-color: #5FF;" class="color-item" onclick="changeColor(&quot;#5FF&quot;)"></div>
+                   <div style="background-color: #5AF;" class="color-item" onclick="changeColor(&quot;#5AF&quot;)"></div>
+                   <div style="background-color: #55F;" class="color-item" onclick="changeColor(&quot;#55F&quot;)"></div>
+                   <div style="background-color: #A5F;" class="color-item" onclick="changeColor(&quot;#A5F&quot;)"></div>
+                   <div style="background-color: #F5F;" class="color-item" onclick="changeColor(&quot;#F5F&quot;)"></div>
+                   <div style="background-color: #F5A;" class="color-item" onclick="changeColor(&quot;#F5A&quot;)"></div>
+                   <div style="background-color: #A00;" class="color-item" onclick="changeColor(&quot;#A00&quot;)"></div>
+                   <div style="background-color: #A50;" class="color-item" onclick="changeColor(&quot;#A50&quot;)"></div>
+                   <div style="background-color: #AA0;" class="color-item" onclick="changeColor(&quot;#AA0&quot;)"></div>
+                   <div style="background-color: #5A0;" class="color-item" onclick="changeColor(&quot;#5A0&quot;)"></div>
+                   <div style="background-color: #0A0;" class="color-item" onclick="changeColor(&quot;#0A0&quot;)"></div>
+                   <div style="background-color: #0A5;" class="color-item" onclick="changeColor(&quot;#0A5&quot;)"></div>
+                   <div style="background-color: #0AA;" class="color-item" onclick="changeColor(&quot;#0AA&quot;)"></div>
+                   <div style="background-color: #05A;" class="color-item" onclick="changeColor(&quot;#05A&quot;)"></div>
+                   <div style="background-color: #00A;" class="color-item" onclick="changeColor(&quot;#00A&quot;)"></div>
+                   <div style="background-color: #50A;" class="color-item" onclick="changeColor(&quot;#50A&quot;)"></div>
+                   <div style="background-color: #A0A;" class="color-item" onclick="changeColor(&quot;#A0A&quot;)"></div>
+                   <div style="background-color: #A05;" class="color-item" onclick="changeColor(&quot;#A05&quot;)"></div>
+                   <div style="background-color: #FFF;" class="color-item" onclick="changeColor(&quot;#FFF&quot;)"></div>
+                   <div style="background-color: #DDD;" class="color-item" onclick="changeColor(&quot;#DDD&quot;)"></div>
+                   <div style="background-color: #AAA;" class="color-item" onclick="changeColor(&quot;#AAA&quot;)"></div>
+                   <div style="background-color: #888;" class="color-item" onclick="changeColor(&quot;#888&quot;)"></div>
+                   <div style="background-color: #555;" class="color-item" onclick="changeColor(&quot;#555&quot;)"></div>
+                   <div style="background-color: #222;" class="color-item" onclick="changeColor(&quot;#222&quot;)"></div>
+                   <div style="background-color: #000;" class="color-item" onclick="changeColor(&quot;#000&quot;)"></div>
+                 </div>
+               </div>
+               <div class="modal-footer">
+                  <button id="modal-confirm-metadata" type="button" class="btn btn-success" data-dismiss="modal">Save Metadata</button>
+               </div>
+            </div>
+         </div>
+      </div>
+
       <!-- Modal for generic things -->
       <div class="modal fade" id="map-modal-2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
          <div class="modal-dialog" role="document">
@@ -528,6 +609,8 @@
             </div>
          </div>
       </div>
+
+
       <!-- Modal for saving a site -->
       <div class="modal fade" id="map-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
          <div class="modal-dialog" role="document">

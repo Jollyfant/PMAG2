@@ -31,7 +31,10 @@ p {
 
 #wrapper {
   position: relative;
+  width: 80%;
+  margin: auto;
 }
+
 .popover {
   min-width: 25%;
 }

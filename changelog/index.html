@@ -77,6 +77,47 @@
         </div>
 
         <div id="accordion">
+
+          <div class="card">
+            <div class="card-header" id="headingTwo">
+              <button class="btn btn-link" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+                Paleomagnetism.org 2.1.0 - Release <small class="text-muted">&nbsp; 2020-02-25</small>
+              </button>
+            </div>
+            <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo" data-parent="#accordion">
+              <div class="card-body">
+              <b> Change Summary </b>
+              <p> Some new features were added for user convenience. Minor bugs were fixed.
+              <ul>
+                <p> <b> Features </b>
+                <li> Added window to add some metadata to collections in the statistics portal. This can be used when exporting .pub files for sharing for literature data that cannot be submitted to the data library.
+                <li> Added satellite imagery to the geography portal (#53).
+              </ul>
+              <ul>
+                <p> <b> Fixes </b>
+                <li> Added new paper (Koymans et al., 2020) to the references page.
+                <li> Fixed JSON exporting in statistics portal mean directions tab.
+                <li> Fixed reading of input files in reversed order. The order is now as expected.
+                <li> Intensity plot in the interpretation portal now uses categories instead of numeric values.
+                <li> Size of charts in the interpretation portal has been increased.
+                <li> The PalPole description on the miscellaneous portal has been updated.
+                <li> A warning is now shown when the application is run in to beta mode.
+                <li> Map width in the geography portal has been reduced and bounds were removed (#51, #52).
+                <li> Fixed GPlates rotation files for plate ID "0" which is the same as "000" (#54)
+                <li> Fixed accidental swap of latitude, longitude in publication preview map.
+                <li> Fixed CTMD test not working for reversed directions.
+                <li> Added Remasoft (RS3) file format.
+                <li> Data library author information is now taken from DOI by default.
+                <li> Added age and generated country based on lat, lng to data library.
+                <li> Prevent linking to statistics/geography portal when no interpreted components are available.
+              </ul>
+   
+              </div>
+            </div>
+          </div>
+
+          <p>
+
           <div class="card">
             <div class="card-header" id="headingOne">
               <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
@@ -85,7 +126,7 @@
             </div>
     <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
           <div class="card-body">
-            <b> Change Summary <20>
+            <b> Change Summary </b>
             <p> The release of Paleomagnetism 2.0.0 exists in parallel with the <a href="http://old.paleomagnetism.org">old application</a>. The old version may have some additional features in the statistics portal that were removed in this version. This version of Paleomagnetism.org focuses on raw demagnetization data and its provenance, and may therefore be more limited in what it allows.
             <ul>
               <p> <b> Features </b>
