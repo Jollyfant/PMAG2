@@ -39,9 +39,16 @@ function addCollectionsToTable(publications) {
   var TABLE_HEADER = new Array("Name", "Author", "Institution", "Description", "Country", "Age", "Created", "DOI");
 
   var rows = publications.map(function(x) {
+
+    if(x.doiInfo) {
+      var author = x.doiInfo.entryTags.author.split(" and ")[0] + " et al., (" + x.doiInfo.entryTags.journal + ", " +  x.doiInfo.entryTags.year + ")";
+    } else {
+      var author = x.author;
+    }
+
     return new Array(
       "<a href='../publication/index.html?" + x.pid + "'>"  + x.name + "</a>",
-      x.author,
+      author,
       x.institution,
       x.description, 
       x.country || "Unconstrained",
