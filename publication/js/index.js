@@ -16,10 +16,10 @@ function addMap(publication) {
      */
 
     return new Array(
-      "<b>" + collection.name + "</b>",
+      "<b>Collection " + collection.name + "</b>",
       "<i>" + publication.description + "</i>",
       "",
-      "Collection contains " + collection.data.specimens.length + " specimens",
+      "Collection contains <b>" + collection.data.specimens.length + "</b> specimens.",
       "",
       "<b>Author</b>: " + publication.author,
       "<b>Published</b>: " + publication.created,
@@ -154,7 +154,7 @@ function formatCollectionTable(publication) {
 
   // Check if there are components: offer to fork in the application
   if(componentSum === 0) {
-    document.getElementById("fork-link").innerHTML = "<small><span class='text-danger'><i class='fas fa-ban'></i> No interpretated components to show.</span></small>";
+    document.getElementById("fork-link").innerHTML = "<small><span class='text-danger'><i class='fas fa-ban'></i> No interpreted components to show.</span></small>";
   } else {
     document.getElementById("fork-link").innerHTML = createForkLink(publication.pid);
   }

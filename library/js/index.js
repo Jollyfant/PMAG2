@@ -15,6 +15,12 @@ function loadDigitalObjects() {
       return notify("danger", "Could not load the list of publications.");
     }
 
+    var nPublications = publications.length;
+    var nCollections = publications.map(x => x.nCollections).reduce((a, b) => a + b, 0);
+    var nSpecimens = publications.map(x => x.nSpecimens).reduce((a, b) => a + b, 0);
+
+    document.getElementById("counter").innerHTML = "<b>" + nPublications + "</b> publications containing <b>" + nCollections + "</b> collections and <b>" + nSpecimens + "</b> specimens"; 
+
     // Update the map and table with the returned collections
     addCollectionsToMap(publications);
     addCollectionsToTable(publications);
@@ -30,18 +36,26 @@ function addCollectionsToTable(publications) {
    * Adds the returned publications to a table
    */
 
-  var TABLE_HEADER = new Array("Name", "Author", "Institution", "Description", "Country", "Identifier", "DOI", "Created");
+  var TABLE_HEADER = new Array("Name", "Author", "Institution", "Description", "Country", "Age", "Created", "DOI");
 
   var rows = publications.map(function(x) {
+
+    if(x.doiInfo) {
+      var author = x.doiInfo.entryTags.author.split(" and ")[0] + " et al., (" + x.doiInfo.entryTags.journal + ", " +  x.doiInfo.entryTags.year + ")";
+    } else {
+      var author = x.author;
+    }
+
     return new Array(
       "<a href='../publication/index.html?" + x.pid + "'>"  + x.name + "</a>",
-      x.author,
+      author,
       x.institution,
       x.description, 
       x.country || "Unconstrained",
-      "<code><a href='../publication/index.html?" + x.pid + "'>" + x.pid.slice(0, 8) + "</a></code>", 
-      "<a href='https://doi.org/" + x.doi + "'>" + x.doi + "</a>" || "N/A",
-      new Date(x.created).toISOString().slice(0, 10)
+      x.age,
+      //"<code><a href='../publication/index.html?" + x.pid + "'>" + x.pid.slice(0, 8) + "</a></code>", 
+      new Date(x.created).toISOString().slice(0, 10),
+      "<a href='https://doi.org/" + x.doi + "'><span class='badge badge-primary'>" + "DOI" + "</span></a>" || "N/A"
     );
   });
 
