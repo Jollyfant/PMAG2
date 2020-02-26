@@ -134,6 +134,11 @@ function formatCollectionTable(publication) {
    * Formats the table containing all collections from this collection
    */
 
+  // Show warning
+  if(!publication.accepted) {
+    notify("warning", "This specimen is pending review and has not yet been accepted.");
+  }
+
   // Initialize the leaflet map
   addMap(publication);
 
