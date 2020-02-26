@@ -41,7 +41,7 @@ function addCollectionsToTable(publications) {
   var rows = publications.map(function(x) {
 
     if(x.doiInfo) {
-      var author = x.doiInfo.entryTags.author.split(" and ")[0] + " et al., (" + x.doiInfo.entryTags.journal + ", " +  x.doiInfo.entryTags.year + ")";
+      var author = x.doiInfo.entryTags.author.split(" and ")[0] + " et al., (" + mapJournal(x.doiInfo.entryTags.journal) + ", " +  x.doiInfo.entryTags.year + ")";
     } else {
       var author = x.author;
     }
@@ -193,6 +193,23 @@ function quickPID() {
 
   // Not a correct PID?
   return notify("danger", "The submitted identifier is not valid and could not be resolved.");
+
+}
+
+function mapJournal(journal) {
+
+  switch(journal) {
+    case "Geochemistry, Geophysics, Geosystems":
+      return "G-Cubed";
+    case "Earth and Planetary Science Letters":
+      return "EPSL";
+    case "Geophysical Journal International":
+      return "Geophys. J. Int.";
+    case "Journal of Geophysical Research: Solid Earth":
+      return "JGR: Solid Earth";
+  }
+
+  return journal;
 
 }
 
