@@ -14,7 +14,15 @@ function registerEventHandlers() {
   // Radio class listeners
   Array.from(document.getElementsByClassName("demagnetization-type-radio")).forEach(function(x) {
     x.addEventListener("click", function(event) {
-      getSelectedSpecimen().demagnetizationType = $(event.target).attr("value");
+
+      let value = $(event.target).attr("value");
+
+      if(value === "null") {
+        value = null;
+      }
+
+      getSelectedSpecimen().demagnetizationType = value;
+
     });
   });
 

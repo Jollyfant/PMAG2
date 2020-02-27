@@ -1368,7 +1368,7 @@ function importCaltech(file) {
   }
 
   specimens.push({
-    "demanull,gnetizationType": null,
+    "demagnetizationType": null,
     "coordinates": "specimen",
     "format": "CALTECH",
     "version": __VERSION__,
