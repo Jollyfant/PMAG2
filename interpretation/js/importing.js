@@ -1368,7 +1368,7 @@ function importCaltech(file) {
   }
 
   specimens.push({
-    "demanull,gnetizationType": null,
+    "demagnetizationType": null,
     "coordinates": "specimen",
     "format": "CALTECH",
     "version": __VERSION__,
@@ -1609,7 +1609,7 @@ function importHelsinki(file) {
    * Imports demagnetization data in the Helsinki format (plain-text csv)
    */
 
-  var lines = file.data.split(LINE_REGEXP).filter(Boolean);
+  var lines = file.data.split(LINE_REGEXP);
 
   // Get some header metadata
   var sampleName = lines[5].split(";")[1]
@@ -1628,6 +1628,11 @@ function importHelsinki(file) {
   lines.slice(12).forEach(function(line) {
 
     var parameters = line.split(";");
+
+    if(parameters.length !== 24) {
+      return;
+    }
+
     var step = parameters[1];
 
     // Take mA/m and set to microamps (multiply by 1E3)
