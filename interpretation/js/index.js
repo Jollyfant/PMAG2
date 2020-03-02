@@ -1841,7 +1841,7 @@ function formatStepTable() {
     "      <td>" + direction.dec.toFixed(2) + "</td>",
     "      <td>" + direction.inc.toFixed(2) + "</td>",
     "      <td>" + direction.length.toFixed(2) + "</td>",
-    "      <td>" + step.error.toFixed(2) + "</td>",
+    "      <td>" + (step.error ? step.error.toFixed(2) : null ) + "</td>",
     "      <td style='cursor: pointer;'>" + specimen.coreAzimuth + "</td>",
     "      <td style='cursor: pointer;'>" + specimen.coreDip + "</td>",
     "      <td style='cursor: pointer;'>" + specimen.beddingStrike + "</td>",
