@@ -1537,7 +1537,7 @@ function importUtrecht(file) {
   }
 
   // Split by 9999 (Utecht specimen delimiter)
-  var blocks = file.data.split(/9999\r?\n/);
+  var blocks = file.data.split(/9999\s+\r?\n/);
 
   if(blocks.length === 1 || blocks[blocks.length - 1].trim().replace(/"/g,"") !== "END") {
     throw(new Exception("Invalid Utrecht format."));
@@ -1559,6 +1559,7 @@ function importUtrecht(file) {
 
     // Extract the header parameters
     var [sampleName, _, coreAzimuth, coreDip, sampleVolume, beddingStrike, beddingDip] = header.split(/,[\s]*/);
+    sampleName = sampleName.replace(/"/g, "");
 
     var steps = new Array();
 
