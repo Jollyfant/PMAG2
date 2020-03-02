@@ -258,7 +258,7 @@ function importMagic(file) {
           }
         
           // Add the demagnetization measurements
-          specimen.steps.push(new Measurement(step.toString(), coordinates, 0));
+          specimen.steps.push(new Measurement(step.toString(), coordinates, null));
 
           // Overwrite the demagnetization type
           specimen.demagnetizationType = demagnetizationType;
@@ -1642,7 +1642,7 @@ function importHelsinki(file) {
     var z = Number(parameters[15]) * 1E3;
 
     var coordinates = new Coordinates(x, y, z);
-    steps.push(new Measurement(step, coordinates, 0));
+    steps.push(new Measurement(step, coordinates, null));
 
   });
 
