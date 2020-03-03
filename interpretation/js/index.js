@@ -45,6 +45,10 @@ var Measurement = function(step, coordinates, error) {
   this.y = Number(coordinates.y);
   this.z = Number(coordinates.z);
 
+  if(isNaN(this.x) || isNaN(this.y) || isNaN(this.z)) {
+    throw new Exception("Components are not a number for demagnetization step: " + step + ".");
+  }
+
   this.error = Number(error);
 
   this.visible = true;
