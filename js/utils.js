@@ -1,5 +1,5 @@
 let __DEBUG__ = false;
-let __VERSION__ = "2.0.1";
+let __VERSION__ = "2.0.2";
 const __DOI__ = "10.5281/zenodo.3687148"
 const RADIANS = Math.PI / 180;
 const PROJECTION_TYPE = "AREA";
@@ -47,6 +47,19 @@ var openedCollection;
 function padLeft(nr, n){
   return Array(n - String(nr).length + 1).join("0") + nr;
 } 
+
+function splitVersion(version) {
+
+  let parameters = version.split(".");
+  let minor = parameters[2].split("-")[0];
+
+  return {
+    "minor": Number(minor),
+    "major": Number(parameters[1]),
+    "version": Number(parameters[0])
+  }
+
+}
 
 function updateTextAreaCounter() {
 
