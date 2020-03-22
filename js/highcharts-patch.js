@@ -1,14 +1,5 @@
 (function(Highcharts) {
 
-  // Local export
-  Highcharts.wrap(Highcharts.Chart.prototype, "exportChartLocal", function (proceed, options) {
-    if(options && options.type === "application/pdf") {
-      this.exportChart(options);
-    } else {
-      proceed.call(this, options);
-    }
-  });
-
   /*
    * Highcharts closure
    * Modifies some Highcharts settings
@@ -35,7 +26,7 @@
   Highcharts.exportCharts = function(charts, options) {
     options = Highcharts.merge(Highcharts.getOptions().exporting, options);
     Highcharts.getSVG(charts, options, function(svg) {
-      Highcharts.downloadSVGLocal(svg, options, function() { 
+      Highcharts.downloadSVGLocal(svg, options, function(e) { 
         notify("danger", "Failured to export figure.");
       });
     });
@@ -61,13 +52,12 @@
 
   Highcharts.getSVG = function(figure, options, callback) {
   
-    function fail() {
+    function fail(e) {
   
       /*
        * Function Highcharts.getSVG::fail
        * Callback function fired when exporting fails
        */
-  
       notify("danger", "Could not export charts.");
   
     }
