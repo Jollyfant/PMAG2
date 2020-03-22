@@ -50,7 +50,7 @@ function padLeft(nr, n){
 
 function isUtrechtIntensityBug(specimen) {
   var version = splitVersion(specimen.version);
-  return specimen.format === "UTRECHT" && version.version === 2 && version.major === 0 & version.minor < 2;
+  return specimen.format === "UTRECHT" && version.version === 2 && version.major === 0 && version.minor <= 1;
 }
 
 function splitVersion(version) {
