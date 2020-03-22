@@ -79,12 +79,45 @@
         <div id="accordion">
 
           <div class="card">
-            <div class="card-header" id="headingTwo">
-              <button class="btn btn-link" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
-                Paleomagnetism.org 2.1.0 - Release <small class="text-muted">&nbsp; 2020-02-25</small>
+            <div class="card-header" id="headingThree">
+              <button class="btn btn-link" data-toggle="collapse" data-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
+                Paleomagnetism.org 2.0.2 - Utrecht Intensity <small class="text-muted">&nbsp; 2020-03-22</small>
               </button>
             </div>
-            <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo" data-parent="#accordion">
+            <div id="collapseThree" class="collapse show" aria-labelledby="headingThree" data-parent="#accordion">
+              <div class="card-body">
+              <b> Change Summary </b>
+              <p> A bug in the Utrecht format where the intensity was not corrected for the sample volume was fixed. This error does not affect directional statistics. Specimens with this problem will be marked but may at a later stage be corrected.
+
+              <ul>
+                <p> <b> Features </b>
+                <li> Added <a href="../fair">information</a> page that decribes how Paleomagnetism.org 2.0 implements the FAIR principles. 
+              </ul>
+
+              <ul>
+                <p> <b> Fixes </b>
+                <li> When reading Utrecht format files the sample volume was ignored in the intensity calculation. It is now calculated correctly for newly loaded specimens, and correctly displayed in the interpretation portal for old specimens. Specimens in the data library with input format <b>UTRECHT</b> and below version <b>2.0.1</b> are in <b>Am^2</b> and should be divided by the sample volume and brought to <b>µA/m</b>.
+                <li> Loading files from the Paleomagnetism.org 1.0.0 format now correctly sets the sample volume.
+                <li> The y-axis of the intensity diagram was changed from <b>µA/m</b> to <b>fraction</b> when normalization is requested.
+                <li> Fixed non-ASCII characters in exporting of single charts in <b>PDF</b>. Unicode support is not available for combined charts. We recommend exporting combined charts as <b>SVG</b>.
+                <li> Intensity diagram is redrawn when option <i>normalize intensities</i> in the settings tab is changed.
+              </ul>
+   
+              </div>
+            </div>
+          </div>
+
+          <p>
+
+        <div id="accordion">
+
+          <div class="card">
+            <div class="card-header" id="headingTwo">
+              <button class="btn btn-link" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+                Paleomagnetism.org 2.0.1 - Patch 1 <small class="text-muted">&nbsp; 2020-02-25</small>
+              </button>
+            </div>
+            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
               <div class="card-body">
               <b> Change Summary </b>
               <p> Some new features were added for user convenience. Minor bugs were fixed.
@@ -124,7 +157,7 @@
                 Paleomagnetism.org 2.0.0 - Release <small class="text-muted">&nbsp; 2020-01-01</small>
               </button>
             </div>
-    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+    <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
           <div class="card-body">
             <b> Change Summary </b>
             <p> The release of Paleomagnetism 2.0.0 exists in parallel with the <a href="http://old.paleomagnetism.org">old application</a>. The old version may have some additional features in the statistics portal that were removed in this version. This version of Paleomagnetism.org focuses on raw demagnetization data and its provenance, and may therefore be more limited in what it allows.

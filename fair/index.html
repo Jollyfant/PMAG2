@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+  <head>
+
+    <!-- Required metadata tags -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Paleomagnetism.org 2 - An online environment for paleomagnetic analysis">
+    <meta name="keywords" content="paleomagnetism, interpretation, zijderveld, pca">
+
+    <meta name="author" content="Mathijs Koymans">
+
+    <link rel="shortcut icon" type="image/x-icon" href="../resources/images/hades-icon.png"/>
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <!-- Bootstrap & Font Awesome CSS -->
+    <link rel="stylesheet" href="../lib/bootstrap-4.3.1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../lib/fontawesome-free-5.7.2-web/css/all.css">
+
+  </head>
+
+  <body>
+
+    <!-- Header -->
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+
+      <a class="navbar-brand" href="http://www.paleomagnetism.org">Paleomagnetism<span class="text-danger">.org</span></a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="../interpretation">Interpretation</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../statistics">Statistics</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../geography">Geography</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../miscellaneous">Miscellaneous</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../references">References</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../team">Team & Contact</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../magic">MagIC Interface</a>
+          </li>
+        </ul>
+
+        <form class="form-inline my-2 my-lg-0">
+          <a href="../library" class="btn btn-sm btn-secondary my-2 my-sm-0"><i class="fas fa-book-open"></i><b>&nbsp; Data Library</b></a>
+        </form>
+
+      </div>
+
+    </nav>
+
+    <!-- Main body -->
+    <div class="container">
+
+      <!-- Container for user notifications -->
+      <div id="notification-container"></div>
+
+        <div class="alert alert-light" role="alert">
+          <h5> Paleomagnetism.org 2 - FAIR Data </h5>
+          <p> The Paleomagnetism.org data library is developed with the <a href="https://www.force11.org/group/fairgroup/fairprinciples">FAIR data management principles</a> in mind. Our goal is to support the paleomagnetic community in sharing their paleomagnetic data in a transparent, reliable, and sustainable way. <p> <b> Disclaimer: </b> this domain is hosted by the <a href="http://www.geo.uu.nl/~forth/">Utrecht University paleomagnetism group</a> as a contribution to our field of research. We are not a licensed data repository, and we do not distribute new DOIs. We provide a best-effort approach and take utmost care of the data used within our application. No rights may be derived from data submitted to the library, or loss thereof.
+        </div>
+
+        The manner in which we align with the FAIR guidelines are outlined below:
+        <hr>
+
+        <h5> <b>F</b>indability </h5>
+        <p> Data hosted in the public Paleomagnetism.org library is freely searchable through metadata (e.g. geographical coverage, specimen age). All data submitted are assigned persistent identifiers that unique identify a particular publication, collection, specimen, or single interpretation in the library. 
+
+        <h5> <b>A</b>ccessibility </h5>
+        <p> All data submitted to the library can be downloaded from the web interface, or directly through the <a href="https://api.paleomagnetism.org">HTTPS API</a>. We commit resources and guarantee that data submitted to the library will remain accessible for the foreseeable future.
+
+        <h5> <b>I</b>nteroperability </h5>
+        <p> The HTTPS API is based on the widely adopted HTTPS protocol which means it can be integrated with other software applications that pull data from our repository, or larger pan-European research infrastructures (e.g. <a href="https://www.epos-ip.org/">EPOS</a>). Specimen metadata also follows semantic vocabularies defined by the MagIC consortium to facilitate integration and interoperability.
+
+        <h5> <b>R</b>eusability </h5> 
+        <p> Since data provenance are included with the submitted data, older published data can be directly re-used at a later time. The data library accepts raw demagnetization data from which all other data are derived, and thus provides the ultimate case of reusability.
+
+        <hr>
+        <p><small> For questions regarding the implementation details or a statement of commitment, please contact us.</small>
+    </div>
+
+    <footer id="footer-container" class="container text-muted"></footer>
+
+    <br> 
+
+  </body>
+
+  <!-- jQuery slim and bootstrap -->
+  <script src="../lib/jquery-3.3.1/jquery-3.3.1.slim.min.js"></script>
+  <script src="../lib/bootstrap-4.3.1/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../js/utils.js"></script>
+
+  <script>
+    document.getElementById("__doi__").innerHTML = "<a href='https://doi.org/" + __DOI__ + "'>" + __DOI__ + "</a>";
+    document.getElementById("__version__").innerHTML = __VERSION__;
+    document.getElementById("__year__").innerHTML = new Date().getFullYear();
+  </script>
+
+
+</html>

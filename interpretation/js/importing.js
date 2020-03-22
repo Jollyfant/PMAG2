@@ -1439,7 +1439,7 @@ function importApplicationSaveOld(file) {
       "lithology": null,
       "sample": specimen.name,
       "name": specimen.name,
-      "volume": 10.0,
+      "volume": specimen.volume,
       "beddingStrike": Number(specimen.bedStrike),
       "beddingDip": Number(specimen.bedDip),
       "coreAzimuth": Number(specimen.coreAzi),
@@ -1559,14 +1559,21 @@ function importUtrecht(file) {
 
     // Extract the header parameters
     var [sampleName, _, coreAzimuth, coreDip, sampleVolume, beddingStrike, beddingDip] = header.split(/,[\s]*/);
+    sampleVolume = Number(sampleVolume);
     sampleName = sampleName.replace(/"/g, "");
 
     var steps = new Array();
-
+    
     // Get the actual demagnetization data
     blockLines.slice(0, -1).forEach(function(measurement) {
 
+      // Step is in Am^2 .. divide by sample volume
       var [step, a, b, c, error, _, _] = measurement.split(/,[\s]*/);
+
+      // Divide by sample volume
+      a = a / sampleVolume;
+      b = b / sampleVolume;
+      c = c / sampleVolume;
 
       var coordinates = new Coordinates(-b, c, -a);
 

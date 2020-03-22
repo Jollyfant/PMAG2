@@ -889,7 +889,7 @@ function createIntensityDiagram(hover, series, categories) {
     },
     "yAxis": {
       "title": {
-        "text": "Intensity (μA/m)"
+        "text": document.getElementById("normalize-intensities").checked ? "Fraction" : "Intensity (μA/m)"
       }	
     },
     "tooltip": {

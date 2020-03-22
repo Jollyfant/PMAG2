@@ -25,8 +25,8 @@
   // SVG combined exporting
   Highcharts.exportCharts = function(charts, options) {
     options = Highcharts.merge(Highcharts.getOptions().exporting, options);
-    Highcharts.getSVG(charts, options, function(svg) { 
-      Highcharts.downloadSVGLocal(svg, options, function() { 
+    Highcharts.getSVG(charts, options, function(svg) {
+      Highcharts.downloadSVGLocal(svg, options, function(e) { 
         notify("danger", "Failured to export figure.");
       });
     });
@@ -52,13 +52,12 @@
 
   Highcharts.getSVG = function(figure, options, callback) {
   
-    function fail() {
+    function fail(e) {
   
       /*
        * Function Highcharts.getSVG::fail
        * Callback function fired when exporting fails
        */
-  
       notify("danger", "Could not export charts.");
   
     }
