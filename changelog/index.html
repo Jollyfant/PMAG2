@@ -81,7 +81,7 @@
           <div class="card">
             <div class="card-header" id="headingTwo">
               <button class="btn btn-link" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
-                Paleomagnetism.org 2.0.2 - Release <small class="text-muted">&nbsp; 2020-02-25</small>
+                Paleomagnetism.org 2.0.2 - Release <small class="text-muted">&nbsp; 2020-03-21</small>
               </button>
             </div>
             <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo" data-parent="#accordion">
@@ -90,7 +90,11 @@
               <p> A bug in the Utrecht format where the intensity was not corrected for the sample volume was fixed.
               <ul>
                 <p> <b> Fixes </b>
-                <li> When reading Utrecht format files the sample volume was ignored in the intensity calculation. It is now calculated correctly for newly loaded specimens, and correctly displayed in the interpretation portal for old specimens.
+                <li> When reading Utrecht format files the sample volume was ignored in the intensity calculation. It is now calculated correctly for newly loaded specimens, and correctly displayed in the interpretation portal for old specimens. Specimens in the data library with input format <b>UTRECHT</b> and below version <b>2.0.1</b> are in Am^2 and should be divided by the sample volume and brought to <b>µA/m</b>.
+                <li> Loading files from the Paleomagnetism.org 1.0.0 format now correctly sets the sample volume.
+                <li> The y-axis of the intensity diagram was changed from <b>µA/m</b> to <b>fraction</b> when normalization is requested.
+                <li> Fixed non-ASCII characters in exporting of single charts in <b>PDF</b>. Unicode support is not available for combined charts. We recommend exporting combined charts as <b>SVG</b>.
+                <li> Intensity diagram is redrawn when option <i>normalize intensities</i> in the settings tab is changed.
               </ul>
    
               </div>

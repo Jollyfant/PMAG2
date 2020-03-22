@@ -48,6 +48,11 @@ function padLeft(nr, n){
   return Array(n - String(nr).length + 1).join("0") + nr;
 } 
 
+function isUtrechtIntensityBug(specimen) {
+  var version = splitVersion(specimen.version);
+  return specimen.format === "UTRECHT" && version.version === 2 && version.major === 0 & version.minor < 2;
+}
+
 function splitVersion(version) {
 
   let parameters = version.split(".");

@@ -11,6 +11,9 @@ function registerEventHandlers() {
   document.getElementById("save-location").addEventListener("click", handleLocationSave);
   document.getElementById("specimen-age-select").addEventListener("change", handleAgeSelection);
 
+  // Redraw when requested
+  document.getElementById("normalize-intensities").addEventListener("change", plotIntensityDiagram.bind(null, false));
+
   // Radio class listeners
   Array.from(document.getElementsByClassName("demagnetization-type-radio")).forEach(function(x) {
     x.addEventListener("click", function(event) {
@@ -1820,6 +1823,13 @@ function formatStepTable() {
     var specimenLocation = "<span style='pointer-events: none;' class='text-muted'>" + getSuccesfulLabel(true) + " Edit</span>";
   }
 
+  // Notify error in Utrecht format
+  if(isUtrechtIntensityBug(specimen)) {
+    var intensity = "<span style='color: red' title='Intensity should be divided by sample volume (see changelog 2.0.2).'>" + direction.length.toFixed(2) + "</span>";
+  } else {
+    var intensity = direction.length.toFixed(2);
+  }
+
   document.getElementById("table-container").innerHTML = [
     "  <caption>Specimen and Demagnetization Details</caption>",
     "  <thead>",
@@ -1844,7 +1854,7 @@ function formatStepTable() {
     "      <td>" + COORDINATES + "</td>",
     "      <td>" + direction.dec.toFixed(2) + "</td>",
     "      <td>" + direction.inc.toFixed(2) + "</td>",
-    "      <td>" + direction.length.toFixed(2) + "</td>",
+    "      <td>" + intensity + "</td>",
     "      <td>" + (step.error ? step.error.toFixed(2) : null ) + "</td>",
     "      <td style='cursor: pointer;'>" + specimen.coreAzimuth + "</td>",
     "      <td style='cursor: pointer;'>" + specimen.coreDip + "</td>",

@@ -558,13 +558,18 @@ function exportMagIC(metadata) {
         // Convert x, y, z in specimen coordinates to a direction
         var direction = new Coordinates(step.x, step.y, step.z).toVector(Direction);
 
-        //Must be in Am^2
-        var x = step.x * specimen.volume;
-        var y = step.y * specimen.volume;
-        var z = step.z * specimen.volume;
-
         // Intensities are in Am^2 in MagIC.
         // Our values are in μA/m. (1E6 * intensity) / (1E6 * volume) = intensity / volume
+        if(isUtrechtIntensityBug(specimen)) {
+          var x = step.x;
+          var y = step.y;
+          var z = step.z;
+        } else {
+          var x = step.x * specimen.volume;
+          var y = step.y * specimen.volume;
+          var z = step.z * specimen.volume;
+        }
+
         magicMeasurements.push([
           specimen.name + "_" + i,
           specimen.name + "_" + i + "_" + demagnetizationType,
