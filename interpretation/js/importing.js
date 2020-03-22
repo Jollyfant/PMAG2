@@ -1565,7 +1565,7 @@ function importUtrecht(file) {
     var steps = new Array();
     
     // Get the actual demagnetization data
-    blockLines.slice(0, -1).forEach(function(measurement) {
+    blockLines.forEach(function(measurement) {
 
       // Step is in Am^2 .. divide by sample volume
       var [step, a, b, c, error, _, _] = measurement.split(/,[\s]*/);
