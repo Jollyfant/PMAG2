@@ -1571,9 +1571,9 @@ function importUtrecht(file) {
       var [step, a, b, c, error, _, _] = measurement.split(/,[\s]*/);
 
       // Divide by sample volume
-      a = a / sampleVolume;
-      b = b / sampleVolume;
-      c = c / sampleVolume;
+      a = Number(a) / sampleVolume;
+      b = Number(b) / sampleVolume;
+      c = Number(c) / sampleVolume;
 
       var coordinates = new Coordinates(-b, c, -a);
 
