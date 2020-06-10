@@ -95,6 +95,12 @@
                 <li> Confidence ellipes in the statistics portal are now not-flipped to antipodal positions by default. You can re-enable this setting in the settings tab.
               </ul>
 
+              <ul>
+                <p> <b> Fixes </b>
+                <li> Fixed UTF-8 exporting of combined PDF graphics.
+                <li> Fixed field headers in the MagIC exporting portal.
+              </ul>
+
               </div>
             </div>
           </div>
@@ -120,7 +126,7 @@
               <ul>
                 <p> <b> Fixes </b>
                 <li> When reading Utrecht format files the sample volume was ignored in the intensity calculation. It is now calculated correctly for newly loaded specimens, and correctly displayed in the interpretation portal for old specimens. Specimens in the data library with input format <b>UTRECHT</b> and below version <b>2.0.1</b> are in <b>Am^2</b> and should be divided by the sample volume and brought to <b>µA/m</b>.
-                <li> Fixed regression introduced by commit <b>94fa96dbda1742b0104e79feae548fed43dc8496<b> where last step in Utrecht format for every specimen was not read.
+                <li> Fixed regression introduced by commit <b>94fa96dbda1742b0104e79feae548fed43dc8496</b> where the last step in Utrecht format for every specimen was not read.
                 <li> Loading files from the Paleomagnetism.org 1.0.0 format now correctly sets the sample volume.
                 <li> The y-axis of the intensity diagram was changed from <b>µA/m</b> to <b>fraction</b> when normalization is requested.
                 <li> Fixed non-ASCII characters in exporting of single charts in <b>PDF</b>. Unicode support is not available for combined charts. We recommend exporting combined charts as <b>SVG</b>.
