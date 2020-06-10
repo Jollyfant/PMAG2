@@ -1,5 +1,5 @@
 let __DEBUG__ = false;
-let __VERSION__ = "2.0.2";
+let __VERSION__ = "2.1.0";
 const __DOI__ = "10.5281/zenodo.3723790"
 const RADIANS = Math.PI / 180;
 const PROJECTION_TYPE = "AREA";
