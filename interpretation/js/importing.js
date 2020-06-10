@@ -1,3 +1,73 @@
+function importRennes(file) {
+
+  // Block delimiter
+  var blockDelimiter = "\r\n\u000c --------------  Parameters sample & data   ----------------";
+
+  file.data.split(blockDelimiter).slice(1).forEach(function(block) {
+
+    var lines = block.split(LINE_REGEXP);
+
+    var sample = lines[3].split(/\s+/)[2];
+    var name = lines[4].split(/\s+/)[2];
+    var volume = lines[5].split(/\s+/)[2];
+    var latitude = lines[6].split(/\s+/)[2];
+    var longitude = lines[6].split(/\s+/)[5];
+
+    // Lazily implement AGICO: may defer call to convertAgico but that does not support P1, P3 yet
+    if(!lines[11].includes("A12_0_3_9")) {
+      throw new Exception("Currently only supporting Agico format 12, 0, 3, 9. The other orientations still need to be implemented for this format.");
+    }
+
+    // Agico flipping!
+    var coreAzimuth = (Number(lines[12].split(/\s+/)[3]) - 90);
+    var coreDip = 90 - Number(lines[13].split(/\s+/)[3]);
+    var beddingStrike = Number(lines[14].split(/\s+/)[3]);
+    var beddingDip = Number(lines[15].split(/\s+/)[3]);
+    var steps = new Array();
+
+    for(var i = 23; i < lines.length - 1; i++) {
+
+      var parameters = lines[i].split(/\s+/);
+      var step = parameters[1];
+      var intensity = Number(parameters[4]) * 1E6;
+      var dec = Number(parameters[6]);
+      var inc = Number(parameters[7]);
+
+      var coordinates = new Direction(dec, inc, intensity).toCartesian();
+
+      steps.push(new Measurement(step, coordinates, null));
+
+    }
+
+    // Add the data to the application
+    specimens.push({
+      "demagnetizationType": null,
+      "coordinates": "specimen",
+      "format": "RENNES",
+      "version": __VERSION__,
+      "created": new Date().toISOString(),
+      "steps": steps,
+      "level": null,
+      "longitude": longitude,
+      "latitude": latitude,
+      "age": null,
+      "ageMin": null,
+      "ageMax": null,
+      "lithology": null,
+      "sample": sample,
+      "name": name,
+      "volume": volume,
+      "beddingStrike": beddingStrike,
+      "beddingDip": beddingDip,
+      "coreAzimuth": coreAzimuth,
+      "coreDip": coreDip, 
+      "interpretations": new Array()
+    });
+
+  });
+
+}
+
 function importMagic(file) {
 
   /*
