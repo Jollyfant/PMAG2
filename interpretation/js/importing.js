@@ -1,31 +1,33 @@
 function importRennes(file) {
 
   // Block delimiter
-  var blockDelimiter = "\r\n\u000c --------------  Parameters sample & data   ----------------";
+  var blockDelimiter = "--------------  Parameters sample & data   ----------------";
 
   file.data.split(blockDelimiter).slice(1).forEach(function(block) {
 
+    // Remove whatever
+    block = block.trim();
     var lines = block.split(LINE_REGEXP);
 
-    var sample = lines[3].split(/\s+/)[2];
-    var name = lines[4].split(/\s+/)[2];
-    var volume = lines[5].split(/\s+/)[2];
-    var latitude = lines[6].split(/\s+/)[2];
-    var longitude = lines[6].split(/\s+/)[5];
+    var sample = lines[1].split(/\s+/)[2];
+    var name = lines[2].split(/\s+/)[2];
+    var volume = lines[3].split(/\s+/)[2];
+    var latitude = lines[4].split(/\s+/)[2];
+    var longitude = lines[4].split(/\s+/)[5];
 
     // Lazily implement AGICO: may defer call to convertAgico but that does not support P1, P3 yet
-    if(!lines[11].includes("A12_0_3_9")) {
+    if(!lines[9].includes("A12_0_3_9")) {
       throw new Exception("Currently only supporting Agico format 12, 0, 3, 9. The other orientations still need to be implemented for this format.");
     }
 
     // Agico flipping!
-    var coreAzimuth = (Number(lines[12].split(/\s+/)[3]) - 90);
-    var coreDip = 90 - Number(lines[13].split(/\s+/)[3]);
-    var beddingStrike = Number(lines[14].split(/\s+/)[3]);
-    var beddingDip = Number(lines[15].split(/\s+/)[3]);
+    var coreAzimuth = (Number(lines[10].split(/\s+/)[3]) - 90);
+    var coreDip = 90 - Number(lines[11].split(/\s+/)[3]);
+    var beddingStrike = Number(lines[12].split(/\s+/)[3]);
+    var beddingDip = Number(lines[13].split(/\s+/)[3]);
     var steps = new Array();
 
-    for(var i = 23; i < lines.length - 1; i++) {
+    for(var i = 21; i < lines.length; i++) {
 
       var parameters = lines[i].split(/\s+/);
       var step = parameters[1];
