@@ -1,3 +1,61 @@
+function importMontpellier(file) {
+
+  var object = new Object();
+
+  var lines = file.data.split("\n");
+
+  for(var i = 1; i < lines.length - 1; i++) {
+
+    let line = lines[i].split(/\s+/);
+
+    let sample = line[0];
+    let step = line[1];
+
+    let intensity = Number(line[2]);
+    let dec = Number(line[3]);
+    let inc = Number(line[4]);
+    let azimuth = Number(line[5]);
+    let plunge = Number(line[6]);
+    
+    if(!object.hasOwnProperty(sample)) {
+      object[sample] = {
+        "demagnetizationType": null,
+        "coordinates": "specimen",
+        "format": "RENNES",
+        "version": __VERSION__,
+        "created": new Date().toISOString(),
+        "steps": new Array(),
+        "level": null,
+        "longitude": null,
+        "latitude": null,
+        "age": null,
+        "ageMin": null,
+        "ageMax": null,
+        "lithology": null,
+        "sample": sample,
+        "name": sample,
+        "volume": null,
+        "beddingStrike": 0,
+        "beddingDip": 0,
+        "coreAzimuth": azimuth,
+        "coreDip": plunge,
+        "interpretations": new Array()
+      }
+    }
+ 
+    let coordinates = new Direction(dec, inc, intensity).toCartesian();
+
+    object[sample].steps.push(new Measurement(step, coordinates, null));
+
+  }
+
+  // Add all to the application
+  Object.values(object).forEach(function(x) {
+    specimens.push(x);
+  });
+
+}
+
 function importRennes(file) {
 
   // Block delimiter
