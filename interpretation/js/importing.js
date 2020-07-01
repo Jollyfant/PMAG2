@@ -1414,6 +1414,11 @@ function importBCN2G(file) {
 
     // Each parameter is delimited by at least one NULL byte
     var parameters = line.split(/\u0000+/);
+ 
+    // Something wrong with a broken line? See #72
+    if(parameters.length !== 30) {
+      return null;
+    }
 
     // Intensity is in emu/cm^3 (1000 A/m)
     var step = parameters[3];
@@ -1425,7 +1430,7 @@ function importBCN2G(file) {
 
     return new Measurement(step, coordinates, null);
 
-  });
+  }).filter(x => x !== null);
 
   specimens.push({
     "demagnetizationType": null,
