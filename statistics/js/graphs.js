@@ -2299,7 +2299,29 @@ function saveCombinedCollection() {
     }
 
     if(document.getElementById("modal-mirror-components").checked) {
-      components = components.map(x => new Component(x, x.coordinates.reflect()));
+      switch(document.getElementById("flip-components-direction").value) {
+        case "mirror":
+          components = components.map(x => new Component(x, x.coordinates.reflect()));
+          break
+        case "positive":
+          components = components.map(function(x) {
+            if(x.coordinates.z > 0) {
+              return x;
+            } else {
+              return new Component(x, x.coordinates.reflect());
+            }
+          });
+          break
+        case "negative":
+          components = components.map(function(x) {
+            if(x.coordinates.z < 0) {
+              return x;
+            } else {
+              return new Component(x, x.coordinates.reflect());
+            }
+          });
+          break
+      }
     }
 
     // Make sure the coordinates are set back to specimen coordinates
