@@ -11,7 +11,7 @@ function importMontpellier(file) {
     let sample = line[0];
     let step = line[1];
 
-    let intensity = Number(line[2]);
+    let intensity = 1E6 * Number(line[2]);
     let dec = Number(line[3]);
     let inc = Number(line[4]);
     let azimuth = Number(line[5]);
