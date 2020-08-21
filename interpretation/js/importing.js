@@ -16,6 +16,8 @@ function importMontpellier(file) {
     let inc = Number(line[4]);
     let azimuth = Number(line[5]);
     let plunge = Number(line[6]);
+    let strike = Number(line[7]);
+    let dip = Number(line[8]);
     
     if(!object.hasOwnProperty(sample)) {
       object[sample] = {
@@ -35,8 +37,8 @@ function importMontpellier(file) {
         "sample": sample,
         "name": sample,
         "volume": null,
-        "beddingStrike": 0,
-        "beddingDip": 0,
+        "beddingStrike": strike,
+        "beddingDip": dip,
         "coreAzimuth": azimuth,
         "coreDip": plunge,
         "interpretations": new Array()
