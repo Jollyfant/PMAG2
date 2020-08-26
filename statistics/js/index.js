@@ -218,6 +218,9 @@ function registerEventHandlers() {
   // The keyboard handler
   document.addEventListener("keydown", keyboardHandler);
  
+  // Flipping is off by default
+  document.getElementById("flip-ellipse").checked = false;
+
   updateTextAreaCounter();
 
 }

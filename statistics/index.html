@@ -630,19 +630,30 @@
                      <input id="modal-name" type="text" class="form-control" placeholder="My Collection" aria-label="Username" aria-describedby="basic-addon1">
                   </div>
 
-                  <!-- Discard rejected component checkbox -->
-                  <div class="form-check form-check-inline">
-                     <input id="modal-discard-rejected" class="form-check-input" type="checkbox" value=""> 
-                     <label class="form-check-label" for="modal-discard-rejected">
-                     Discard rejected components
-                     </label>
+                  <!-- Mirror -->
+		  <div class="input-group">
+  		    <div class="input-group-prepend">
+     		      <div class="input-group-text">
+                        <input id="modal-mirror-components" type="checkbox" value="">
+                        <label class="form-check-label" for="modal-mirror-components">
+                         &nbsp; Flip Components
+                        </label>
+    		      </div>
+                    </div>
+                    <select class="custom-select" id="flip-components-direction">
+                      <option value="mirror">Mirror All Directions</option>
+                      <option value="positive">Make All Positive</option>
+                      <option value="negative">Make All Negative</option>
+                    </select>
                   </div>
 
-                  <!-- Mirror -->
+		  <p>
+
+                  <!-- Discard rejected component checkbox -->
                   <div class="form-check form-check-inline">
-                     <input id="modal-mirror-components" class="form-check-input" type="checkbox" value="">
-                     <label class="form-check-label" for="modal-mirror-components">
-                     Mirror components
+                     <input id="modal-discard-rejected" class="form-check-input" type="checkbox" value="">
+                     <label class="form-check-label" for="modal-discard-rejected">
+                     Discard rejected components
                      </label>
                   </div>
 

@@ -10,6 +10,9 @@ $(".selectpicker").selectpicker("show");
 var COORDINATES_COUNTER = 0;
 var COORDINATES = "specimen";
 
+const MARKER_SIZE = 100;
+const MARKER_OPACITY = 0.5;
+
 function addMap() {
 
   /*
@@ -251,6 +254,7 @@ function registerEventHandlers() {
   // Simple listeners
   document.getElementById("site-input-area").addEventListener("scroll", updateTextAreaCounter);
   document.getElementById("euler-upload").addEventListener("change", eulerSelectionHandler);
+  document.getElementById("lit-upload").addEventListener("change", litSelectionHandler);
   document.getElementById("apwp-upload").addEventListener("change", APWPSelectionHandler);
   document.getElementById("kml-upload").addEventListener("change", kmlSelectionHandler);
   document.getElementById("customFile").addEventListener("change", fileSelectionHandler);
@@ -312,58 +316,55 @@ function getSelectedItems(id) {
 
 }
 
+function resetMarkers() {
+
+  /*
+   * Function getSVGPath
+   * Returns an SVG path (parachute) based on an angle and error
+   */
+
+  mapMakers.forEach(x => map.removeLayer(x));
+  mapMakers = new Array();
+
+}
+
+function getSVGPath(angle, error) {
+
+  /*
+   * Function getSVGPath
+   * Returns an SVG path (parachute) based on an angle and error
+   */
+
+  var radError = error * RADIANS;
+  var radAngle = Math.PI - angle * RADIANS;
+
+  // SVG path for the marker (2px by 2px size) parachute based on the declination and error
+  return new Array( 
+    "M 1 1",
+    "L", 1 + Math.sin(radAngle + radError), 1 + Math.cos(radAngle + radError),
+    "A 1 1 0 0 1", 1 + Math.sin(radAngle - radError), 1 + Math.cos(radAngle - radError),
+    "Z"
+  ).join(" ");
+
+}
+
+function getFullSVG(path, color) {
+
+  /*
+   * Function getFullSVG
+   * Returns the full SVG path
+   */
+
+  return encodeURI("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2'><path d='" + path + "' stroke-width='0.025' stroke='black' fill='" + color + "'/></svg>").replace("#", "%23");
+
+}
+
 function showCollectionsOnMap() {
 
   /*
    * Function showCollectionsOnMap
    * Shows the collection on a map
    */
-
-  function resetMarkers() {
-
-    /*
-     * Function getSVGPath
-     * Returns an SVG path (parachute) based on an angle and error
-     */
-
-    mapMakers.forEach(x => map.removeLayer(x));
-    mapMakers = new Array();
-
-  }
-
-  function getSVGPath(angle, error) {
-
-    /*
-     * Function getSVGPath
-     * Returns an SVG path (parachute) based on an angle and error
-     */
-
-    var radError = error * RADIANS;
-    var radAngle = Math.PI - angle * RADIANS;
-
-    // SVG path for the marker (2px by 2px size) parachute based on the declination and error
-    return new Array( 
-      "M 1 1",
-      "L", 1 + Math.sin(radAngle + radError), 1 + Math.cos(radAngle + radError),
-      "A 1 1 0 0 1", 1 + Math.sin(radAngle - radError), 1 + Math.cos(radAngle - radError),
-      "Z"
-    ).join(" ");
-
-  }
-
-  function getFullSVG(path, color) {
-
-    /*
-     * Function getFullSVG
-     * Returns the full SVG path
-     */
-
-    return encodeURI("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='2' height='2'><path d='" + path + "' stroke-width='0.025' stroke='black' fill='" + color + "'/></svg>").replace("#", "%23");
-
-  }
-
-  const MARKER_SIZE = 100;
-  const MARKER_OPACITY = 0.5;
 
   // Drop references to old markers
   resetMarkers();
@@ -975,6 +976,47 @@ function createOption(text, value) {
   option.value = value;
 
   return option;
+
+}
+
+function litSelectionHandler(event) {
+
+  function parse(line) {
+
+    parameters = line.split(/\s+/);
+
+    return {
+      "lat": Number(parameters[0]),
+      "lng": Number(parameters[1]),
+      "dec": Number(parameters[2]),
+      "inc": Number(parameters[3]),
+      "delta": Number(parameters[4]),
+      "color": parameters[5]
+    }
+
+  }
+
+  readMultipleFiles(Array.from(event.target.files), function(files) {
+
+    lines = files[0].data.split(/\r?\n/).map(parse).slice(0, -1);
+
+    lines.forEach(function(line) {
+
+      var direction = new Direction(line.dec, line.inc);
+      var color = (direction.inc < 0 ? HIGHCHARTS_WHITE : HIGHCHARTS_BLACK);
+      var markerPath = getSVGPath(direction.dec, line.delta);
+
+      var markerIcon = L.icon({
+        "iconUrl": getFullSVG(markerPath, line.color),
+        "opacity": MARKER_OPACITY,
+        "iconSize": MARKER_SIZE
+      });
+
+      mapMakers.push(L.marker([line.lat, line.lng], {"icon": markerIcon, "name": null}).addTo(map));
+
+    });
+
+  });
 
 }
 

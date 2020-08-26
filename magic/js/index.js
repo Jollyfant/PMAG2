@@ -408,8 +408,8 @@ function exportMagIC(metadata) {
     "method_codes",
     "citations",
     // Geology
-    "geological_classes",
-    "geological_types",
+    "geologic_classes",
+    "geologic_types",
     "lithologies",
     // Geography
     "lat",
@@ -425,9 +425,9 @@ function exportMagIC(metadata) {
   var locationHeader = new Array(
     // Names
     "location",
-    //"location_type",
+    "location_type",
     // Geology
-    "geological_classes",
+    "geologic_classes",
     "lithologies",
     // Geography
     "lat_s",
@@ -600,7 +600,7 @@ function exportMagIC(metadata) {
 
     magicLocations.push([
       "location-" + i,
-      //determineLocationType(latitudes, longitudes, levels),
+      determineLocationType(latitudes, longitudes, levels),
       Array.from(geologies.values()).join(":"),
       Array.from(lithologies.values()).join(":"),
       latitudes[0],

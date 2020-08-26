@@ -1,3 +1,135 @@
+function importMontpellier(file) {
+
+  var object = new Object();
+
+  var lines = file.data.split("\n");
+
+  for(var i = 1; i < lines.length - 1; i++) {
+
+    let line = lines[i].split(/\s+/);
+
+    let sample = line[0];
+    let step = line[1];
+
+    let intensity = 1E6 * Number(line[2]);
+    let dec = Number(line[3]);
+    let inc = Number(line[4]);
+    let azimuth = Number(line[5]);
+    let plunge = Number(line[6]);
+    let strike = Number(line[7]);
+    let dip = Number(line[8]);
+    
+    if(!object.hasOwnProperty(sample)) {
+      object[sample] = {
+        "demagnetizationType": null,
+        "coordinates": "specimen",
+        "format": "RENNES",
+        "version": __VERSION__,
+        "created": new Date().toISOString(),
+        "steps": new Array(),
+        "level": null,
+        "longitude": null,
+        "latitude": null,
+        "age": null,
+        "ageMin": null,
+        "ageMax": null,
+        "lithology": null,
+        "sample": sample,
+        "name": sample,
+        "volume": null,
+        "beddingStrike": strike,
+        "beddingDip": dip,
+        "coreAzimuth": azimuth,
+        "coreDip": plunge,
+        "interpretations": new Array()
+      }
+    }
+ 
+    let coordinates = new Direction(dec, inc, intensity).toCartesian();
+
+    object[sample].steps.push(new Measurement(step, coordinates, null));
+
+  }
+
+  // Add all to the application
+  Object.values(object).forEach(function(x) {
+    specimens.push(x);
+  });
+
+}
+
+function importRennes(file) {
+
+  // Block delimiter
+  var blockDelimiter = "--------------  Parameters sample & data   ----------------";
+
+  file.data.split(blockDelimiter).slice(1).forEach(function(block) {
+
+    // Remove whatever
+    block = block.trim();
+    var lines = block.split(LINE_REGEXP);
+
+    var sample = lines[1].split(/\s+/)[2];
+    var name = lines[2].split(/\s+/)[2];
+    var volume = lines[3].split(/\s+/)[2];
+    var latitude = lines[4].split(/\s+/)[2];
+    var longitude = lines[4].split(/\s+/)[5];
+
+    // Lazily implement AGICO: may defer call to convertAgico but that does not support P1, P3 yet
+    if(!lines[9].includes("A12_0_3_9")) {
+      throw new Exception("Currently only supporting Agico format 12, 0, 3, 9. The other orientations still need to be implemented for this format.");
+    }
+
+    // Agico flipping!
+    var coreAzimuth = (Number(lines[10].split(/\s+/)[3]) - 90);
+    var coreDip = 90 - Number(lines[11].split(/\s+/)[3]);
+    var beddingStrike = Number(lines[12].split(/\s+/)[3]);
+    var beddingDip = Number(lines[13].split(/\s+/)[3]);
+    var steps = new Array();
+
+    for(var i = 21; i < lines.length; i++) {
+
+      var parameters = lines[i].split(/\s+/);
+      var step = parameters[1];
+      var intensity = Number(parameters[4]) * 1E6;
+      var dec = Number(parameters[6]);
+      var inc = Number(parameters[7]);
+
+      var coordinates = new Direction(dec, inc, intensity).toCartesian();
+
+      steps.push(new Measurement(step, coordinates, null));
+
+    }
+
+    // Add the data to the application
+    specimens.push({
+      "demagnetizationType": null,
+      "coordinates": "specimen",
+      "format": "RENNES",
+      "version": __VERSION__,
+      "created": new Date().toISOString(),
+      "steps": steps,
+      "level": null,
+      "longitude": longitude,
+      "latitude": latitude,
+      "age": null,
+      "ageMin": null,
+      "ageMax": null,
+      "lithology": null,
+      "sample": sample,
+      "name": name,
+      "volume": volume,
+      "beddingStrike": beddingStrike,
+      "beddingDip": beddingDip,
+      "coreAzimuth": coreAzimuth,
+      "coreDip": coreDip, 
+      "interpretations": new Array()
+    });
+
+  });
+
+}
+
 function importMagic(file) {
 
   /*
@@ -1284,6 +1416,11 @@ function importBCN2G(file) {
 
     // Each parameter is delimited by at least one NULL byte
     var parameters = line.split(/\u0000+/);
+ 
+    // Something wrong with a broken line? See #72
+    if(parameters.length !== 30) {
+      return null;
+    }
 
     // Intensity is in emu/cm^3 (1000 A/m)
     var step = parameters[3];
@@ -1295,7 +1432,7 @@ function importBCN2G(file) {
 
     return new Measurement(step, coordinates, null);
 
-  });
+  }).filter(x => x !== null);
 
   specimens.push({
     "demagnetizationType": null,
@@ -1571,9 +1708,9 @@ function importUtrecht(file) {
       var [step, a, b, c, error, _, _] = measurement.split(/,[\s]*/);
 
       // Divide by sample volume
-      a = a / sampleVolume;
-      b = b / sampleVolume;
-      c = c / sampleVolume;
+      a = Number(a) / sampleVolume;
+      b = Number(b) / sampleVolume;
+      c = Number(c) / sampleVolume;
 
       var coordinates = new Coordinates(-b, c, -a);
 
