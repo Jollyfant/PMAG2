@@ -1,3 +1,66 @@
+function importGTK(file) {
+
+  function capitalize(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1)
+  }
+
+  var lines = file.data.split(/\r?\n/);
+
+  let name = lines[1].split(":")[1].trim();
+  let lithology = capitalize(lines[2].split(":")[1].trim().toLowerCase());
+
+  let metadata = lines[7].split(/\s+/);
+  let latitude = Number(metadata[1]);
+  let longitude = Number(metadata[2]);
+  let coreAzimuth = Number(metadata[3]);
+  let coreDip = Number(metadata[4]);
+  let beddingStrike = Number(metadata[5]);
+  let beddingDip = Number(metadata[6]);
+  let volume = Number(metadata[7]);
+  let mass = Number(metadata[8]);
+ 
+  let demagnetizationType = lines[8].slice(0, 2) === "AF" ? "alternating" : "thermal";
+
+  let steps = new Array();
+
+  // Parse data lines
+  for(var i = 9; i < lines.length - 1; i++) {
+    let line = lines[i];
+    let step = line.slice(0, 4);
+    let dec = Number(line.slice(7, 12));
+    let inc = Number(line.slice(13, 19));
+    let intensity = Number(line.slice(24, 30));
+    let coordinates = new Direction(dec, inc, intensity).toCartesian();
+    steps.push(new Measurement(step, coordinates, null))
+  }
+
+  // Add the data to the application
+  specimens.push({
+    "demagnetizationType": demagnetizationType,
+    "coordinates": "specimen",
+    "format": "GTK",
+    "version": __VERSION__,
+    "created": new Date().toISOString(),
+    "steps": steps,
+    "level": null,
+    "longitude": longitude,
+    "latitude": latitude,
+    "age": null,
+    "ageMin": null,
+    "ageMax": null,
+    "lithology": lithology,
+    "sample": name,
+    "name": name,
+    "volume": volume,
+    "beddingStrike": beddingStrike,
+    "beddingDip": beddingDip,
+    "coreAzimuth": coreAzimuth,
+    "coreDip": coreDip, 
+    "interpretations": new Array()
+  });
+
+}
+
 function importMontpellier(file) {
 
   var object = new Object();
