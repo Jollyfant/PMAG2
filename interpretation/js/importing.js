@@ -13,7 +13,7 @@ function importGTK(file) {
   let latitude = Number(metadata[1]);
   let longitude = Number(metadata[2]);
   let coreAzimuth = Number(metadata[3]);
-  let coreDip = Number(metadata[4]);
+  let coreDip = 90 - Number(metadata[4]);
   let beddingStrike = Number(metadata[5]);
   let beddingDip = Number(metadata[6]);
   let volume = Number(metadata[7]);
@@ -29,7 +29,8 @@ function importGTK(file) {
     let step = line.slice(0, 4);
     let dec = Number(line.slice(7, 12));
     let inc = Number(line.slice(13, 19));
-    let intensity = Number(line.slice(24, 30));
+    // Intensity in mA/m (Satu, pers. comm. 2020)
+    let intensity = 1E3 * Number(line.slice(24, 30));
     let coordinates = new Direction(dec, inc, intensity).toCartesian();
     steps.push(new Measurement(step, coordinates, null))
   }
