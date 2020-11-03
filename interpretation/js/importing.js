@@ -1350,11 +1350,88 @@ function importCenieh(file) {
   });
 
   // Add all specimens in the hashmap to the application
-  ceniehSpecimens.forEach(function(specimen) {
-    specimens.push(specimen);
+  Object.keys(ceniehSpecimens).forEach(function(specimen) {
+    specimens.push(ceniehSpecimens[specimen]);
   });
 
 }
+
+function importCeniehRegular(file) {
+
+  var lines = file.data.split(LINE_REGEXP).filter(Boolean);
+
+  var parsedData = new Array();
+  var rotatedVectors = new Array();
+
+  for(var i = 1; i < lines.length; i++) {
+
+    var parameters = lines[i].split(/[\t\s]+/);
+    var sampleName = parameters[0];
+    var step = parameters[1];
+    var intensity = Number(parameters[2]);
+    var dec = Number(parameters[3]);
+    var inc = Number(parameters[4]);
+    rotatedVectors.push({"dec": Number(parameters[5]), "inc": Number(parameters[6])});
+
+    // Given intensity is in emu/cc (1E3 A/m)
+    var cartesianCoordinates = new Direction(dec, inc, intensity / 1E-9).toCartesian();
+
+    parsedData.push(new Measurement(step, cartesianCoordinates, null));
+
+  }
+
+  var beddingString = prompt("Sample " + sampleName + " - please enter: core azimuth,core dip,bedding strike,bedding dip (e.g. 121,24,0,0)");
+
+  var coreAzimuth = Number(beddingString.split(",")[0]);
+  var coreDip = Number(beddingString.split(",")[1]);
+  var beddingStrike = Number(beddingString.split(",")[2]);
+  var beddingDip = Number(beddingString.split(",")[3]);
+ 
+  if(beddingString.split(",").length !== 4) {
+    throw("Not enough parameters!");
+  }
+
+  // The input format has the rotated vectors
+  // We check if the user input core azi & dip match what is expected 
+  var b = parsedData.map(function(x) {
+    return new Coordinates(x.x, x.y, x.z);
+  }).map(function(direction) {
+    return direction.rotateTo(coreAzimuth, coreDip - 90)
+  });
+
+  // Check and raise if discrepancy
+  for(var i = 0; i < rotatedVectors.length; i++) {
+    if(Math.round(b[i].dec) !== Math.round(rotatedVectors[i].dec) || Math.round(b[i].inc) !== Math.round(rotatedVectors[i].inc)) {
+      notify("failure", "WARNING: Core parameters incorrect for Cenieh Regular import. Continue on own risk.");
+	  break;
+    }
+  }
+
+  specimens.push({
+    "demagnetizationType": null,
+    "coordinates": "specimen",
+    "format": "MUNICH",
+    "version": __VERSION__,
+    "created": new Date().toISOString(),
+    "steps": parsedData,
+    "name": sampleName,
+    "volume": 10.0, // 10cc @ Mark Sier,
+    "longitude": null,
+    "latitude": null,
+    "age": null,
+    "ageMin": null,
+    "ageMax": null,
+    "lithology": null,
+    "sample": sampleName,
+    "beddingStrike": Number(beddingStrike),
+    "beddingDip": Number(beddingDip),
+    "coreAzimuth": Number(coreAzimuth),
+    "coreDip": Number(coreDip),
+    "interpretations": new Array()
+  });
+
+}
+
 
 function importMunich(file) {
 
