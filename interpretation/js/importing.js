@@ -1362,6 +1362,8 @@ function importCeniehRegular(file) {
 
   var parsedData = new Array();
   var rotatedVectors = new Array();
+  var rotatedTectonicVectors = new Array();
+  let demagnetizationType = lines[0].split("\t")[1].includes("AF") ? "alternating" : "thermal";
 
   for(var i = 1; i < lines.length; i++) {
 
@@ -1372,6 +1374,7 @@ function importCeniehRegular(file) {
     var dec = Number(parameters[3]);
     var inc = Number(parameters[4]);
     rotatedVectors.push({"dec": Number(parameters[5]), "inc": Number(parameters[6])});
+    rotatedTectonicVectors.push({"dec": Number(parameters[22]), "inc": Number(parameters[23])});
 
     // Given intensity is in emu/cc (1E3 A/m)
     var cartesianCoordinates = new Direction(dec, inc, intensity / 1E-9).toCartesian();
@@ -1392,25 +1395,46 @@ function importCeniehRegular(file) {
   }
 
   // The input format has the rotated vectors
-  // We check if the user input core azi & dip match what is expected 
+  // We check if the user input core azi & dip match what is expected
   var b = parsedData.map(function(x) {
     return new Coordinates(x.x, x.y, x.z);
   }).map(function(direction) {
-    return direction.rotateTo(coreAzimuth, coreDip - 90)
+    return direction.rotateTo(coreAzimuth, coreDip).toVector(Direction);
   });
 
-  // Check and raise if discrepancy
+  // Check and raise if discrepancy: defer with settimeout to prevent being overwritten
   for(var i = 0; i < rotatedVectors.length; i++) {
     if(Math.round(b[i].dec) !== Math.round(rotatedVectors[i].dec) || Math.round(b[i].inc) !== Math.round(rotatedVectors[i].inc)) {
-      notify("failure", "WARNING: Core parameters incorrect for Cenieh Regular import. Continue on own risk.");
-	  break;
+      setTimeout(function() {
+        let error = "Found: <b>" + Math.round(b[i].dec) + ", " + Math.round(b[i].inc) + "</b> while expecting: <b>" + Math.round(rotatedVectors[i].dec) + ", " + Math.round(rotatedVectors[i].inc) + "</b>!";
+        notify("warning", "Core parameters inconsistent for Cenieh Regular import. Continue on own risk! <br> Details: " + error);
+      });
+      break;
+    }
+  }
+
+  // Make sure to check tectonic as well
+  var c = parsedData.map(function(x) {
+    return new Coordinates(x.x, x.y, x.z);
+  }).map(function(direction) {
+    return direction.rotateTo(coreAzimuth, coreDip).correctBedding(beddingStrike, beddingDip).toVector(Direction);
+  });
+
+  // Check and raise if discrepancy: defer with settimeout to prevent being overwritten
+  for(var i = 0; i < rotatedTectonicVectors.length; i++) {
+    if(Math.round(c[i].dec) !== Math.round(rotatedTectonicVectors[i].dec) || Math.round(c[i].inc) !== Math.round(rotatedTectonicVectors[i].inc)) {
+      setTimeout(function() {
+        let error = "Found: <b>" + Math.round(c[i].dec) + ", " + Math.round(c[i].inc) + "</b> while expecting: <b>" + Math.round(rotatedTectonicVectors[i].dec) + ", " + Math.round(rotatedTectonicVectors[i].inc) + "</b>!";
+        notify("warning", "Bedding parameters inconsistent for Cenieh Regular import. Continue on own risk! <br> Details: " + error);
+      });
+      break;
     }
   }
 
   specimens.push({
-    "demagnetizationType": null,
+    "demagnetizationType": demagnetizationType,
     "coordinates": "specimen",
-    "format": "MUNICH",
+    "format": "CENIEHREG",
     "version": __VERSION__,
     "created": new Date().toISOString(),
     "steps": parsedData,
