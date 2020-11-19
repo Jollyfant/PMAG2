@@ -376,7 +376,11 @@ function importMagic(file) {
             //throw(new Exception("Specimen " + object.specimen + " is defined multiple times."));
           }
 
-          var methods = object["method_codes"].split(":");
+          try {
+            var methods = object["method_codes"].split(":");
+          } catch(e) {
+            var methods = [];
+          }
 
           // Create a new specimen
           magicSpecimens[object.specimen] = {
@@ -388,7 +392,7 @@ function importMagic(file) {
             "minStep": Number(object["meas_step_min"]),
             "maxStep": Number(object["meas_step_max"]),
             "anchored": methods.includes("DE-BFL-A"),
-            "type": ((methods.includes("DE-BFP") || methods.includes("DE-BFP-G")) ? "TAU3" : "TAU1"),
+            //"type": ((methods.includes("DE-BFP") || methods.includes("DE-BFP-G")) ? "TAU3" : "TAU1"),
             "unit": object["meas_step_unit"],
             //
             "created": new Date().toISOString(),
@@ -1581,9 +1585,9 @@ function importBCN2G(file) {
 
     // Each parameter is delimited by at least one NULL byte
     var parameters = line.split(/\u0000+/);
- 
+
     // Something wrong with a broken line? See #72
-    if(parameters.length !== 30) {
+    if(parameters.length < 25) {
       return null;
     }
 

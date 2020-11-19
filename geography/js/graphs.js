@@ -528,6 +528,7 @@ function plotPredictedDirections() {
 
   });
 
+  console.log(dataSeriesInclination, dataSeriesDeclination);
   const CHART_CONTAINER_DECLINATION = "declination-container";
   const CHART_CONTAINER_INCLINATION = "inclination-container";
   const CHART_CONTAINER_PALEOLATITUDE = "paleolatitude-container";
