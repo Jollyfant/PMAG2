@@ -86,6 +86,8 @@ function addDegmagnetizationFiles(format, files) {
       return files.forEach(importApplicationSaveOld);
     case "HELSINKI":
       return files.forEach(importHelsinki);
+    case "GTK":
+      return files.forEach(importGTK);
     case "CALTECH":
       return files.forEach(importCaltech);
     case "BCN2G":
@@ -102,6 +104,8 @@ function addDegmagnetizationFiles(format, files) {
       return files.forEach(importBCN2G);
     case "CENIEH":
       return files.forEach(importCenieh);
+    case "CENIEHREG":
+      return files.forEach(importCeniehRegular);
     case "MAGIC":
       return files.forEach(importMagic);
     case "JR5":

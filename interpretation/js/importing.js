@@ -1,3 +1,67 @@
+function importGTK(file) {
+
+  function capitalize(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1)
+  }
+
+  var lines = file.data.split(/\r?\n/);
+
+  let name = lines[1].split(":")[1].trim();
+  let lithology = capitalize(lines[2].split(":")[1].trim().toLowerCase());
+
+  let metadata = lines[7].split(/\s+/);
+  let latitude = Number(metadata[1]);
+  let longitude = Number(metadata[2]);
+  let coreAzimuth = Number(metadata[3]);
+  let coreDip = 90 - Number(metadata[4]);
+  let beddingStrike = Number(metadata[5]);
+  let beddingDip = Number(metadata[6]);
+  let volume = Number(metadata[7]);
+  let mass = Number(metadata[8]);
+ 
+  let demagnetizationType = lines[8].slice(0, 2) === "AF" ? "alternating" : "thermal";
+
+  let steps = new Array();
+
+  // Parse data lines
+  for(var i = 9; i < lines.length - 1; i++) {
+    let line = lines[i];
+    let step = line.slice(0, 4);
+    let dec = Number(line.slice(7, 12));
+    let inc = Number(line.slice(13, 19));
+    // Intensity in mA/m (Satu, pers. comm. 2020)
+    let intensity = 1E3 * Number(line.slice(24, 30));
+    let coordinates = new Direction(dec, inc, intensity).toCartesian();
+    steps.push(new Measurement(step, coordinates, null))
+  }
+
+  // Add the data to the application
+  specimens.push({
+    "demagnetizationType": demagnetizationType,
+    "coordinates": "specimen",
+    "format": "GTK",
+    "version": __VERSION__,
+    "created": new Date().toISOString(),
+    "steps": steps,
+    "level": null,
+    "longitude": longitude,
+    "latitude": latitude,
+    "age": null,
+    "ageMin": null,
+    "ageMax": null,
+    "lithology": lithology,
+    "sample": name,
+    "name": name,
+    "volume": volume,
+    "beddingStrike": beddingStrike,
+    "beddingDip": beddingDip,
+    "coreAzimuth": coreAzimuth,
+    "coreDip": coreDip, 
+    "interpretations": new Array()
+  });
+
+}
+
 function importMontpellier(file) {
 
   var object = new Object();
@@ -312,7 +376,11 @@ function importMagic(file) {
             //throw(new Exception("Specimen " + object.specimen + " is defined multiple times."));
           }
 
-          var methods = object["method_codes"].split(":");
+          try {
+            var methods = object["method_codes"].split(":");
+          } catch(e) {
+            var methods = [];
+          }
 
           // Create a new specimen
           magicSpecimens[object.specimen] = {
@@ -324,7 +392,7 @@ function importMagic(file) {
             "minStep": Number(object["meas_step_min"]),
             "maxStep": Number(object["meas_step_max"]),
             "anchored": methods.includes("DE-BFL-A"),
-            "type": ((methods.includes("DE-BFP") || methods.includes("DE-BFP-G")) ? "TAU3" : "TAU1"),
+            //"type": ((methods.includes("DE-BFP") || methods.includes("DE-BFP-G")) ? "TAU3" : "TAU1"),
             "unit": object["meas_step_unit"],
             //
             "created": new Date().toISOString(),
@@ -1286,11 +1354,112 @@ function importCenieh(file) {
   });
 
   // Add all specimens in the hashmap to the application
-  ceniehSpecimens.forEach(function(specimen) {
-    specimens.push(specimen);
+  Object.keys(ceniehSpecimens).forEach(function(specimen) {
+    specimens.push(ceniehSpecimens[specimen]);
   });
 
 }
+
+function importCeniehRegular(file) {
+
+  var lines = file.data.split(LINE_REGEXP).filter(Boolean);
+
+  var parsedData = new Array();
+  var rotatedVectors = new Array();
+  var rotatedTectonicVectors = new Array();
+  let demagnetizationType = lines[0].split("\t")[1].includes("AF") ? "alternating" : "thermal";
+
+  for(var i = 1; i < lines.length; i++) {
+
+    var parameters = lines[i].split(/[\t\s]+/);
+    var sampleName = parameters[0];
+    var step = parameters[1];
+    var intensity = Number(parameters[2]);
+    var dec = Number(parameters[3]);
+    var inc = Number(parameters[4]);
+    rotatedVectors.push({"dec": Number(parameters[5]), "inc": Number(parameters[6])});
+    rotatedTectonicVectors.push({"dec": Number(parameters[22]), "inc": Number(parameters[23])});
+
+    // Given intensity is in emu/cc (1E3 A/m)
+    var cartesianCoordinates = new Direction(dec, inc, intensity / 1E-9).toCartesian();
+
+    parsedData.push(new Measurement(step, cartesianCoordinates, null));
+
+  }
+
+  var beddingString = prompt("Sample " + sampleName + " - please enter: core azimuth,core dip,bedding strike,bedding dip (e.g. 121,24,0,0)");
+
+  var coreAzimuth = Number(beddingString.split(",")[0]);
+  var coreDip = Number(beddingString.split(",")[1]);
+  var beddingStrike = Number(beddingString.split(",")[2]);
+  var beddingDip = Number(beddingString.split(",")[3]);
+ 
+  if(beddingString.split(",").length !== 4) {
+    throw("Not enough parameters!");
+  }
+
+  // The input format has the rotated vectors
+  // We check if the user input core azi & dip match what is expected
+  var b = parsedData.map(function(x) {
+    return new Coordinates(x.x, x.y, x.z);
+  }).map(function(direction) {
+    return direction.rotateTo(coreAzimuth, coreDip).toVector(Direction);
+  });
+
+  // Check and raise if discrepancy: defer with settimeout to prevent being overwritten
+  for(var i = 0; i < rotatedVectors.length; i++) {
+    if(Math.round(b[i].dec) !== Math.round(rotatedVectors[i].dec) || Math.round(b[i].inc) !== Math.round(rotatedVectors[i].inc)) {
+      setTimeout(function() {
+        let error = "Found: <b>" + Math.round(b[i].dec) + ", " + Math.round(b[i].inc) + "</b> while expecting: <b>" + Math.round(rotatedVectors[i].dec) + ", " + Math.round(rotatedVectors[i].inc) + "</b>!";
+        notify("warning", "Core parameters inconsistent for Cenieh Regular import. Continue on own risk! <br> Details: " + error);
+      });
+      break;
+    }
+  }
+
+  // Make sure to check tectonic as well
+  var c = parsedData.map(function(x) {
+    return new Coordinates(x.x, x.y, x.z);
+  }).map(function(direction) {
+    return direction.rotateTo(coreAzimuth, coreDip).correctBedding(beddingStrike, beddingDip).toVector(Direction);
+  });
+
+  // Check and raise if discrepancy: defer with settimeout to prevent being overwritten
+  for(var i = 0; i < rotatedTectonicVectors.length; i++) {
+    if(Math.round(c[i].dec) !== Math.round(rotatedTectonicVectors[i].dec) || Math.round(c[i].inc) !== Math.round(rotatedTectonicVectors[i].inc)) {
+      setTimeout(function() {
+        let error = "Found: <b>" + Math.round(c[i].dec) + ", " + Math.round(c[i].inc) + "</b> while expecting: <b>" + Math.round(rotatedTectonicVectors[i].dec) + ", " + Math.round(rotatedTectonicVectors[i].inc) + "</b>!";
+        notify("warning", "Bedding parameters inconsistent for Cenieh Regular import. Continue on own risk! <br> Details: " + error);
+      });
+      break;
+    }
+  }
+
+  specimens.push({
+    "demagnetizationType": demagnetizationType,
+    "coordinates": "specimen",
+    "format": "CENIEHREG",
+    "version": __VERSION__,
+    "created": new Date().toISOString(),
+    "steps": parsedData,
+    "name": sampleName,
+    "volume": 10.0, // 10cc @ Mark Sier,
+    "longitude": null,
+    "latitude": null,
+    "age": null,
+    "ageMin": null,
+    "ageMax": null,
+    "lithology": null,
+    "sample": sampleName,
+    "beddingStrike": Number(beddingStrike),
+    "beddingDip": Number(beddingDip),
+    "coreAzimuth": Number(coreAzimuth),
+    "coreDip": Number(coreDip),
+    "interpretations": new Array()
+  });
+
+}
+
 
 function importMunich(file) {
 
@@ -1416,9 +1585,9 @@ function importBCN2G(file) {
 
     // Each parameter is delimited by at least one NULL byte
     var parameters = line.split(/\u0000+/);
- 
+
     // Something wrong with a broken line? See #72
-    if(parameters.length !== 30) {
+    if(parameters.length < 25) {
       return null;
     }
 
