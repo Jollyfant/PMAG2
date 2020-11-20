@@ -24,6 +24,14 @@ function registerEventHandlers() {
         value = null;
       }
 
+      // When control is pressed apply to all
+      if(event.ctrlKey) {
+        specimens.forEach(function(specimen) {
+          specimen.demagnetizationType = value;
+        });
+        return notify("success", "Changed the demagnetization type of all samples to <b>" + (value || "unknown") + "</b>.");
+      }
+
       getSelectedSpecimen().demagnetizationType = value;
 
     });
