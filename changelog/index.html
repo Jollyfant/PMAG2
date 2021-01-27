@@ -79,6 +79,32 @@
         <div id="accordion">
 
           <div class="card">
+            <div class="card-header" id="headingSix">
+              <button class="btn btn-link" data-toggle="collapse" data-target="#collapseSix" aria-expanded="true" aria-controls="collapseSix">
+                Paleomagnetism.org 2.2.1 - VGP Fixes <small class="text-muted">&nbsp; XXXX-XX-XX</small>
+              </button>
+            </div>
+            <div id="collapseSix" class="collapse show" aria-labelledby="headingSix" data-parent="#accordion">
+              <div class="card-body">
+              <b> Change Summary </b>
+				<p> Fixes were made to virtual geomagnetic pole calculations. The relative VGP distribution and cutoff algorithm use an arbitrary virtual site at location (0, 0). For the relative VGP distribution this does not matter. However, it means that for correct interpretation, all specimens in a collection should come from geographically adjacent areas.
+
+              <ul>
+                <p> <b> Features </b>
+                <li> Added VGP longitude, latitude to mean downloads CSV and JSON. This VGP is based on the mean of individual poles. It is not the VGP of the mean of directions which may differ slightly.
+              </ul>
+
+              <ul>
+                <p> <b> Fixes </b>
+                <li> Fixed tooltip of site mean VGP in geography portal. The tooltip showed the projected equal area inclination instead of true inclination.
+                <li> Added disclaimer under the VGP distribution in the directions tab in the statistics portal to emphasize it is a relative distribution assuming a single site.
+              </ul>
+
+              </div>
+            </div>
+          </div>
+          <p>
+          <div class="card">
             <div class="card-header" id="headingFive">
               <button class="btn btn-link" data-toggle="collapse" data-target="#collapseFive" aria-expanded="true" aria-controls="collapseFive">
                 Paleomagnetism.org 2.2.0 - Parsing is Difficult! <small class="text-muted">&nbsp; 2020-11-20</small>
@@ -107,7 +133,6 @@
 
           <p>
 
-        <div id="accordion">
 
           <div class="card">
             <div class="card-header" id="headingFour">
@@ -172,8 +197,6 @@
           </div>
 
           <p>
-
-        <div id="accordion">
 
           <div class="card">
             <div class="card-header" id="headingTwo">

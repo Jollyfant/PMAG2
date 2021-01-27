@@ -613,7 +613,7 @@ function plotPoles(dataSeries) {
       "data": [{
         "x": statistics.dir.mean.dec,
         "y": projectInclination(statistics.dir.mean.inc),
-        "inc": projectInclination(statistics.dir.mean.inc),
+        "inc": statistics.dir.mean.inc,
         "age": 0
       }],
       "lineWidth": 1,

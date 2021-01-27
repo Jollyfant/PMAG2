@@ -63,11 +63,32 @@ function exportMeanJSON() {
     var statistics = getStatisticalParameters(cutofC.components);
     var averageLocation = getAverageLocation(site);
 
+    var lat = null;
+    var lng = null;
+    var pLat = null;
+    var pLon = null;
+
+    if(averageLocation !== null) {
+
+      lat = averageLocation.lat;
+      lng = averageLocation.lng;
+
+      var convertedComps = cutofC.components.filter(x => x.latitude !== null && x.longitude !== null).map(function(x) {
+        var site = new Site(x.longitude, x.latitude);
+        return new Component(x, site.poleFrom(literalToCoordinates(x.coordinates).toVector(Direction)).toCartesian());
+      });
+      
+      var poleStatistics = getStatisticalParameters(convertedComps);
+      pLon = poleStatistics.dir.mean.dec.toFixed(PRECISION);
+      pLat = poleStatistics.dir.mean.inc.toFixed(PRECISION);
+
+    }
+
     // Check if a polarity switch is requested
     statisticsRows.push({
       "collection": site.name,
-      "latitude": averageLocation.lat,
-      "longitude": averageLocation.lng,
+      "latitude": lat,
+      "longitude": lng,
       "numberComponentsUsed": Number(cutofC.components.filter(x => !x.rejected).length),
       "numberComponents": Number(cutofC.components.length),
       "cutoff": Number(cutofC.cutoff.toFixed(PRECISION)),
@@ -83,7 +104,9 @@ function exportMeanJSON() {
       "confidencepolemax": Number(statistics.pole.confidenceMax.toFixed(PRECISION)),
       "declinationconfidence": Number(statistics.butler.dDx.toFixed(PRECISION)),
       "inclinationconfidence": Number(statistics.butler.dIx.toFixed(PRECISION)),
-      "paleolatitude": Number(statistics.dir.lambda.toFixed(PRECISION))
+      "paleolatitude": Number(statistics.dir.lambda.toFixed(PRECISION)),
+      "poleLatitude": Number(pLat),
+      "poleLongitude": Number(pLon)
     });
 
   });
@@ -109,18 +132,38 @@ function exportMeanCSV() {
   }
 
   // Add the header as the first row
-  var statisticsRows = new Array(new Array("Collection", "Latitude", "Longitude", "N", "Ns", "Cutoff", "S", "Dec", "Inc", "R", "k", "a95", "K", "A95", "A95Min", "A95Max", "ΔDx", "ΔIx", "λ").join(","));
+  var statisticsRows = new Array(new Array("Collection", "Latitude", "Longitude", "N", "Ns", "Cutoff", "S", "Dec", "Inc", "R", "k", "a95", "K", "A95", "A95Min", "A95Max", "ΔDx", "ΔIx", "λ", "Pole Lng", "Pole Lat").join(","));
 
   selectedCollections.forEach(function(site) {
 
     var cutofC = doCutoff(site.components.map(x => x.inReferenceCoordinates()));
     var statistics = getStatisticalParameters(cutofC.components);
     var averageLocation = getAverageLocation(site);
+    var lat = null;
+    var lng = null;
+    var pLat = null;
+    var pLon = null;
+
+    if(averageLocation !== null) {
+
+      lat = averageLocation.lat;
+      lng = averageLocation.lng;
+
+      var convertedComps = cutofC.components.filter(x => x.latitude !== null && x.longitude !== null).map(function(x) {
+        var site = new Site(x.longitude, x.latitude);
+        return new Component(x, site.poleFrom(literalToCoordinates(x.coordinates).toVector(Direction)).toCartesian());
+      });
+      
+      var poleStatistics = getStatisticalParameters(convertedComps);
+      pLon = poleStatistics.dir.mean.dec.toFixed(PRECISION);
+      pLat = poleStatistics.dir.mean.inc.toFixed(PRECISION);
+
+    }
 
     statisticsRows.push([
       site.name,
-      averageLocation.lat,
-      averageLocation.lng,
+      lat,
+      lng,
       cutofC.components.filter(x => !x.rejected).length,
       cutofC.components.length,
       cutofC.cutoff.toFixed(PRECISION),
@@ -136,7 +179,9 @@ function exportMeanCSV() {
       statistics.pole.confidenceMax.toFixed(PRECISION),
       statistics.butler.dDx.toFixed(PRECISION),
       statistics.butler.dIx.toFixed(PRECISION),
-      statistics.dir.lambda.toFixed(PRECISION)
+      statistics.dir.lambda.toFixed(PRECISION),
+      pLon,
+      pLat
     ].join(","));
 
   });
