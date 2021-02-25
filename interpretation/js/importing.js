@@ -1222,6 +1222,74 @@ function importOxford(file) {
 }
 
 
+function importAnglia(file) {
+
+
+  /*
+   * Function importAnglia
+   * Might be the same as NGU format (see below)
+   */
+
+  var lines = file.data.split(LINE_REGEXP).filter(Boolean);
+  var parsedData = new Array();
+  var parameters = lines[0].split(/[,\s\t]+/);
+  var sampleName = parameters[0];
+
+  // Different convention for core orientation than Utrecht
+  var coreAzimuth = Number(parameters[1]);
+  var coreDip = Number(parameters[2]);
+  var sampleVolume = Number(parameters[5]);
+
+  // Bedding strike needs to be decreased by 90 for input convention
+  var beddingStrike = (Number(parameters[3]) + 270) % 360;
+  var beddingDip = Number(parameters[4]);
+  var info = parameters[5];
+
+  for(var i = 1; i < lines.length; i++) {
+
+    // Reduce empty lines
+    var parameters = lines[i].split(/[,\s\t]+/);
+    parameters = parameters.filter(function(x) {
+      return x !== "";
+    });
+
+    // Get Cartesian coordinates for specimen coordinates (intensities in mA -> bring to μA)
+    var intensity = 1E3 * Number(parameters[1]);
+    var dec = Number(parameters[5]);
+    var inc = Number(parameters[6]);
+
+    var coordinates = new Direction(dec, inc, intensity).toCartesian();
+    // Have to flip x coordinates. Old data format.. different convention?
+    coordinates = new Coordinates(-coordinates.x, coordinates.y, coordinates.z);
+    parsedData.push(new Measurement(parameters[0], coordinates, Number(parameters[4])));
+
+  }
+
+  specimens.push({
+    "demagnetizationType": null,
+    "coordinates": "specimen",
+    "format": "ANGLIA",
+    "version": __VERSION__,
+    "created": new Date().toISOString(),
+    "steps": parsedData,
+    "name": sampleName,
+    "longitude": null,
+    "latitude": null,
+    "age": null,
+    "ageMin": null,
+    "ageMax": null,
+    "sample": sampleName,
+    "volume": sampleVolume,
+    "lithology": null,
+    "beddingStrike": Number(beddingStrike),
+    "beddingDip": Number(beddingDip),
+    "coreAzimuth": Number(coreAzimuth),
+    "coreDip": Number(coreDip),
+    "interpretations": new Array()
+  });
+
+}
+
 function importNGU(file) {
 
   /*
@@ -1276,6 +1344,7 @@ function importNGU(file) {
     "created": new Date().toISOString(),
     "steps": parsedData,
     "name": sampleName,
+    "volume": sampleVolume,
     "longitude": null,
     "latitude": null,
     "age": null,

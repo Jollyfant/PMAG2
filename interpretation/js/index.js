@@ -11,6 +11,10 @@ function registerEventHandlers() {
   document.getElementById("save-location").addEventListener("click", handleLocationSave);
   document.getElementById("specimen-age-select").addEventListener("change", handleAgeSelection);
 
+  // Redraw on option change
+  document.getElementById("show-ticks").addEventListener("click", redrawCharts);
+  document.getElementById("show-labels").addEventListener("click", redrawCharts);
+
   // Redraw when requested
   document.getElementById("normalize-intensities").addEventListener("change", plotIntensityDiagram.bind(null, false));
 
@@ -104,6 +108,8 @@ function addDegmagnetizationFiles(format, files) {
       return files.forEach(importNGU);
     case "PALEOMAC":
       return files.forEach(importPaleoMac);
+    case "ANGLIA":
+      return files.forEach(importAnglia);
     case "OXFORD":
       return files.forEach(importOxford);
     case "RS3":

@@ -388,7 +388,7 @@ function plotZijderveldDiagram(hover) {
   });
 
   var graphScale = Math.max.apply(Math, graphScale);
-  var tickFlag = false;
+  var tickFlag = document.getElementById("show-ticks").checked;
   var enableLabels = document.getElementById("show-labels").checked;
 
   var vHover;
