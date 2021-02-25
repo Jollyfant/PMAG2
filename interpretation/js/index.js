@@ -12,8 +12,12 @@ function registerEventHandlers() {
   document.getElementById("specimen-age-select").addEventListener("change", handleAgeSelection);
 
   // Redraw on option change
-  document.getElementById("show-ticks").addEventListener("click", redrawCharts);
-  document.getElementById("show-labels").addEventListener("click", redrawCharts);
+  document.getElementById("show-ticks").addEventListener("click", function() {
+    redrawCharts();
+  });
+  document.getElementById("show-labels").addEventListener("click", function() {
+    redrawCharts();
+  });
 
   // Redraw when requested
   document.getElementById("normalize-intensities").addEventListener("change", plotIntensityDiagram.bind(null, false));
