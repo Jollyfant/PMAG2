@@ -2243,6 +2243,7 @@ function eqAreaProjection() {
     "name": "Mean Direction",
     "data": new Array(statistics.dir.mean).map(prepareDirectionData),
     "type": "scatter",
+    "zIndex": 10,
     "color": HIGHCHARTS_GREEN,
     "marker": {
       "symbol": "circle",
@@ -2254,6 +2255,7 @@ function eqAreaProjection() {
   }, {
     "name": "Confidence Ellipse",
     "type": "line",
+    "zIndex": 10,
     "color": HIGHCHARTS_RED,
     "data": a95ellipse,
     "enableMouseTracking": false,
