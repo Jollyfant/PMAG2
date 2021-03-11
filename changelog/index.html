@@ -81,7 +81,7 @@
           <div class="card">
             <div class="card-header" id="headingSix">
               <button class="btn btn-link" data-toggle="collapse" data-target="#collapseSix" aria-expanded="true" aria-controls="collapseSix">
-                Paleomagnetism.org 2.2.1 - VGP Fixes <small class="text-muted">&nbsp; XXXX-XX-XX</small>
+                Paleomagnetism.org 2.2.1 - Bug Fixes <small class="text-muted">&nbsp; XXXX-XX-XX</small>
               </button>
             </div>
             <div id="collapseSix" class="collapse show" aria-labelledby="headingSix" data-parent="#accordion">
@@ -90,8 +90,14 @@
 				<p> Fixes were made to virtual geomagnetic pole calculations. The relative VGP distribution and cutoff algorithm use an arbitrary virtual site at location (0, 0). For the relative VGP distribution this does not matter. However, it means that for correct interpretation, all specimens in a collection should come from geographically adjacent areas.
 
               <ul>
+                <p> <b> Fixes </b>
+                <li> Fixed bug in great circle PCA in geographic and tectonic coordinates where the pole to the plane was presented antipodal.
+              </ul>
+
+              <ul>
                 <p> <b> Features </b>
                 <li> Added VGP longitude, latitude to mean downloads CSV and JSON. This VGP is based on the mean of individual poles. It is not the VGP of the mean of directions which may differ slightly.
+                <li> Added option to show tick labels to Zijderveld plot.
               </ul>
 
               <ul>
