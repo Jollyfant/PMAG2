@@ -1109,7 +1109,7 @@ function importPaleoMac(file) {
     var x = 1E6 * Number(line.slice(5, 14)) / sampleVolume;
     var y = 1E6 * Number(line.slice(15, 25)) / sampleVolume;
     var z = 1E6 * Number(line.slice(25, 34)) / sampleVolume;
-console.log(Number(line.slice(5, 14)), Number(line.slice(15, 25)), Number(line.slice(25, 34)))
+
     var a95 = Number(line.slice(69, 73));
 
     var coordinates = new Coordinates(x, y, z);
