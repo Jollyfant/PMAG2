@@ -2314,9 +2314,19 @@ function makeInterpretation(specimen, options) {
   var geoCoordinates = inReferenceCoordinates("geographic", specimen, PCA.component.coordinates);
   var geoMass = inReferenceCoordinates("geographic", specimen, PCA.component.centerMass);
 
+  // Bug fix when rotating the TAU3 pole may no longer be always negative..
+  if(options.type === "TAU3" && geoCoordinates.z > 0) {
+    geoCoordinates = geoCoordinates.reflect();
+  }
+
   // Rotate component to tectonic coordinates
   var tectCoordinates = inReferenceCoordinates("tectonic", specimen, PCA.component.coordinates);
   var tectMass = inReferenceCoordinates("tectonic", specimen, PCA.component.centerMass);
+
+  // Bug fix when rotating the TAU3 pole may no longer be always negative..
+  if(options.type === "TAU3" && tectCoordinates.z > 0) {
+    tectCoordinates = tectCoordinates.reflect();
+  }
 
   var comment;
 
