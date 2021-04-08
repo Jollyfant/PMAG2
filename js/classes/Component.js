@@ -1,4 +1,4 @@
-var Component = function(specimen, coordinates) {
+var Component = function(specimen, coordinates, MAD) {
 
   /*
    * Class Component
@@ -7,6 +7,7 @@ var Component = function(specimen, coordinates) {
 
   this.name = specimen.name
   this.rejected = false;
+  this.MAD = MAD;
 
   this.latitude = specimen.latitude;
   this.longitude = specimen.longitude;
@@ -37,7 +38,7 @@ Component.prototype.inReferenceCoordinates = function(coordinates) {
   }
 
   // Return a itself as a new component but in reference coordinates
-  return new Component(this, inReferenceCoordinates(coordinates, this, this.coordinates));
+  return new Component(this, inReferenceCoordinates(coordinates, this, this.coordinates), this.MAD);
 
 }
 
@@ -53,6 +54,6 @@ Component.prototype.fromReferenceCoordinates = function(coordinates) {
   }
 
   // Return a itself as a new component but in reference coordinates
-  return new Component(this, fromReferenceCoordinates(coordinates, this, this.coordinates));
+  return new Component(this, fromReferenceCoordinates(coordinates, this, this.coordinates), this.MAD);
 
 }

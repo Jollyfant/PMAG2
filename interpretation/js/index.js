@@ -2252,12 +2252,12 @@ function makeInterpretations(options, selectedSteps, reference) {
 
       // Get the coordinates of the maximum eigenvector stored in v3
       var eigenVectorCoordinates = vectorTAU3;
-
+console.log(eigenVectorCoordinates);
       // Always take the negative pole by convention
       if(eigenVectorCoordinates.z > 0) {
         eigenVectorCoordinates = eigenVectorCoordinates.reflect();
       }
-
+console.log(eigenVectorCoordinates.toVector(Direction));
       break;
 
     default:

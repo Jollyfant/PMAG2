@@ -83,7 +83,7 @@ function __init__() {
     // Convert the saved literals to components
     collections = JSON.parse(item).map(function(x) {
       x.components = x.components.map(function(y) {
-        return new Component(y, y.coordinates);
+        return new Component(y, y.coordinates, y.MAD);
       });
       return x;
     });

@@ -227,7 +227,7 @@ function addSiteWindowWrapper() {
       "rejected": false
     });
 
-    return new Component(thing, thing.coordinates);
+    return new Component(thing, thing.coordinates, null);
 
   });
 
@@ -675,7 +675,7 @@ function getSelectedComponents() {
 
     // Reflect the coordinates
     comp.forEach(function(x) {
-      components.push(new Component(x, x.coordinates.reflect()));
+      components.push(new Component(x, x.coordinates.reflect(), x.MAD));
     });
 
   });
@@ -1539,7 +1539,7 @@ function importCSV(file) {
     let direction = new Direction(Number(dec), Number(inc));
 
     // Return in the correct reference frame
-    return new Component(object, direction.toCartesian()).fromReferenceCoordinates(coordinates);
+    return new Component(object, direction.toCartesian(), null).fromReferenceCoordinates(coordinates);
 
   }
 
@@ -1648,7 +1648,7 @@ function addData(file) {
          groups[interpretation.group] = new Array();
        }
 
-       groups[interpretation.group].push(new Component(specimen, interpretation.specimen.coordinates));
+       groups[interpretation.group].push(new Component(specimen, interpretation.specimen.coordinates, interpretation.MAD));
 
      });
 
@@ -1738,7 +1738,7 @@ function importPMAG(file) {
         "coreDip": 90,
         "beddingStrike": strike,
         "beddingDip": dip,
-      }, coords);
+      }, coords, null);
 
     });
 
@@ -1880,7 +1880,7 @@ function toComponent(component) {
    * Converts a literal component to a class component
    */
 
-  return new Component(component, component.coordinates);
+  return new Component(component, component.coordinates, component.MAD);
 
 }
 
