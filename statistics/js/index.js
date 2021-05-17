@@ -215,11 +215,16 @@ function registerEventHandlers() {
   document.getElementById("cutoff-selection").addEventListener("change", redrawCharts);
   document.getElementById("enable-deenen").addEventListener("change", redrawCharts);
 
+  document.getElementById("random-mean-color").addEventListener("change", redrawCharts);
+  document.getElementById("show-samples-mean").addEventListener("change", redrawCharts);
+
   // The keyboard handler
   document.addEventListener("keydown", keyboardHandler);
  
   // Flipping is off by default
   document.getElementById("flip-ellipse").checked = false;
+  document.getElementById("random-mean-color").checked = false;
+  document.getElementById("show-samples-mean").checked = false;
 
   updateTextAreaCounter();
 

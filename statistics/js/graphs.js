@@ -1934,6 +1934,14 @@ function eqAreaProjectionMean() {
 
   selectedCollections.forEach(function(site) {
 
+    let sampleColor = HIGHCHARTS_BLUE;
+    let meanColor = HIGHCHARTS_GREEN;
+    let ellipseColor = HIGHCHARTS_RED;
+
+    if(document.getElementById("random-mean-color").checked) {
+      sampleColor = meanColor = ellipseColor = '#'+(0x1000000+Math.random()*0xffffff).toString(16).substr(1,6);
+    }
+
     var cutofC = doCutoff(site.components.map(x => x.inReferenceCoordinates()));
     var statistics = getStatisticalParameters(cutofC.components);
 
@@ -1950,25 +1958,66 @@ function eqAreaProjectionMean() {
       "name": "Mean Direction " + site.name,
       "type": "scatter",
       "data": new Array(statistics.dir.mean).map(prepareDirectionData),
-      "color": HIGHCHARTS_GREEN,
+      "color": meanColor,
+      "zIndex": 100,
       "marker": {
         "symbol": "circle",
         "radius": 6,
-        "lineColor": HIGHCHARTS_GREEN,
+        "lineColor": meanColor,
         "lineWidth": 1,
-        "fillColor": (statistics.dir.mean.inc < 0 ? HIGHCHARTS_WHITE : HIGHCHARTS_GREEN)
+        "fillColor": (statistics.dir.mean.inc < 0 ? HIGHCHARTS_WHITE : meanColor)
       }
     }, {
       "name": "Confidence Ellipse",
       "linkedTo": ":previous",
       "type": "line",
-      "color": HIGHCHARTS_RED,
+      "color": ellipseColor,
       "data": a95ellipse,
       "enableMouseTracking": false,
       "marker": {
         "enabled": false
       }
     });
+
+    if(document.getElementById("show-samples-mean").checked) {
+
+      let componentSeries = new Array();
+
+      site.components.forEach(function(component) {
+      
+          // Go over each step
+          var direction = literalToCoordinates(component.coordinates).toVector(Direction);
+
+          // Do not show rejected
+          if(component.rejected) {
+            return;
+          }
+      
+          componentSeries.push({
+            "x": direction.dec, 
+            "y": projectInclination(direction.inc), 
+            "inc": direction.inc,
+            "component": component,
+            "marker": {
+              "fillColor": (direction.inc < 0 ? HIGHCHARTS_WHITE : sampleColor),
+              "lineWidth": 1,
+              "lineColor": sampleColor,
+              "symbol": "circle"
+            }
+          })
+
+      });
+
+      dataSeries.push({
+        "name": "",
+        "type": "scatter",
+        "data": componentSeries,
+        "color": sampleColor,
+        "linkedTo": ":previous",
+        "enableMouseTracking": false
+      });
+
+    }
 
     if(site.doi) {
       var icon = "<span class='text-success'><i class='fas fa-id-card'></i></span>";
