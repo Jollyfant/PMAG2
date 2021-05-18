@@ -1939,7 +1939,7 @@ function eqAreaProjectionMean() {
     let ellipseColor = HIGHCHARTS_RED;
 
     if(document.getElementById("random-mean-color").checked) {
-      sampleColor = meanColor = ellipseColor = '#'+(0x1000000+Math.random()*0xffffff).toString(16).substr(1,6);
+      sampleColor = meanColor = ellipseColor = "#" + (0x1000000 + Math.random() * 0xFFFFFF).toString(16).substr(1, 6);
     }
 
     var cutofC = doCutoff(site.components.map(x => x.inReferenceCoordinates()));
@@ -1983,7 +1983,7 @@ function eqAreaProjectionMean() {
 
       let componentSeries = new Array();
 
-      site.components.forEach(function(component) {
+      site.components.map(x => x.inReferenceCoordinates()).forEach(function(component) {
       
           // Go over each step
           var direction = literalToCoordinates(component.coordinates).toVector(Direction);
