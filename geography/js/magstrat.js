@@ -237,7 +237,10 @@ function plotStrat() {
   // Get all accepted/rejected directions and sort by strat. level
   var stratigraphicData = new Array();
 
-  collections.pop().components.forEach(function(component) {
+  // Change to requested reference coordinates and apply the cutoff
+  var cutoff = doCutoff(collections.pop().components.map(x => x.inReferenceCoordinates()));
+
+  cutoff.components.forEach(function(component) {
 
     var direction = component.coordinates.toVector(Direction);
 
