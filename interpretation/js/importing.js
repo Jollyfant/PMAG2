@@ -2066,8 +2066,10 @@ function importHelsinkiBlock(file) {
 
   // Get some header metadata
   var sampleName = lines[5].split(";")[1]
-  var coreAzimuth = Number(lines[5].split(";")[7])
-  var coreDip = Number(lines[6].split(";")[7])
+  // Strike not azimuth
+  var coreAzimuth = (Number(lines[5].split(";")[7]) - 90).toFixed(1);
+  // 90 is vertical, 0 is horizontal (other convention)
+  var coreDip = 90 - Number(lines[6].split(";")[7]);
   var sampleVolume = Number(lines[7].split(";")[2]);
   var demagnetizationType = lines[7].split(";")[7];
 
@@ -2088,10 +2090,13 @@ function importHelsinkiBlock(file) {
 
     var step = parameters[1];
 
+    let dec = Number(parameters[5])
+    let inc = Number(parameters[6])
+
     // Take mA/m and set to microamps (multiply by 1E3)
-    var x = Number(parameters[13]) * 1E3;
-    var z = Number(parameters[14]) * 1E3;
-    var y = -Number(parameters[15]) * 1E3;
+    var y = Number(parameters[13]) * 1E3;
+    var x = -Number(parameters[14]) * 1E3;
+    var z = Number(parameters[15]) * 1E3;
 
     var coordinates = new Coordinates(x, y, z);
     steps.push(new Measurement(step, coordinates, null));
