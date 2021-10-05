@@ -2054,3 +2054,72 @@ function importHelsinki(file) {
   });
 
 }
+
+function importHelsinkiBlock(file) {
+
+  /*
+   * Function importHelsinki
+   * Imports demagnetization data in the Helsinki format (plain-text csv)
+   */
+
+  var lines = file.data.split(LINE_REGEXP);
+
+  // Get some header metadata
+  var sampleName = lines[5].split(";")[1]
+  var coreAzimuth = Number(lines[5].split(";")[7])
+  var coreDip = Number(lines[6].split(";")[7])
+  var sampleVolume = Number(lines[7].split(";")[2]);
+  var demagnetizationType = lines[7].split(";")[7];
+
+  // Bedding is not included: always set to 0, 0
+  var beddingStrike = 0;
+  var beddingDip = 0;
+
+  var steps = new Array();
+
+  // Skip the header (12 lines)
+  lines.slice(12).forEach(function(line) {
+
+    var parameters = line.split(";");
+
+    if(parameters.length !== 24) {
+      return;
+    }
+
+    var step = parameters[1];
+
+    // Take mA/m and set to microamps (multiply by 1E3)
+    var x = Number(parameters[13]) * 1E3;
+    var z = Number(parameters[14]) * 1E3;
+    var y = -Number(parameters[15]) * 1E3;
+
+    var coordinates = new Coordinates(x, y, z);
+    steps.push(new Measurement(step, coordinates, null));
+
+  });
+
+  specimens.push({
+    "demagnetizationType": demagnetizationType,
+    "coordinates": "specimen",
+    "format": "HELSINKI",
+    "version": __VERSION__,
+    "created": new Date().toISOString(),
+    "steps": steps,
+    "level": null,
+    "longitude": null,
+    "latitude": null,
+    "age": null,
+    "ageMin": null,
+    "ageMax": null,
+    "lithology": null,
+    "sample": sampleName,
+    "name": sampleName,
+    "volume": Number(sampleVolume),
+    "beddingStrike": Number(beddingStrike),
+    "beddingDip": Number(beddingDip),
+    "coreAzimuth": Number(coreAzimuth),
+    "coreDip": Number(coreDip),
+    "interpretations": new Array()
+  });
+
+}

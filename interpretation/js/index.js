@@ -102,6 +102,8 @@ function addDegmagnetizationFiles(format, files) {
       return files.forEach(importApplicationSaveOld);
     case "HELSINKI":
       return files.forEach(importHelsinki);
+    case "HELSINKIBLOCK":
+      return files.forEach(importHelsinkiBlock);
     case "GTK":
       return files.forEach(importGTK);
     case "CALTECH":
