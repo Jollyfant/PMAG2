@@ -12,7 +12,7 @@ function importGTK(file) {
   let metadata = lines[7].split(/\s+/);
   let latitude = Number(metadata[1]);
   let longitude = Number(metadata[2]);
-  let coreAzimuth = Number(metadata[3]);
+  let coreAzimuth = 270 + Number(metadata[3]);
   let coreDip = 90 - Number(metadata[4]);
   let beddingStrike = Number(metadata[5]);
   let beddingDip = Number(metadata[6]);
@@ -27,12 +27,25 @@ function importGTK(file) {
   for(var i = 9; i < lines.length - 1; i++) {
     let line = lines[i];
     let step = line.slice(0, 4);
-    let dec = Number(line.slice(7, 12));
+    let dec = Number(line.slice(6, 12));
     let inc = Number(line.slice(13, 19));
-    // Intensity in mA/m (Satu, pers. comm. 2020)
+    // Intensity in mA/m (Satu, pers. comm. 2020) (not used)
     let intensity = 1E3 * Number(line.slice(24, 30));
-    let coordinates = new Direction(dec, inc, intensity).toCartesian();
-    steps.push(new Measurement(step, coordinates, null))
+
+    let y = 1E3 * Number(line.slice(50, 57));
+    let x = -1E3 * Number(line.slice(61, 68));
+    let z = 1E3 * Number(line.slice(72, 79));
+
+    let coordinates = new Coordinates(x, y, z);
+    let dir = coordinates.rotateTo(coreAzimuth, coreDip).toVector(Direction);
+
+    // Verify
+    if(dir.dec.toFixed(0) !== dec.toFixed(0) || dir.inc.toFixed(0) !== inc.toFixed(0)) {
+      throw("The given geographic coordinates do not match the rotated specimen coordinates for this file!");
+    }
+
+    steps.push(new Measurement(step, coordinates, null));
+
   }
 
   // Add the data to the application
