@@ -12,7 +12,7 @@ function importGTK(file) {
   let metadata = lines[7].split(/\s+/);
   let latitude = Number(metadata[1]);
   let longitude = Number(metadata[2]);
-  let coreAzimuth = 270 + Number(metadata[3]);
+  let coreAzimuth = (270 + Number(metadata[3])) % 360;
   let coreDip = 90 - Number(metadata[4]);
   let beddingStrike = Number(metadata[5]);
   let beddingDip = Number(metadata[6]);
