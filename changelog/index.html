@@ -96,6 +96,7 @@
                 <li> Added MAD angle in statistics portal directional tab CSV exporting. The MAD angle is only carried over from imported .col files since 2.2.1.
                 <li> Added option in settings tab to overlay individual samples in the collection mean tab.
                 <li> Added option in settings tab to set each mean collection to a random color.
+                <li> Added format for University of Helsinki (using block orientation).
               </ul>
 
               <ul>
@@ -105,6 +106,7 @@
                 <li> Fixed bug in great circle PCA in geographic and tectonic coordinates where the pole to the plane was presented antipodal. The convention is that the pole is presented as negative (this has no effect on results). 
                 <li> Swapped line styles for lower (solid) and upper (dashed) GC in hemisphere plot. 
                 <li> Changed ordering of directions, mean and ellipse. Mean and ellipse should be on top in equal area plots.
+                <li> Fixed multiple problems with the Geological Survey of Finland format. Geographic coordinates were interpreted as specimen coordinates and some leading numerals were dropped reading the file. Data interpreted with this format before version 2.3.0 are therefore incorrect.
               </ul>
 
               </div>
