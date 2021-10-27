@@ -11,6 +11,14 @@ function registerEventHandlers() {
   document.getElementById("save-location").addEventListener("click", handleLocationSave);
   document.getElementById("specimen-age-select").addEventListener("change", handleAgeSelection);
 
+  // Redraw on option change
+  document.getElementById("show-ticks").addEventListener("click", function() {
+    redrawCharts();
+  });
+  document.getElementById("show-labels").addEventListener("click", function() {
+    redrawCharts();
+  });
+
   // Redraw when requested
   document.getElementById("normalize-intensities").addEventListener("change", plotIntensityDiagram.bind(null, false));
 
@@ -94,6 +102,8 @@ function addDegmagnetizationFiles(format, files) {
       return files.forEach(importApplicationSaveOld);
     case "HELSINKI":
       return files.forEach(importHelsinki);
+    case "HELSINKIBLOCK":
+      return files.forEach(importHelsinkiBlock);
     case "GTK":
       return files.forEach(importGTK);
     case "CALTECH":
@@ -104,6 +114,8 @@ function addDegmagnetizationFiles(format, files) {
       return files.forEach(importNGU);
     case "PALEOMAC":
       return files.forEach(importPaleoMac);
+    case "ANGLIA":
+      return files.forEach(importAnglia);
     case "OXFORD":
       return files.forEach(importOxford);
     case "RS3":
@@ -2304,9 +2316,19 @@ function makeInterpretation(specimen, options) {
   var geoCoordinates = inReferenceCoordinates("geographic", specimen, PCA.component.coordinates);
   var geoMass = inReferenceCoordinates("geographic", specimen, PCA.component.centerMass);
 
+  // Bug fix when rotating the TAU3 pole may no longer be always negative..
+  if(options.type === "TAU3" && geoCoordinates.z > 0) {
+    geoCoordinates = geoCoordinates.reflect();
+  }
+
   // Rotate component to tectonic coordinates
   var tectCoordinates = inReferenceCoordinates("tectonic", specimen, PCA.component.coordinates);
   var tectMass = inReferenceCoordinates("tectonic", specimen, PCA.component.centerMass);
+
+  // Bug fix when rotating the TAU3 pole may no longer be always negative..
+  if(options.type === "TAU3" && tectCoordinates.z > 0) {
+    tectCoordinates = tectCoordinates.reflect();
+  }
 
   var comment;
 

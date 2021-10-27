@@ -79,6 +79,41 @@
         <div id="accordion">
 
           <div class="card">
+            <div class="card-header" id="headingSix">
+              <button class="btn btn-link" data-toggle="collapse" data-target="#collapseSix" aria-expanded="true" aria-controls="collapseSix">
+                Paleomagnetism.org 2.3.0 - Bug Fixes and Features <small class="text-muted">&nbsp; 2021-10-27</small>
+              </button>
+            </div>
+            <div id="collapseSix" class="collapse show" aria-labelledby="headingSix" data-parent="#accordion">
+              <div class="card-body">
+              <b> Change Summary </b>
+				<p> Fixes were made to virtual geomagnetic pole calculations. The relative VGP distribution and cutoff algorithm use an arbitrary virtual site at location (0, 0). For the relative VGP distribution this does not matter. However, it means that for correct interpretation, all specimens in a collection should come from geographically adjacent areas.
+
+              <ul>
+                <p> <b> Features </b>
+                <li> Added VGP longitude, latitude to mean downloads CSV and JSON. This VGP is based on the mean of individual poles. It is not the VGP of the mean of directions which may differ slightly.
+                <li> Added option to show tick labels to Zijderveld plot.
+                <li> Added MAD angle in statistics portal directional tab CSV exporting. The MAD angle is only carried over from imported .col files since 2.2.1.
+                <li> Added option in settings tab to overlay individual samples in the collection mean tab.
+                <li> Added option in settings tab to set each mean collection to a random color.
+                <li> Added format for University of Helsinki (using block orientation).
+              </ul>
+
+              <ul>
+                <p> <b> Fixes </b>
+                <li> Fixed tooltip of site mean VGP in geography portal. The tooltip showed the projected equal area inclination instead of true inclination.
+                <li> Added disclaimer under the VGP distribution in the directions tab in the statistics portal to emphasize it is a relative distribution assuming a single site.
+                <li> Fixed bug in great circle PCA in geographic and tectonic coordinates where the pole to the plane was presented antipodal. The convention is that the pole is presented as negative (this has no effect on results). 
+                <li> Swapped line styles for lower (solid) and upper (dashed) GC in hemisphere plot. 
+                <li> Changed ordering of directions, mean and ellipse. Mean and ellipse should be on top in equal area plots.
+                <li> Fixed multiple problems with the Geological Survey of Finland format. Geographic coordinates were interpreted as specimen coordinates and some leading numerals were dropped reading the file. Data interpreted with this format before version 2.3.0 are therefore incorrect.
+              </ul>
+
+              </div>
+            </div>
+          </div>
+          <p>
+          <div class="card">
             <div class="card-header" id="headingFive">
               <button class="btn btn-link" data-toggle="collapse" data-target="#collapseFive" aria-expanded="true" aria-controls="collapseFive">
                 Paleomagnetism.org 2.2.0 - Parsing is Difficult! <small class="text-muted">&nbsp; 2020-11-20</small>
@@ -107,7 +142,6 @@
 
           <p>
 
-        <div id="accordion">
 
           <div class="card">
             <div class="card-header" id="headingFour">
@@ -172,8 +206,6 @@
           </div>
 
           <p>
-
-        <div id="accordion">
 
           <div class="card">
             <div class="card-header" id="headingTwo">

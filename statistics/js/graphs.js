@@ -1934,6 +1934,14 @@ function eqAreaProjectionMean() {
 
   selectedCollections.forEach(function(site) {
 
+    let sampleColor = HIGHCHARTS_BLUE;
+    let meanColor = HIGHCHARTS_GREEN;
+    let ellipseColor = HIGHCHARTS_RED;
+
+    if(document.getElementById("random-mean-color").checked) {
+      sampleColor = meanColor = ellipseColor = "#" + (0x1000000 + Math.random() * 0xFFFFFF).toString(16).substr(1, 6);
+    }
+
     var cutofC = doCutoff(site.components.map(x => x.inReferenceCoordinates()));
     var statistics = getStatisticalParameters(cutofC.components);
 
@@ -1950,25 +1958,66 @@ function eqAreaProjectionMean() {
       "name": "Mean Direction " + site.name,
       "type": "scatter",
       "data": new Array(statistics.dir.mean).map(prepareDirectionData),
-      "color": HIGHCHARTS_GREEN,
+      "color": meanColor,
+      "zIndex": 100,
       "marker": {
         "symbol": "circle",
         "radius": 6,
-        "lineColor": HIGHCHARTS_GREEN,
+        "lineColor": meanColor,
         "lineWidth": 1,
-        "fillColor": (statistics.dir.mean.inc < 0 ? HIGHCHARTS_WHITE : HIGHCHARTS_GREEN)
+        "fillColor": (statistics.dir.mean.inc < 0 ? HIGHCHARTS_WHITE : meanColor)
       }
     }, {
       "name": "Confidence Ellipse",
       "linkedTo": ":previous",
       "type": "line",
-      "color": HIGHCHARTS_RED,
+      "color": ellipseColor,
       "data": a95ellipse,
       "enableMouseTracking": false,
       "marker": {
         "enabled": false
       }
     });
+
+    if(document.getElementById("show-samples-mean").checked) {
+
+      let componentSeries = new Array();
+
+      site.components.map(x => x.inReferenceCoordinates()).forEach(function(component) {
+      
+          // Go over each step
+          var direction = literalToCoordinates(component.coordinates).toVector(Direction);
+
+          // Do not show rejected
+          if(component.rejected) {
+            return;
+          }
+      
+          componentSeries.push({
+            "x": direction.dec, 
+            "y": projectInclination(direction.inc), 
+            "inc": direction.inc,
+            "component": component,
+            "marker": {
+              "fillColor": (direction.inc < 0 ? HIGHCHARTS_WHITE : sampleColor),
+              "lineWidth": 1,
+              "lineColor": sampleColor,
+              "symbol": "circle"
+            }
+          })
+
+      });
+
+      dataSeries.push({
+        "name": "",
+        "type": "scatter",
+        "data": componentSeries,
+        "color": sampleColor,
+        "linkedTo": ":previous",
+        "enableMouseTracking": false
+      });
+
+    }
 
     if(site.doi) {
       var icon = "<span class='text-success'><i class='fas fa-id-card'></i></span>";
@@ -2243,6 +2292,7 @@ function eqAreaProjection() {
     "name": "Mean Direction",
     "data": new Array(statistics.dir.mean).map(prepareDirectionData),
     "type": "scatter",
+    "zIndex": 10,
     "color": HIGHCHARTS_GREEN,
     "marker": {
       "symbol": "circle",
@@ -2254,6 +2304,7 @@ function eqAreaProjection() {
   }, {
     "name": "Confidence Ellipse",
     "type": "line",
+    "zIndex": 10,
     "color": HIGHCHARTS_RED,
     "data": a95ellipse,
     "enableMouseTracking": false,
@@ -2497,13 +2548,15 @@ function eqAreaChart(container, dataSeries, plotBands, tickPositions) {
      * Exports ChRM Distribution to CSV file
      */
     
-    const HEADER = new Array("Sample, Declination, Inclination, Core Azimuth, Core Dip, Bedding Strike, Bedding Dip, Latitude, Longitude, Age, Age Min, Age Max");
+    const HEADER = new Array("Sample, Declination, Inclination, MAD, Core Azimuth, Core Dip, Bedding Strike, Bedding Dip, Latitude, Longitude, Age, Age Min, Age Max");
     
     var csv = HEADER.concat(dataSeries[0].data.map(function(point) {
+
       return new Array(
         point.component.name,
         point.x.toFixed(PRECISION),
         point.inc.toFixed(PRECISION),
+        point.component.MAD,
         point.component.coreAzimuth,
         point.component.coreDip,
         point.component.beddingStrike,

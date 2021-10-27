@@ -158,7 +158,7 @@
                         <div id="pole-container"></div>
                      </div>
                   </div>
-
+                  <p><small><b>Note</b>: The illustrated VGP distribution and cutoff is relative to the mean and does not show true VGP positions. All directions are assumed to come from the same geographic location. </small>
                   <div class="text-right">
                      <button class="btn btn-sm btn-light" id="export-png"><i class="far fa-file-image"></i> PNG</button>
                      <button class="btn btn-sm btn-light" id="export-svg"><i class="far fa-file-image"></i> SVG</button>
@@ -195,7 +195,7 @@
                <br>
                <div class="alert alert-light alert-dismissible fade show" role="alert">
                   <h5> Statistics - Common True Mean Directions </h5>
-                  <p> Figures showing <b>1000</b> bootstrapped mean coordinates for the selected collections following the approach of <a href='../references'>Tauxe et al., 2014</a>. Select two collections and click <b>initialize</b> to begin the bootstrap. Overlapping distributions indicidate that two collections are the same within confidence limits.
+                  <p> Figures showing <b>1000</b> bootstrapped mean coordinates for the selected collections following the approach of <a href='../references'>Tauxe et al., 2010</a>. Select two collections and click <b>initialize</b> to begin the bootstrap. Overlapping distributions indicidate that two collections are the same within confidence limits.
                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                      <span aria-hidden="true">&times;</span>
                      </button>
@@ -406,6 +406,14 @@
                      <div class="form-check form-check-inline">
                         <input class="form-check-input" type="checkbox" id="flip-ellipse" value="option1" checked>
                         <label class="form-check-label" for="flip-ellipse"> Flip Confidence Ellipses </label>
+                     </div>
+                     <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="random-mean-color" value="option1" checked>
+                        <label class="form-check-label" for="random-mean-color"> Random Mean Color </label>
+                     </div>
+                     <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="show-samples-mean" value="option1" checked>
+                        <label class="form-check-label" for="show-samples-mean"> Show Samples Mean </label>
                      </div>
                   </div>
                </div>

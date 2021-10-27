@@ -12,7 +12,7 @@ function importGTK(file) {
   let metadata = lines[7].split(/\s+/);
   let latitude = Number(metadata[1]);
   let longitude = Number(metadata[2]);
-  let coreAzimuth = Number(metadata[3]);
+  let coreAzimuth = (270 + Number(metadata[3])) % 360;
   let coreDip = 90 - Number(metadata[4]);
   let beddingStrike = Number(metadata[5]);
   let beddingDip = Number(metadata[6]);
@@ -27,12 +27,25 @@ function importGTK(file) {
   for(var i = 9; i < lines.length - 1; i++) {
     let line = lines[i];
     let step = line.slice(0, 4);
-    let dec = Number(line.slice(7, 12));
+    let dec = Number(line.slice(6, 12));
     let inc = Number(line.slice(13, 19));
-    // Intensity in mA/m (Satu, pers. comm. 2020)
+    // Intensity in mA/m (Satu, pers. comm. 2020) (not used)
     let intensity = 1E3 * Number(line.slice(24, 30));
-    let coordinates = new Direction(dec, inc, intensity).toCartesian();
-    steps.push(new Measurement(step, coordinates, null))
+
+    let y = 1E3 * Number(line.slice(50, 57));
+    let x = -1E3 * Number(line.slice(61, 68));
+    let z = 1E3 * Number(line.slice(72, 79));
+
+    let coordinates = new Coordinates(x, y, z);
+    let dir = coordinates.rotateTo(coreAzimuth, coreDip).toVector(Direction);
+
+    // Verify
+    if(dir.dec.toFixed(0) !== dec.toFixed(0) || dir.inc.toFixed(0) !== inc.toFixed(0)) {
+      throw("The given geographic coordinates do not match the rotated specimen coordinates for this file!");
+    }
+
+    steps.push(new Measurement(step, coordinates, null));
+
   }
 
   // Add the data to the application
@@ -1109,6 +1122,7 @@ function importPaleoMac(file) {
     var x = 1E6 * Number(line.slice(5, 14)) / sampleVolume;
     var y = 1E6 * Number(line.slice(15, 25)) / sampleVolume;
     var z = 1E6 * Number(line.slice(25, 34)) / sampleVolume;
+
     var a95 = Number(line.slice(69, 73));
 
     var coordinates = new Coordinates(x, y, z);
@@ -1222,6 +1236,74 @@ function importOxford(file) {
 }
 
 
+function importAnglia(file) {
+
+
+  /*
+   * Function importAnglia
+   * Might be the same as NGU format (see below)
+   */
+
+  var lines = file.data.split(LINE_REGEXP).filter(Boolean);
+  var parsedData = new Array();
+  var parameters = lines[0].split(/[,\s\t]+/);
+  var sampleName = parameters[0];
+
+  // Different convention for core orientation than Utrecht
+  var coreAzimuth = Number(parameters[1]);
+  var coreDip = Number(parameters[2]);
+  var sampleVolume = Number(parameters[5]);
+
+  // Bedding strike needs to be decreased by 90 for input convention
+  var beddingStrike = (Number(parameters[3]) + 270) % 360;
+  var beddingDip = Number(parameters[4]);
+  var info = parameters[5];
+
+  for(var i = 1; i < lines.length; i++) {
+
+    // Reduce empty lines
+    var parameters = lines[i].split(/[,\s\t]+/);
+    parameters = parameters.filter(function(x) {
+      return x !== "";
+    });
+
+    // Get Cartesian coordinates for specimen coordinates (intensities in mA -> bring to μA)
+    var intensity = 1E3 * Number(parameters[1]);
+    var dec = Number(parameters[5]);
+    var inc = Number(parameters[6]);
+
+    var coordinates = new Direction(dec, inc, intensity).toCartesian();
+    // Have to flip x coordinates. Old data format.. different convention?
+    coordinates = new Coordinates(-coordinates.x, coordinates.y, coordinates.z);
+    parsedData.push(new Measurement(parameters[0], coordinates, Number(parameters[4])));
+
+  }
+
+  specimens.push({
+    "demagnetizationType": null,
+    "coordinates": "specimen",
+    "format": "ANGLIA",
+    "version": __VERSION__,
+    "created": new Date().toISOString(),
+    "steps": parsedData,
+    "name": sampleName,
+    "longitude": null,
+    "latitude": null,
+    "age": null,
+    "ageMin": null,
+    "ageMax": null,
+    "sample": sampleName,
+    "volume": sampleVolume,
+    "lithology": null,
+    "beddingStrike": Number(beddingStrike),
+    "beddingDip": Number(beddingDip),
+    "coreAzimuth": Number(coreAzimuth),
+    "coreDip": Number(coreDip),
+    "interpretations": new Array()
+  });
+
+}
+
 function importNGU(file) {
 
   /*
@@ -1276,6 +1358,7 @@ function importNGU(file) {
     "created": new Date().toISOString(),
     "steps": parsedData,
     "name": sampleName,
+    "volume": sampleVolume,
     "longitude": null,
     "latitude": null,
     "age": null,
@@ -1952,6 +2035,80 @@ function importHelsinki(file) {
     // Take mA/m and set to microamps (multiply by 1E3)
     var x = Number(parameters[13]) * 1E3;
     var y = Number(parameters[14]) * 1E3;
+    var z = Number(parameters[15]) * 1E3;
+
+    var coordinates = new Coordinates(x, y, z);
+    steps.push(new Measurement(step, coordinates, null));
+
+  });
+
+  specimens.push({
+    "demagnetizationType": demagnetizationType,
+    "coordinates": "specimen",
+    "format": "HELSINKI",
+    "version": __VERSION__,
+    "created": new Date().toISOString(),
+    "steps": steps,
+    "level": null,
+    "longitude": null,
+    "latitude": null,
+    "age": null,
+    "ageMin": null,
+    "ageMax": null,
+    "lithology": null,
+    "sample": sampleName,
+    "name": sampleName,
+    "volume": Number(sampleVolume),
+    "beddingStrike": Number(beddingStrike),
+    "beddingDip": Number(beddingDip),
+    "coreAzimuth": Number(coreAzimuth),
+    "coreDip": Number(coreDip),
+    "interpretations": new Array()
+  });
+
+}
+
+function importHelsinkiBlock(file) {
+
+  /*
+   * Function importHelsinki
+   * Imports demagnetization data in the Helsinki format (plain-text csv)
+   */
+
+  var lines = file.data.split(LINE_REGEXP);
+
+  // Get some header metadata
+  var sampleName = lines[5].split(";")[1]
+  // Strike not azimuth
+  var coreAzimuth = (Number(lines[5].split(";")[7]) - 90).toFixed(1);
+  // 90 is vertical, 0 is horizontal (other convention)
+  var coreDip = 90 - Number(lines[6].split(";")[7]);
+  var sampleVolume = Number(lines[7].split(";")[2]);
+  var demagnetizationType = lines[7].split(";")[7];
+
+  // Bedding is not included: always set to 0, 0
+  var beddingStrike = 0;
+  var beddingDip = 0;
+
+  var steps = new Array();
+
+  // Skip the header (12 lines)
+  lines.slice(12).forEach(function(line) {
+
+    var parameters = line.split(";");
+
+    if(parameters.length !== 24) {
+      return;
+    }
+
+    var step = parameters[1];
+
+    let dec = Number(parameters[5])
+    let inc = Number(parameters[6])
+
+    // Take mA/m and set to microamps (multiply by 1E3)
+    var y = Number(parameters[13]) * 1E3;
+    var x = -Number(parameters[14]) * 1E3;
     var z = Number(parameters[15]) * 1E3;
 
     var coordinates = new Coordinates(x, y, z);
