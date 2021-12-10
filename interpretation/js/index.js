@@ -2041,7 +2041,7 @@ function downloadInterpretationsCSV() {
     "bedding strike", "bedding dip", "level",
     "longitude", "latitude", "MAD",
     "anchored", "type", "comment",
-    "created"
+    "created", "number steps", "steps"
   );
 
   // No samples are loaded
@@ -2075,7 +2075,9 @@ function downloadInterpretationsCSV() {
         interpretation.anchored,
         interpretation.type,
         interpretation.comment,
-        interpretation.created
+        interpretation.created,
+        interpretation.steps.length,
+        interpretation.steps.join(",")
       ).join(ITEM_DELIMITER));
 
     });
