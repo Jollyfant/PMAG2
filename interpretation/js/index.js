@@ -2077,7 +2077,7 @@ function downloadInterpretationsCSV() {
         interpretation.comment,
         interpretation.created,
         interpretation.steps.length,
-        interpretation.steps.join(",")
+        interpretation.steps.join(" ")
       ).join(ITEM_DELIMITER));
 
     });
