@@ -479,9 +479,6 @@ function exportMagIC(metadata) {
 
       var demagnetizationType;
 
-      //  We assume a specimen volume of 10.5cc if it is missing
-      var volume = specimen.volume || 10.5;
-
       if(specimen.demagnetizationType === "thermal") {
         demagnetizationType = DEMAGNETIZATION_THERMAL;
       } else if(specimen.demagnetizationType === "alternating") {
@@ -586,7 +583,7 @@ function exportMagIC(metadata) {
           z,
           direction.dec,
           direction.inc,
-          Math.sqrt(x * x + y * y + z * z)
+          direction.length
         ].join(TAB_DELIMITER));
 
       });
