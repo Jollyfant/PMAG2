@@ -481,15 +481,15 @@ function exportMagIC() {
         var direction = new Coordinates(step.x, step.y, step.z).toVector(Direction);
 
         // Intensities are in Am^2 in MagIC.
-        // Our values are in μA/m. (1E6 * intensity) / (1E6 * volume) = intensity / volume
+        // Our values are in μA/m so convert it: for Utrecht bug we already normalised to volume
         if(isUtrechtIntensityBug(specimen)) {
-          var x = step.x;
-          var y = step.y;
-          var z = step.z;
+          var x = 1E-12 * step.x;
+          var y = 1E-12 * step.y;
+          var z = 1E-12 * step.z;
         } else {
-          var x = step.x * (specimen.volume || 10.5);
-          var y = step.y * (specimen.volume || 10.5);
-          var z = step.z * (specimen.volume || 10.5);
+          var x = 1E-12 * step.x * (specimen.volume || 10.5);
+          var y = 1E-12 * step.y * (specimen.volume || 10.5);
+          var z = 1E-12 * step.z * (specimen.volume || 10.5);
         }
 
         magicMeasurements.push([
