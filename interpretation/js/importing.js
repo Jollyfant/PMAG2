@@ -1956,10 +1956,9 @@ function importUtrecht(file) {
     // Get the actual demagnetization data
     blockLines.forEach(function(measurement) {
 
-      // Step is in Am^2 .. divide by sample volume
       var [step, a, b, c, error, _, _] = measurement.split(/,[\s]*/);
 
-      // Divide by sample volume
+      // Step is in pico Am^2 .. divide by sample volume to get uAm/m!
       a = Number(a) / sampleVolume;
       b = Number(b) / sampleVolume;
       c = Number(c) / sampleVolume;
