@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <!-- Required metadata tags -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Paleomagnetism.org 2 - An online environment for paleomagnetic analysis">
+    <meta name="keywords" content="paleomagnetism, interpretation, zijderveld, pca">
+
+    <meta name="author" content="Mathijs Koymans">
+
+    <link rel="shortcut icon" type="image/x-icon" href="../resources/images/hades-icon.png" />
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <!-- Bootstrap & Font Awesome CSS -->
+    <link rel="stylesheet" href="../lib/bootstrap-4.3.1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../lib/fontawesome-free-5.7.2-web/css/all.css">
+
+</head>
+
+<body>
+
+    <!-- Header -->
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+
+        <a class="navbar-brand" href="http://www.paleomagnetism.org">Paleomagnetism<span class="text-danger">.org</span></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="../interpretation">Interpretation</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="../statistics">Statistics</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="../geography">Geography</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="../miscellaneous">Miscellaneous</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="../references">References</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="../team">Team & Contact</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="../magic">MagIC Interface</a>
+                </li>
+            </ul>
+
+            <form class="form-inline my-2 my-lg-0">
+                <a href="../library" class="btn btn-sm btn-secondary my-2 my-sm-0"><i class="fas fa-book-open"></i><b>&nbsp; Data Library</b></a>
+            </form>
+
+        </div>
+
+    </nav>
+
+    <!-- Main body -->
+    <div class="container">
+
+        <!-- Container for user notifications -->
+        <div id="notification-container"></div>
+
+        <div class="alert alert-light" role="alert">
+
+            <h5>Paleomagnetism.org 2 - Oroclinal Test </h5>
+                <!-- Tab for NTR Analysis -->
+                <p>The oroclinal tests uses bootstrapped (Gaussian or Standard) linear regressive techniques to determine the relationship between bi-dimensional data (e.g. strike and declination).</p>
+        </div>
+
+							<button class="btn btn-primary" id="load-data">Load Data</button>
+
+                            <div class="form-row">
+                                <div class="col">
+									Strike
+                                    <select class="form-control" id="strike-type">
+                                        <option value="standard">Standard</option>
+                                        <option value="gaussian">Gaussian</option>
+                                    </select>
+								</div>
+                                <div class="col">
+									Declination
+                                    <select class="form-control" id="declination-type">
+                                        <option value="standard">Standard</option>
+                                        <option value="gaussian">Gaussian</option>
+                                    </select>
+                                </div>
+                            </div>
+
+			<input style="display: none" id="importFile" type="file" size="4" name="file" />
+							<button class="btn btn-primary" id="start">Start</button>
+
+			<div id="oroclinalBody" style="display: none;">
+							<hr>
+			<!-- <div id="parameterTable" style="text-align: center; margin: 0 auto; border: 1px dotted rgb(119, 152, 191);"></div> -->
+			<p>
+			<div style="text-align: center;">
+				<h2> Regression Information </h2>
+			</div>
+			<div id="bootTable" style="text-align: center; margin: 0 auto; border: 1px dotted rgb(119, 152, 191);"></div>
+			<p>
+			<div id="initialPlot"></div>
+			<div class="caption">
+				<b>Figure 1</b> - Oroclinal test showing the sampled declinations and strikes (blue dots) with measurement uncertainties (black bars). The red line shows the total least squares regression for the data. The surrounding shaded red area illustrates the confidence interval for 1000 bootstrapped regressions. For comparison the average bootstrap shown in green.
+			</div>
+			<br>
+			<div style="text-align: center;" id="showBooty">
+
+				<div id="CDFContainerSlope" style="width: 550px; display: inline-block; margin: 0 auto;"></div>
+				<div id="CDFContainerIntercept" style="width: 550px; display: inline-block;  margin: 0 auto;"></div>
+			</div>
+			<div class="caption">
+				<b>Figure 2a, b</b> - Showing the slope (left) and intercept (right) of the total least squares regression for the data (blue vertical) with shaded blue bootstrapped confidence interval. The green vertical indicates the average bootstrapped value. The black vertical indicates the result from a weighed regression (see text).
+			</div>
+			<br>
+			<div style="text-align: center;">
+			<h2> Residuals to Regression </h2>
+			<br>
+			<select id="residualsWhich" style="display: inline-block;">
+				<option> Declination </option>
+				<option> Strike </option>
+			</select>
+			</div>
+			<div id="pClu"></div>
+			<div class="caption">
+				<b>Figure 3 </b> - Illustrating the data residuals in blue dots including lines indicating 1σ, 2σ, and 3σ. The bars are histograms for the data and bootstraps in blue and orange respectively. These should approximate a normal distributed. The length of each bin is represented by a sample (scaled by -1000 for the bootstraps).
+			</div>
+			<br>
+			<div id="QQ"></div>
+			<div class="caption">
+				<b>Figure 4 </b> - Quantile - Quantile plot for the selected residuals. A normal distribution of residuals would approximate a straight line.
+			</div>
+			<div style="text-align: center;">
+				<h2> Oroclinal Foldtest </h2>
+			</div>
+			<br>
+			<div id="foldTable" style="text-align: center; margin: 0 auto; border: 1px dotted rgb(119, 152, 191);"></div>
+			<p>
+			<div id="container5"></div>
+			<div class="caption">
+				<b>Figure 5 </b> - Oroclinal foldtest showing the circular variance as a function of unfolding. A smaller circular variance indicates a tighter clustering of the data. The bolded red line represents the actual data and is surrounded by the first 25 bootstraps shaded in blue.
+			</div>
+			<small> Awesome Tip: Click the thick red line to view the declination distribution for that percentage of unfolding. </small> 
+			</div>		
+             <footer id="footer-container" class="container text-muted"></footer>
+
+                                        <br>
+
+</body>
+
+<!-- jQuery slim and bootstrap -->
+<!-- jQuery slim and bootstrap -->
+<script src="../lib/jquery-3.3.1/jquery-3.3.1.slim.min.js"></script>
+<script src="../lib/bootstrap-4.3.1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/utils.js"></script>
+
+<!-- Highcharts -->
+<script src="../lib/highcharts-7.0.3/code/highcharts.js"></script>
+<script src="../lib/highcharts-7.0.3/code/highcharts-more.js"></script>
+<script src="../lib/highcharts-7.0.3/code/modules/exporting.js"></script>
+<script src="../lib/highcharts-7.0.3/code/modules/offline-exporting.js"></script>
+
+<script src="../js/highcharts-patch.js"></script>
+<script src="./js/shapiro.js"></script>
+<script src="./js/index.js"></script>
+
+</html>
