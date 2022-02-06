@@ -1,792 +1,1 @@
-{
-	"null": {
-		"min": "",
-		"max": "",
-		"indentation": 0
-	},
-	"Quaternary": {
-		"min": 0,
-		"max": 2.6,
-		"indentation": 0
-	},
-	"Holocene": {
-		"min": 0,
-		"max": 0.01,
-		"indentation": 1
-	},
-	"Pleistocene": {
-		"min": 0.01,
-		"max": 2.6,
-		"indentation": 1
-	},
-	"Neogene": {
-		"min": 2.6,
-		"max": 23.0,
-		"indentation": 0
-	},
-	"Pliocene": {
-		"min": 2.6,
-		"max": 5.3,
-		"indentation": 1
-	},
-	"Piacenzian": {
-		"min": 2.6,
-		"max": 3.6,
-		"indentation": 3
-	},
-	"Zanclean": {
-		"min": 3.6,
-		"max": 5.3,
-		"indentation": 3
-	},
-	"Miocene": {
-		"min": 5.3,
-		"max": 23.0,
-		"indentation": 1
-	},
-	"Late Miocene": {
-		"min": 5.3,
-		"max": 11.7,
-		"indentation": 2
-	},
-	"Messinian": {
-		"min": 5.3,
-		"max": 7.2,
-		"indentation": 3
-	},
-	"Tortonian": {
-		"min": 7.2,
-		"max": 11.7,
-		"indentation": 3
-	},
-	"Middle Miocene": {
-		"min": 11.7,
-		"max": 16.0,
-		"indentation": 2
-	},
-	"Serravallian": {
-		"min": 11.7,
-		"max": 13.8,
-		"indentation": 3
-	},
-	"Langhian": {
-		"min": 13.8,
-		"max": 16.0,
-		"indentation": 3
-	},
-	"Early Miocene": {
-		"min": 16.0,
-		"max": 23.0,
-		"indentation": 2
-	},
-	"Burdigalian": {
-		"min": 16.0,
-		"max": 20.4,
-		"indentation": 3
-	},
-	"Aquitanian": {
-		"min": 20.4,
-		"max": 23.0,
-		"indentation": 3
-	},
-	"Paleogene": {
-		"min": 23.0,
-		"max": 66.0,
-		"indentation": 0
-	},
-	"Oligocene": {
-		"min": 23.0,
-		"max": 33.9,
-		"indentation": 1
-	},
-	"Late Oligocene": {
-		"min": 23.0,
-		"max": 28.1,
-		"indentation": 2
-	},
-	"Chattian": {
-		"min": 23.0,
-		"max": 28.1,
-		"indentation": 3
-	},
-	"Early Oligocene": {
-		"min": 28.1,
-		"max": 33.9,
-		"indentation": 2
-	},
-	"Rupelian": {
-		"min": 28.1,
-		"max": 33.9,
-		"indentation": 3
-	},
-	"Eocene": {
-		"min": 33.9,
-		"max": 56.0,
-		"indentation": 1
-	},
-	"Late Eocene": {
-		"min": 33.9,
-		"max": 38.0,
-		"indentation": 2
-	},
-	"Priabonian": {
-		"min": 33.9,
-		"max": 38.0,
-		"indentation": 3
-	},
-	"Middle Eocene": {
-		"min": 38.0,
-		"max": 47.8,
-		"indentation": 2
-	},
-	"Bartonian": {
-		"min": 38.0,
-		"max": 41.3,
-		"indentation": 3
-	},
-	"Lutetian": {
-		"min": 41.3,
-		"max": 47.8,
-		"indentation": 3
-	},
-	"Early Eocene": {
-		"min": 47.8,
-		"max": 56.0,
-		"indentation": 2
-	},
-	"Ypresian": {
-		"min": 47.8,
-		"max": 56.0,
-		"indentation": 3
-	},
-	"Paleocene": {
-		"min": 56.0,
-		"max": 66.0,
-		"indentation": 1
-	},
-	"Late Paleocene": {
-		"min": 56.0,
-		"max": 59.2,
-		"indentation": 2
-	},
-	"Thanetian": {
-		"min": 56.0,
-		"max": 59.2,
-		"indentation": 3
-	},
-	"Middle Paleocene": {
-		"min": 59.2,
-		"max": 61.6,
-		"indentation": 2
-	},
-	"Selandian": {
-		"min": 59.2,
-		"max": 61.6,
-		"indentation": 3
-	},
-	"Early Paleocene": {
-		"min": 61.6,
-		"max": 66.0,
-		"indentation": 2
-	},
-	"Danian": {
-		"min": 61.6,
-		"max": 66.0,
-		"indentation": 3
-	},
-	"Cretaceous": {
-		"min": 66.0,
-		"max": 145,
-		"indentation": 0
-	},
-	"Late Cretaceous": {
-		"min": 66.0,
-		"max": 100,
-		"indentation": 1
-	},
-	"Maastrichtian": {
-		"min": 66.0,
-		"max": 72.1,
-		"indentation": 3
-	},
-	"Campanian": {
-		"min": 72.1,
-		"max": 83.6,
-		"indentation": 3
-	},
-	"Santonian": {
-		"min": 83.6,
-		"max": 86.3,
-		"indentation": 3
-	},
-	"Coniacian": {
-		"min": 86.3,
-		"max": 89.8,
-		"indentation": 3
-	},
-	"Turonian": {
-		"min": 89.8,
-		"max": 93.9,
-		"indentation": 3
-	},
-	"Cenomanian": {
-		"min": 93.9,
-		"max": 100,
-		"indentation": 3
-	},
-	"Early Cretaceous": {
-		"min": 100,
-		"max": 145,
-		"indentation": 1
-	},
-	"Albian": {
-		"min": 100,
-		"max": 113,
-		"indentation": 3
-	},
-	"Aptian": {
-		"min": 113,
-		"max": 125,
-		"indentation": 3
-	},
-	"Barremian": {
-		"min": 125,
-		"max": 129,
-		"indentation": 3
-	},
-	"Hauterivian": {
-		"min": 129,
-		"max": 133,
-		"indentation": 3
-	},
-	"Valanginian": {
-		"min": 133,
-		"max": 140,
-		"indentation": 3
-	},
-	"Berriasian": {
-		"min": 140,
-		"max": 145,
-		"indentation": 3
-	},
-	"Jurassic": {
-		"min": 145,
-		"max": 201,
-		"indentation": 0
-	},
-	"Late Jurassic": {
-		"min": 145,
-		"max": 164,
-		"indentation": 1
-	},
-	"Tithonian": {
-		"min": 145,
-		"max": 152,
-		"indentation": 3
-	},
-	"Kimmeridgian": {
-		"min": 152,
-		"max": 157,
-		"indentation": 3
-	},
-	"Oxfordian": {
-		"min": 157,
-		"max": 164,
-		"indentation": 3
-	},
-	"Middle Jurassic": {
-		"min": 164,
-		"max": 174,
-		"indentation": 1
-	},
-	"Callovian": {
-		"min": 164,
-		"max": 166,
-		"indentation": 3
-	},
-	"Bathonian": {
-		"min": 166,
-		"max": 168,
-		"indentation": 3
-	},
-	"Bajocian": {
-		"min": 168,
-		"max": 170,
-		"indentation": 3
-	},
-	"Aalenian": {
-		"min": 170,
-		"max": 174,
-		"indentation": 3
-	},
-	"Early Jurassic": {
-		"min": 174,
-		"max": 201,
-		"indentation": 1
-	},
-	"Toarcian": {
-		"min": 174,
-		"max": 183,
-		"indentation": 3
-	},
-	"Pliensbachian": {
-		"min": 183,
-		"max": 191,
-		"indentation": 3
-	},
-	"Sinemurian": {
-		"min": 191,
-		"max": 199,
-		"indentation": 3
-	},
-	"Hettangian": {
-		"min": 199,
-		"max": 201,
-		"indentation": 3
-	},
-	"Triassic": {
-		"min": 201,
-		"max": 252,
-		"indentation": 0
-	},
-	"Late Triassic": {
-		"min": 201,
-		"max": 235,
-		"indentation": 1
-	},
-	"Rhaetian": {
-		"min": 201,
-		"max": 209,
-		"indentation": 3
-	},
-	"Norian": {
-		"min": 209,
-		"max": 228,
-		"indentation": 3
-	},
-	"Carnian": {
-		"min": 228,
-		"max": 235,
-		"indentation": 3
-	},
-	"Middle Triassic": {
-		"min": 235,
-		"max": 247,
-		"indentation": 1
-	},
-	"Ladinian": {
-		"min": 235,
-		"max": 242,
-		"indentation": 3
-	},
-	"Anisian": {
-		"min": 242,
-		"max": 247,
-		"indentation": 3
-	},
-	"Early Triassic": {
-		"min": 247,
-		"max": 252,
-		"indentation": 1
-	},
-	"Olenekian": {
-		"min": 247,
-		"max": 251,
-		"indentation": 3
-	},
-	"Induan": {
-		"min": 251,
-		"max": 252,
-		"indentation": 3
-	},
-	"Permian": {
-		"min": 252,
-		"max": 299,
-		"indentation": 0
-	},
-	"Lopingian": {
-		"min": 252,
-		"max": 260,
-		"indentation": 1
-	},
-	"Changhsingian": {
-		"min": 252,
-		"max": 254,
-		"indentation": 3
-	},
-	"Wuchiapingian": {
-		"min": 254,
-		"max": 260,
-		"indentation": 3
-	},
-	"Guadalupian": {
-		"min": 260,
-		"max": 272,
-		"indentation": 1
-	},
-	"Capitanian": {
-		"min": 260,
-		"max": 265,
-		"indentation": 3
-	},
-	"Wordian": {
-		"min": 265,
-		"max": 269,
-		"indentation": 3
-	},
-	"Roadian": {
-		"min": 269,
-		"max": 272,
-		"indentation": 3
-	},
-	"Cisuralian": {
-		"min": 272,
-		"max": 299,
-		"indentation": 1
-	},
-	"Kungurian": {
-		"min": 272,
-		"max": 279,
-		"indentation": 3
-	},
-	"Artinskian": {
-		"min": 279,
-		"max": 290,
-		"indentation": 3
-	},
-	"Sakmarian": {
-		"min": 290,
-		"max": 295,
-		"indentation": 3
-	},
-	"Asselian": {
-		"min": 295,
-		"max": 299,
-		"indentation": 3
-	},
-	"Carboniferous": {
-		"min": 299,
-		"max": 359,
-		"indentation": 0
-	},
-	"Pennsylvanian": {
-		"min": 299,
-		"max": 304,
-		"indentation": 1
-	},
-	"Upper Pennsylvanian": {
-		"min": 299,
-		"max": 307,
-		"indentation": 2
-	},
-	"Gzhelian": {
-		"min": 299,
-		"max": 304,
-		"indentation": 3
-	},
-	"Kasimovian": {
-		"min": 304,
-		"max": 307,
-		"indentation": 3
-	},
-	"Middle Pennsylvanian": {
-		"min": 307,
-		"max": 315,
-		"indentation": 2
-	},
-	"Moscovian": {
-		"min": 307,
-		"max": 315,
-		"indentation": 3
-	},
-	"Lower Pennsylvanian": {
-		"min": 315,
-		"max": 323,
-		"indentation": 2
-	},
-	"Bashkirian": {
-		"min": 315,
-		"max": 323,
-		"indentation": 3
-	},
-	"Mississippian": {
-		"min": 323,
-		"max": 359,
-		"indentation": 1
-	},
-	"Upper Mississippian": {
-		"min": 323,
-		"max": 331,
-		"indentation": 2
-	},
-	"Serpukhobian": {
-		"min": 323,
-		"max": 331,
-		"indentation": 3
-	},
-	"Middle Mississippian": {
-		"min": 331,
-		"max": 347,
-		"indentation": 2
-	},
-	"Visean": {
-		"min": 331,
-		"max": 347,
-		"indentation": 3
-	},
-	"Lower Mississippian": {
-		"min": 347,
-		"max": 359,
-		"indentation": 2
-	},
-	"Tournaisian": {
-		"min": 347,
-		"max": 359,
-		"indentation": 3
-	},
-	"Devonian": {
-		"min": 359,
-		"max": 419,
-		"indentation": 0
-	},
-	"Upper Devonian": {
-		"min": 359,
-		"max": 383,
-		"indentation": 1
-	},
-	"Famennian": {
-		"min": 359,
-		"max": 372,
-		"indentation": 3
-	},
-	"Frasnian": {
-		"min": 372,
-		"max": 383,
-		"indentation": 3
-	},
-	"Middle Devonian": {
-		"min": 383,
-		"max": 393,
-		"indentation": 1
-	},
-	"Givetian": {
-		"min": 383,
-		"max": 388,
-		"indentation": 3
-	},
-	"Eifelian": {
-		"min": 388,
-		"max": 393,
-		"indentation": 3
-	},
-	"Lower Devonian": {
-		"min": 393,
-		"max": 419,
-		"indentation": 1
-	},
-	"Emsian": {
-		"min": 393,
-		"max": 408,
-		"indentation": 3
-	},
-	"Pragian": {
-		"min": 408,
-		"max": 411,
-		"indentation": 3
-	},
-	"Lochkovian": {
-		"min": 411,
-		"max": 419,
-		"indentation": 3
-	},
-	"Silurian": {
-		"min": 419,
-		"max": 444,
-		"indentation": 0
-	},
-	"Pridoli": {
-		"min": 419,
-		"max": 423,
-		"indentation": 1
-	},
-	"Ludlow": {
-		"min": 423,
-		"max": 427,
-		"indentation": 1
-	},
-	"Ludfordian": {
-		"min": 423,
-		"max": 426,
-		"indentation": 3
-	},
-	"Gorstian": {
-		"min": 426,
-		"max": 427,
-		"indentation": 3
-	},
-	"Wenlock": {
-		"min": 427,
-		"max": 433,
-		"indentation": 1
-	},
-	"Homerian": {
-		"min": 427,
-		"max": 431,
-		"indentation": 3
-	},
-	"Sheinwoodian": {
-		"min": 431,
-		"max": 433,
-		"indentation": 3
-	},
-	"Llandovery": {
-		"min": 433,
-		"max": 444,
-		"indentation": 1
-	},
-	"Telychian": {
-		"min": 433,
-		"max": 439,
-		"indentation": 3
-	},
-	"Aeronian": {
-		"min": 439,
-		"max": 441,
-		"indentation": 3
-	},
-	"Rhuddanian": {
-		"min": 441,
-		"max": 444,
-		"indentation": 3
-	},
-	"Ordovician": {
-		"min": 444,
-		"max": 485,
-		"indentation": 0
-	},
-	"Upper Ordivician": {
-		"min": 444,
-		"max": 458,
-		"indentation": 1
-	},
-	"Hirnantian": {
-		"min": 444,
-		"max": 445,
-		"indentation": 3
-	},
-	"Katian": {
-		"min": 445,
-		"max": 453,
-		"indentation": 3
-	},
-	"Sandbian": {
-		"min": 453,
-		"max": 458,
-		"indentation": 3
-	},
-	"Middle Ordovician": {
-		"min": 458,
-		"max": 470,
-		"indentation": 1
-	},
-	"Darriwilian": {
-		"min": 458,
-		"max": 467,
-		"indentation": 3
-	},
-	"Dapingian": {
-		"min": 467,
-		"max": 470,
-		"indentation": 3
-	},
-	"Lower Ordovician": {
-		"min": 470,
-		"max": 485,
-		"indentation": 1
-	},
-	"Floian": {
-		"min": 470,
-		"max": 478,
-		"indentation": 3
-	},
-	"Tremadocian": {
-		"min": 478,
-		"max": 485,
-		"indentation": 3
-	},
-	"Cambrian": {
-		"min": 485,
-		"max": 541,
-		"indentation": 0
-	},
-	"Furongian": {
-		"min": 485,
-		"max": 497,
-		"indentation": 1
-	},
-	"Stage 10": {
-		"min": 485,
-		"max": 490,
-		"indentation": 3
-	},
-	"Jiangshanian": {
-		"min": 490,
-		"max": 494,
-		"indentation": 3
-	},
-	"Paibian": {
-		"min": 494,
-		"max": 497,
-		"indentation": 3
-	},
-	"Series 3": {
-		"min": 497,
-		"max": 509,
-		"indentation": 1
-	},
-	"Guzhangian": {
-		"min": 497,
-		"max": 501,
-		"indentation": 3
-	},
-	"Drumian": {
-		"min": 501,
-		"max": 505,
-		"indentation": 3
-	},
-	"Stage 5": {
-		"min": 505,
-		"max": 509,
-		"indentation": 3
-	},
-	"Series 2": {
-		"min": 509,
-		"max": 521,
-		"indentation": 1
-	},
-	"Stage 4": {
-		"min": 509,
-		"max": 514,
-		"indentation": 3
-	},
-	"Stage 3": {
-		"min": 514,
-		"max": 521,
-		"indentation": 3
-	},
-	"Terreneuvian": {
-		"min": 521,
-		"max": 541,
-		"indentation": 1
-	},
-	"Stage 2": {
-		"min": 521,
-		"max": 529,
-		"indentation": 3
-	},
-	"Fortunian": {
-		"min": 529,
-		"max": 541,
-		"indentation": 3
-	}
-}
+{  "null": {    "min": "",    "max": "",    "indentation": 0  },  "Quaternary": {    "min": 0,    "max": 2.6,    "indentation": 0  },  "Holocene": {    "min": 0,    "max": 0.01,    "indentation": 1  },  "Pleistocene": {    "min": 0.01,    "max": 2.6,    "indentation": 1  },  "Neogene": {    "min": 2.6,    "max": 23,    "indentation": 0  },  "Pliocene": {    "min": 2.6,    "max": 5.3,    "indentation": 1  },  "Piacenzian": {    "min": 2.6,    "max": 3.6,    "indentation": 3  },  "Zanclean": {    "min": 3.6,    "max": 5.3,    "indentation": 3  },  "Miocene": {    "min": 5.3,    "max": 23,    "indentation": 1  },  "Late Miocene": {    "min": 5.3,    "max": 11.6,    "indentation": 2  },  "Messinian": {    "min": 5.3,    "max": 7.3,    "indentation": 3  },  "Tortonian": {    "min": 7.3,    "max": 11.6,    "indentation": 3  },  "Middle Miocene": {    "min": 11.6,    "max": 16,    "indentation": 2  },  "Serravallian": {    "min": 11.6,    "max": 13.8,    "indentation": 3  },  "Langhian": {    "min": 13.8,    "max": 16,    "indentation": 3  },  "Early Miocene": {    "min": 16,    "max": 23,    "indentation": 2  },  "Burdigalian": {    "min": 16,    "max": 20.5,    "indentation": 3  },  "Aquitanian": {    "min": 20.5,    "max": 23,    "indentation": 3  },  "Paleogene": {    "min": 23,    "max": 66,    "indentation": 0  },  "Oligocene": {    "min": 23,    "max": 33.9,    "indentation": 1  },  "Late Oligocene": {    "min": 23,    "max": 28.1,    "indentation": 2  },  "Chattian": {    "min": 23,    "max": 27.3,    "indentation": 3  },  "Early Oligocene": {    "min": 27.3,    "max": 33.9,    "indentation": 2  },  "Rupelian": {    "min": 27.3,    "max": 33.9,    "indentation": 3  },  "Eocene": {    "min": 33.9,    "max": 56,    "indentation": 1  },  "Late Eocene": {    "min": 33.9,    "max": 37.7,    "indentation": 2  },  "Priabonian": {    "min": 33.9,    "max": 37.7,    "indentation": 3  },  "Middle Eocene": {    "min": 37.7,    "max": 48.1,    "indentation": 2  },  "Bartonian": {    "min": 37.7,    "max": 41,    "indentation": 3  },  "Lutetian": {    "min": 41,    "max": 48.1,    "indentation": 3  },  "Early Eocene": {    "min": 48.1,    "max": 56,    "indentation": 2  },  "Ypresian": {    "min": 48.1,    "max": 56,    "indentation": 3  },  "Paleocene": {    "min": 56,    "max": 66,    "indentation": 1  },  "Late Paleocene": {    "min": 56,    "max": 59.2,    "indentation": 2  },  "Thanetian": {    "min": 56,    "max": 59.2,    "indentation": 3  },  "Middle Paleocene": {    "min": 59.2,    "max": 61.7,    "indentation": 2  },  "Selandian": {    "min": 59.2,    "max": 61.7,    "indentation": 3  },  "Early Paleocene": {    "min": 61.7,    "max": 66,    "indentation": 2  },  "Danian": {    "min": 61.7,    "max": 66,    "indentation": 3  },  "Cretaceous": {    "min": 66,    "max": 143.1,    "indentation": 0  },  "Late Cretaceous": {    "min": 66,    "max": 100.5,    "indentation": 1  },  "Maastrichtian": {    "min": 66,    "max": 72.2,    "indentation": 3  },  "Campanian": {    "min": 72.2,    "max": 83.7,    "indentation": 3  },  "Santonian": {    "min": 83.7,    "max": 85.7,    "indentation": 3  },  "Coniacian": {    "min": 85.7,    "max": 89.4,    "indentation": 3  },  "Turonian": {    "min": 89.4,    "max": 93.9,    "indentation": 3  },  "Cenomanian": {    "min": 93.9,    "max": 100.5,    "indentation": 3  },  "Early Cretaceous": {    "min": 100.5,    "max": 143.1,    "indentation": 1  },  "Albian": {    "min": 100.5,    "max": 113.2,    "indentation": 3  },  "Aptian": {    "min": 113.2,    "max": 121.4,    "indentation": 3  },  "Barremian": {    "min": 121.4,    "max": 126.5,    "indentation": 3  },  "Hauterivian": {    "min": 126.5,    "max": 132.6,    "indentation": 3  },  "Valanginian": {    "min": 132.6,    "max": 137.7,    "indentation": 3  },  "Berriasian": {    "min": 137.7,    "max": 143.1,    "indentation": 3  },  "Jurassic": {    "min": 143.1,    "max": 201.4,    "indentation": 0  },  "Late Jurassic": {    "min": 143.1,    "max": 161.5,    "indentation": 1  },  "Tithonian": {    "min": 143.1,    "max": 149.2,    "indentation": 3  },  "Kimmeridgian": {    "min": 149.2,    "max": 154.8,    "indentation": 3  },  "Oxfordian": {    "min": 154.8,    "max": 161.5,    "indentation": 3  },  "Middle Jurassic": {    "min": 161.5,    "max": 174.7,    "indentation": 1  },  "Callovian": {    "min": 161.5,    "max": 165.3,    "indentation": 3  },  "Bathonian": {    "min": 165.3,    "max": 168.2,    "indentation": 3  },  "Bajocian": {    "min": 168.2,    "max": 170.9,    "indentation": 3  },  "Aalenian": {    "min": 170.9,    "max": 174.7,    "indentation": 3  },  "Early Jurassic": {    "min": 174.7,    "max": 201.4,    "indentation": 1  },  "Toarcian": {    "min": 174.7,    "max": 184.2,    "indentation": 3  },  "Pliensbachian": {    "min": 184.2,    "max": 192.9,    "indentation": 3  },  "Sinemurian": {    "min": 192.9,    "max": 199.5,    "indentation": 3  },  "Hettangian": {    "min": 199.5,    "max": 201.4,    "indentation": 3  },  "Triassic": {    "min": 201.4,    "max": 251.9,    "indentation": 0  },  "Late Triassic": {    "min": 201.4,    "max": 237,    "indentation": 1  },  "Rhaetian": {    "min": 201.4,    "max": 205.7,    "indentation": 3  },  "Norian": {    "min": 205.7,    "max": 226.8,    "indentation": 3  },  "Carnian": {    "min": 226.8,    "max": 237,    "indentation": 3  },  "Middle Triassic": {    "min": 237,    "max": 246.7,    "indentation": 1  },  "Ladinian": {    "min": 237,    "max": 241.5,    "indentation": 3  },  "Anisian": {    "min": 241.5,    "max": 246.7,    "indentation": 3  },  "Early Triassic": {    "min": 246.7,    "max": 251.9,    "indentation": 1  },  "Olenekian": {    "min": 246.7,    "max": 249.9,    "indentation": 3  },  "Induan": {    "min": 249.9,    "max": 251.9,    "indentation": 3  },  "Permian": {    "min": 251.9,    "max": 298.9,    "indentation": 0  },  "Lopingian": {    "min": 251.9,    "max": 259.5,    "indentation": 1  },  "Changhsingian": {    "min": 251.9,    "max": 254.2,    "indentation": 3  },  "Wuchiapingian": {    "min": 254.2,    "max": 259.5,    "indentation": 3  },  "Guadalupian": {    "min": 259.5,    "max": 274.4,    "indentation": 1  },  "Capitanian": {    "min": 259.5,    "max": 264.3,    "indentation": 3  },  "Wordian": {    "min": 264.3,    "max": 269.2,    "indentation": 3  },  "Roadian": {    "min": 269.2,    "max": 274.4,    "indentation": 3  },  "Cisuralian": {    "min": 274.4,    "max": 298.9,    "indentation": 1  },  "Kungurian": {    "min": 274.4,    "max": 278.3,    "indentation": 3  },  "Artinskian": {    "min": 278.3,    "max": 290.5,    "indentation": 3  },  "Sakmarian": {    "min": 290.5,    "max": 293.5,    "indentation": 3  },  "Asselian": {    "min": 293.5,    "max": 298.9,    "indentation": 3  },  "Carboniferous": {    "min": 298.9,    "max": 359.3,    "indentation": 0  },  "Pennsylvanian": {    "min": 298.9,    "max": 303.7,    "indentation": 1  },  "Upper Pennsylvanian": {    "min": 298.9,    "max": 307,    "indentation": 2  },  "Gzhelian": {    "min": 298.9,    "max": 303.7,    "indentation": 3  },  "Kasimovian": {    "min": 303.7,    "max": 307,    "indentation": 3  },  "Middle Pennsylvanian": {    "min": 307,    "max": 315.2,    "indentation": 2  },  "Moscovian": {    "min": 307,    "max": 315.2,    "indentation": 3  },  "Lower Pennsylvanian": {    "min": 315.2,    "max": 323.4,    "indentation": 2  },  "Bashkirian": {    "min": 315.2,    "max": 323.4,    "indentation": 3  },  "Mississippian": {    "min": 323.4,    "max": 359.3,    "indentation": 1  },  "Upper Mississippian": {    "min": 323.4,    "max": 330.3,    "indentation": 2  },  "Serpukhobian": {    "min": 323.4,    "max": 330.3,    "indentation": 3  },  "Middle Mississippian": {    "min": 330.3,    "max": 346.7,    "indentation": 2  },  "Visean": {    "min": 330.3,    "max": 346.7,    "indentation": 3  },  "Lower Mississippian": {    "min": 346.7,    "max": 359.3,    "indentation": 2  },  "Tournaisian": {    "min": 347.7,    "max": 359.3,    "indentation": 3  },  "Devonian": {    "min": 359.3,    "max": 419,    "indentation": 0  },  "Upper Devonian": {    "min": 359.3,    "max": 378.9,    "indentation": 1  },  "Famennian": {    "min": 359.3,    "max": 371.1,    "indentation": 3  },  "Frasnian": {    "min": 371.1,    "max": 378.9,    "indentation": 3  },  "Middle Devonian": {    "min": 378.9,    "max": 394.3,    "indentation": 1  },  "Givetian": {    "min": 378.9,    "max": 385.3,    "indentation": 3  },  "Eifelian": {    "min": 385.3,    "max": 394.3,    "indentation": 3  },  "Lower Devonian": {    "min": 394.3,    "max": 419,    "indentation": 1  },  "Emsian": {    "min": 394.3,    "max": 410.5,    "indentation": 3  },  "Pragian": {    "min": 410.5,    "max": 412.4,    "indentation": 3  },  "Lochkovian": {    "min": 412.4,    "max": 419,    "indentation": 3  },  "Silurian": {    "min": 419,    "max": 443.1,    "indentation": 0  },  "Pridoli": {    "min": 419,    "max": 422.7,    "indentation": 1  },  "Ludlow": {    "min": 422.7,    "max": 425,    "indentation": 1  },  "Ludfordian": {    "min": 422.7,    "max": 425,    "indentation": 3  },  "Gorstian": {    "min": 425,    "max": 426.7,    "indentation": 3  },  "Wenlock": {    "min": 426.7,    "max": 432.9,    "indentation": 1  },  "Homerian": {    "min": 426.7,    "max": 430.6,    "indentation": 3  },  "Sheinwoodian": {    "min": 430.6,    "max": 432.9,    "indentation": 3  },  "Llandovery": {    "min": 432.9,    "max": 443.1,    "indentation": 1  },  "Telychian": {    "min": 432.9,    "max": 438.6,    "indentation": 3  },  "Aeronian": {    "min": 438.6,    "max": 440.5,    "indentation": 3  },  "Rhuddanian": {    "min": 440.5,    "max": 443.1,    "indentation": 3  },  "Ordovician": {    "min": 443.1,    "max": 486.9,    "indentation": 0  },  "Upper Ordivician": {    "min": 443.1,    "max": 458.2,    "indentation": 1  },  "Hirnantian": {    "min": 443.1,    "max": 445.2,    "indentation": 3  },  "Katian": {    "min": 445.2,    "max": 452.8,    "indentation": 3  },  "Sandbian": {    "min": 452.8,    "max": 458.2,    "indentation": 3  },  "Middle Ordovician": {    "min": 458.2,    "max": 471.3,    "indentation": 1  },  "Darriwilian": {    "min": 458.2,    "max": 469.4,    "indentation": 3  },  "Dapingian": {    "min": 469.4,    "max": 471.3,    "indentation": 3  },  "Lower Ordovician": {    "min": 471.3,    "max": 486.9,    "indentation": 1  },  "Floian": {    "min": 471.3,    "max": 477.1,    "indentation": 3  },  "Tremadocian": {    "min": 477.1,    "max": 486.9,    "indentation": 3  },  "Cambrian": {    "min": 486.9,    "max": 538.8,    "indentation": 0  },  "Furongian": {    "min": 486.9,    "max": 497,    "indentation": 1  },  "Stage 10": {    "min": 486.9,    "max": 491,    "indentation": 3  },  "Jiangshanian": {    "min": 491,    "max": 494.2,    "indentation": 3  },  "Paibian": {    "min": 494.2,    "max": 497,    "indentation": 3  },  "Series 3": {    "min": 497,    "max": 509,    "indentation": 1  },  "Guzhangian": {    "min": 497,    "max": 500.5,    "indentation": 3  },  "Drumian": {    "min": 500.5,    "max": 504.5,    "indentation": 3  },  "Stage 5": {    "min": 504.5,    "max": 509,    "indentation": 3  },  "Series 2": {    "min": 509,    "max": 521,    "indentation": 1  },  "Stage 4": {    "min": 509,    "max": 514.5,    "indentation": 3  },  "Stage 3": {    "min": 514.5,    "max": 521,    "indentation": 3  },  "Terreneuvian": {    "min": 521,    "max": 538.8,    "indentation": 1  },  "Stage 2": {    "min": 521,    "max": 529,    "indentation": 3  },  "Fortunian": {    "min": 529,    "max": 538.8,    "indentation": 3  }}
