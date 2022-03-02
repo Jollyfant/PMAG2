@@ -1938,6 +1938,13 @@ function eqAreaProjectionMean() {
     let meanColor = HIGHCHARTS_GREEN;
     let ellipseColor = HIGHCHARTS_RED;
 
+    // Overwrite with the selected color
+    if(site.color) {
+      meanColor = site.color;
+      sampleColor = site.color;
+      ellipseColor = site.color;
+    }
+
     if(document.getElementById("random-mean-color").checked) {
       sampleColor = meanColor = ellipseColor = "#" + (0x1000000 + Math.random() * 0xFFFFFF).toString(16).substr(1, 6);
     }
