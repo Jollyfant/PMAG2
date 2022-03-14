@@ -79,7 +79,10 @@
         </div>
 
 							<button class="btn btn-primary" id="load-data">Load Data</button>
-
+                            <br> Data file must contain tab delimited <code>Declination, Declination Uncertainty, Strike, Strike Uncertainty, (code)</Code>. An example input file is <a href="./example-oroclinal.txt">here</a>.
+                            <hr>
+                            <h4> Resampling Options </h4>
+                            <p> Data are bootstrapped and randomly sampled from a confidence interval (95%) and mean.
                             <div class="form-row">
                                 <div class="col">
 									Strike
@@ -96,9 +99,9 @@
                                     </select>
                                 </div>
                             </div>
-
+                            <hr>
 			<input style="display: none" id="importFile" type="file" size="4" name="file" />
-							<button class="btn btn-primary" id="start">Start</button>
+							<button class="btn btn-primary" id="start">Initialize Oroclinal Test</button>
 
 			<div id="oroclinalBody" style="display: none;">
 							<hr>
@@ -107,7 +110,7 @@
 			<div style="text-align: center;">
 				<h2> Regression Information </h2>
 			</div>
-			<div id="bootTable" style="text-align: center; margin: 0 auto; border: 1px dotted rgb(119, 152, 191);"></div>
+			<div id="bootTable"></div>
 			<p>
 			<div id="initialPlot"></div>
 			<div class="caption">
@@ -126,7 +129,7 @@
 			<div style="text-align: center;">
 			<h2> Residuals to Regression </h2>
 			<br>
-			<select id="residualsWhich" style="display: inline-block;">
+			<select class="form-control" id="residualsWhich" style="display: inline-block;">
 				<option> Declination </option>
 				<option> Strike </option>
 			</select>
@@ -144,7 +147,7 @@
 				<h2> Oroclinal Foldtest </h2>
 			</div>
 			<br>
-			<div id="foldTable" style="text-align: center; margin: 0 auto; border: 1px dotted rgb(119, 152, 191);"></div>
+			<div id="foldTable"></div>
 			<p>
 			<div id="container5"></div>
 			<div class="caption">

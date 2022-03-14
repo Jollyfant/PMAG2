@@ -799,7 +799,7 @@ function grfoldtestOro (cdfData, data, lower, upper, begin, end, sub, input, max
 	
 	new Highcharts.Chart(chartOptions);
 	
-	document.getElementById('foldTable').innerHTML = ('<table class="sample" style="text-align: center"> <thead> <th> Type of sampling </th> <th> Number of Bootstraps </th> <th> Minimum Variance at % Unfolding (Data) </th> <th> Confidence Interval (Bootstraps) </th> </thead> <tbody> <td> Strike: ' + type.strike + '<br> Declination: ' + type.dec + ' <td> ' + cdfData.length + '</td> <td> ' + max + ' </td> <td> ' + lower + ' - ' + upper + ' </td>  </tbody> </table>');
+	document.getElementById('foldTable').innerHTML = ('<table class="table table-sm text-center table-striped" style="text-align: center"> <thead> <th> Type of sampling </th> <th> Number of Bootstraps </th> <th> Minimum Variance at % Unfolding (Data) </th> <th> Confidence Interval (Bootstraps) </th> </thead> <tbody> <td> Strike: ' + type.strike + '<br> Declination: ' + type.dec + ' <td> ' + cdfData.length + '</td> <td> ' + max + ' </td> <td> ' + lower + ' - ' + upper + ' </td>  </tbody> </table>');
 	document.getElementById('foldTable').style.display = "block";
 		
 }
@@ -966,7 +966,7 @@ function importing(event) {
 		minPlot = Math.min.apply(null, strike) - maxE;
 		maxPlot = Math.max.apply(null, strike) + maxE;
 	
-		notify('success', lines.length + ' lines have been added to the declination.');
+		notify('success', lines.length + ' samples have been added.');
 		applicationHasData = true;
 		
 	}
@@ -1144,7 +1144,7 @@ function weighedData(getParams) {
 	
 	plotGraph(plotSeries, minPlot, maxPlot, false);
 	document.getElementById("pClu").style.display = "none";
-	document.getElementById("parameterTable").innerHTML = ('<table class="sample" style="text-align: center"> <thead> <th> Type of Regression </th> <th> Slope </th> <th> Intercept </th> <th> a95 Slope </th> <th> a95 Intercept </th> </thead> <tbody> <td> Weighed </td> <td> ' + slope.toFixed(3) + ' </td> <td> ' + intercept.toFixed(3) + ' </td> <td> ' + slope95.toFixed(3) + ' </td> <td> ' + intercept95.toFixed(3) + ' </td> </tbody> </table>')
+	document.getElementById("parameterTable").innerHTML = ('<table class="table table-sm text-center table-striped" style="text-align: center"> <thead> <th> Type of Regression </th> <th> Slope </th> <th> Intercept </th> <th> a95 Slope </th> <th> a95 Intercept </th> </thead> <tbody> <td> Weighed </td> <td> ' + slope.toFixed(3) + ' </td> <td> ' + intercept.toFixed(3) + ' </td> <td> ' + slope95.toFixed(3) + ' </td> <td> ' + intercept95.toFixed(3) + ' </td> </tbody> </table>')
 	document.getElementById("parameterTable").style.display = "block";
 }
 
@@ -1858,7 +1858,7 @@ function getCDF ( type ) {
 	plotCDF(dataSlope, 'CDFContainerSlope', 'Slope Cumulative Distribution Function', lr['slope'], slopeAverage, weighedParameters['slope'], 'Slope of Regression');
 	plotCDF(dataIntercept, 'CDFContainerIntercept', 'Intercept Cumulative Distribution Function', lr['intercept'], interceptAverage, weighedParameters['intercept'], 'Intercept of Regression');
 	
-	$("#bootTable").html('<table class="sample" style="text-align: center"><thead> <th> Type </th> <th> Total Least Squares Regression </th> <th> Average Bootstrap </th> <th> Bootstrapped Confidence Interval </th> <th> Least Squares </th> </thead> <tbody> <td> Slope </td> <td> ' + lr.slope.toFixed(3) + ' </td> <td> ' + slopeAverage.toFixed(3) + ' </td> <td> ' + dataSlope[lower].toFixed(3) + ' - ' + dataSlope[upper].toFixed(3) + ' </td> <td> ' + oldLr['slope'].toFixed(3) + ' </td> <tr> <td> Intercept </td> <td> ' + lr.intercept.toFixed(3) + ' </td> <td> ' + interceptAverage.toFixed(3) + ' </td> <td> ' + dataIntercept[lower].toFixed(3) + ' - ' + dataIntercept[upper].toFixed(3) + ' </td> <td> ' + oldLr['intercept'].toFixed(3) + ' </td> </tr> </tbody> </table>')
+	$("#bootTable").html('<table class="table table-sm text-center table-striped" style="text-align: center"><thead> <th> Type </th> <th> Total Least Squares Regression </th> <th> Average Bootstrap </th> <th> Bootstrapped Confidence Interval </th> <th> Least Squares </th> </thead> <tbody> <td> Slope </td> <td> ' + lr.slope.toFixed(3) + ' </td> <td> ' + slopeAverage.toFixed(3) + ' </td> <td> ' + dataSlope[lower].toFixed(3) + ' - ' + dataSlope[upper].toFixed(3) + ' </td> <td> ' + oldLr['slope'].toFixed(3) + ' </td> <tr> <td> Intercept </td> <td> ' + lr.intercept.toFixed(3) + ' </td> <td> ' + interceptAverage.toFixed(3) + ' </td> <td> ' + dataIntercept[lower].toFixed(3) + ' - ' + dataIntercept[upper].toFixed(3) + ' </td> <td> ' + oldLr['intercept'].toFixed(3) + ' </td> </tr> </tbody> </table>')
 
 }
 
