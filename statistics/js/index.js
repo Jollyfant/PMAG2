@@ -223,8 +223,6 @@ function registerEventHandlers() {
  
   // Flipping is off by default
   document.getElementById("flip-ellipse").checked = false;
-  document.getElementById("random-mean-color").checked = false;
-  document.getElementById("show-samples-mean").checked = false;
 
   updateTextAreaCounter();
 

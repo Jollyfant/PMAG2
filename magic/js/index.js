@@ -45,45 +45,6 @@ function keyboardHandler(event) {
 
 }
 
-function collectCitation() {
-
-  /*
-   * Function collectCitation
-   * Collects a citation from Crossref based on a submitted DOI
-   */
-
-  const DOI_DISPOSE_TIMEOUT_MS = 3000;
-
-  var submittedDOI = document.getElementById("citation-input").value;
-
-  // Do nothing when empty
-  if(submittedDOI === "") {
-    return;
-  }
-
-  // Confirm that the DOI is valid
-  if(!submittedDOI.startsWith("10") || !submittedDOI.includes("/")) {
-    return notify("warning", new Exception("The submitted DOI is not valid."));
-  }
-
-  // Look up the DOI @ CrossRef
-  doiLookup(submittedDOI, function(citation) {
-
-    if(citation === null) {
-      return;
-    }
-
-    // Parse the string to make a link out of the returned DOI
-    var split = citation.split(" ");
-    var link = split.pop();
-    split.push(createLink(link, link))
-
-    notify("success", "<i class='fas fa-book'></i><b> Found citation: </b>" + split.join(" ")); 
-
-  });
-
-}
-
 
 function fileSelectionHandler(event) {
 
@@ -252,7 +213,8 @@ function checkSpecimen(specimen) {
     }
 
     if(specimen.volume === null) {
-      throw("Volume is not set.");
+      specimen.volume = 10.5;
+      notify("warning", "Volume is not set: assuming a volume of 10.5cc.");
     }
 
   } catch(exception) {
@@ -275,37 +237,12 @@ function downloadMagIC() {
     return notify("danger", new Exception("No collections were loaded."));    
   }
 
-  // Construct metadata fields
-  const metadata = {
-    "version": MAGIC_DATA_MODEL_VERSION,
-    "timestamp": new Date().toISOString(),
-    "contributor": document.getElementById("contributor-input").value,
-    "reference": document.getElementById("citation-input").value || "This study",
-    "description": document.getElementById("description-input").value
-  }
-
-  // Metadata sanitization
-  try {
-
-    // Contributor and description are required
-    if(metadata.contributor === "") {
-      throw("The contributor field is required and cannot be empty.");
-    }
-
-    if(metadata.description === "") {
-      throw("The description field is required and cannot be empty.");
-    } 
-
-  } catch(exception) {
-    return notify("danger", new Exception(exception));
-  }
-
   // Call to create a MagIC file
-  exportMagIC(metadata);
+  exportMagIC();
 
 }
 
-function exportMagIC(metadata) {
+function exportMagIC() {
 
   /*
    * Function exportMagIC
@@ -441,18 +378,6 @@ function exportMagIC(metadata) {
     "citations"
   );
 
-  // Create a new contribution
-  var magicContribution = new Array(
-    new Array(
-      "4",
-      metadata.timestamp,
-      metadata.contributor,
-      metadata.version,
-      metadata.reference,
-      metadata.description
-    ).join(TAB_DELIMITER)
-  );
-
   var magicSpecimens = new Array();
   var magicSites = new Array();
   var magicSamples = new Array();
@@ -478,9 +403,6 @@ function exportMagIC(metadata) {
     specimens.forEach(function(specimen) {
 
       var demagnetizationType;
-
-      //  We assume a specimen volume of 10.5cc if it is missing
-      var volume = specimen.volume || 10.5;
 
       if(specimen.demagnetizationType === "thermal") {
         demagnetizationType = DEMAGNETIZATION_THERMAL;
@@ -559,15 +481,15 @@ function exportMagIC(metadata) {
         var direction = new Coordinates(step.x, step.y, step.z).toVector(Direction);
 
         // Intensities are in Am^2 in MagIC.
-        // Our values are in μA/m. (1E6 * intensity) / (1E6 * volume) = intensity / volume
+        // Our values are in μA/m so convert it: for Utrecht bug we already normalised to volume
         if(isUtrechtIntensityBug(specimen)) {
-          var x = step.x;
-          var y = step.y;
-          var z = step.z;
+          var x = 1E-12 * step.x;
+          var y = 1E-12 * step.y;
+          var z = 1E-12 * step.z;
         } else {
-          var x = step.x * specimen.volume;
-          var y = step.y * specimen.volume;
-          var z = step.z * specimen.volume;
+          var x = 1E-12 * step.x * (specimen.volume || 10.5);
+          var y = 1E-12 * step.y * (specimen.volume || 10.5);
+          var z = 1E-12 * step.z * (specimen.volume || 10.5);
         }
 
         magicMeasurements.push([
@@ -586,7 +508,8 @@ function exportMagIC(metadata) {
           z,
           direction.dec,
           direction.inc,
-          Math.sqrt(x * x + y * y + z * z)
+          // A/m
+          1E-6 * direction.length
         ].join(TAB_DELIMITER));
 
       });
@@ -617,7 +540,6 @@ function exportMagIC(metadata) {
 
   // Concatenate information of all the MagIC tables
   var lines = new Array(
-    createTable("contribution", contributionHeader, magicContribution),
     createTable("locations", locationHeader, magicLocations),
     createTable("sites", siteHeader, magicSites),
     createTable("samples", sampleHeader, magicSamples),
