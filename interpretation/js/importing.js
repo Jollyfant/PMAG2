@@ -1711,6 +1711,61 @@ function importBCN2G(file) {
 
 }
 
+function importLDGO(file) {
+
+  let collector = {}
+  var lines = file.data.split(LINE_REGEXP).filter(Boolean);
+
+  lines.slice(1).forEach(function(line) {
+
+    let parameters = line.trim().split("\t");
+    let sampleName = parameters[0];
+    let step = parameters[1];
+    let dec = Number(parameters[2]);
+    let inc = Number(parameters[3]);
+    let intensity = 1E6 * Number(parameters[4]); // A/m to uA/m
+    let coreAzimuth = Number(parameters[5]);
+    let coreDip = 90 - Number(parameters[6]); // We use dip not hade
+    let beddingStrike = (Number(parameters[7]) + 270) % 360;
+    let beddingDip = Number(parameters[8]);
+    let sampleVolume = Number(parameters[9]);
+    let coordinates = new Direction(dec, inc, intensity).toCartesian();
+
+    if(!collector.hasOwnProperty(sampleName)) {
+      collector[sampleName] = {
+        "demagnetizationType": step.includes("C") ? "thermal": "alternating",
+        "coordinates": "specimen",
+        "format": "LDGO",
+        "version": __VERSION__,
+        "created": new Date().toISOString(),
+        "steps": new Array(),
+        "longitude": null,
+        "latitude": null,
+        "age": null,
+        "ageMin": null,
+        "ageMax": null,
+        "lithology": null,
+        "sample": sampleName,
+        "name": sampleName,
+        "volume": Number(sampleVolume),
+        "beddingStrike": Number(beddingStrike),
+        "beddingDip": Number(beddingDip),
+        "coreAzimuth": Number(coreAzimuth),
+        "coreDip": Number(coreDip),
+        "interpretations": new Array()
+      }
+    }
+
+    collector[sampleName].steps.push(new Measurement(step, coordinates, null))
+
+  });
+
+  Object.values(collector).forEach(function(obj) {
+    specimens.push(obj);
+  });
+
+}
+
 function importCaltech(file) {
 
   /*
