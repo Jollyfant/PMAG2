@@ -88,6 +88,8 @@ function addDegmagnetizationFiles(format, files) {
       return files.forEach(importMontpellier);
     case "UNKNOWN":
       return files.forEach(importUnknown);
+    case "LDGO":
+      return files.forEach(importLDGO);
     case "BLACKMNT":
       return files.forEach(importBlackMnt);
     case "UTRECHT":
