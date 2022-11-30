@@ -120,11 +120,17 @@ function fileSelectionHandler(event) {
 
       data.specimens.forEach(function(specimen) {
 
+        let longitude = specimen.longitude;
+
+        if(longitude < 0) {
+          longitude += 360;
+        }
+
         rows.push([
           "  <tr>",
           "    <td>" + specimen.name + "</td>",
           "    <td>" + getDemagnetizationTypeLabel(specimen.demagnetizationType) + "</td>",
-          "    <td>" + specimen.longitude + "°E, " + specimen.latitude + "°N</td>",
+          "    <td>" + longitude + "°E, " + specimen.latitude + "°N</td>",
           "    <td>" + specimen.geology + "</td>",
           "    <td>" + specimen.lithology + "</td>",
           "    <td>" + specimen.beddingStrike + "</td>",
@@ -412,8 +418,14 @@ function exportMagIC() {
         throw(new Exception("Could not determine demagnetization type for specimen " + specimen.name));
       }
 
+      let longitude = specimen.longitude;
+
+      if(longitude < 0) {
+        longitude += 360;
+      }
+
       latitudes.push(specimen.latitude);
-      longitudes.push(specimen.longitude);
+      longitudes.push(longitude);
       levels.push(specimen.level);
 
       // Save the minimum and maximum ages
@@ -435,7 +447,7 @@ function exportMagIC() {
         "Not Specified",
         specimen.lithology,
         specimen.latitude,
-        specimen.longitude,
+        longitude,
         specimen.age,
         specimen.ageMin,
         specimen.ageMax,
@@ -454,7 +466,7 @@ function exportMagIC() {
         specimen.beddingStrike + 90,
         specimen.beddingDip,
         specimen.latitude,
-        specimen.longitude
+        longitude
       ].join(TAB_DELIMITER));
 
       // Determine minimum and maximum step in correct units
