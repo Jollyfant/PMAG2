@@ -394,7 +394,7 @@ function plotPredictedDirections() {
     }
   
     if(pole.euler === undefined) {
-      notify("danger", "Select at least one reference model on the left hand side.");
+      notify("danger", "Vaes et al., 2022 does not have a default plate circuit. Please load a GPlates rotation file.")
       throw(new Exception("Vaes et al., 2022 does not have a default plate circuit. Please load a GPlates rotation file."));
     }
 
