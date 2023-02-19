@@ -1,6 +1,30 @@
 var map;
 var markerGroup = new Array();
 
+document.getElementById("downloadZip").addEventListener("click", downloadArchive);
+
+function downloadArchive() {
+
+  let zip = new JSZip();
+  let pid = window.location.search.slice(1);
+
+  // Get collections
+  HTTPRequest("https://api.paleomagnetism.org/" + pid, "GET", function(data) {
+
+    // Add them to the ZIP file
+    data.collections.forEach(function(collection) {
+      zip.file(collection.name, JSON.stringify(collection.data));
+    });
+
+    // Generate and download
+    zip.generateAsync({type:"blob"}).then(function(content) {
+     downloadURIComponent(pid + ".zip", window.URL.createObjectURL(content));
+    });
+
+  });
+
+}
+
 function addMap(publication) {
 
   /*
