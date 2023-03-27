@@ -1780,13 +1780,11 @@ function importCaltech(file) {
 
   // First line has the core & bedding parameters
   var coreParameters = lines[1].split(/\s+/).filter(Boolean);
-
-  // Correct core strike to azimuth and hade to plunge
-  var coreAzimuth = (Number(coreParameters[0].trim()) + 270) % 360;
-  var coreDip = 90 - Number(coreParameters[1].trim());
-  var beddingStrike = Number(coreParameters[2].trim());
-  var beddingDip = Number(coreParameters[3].trim());
-  var sampleVolume = Number(coreParameters[4].trim());
+  var coreAzimuth = (Number(lines[1].slice(8, 13).trim()) + 270) % 360;
+  var coreDip = 90 - Number(lines[1].slice(14, 19).trim());
+  var beddingStrike = Number(lines[1].slice(20, 25).trim());
+  var beddingDip = Number(lines[1].slice(26, 32).trim());
+  var sampleVolume = Number(lines[1].slice(33, 38).trim());
  
   var line;
   var steps = new Array();
@@ -1805,7 +1803,24 @@ function importCaltech(file) {
     var a95 = Number(line.slice(40, 45));
     var info = line.slice(85, 113).trim();
 
+    let GDec = Number(line.slice(7, 12).trim());
+    let GInc = Number(line.slice(13, 18).trim());
+
     var coordinates = new Direction(dec, inc, intensity).toCartesian();
+    var GDirection = coordinates.rotateTo(coreAzimuth, coreDip).toVector(Direction);
+	
+    if(Math.abs(GDec - GDirection.dec) > 1 || Math.abs(GInc - GDirection.inc) > 1) {
+      throw(new Exception("Inconsistency detected in geographic vector component."));
+    }
+
+    var TDec = Number(line.slice(19, 24).trim());
+    var TInc = Number(line.slice(25, 30).trim());
+    var TDirection = coordinates.rotateTo(coreAzimuth, coreDip).correctBedding(beddingStrike, beddingDip).toVector(Direction);
+
+    // Check and verify tectonic coordinates
+    if(Math.abs(TDec - TDirection.dec) > 1 || Math.abs(TInc - TDirection.inc) > 1) {
+      throw(new Exception("Inconsistency detected in tectonic vector component."));
+    }
 
     steps.push(new Measurement(step, coordinates, a95));
 

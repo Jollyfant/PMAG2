@@ -328,8 +328,8 @@ function exportMagIC() {
     "method_codes",
     "citations",
     // Measurement Parameters
-    "meas_field_ac",
-    "meas_temp",
+    "treat_ac_field",
+    "treat_temp",
     // Raw Measurement
     "magn_x",
     "magn_y",
