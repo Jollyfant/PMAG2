@@ -1868,7 +1868,7 @@ function importApplicationSaveOld(file) {
 
     // Block this: it means the data is incompatible and needs to be patched
     if(specimen.patch !== 1.1) {
-      throw(new Exception("This file contains incompatible specimens. Run this file through old.paleomagnetism.org."));
+      throw(new Exception("This file contains incompatible specimens. Run this file through the <a href='https://jollyfant.github.io/Paleomagnetism.org/Paleomagnetism.org/'>old application</a>."));
     }
 
     // Declination correction BCN2G was stored as property.. just add it to the core azimuth now
