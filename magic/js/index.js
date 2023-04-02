@@ -3,8 +3,8 @@
  * Handler for magic exporting
  */
 
-const DEMAGNETIZATION_THERMAL = "LP-DIR-T";
-const DEMAGNETIZATION_ALTERNATING = "LP-DIR-AF";
+const DEMAGNETIZATION_THERMAL = "LT-T-Z";
+const DEMAGNETIZATION_ALTERNATING = "LT-AF-Z";
 const MAGIC_TABLE_DELIMITER = ">>>>>>>>>>";
 
 var data = null;
@@ -391,7 +391,7 @@ function exportMagIC() {
   var magicLocations = new Array();
   var experimentCounter = 0;
 
-  data.forEach(function(file, i) {
+  data.forEach(function(file, locationIndex) {
 
     var specimens = JSON.parse(file.data).specimens;
 
@@ -405,126 +405,162 @@ function exportMagIC() {
     var ages = new Array();
     var levels = new Array();
 
-    // Go over all specimens
+    // Collect samples to sites based on lat/lng
+    var groupedSites = new Object();
+
     specimens.forEach(function(specimen) {
 
-      var demagnetizationType;
+      let key = specimen.latitude + "/" + specimen.longitude;
 
-      if(specimen.demagnetizationType === "thermal") {
-        demagnetizationType = DEMAGNETIZATION_THERMAL;
-      } else if(specimen.demagnetizationType === "alternating") {
-        demagnetizationType = DEMAGNETIZATION_ALTERNATING;
-      } else {
-        throw(new Exception("Could not determine demagnetization type for specimen " + specimen.name));
+      if(!groupedSites.hasOwnProperty(key)) {
+        groupedSites[key] = new Array();
       }
 
-      let longitude = specimen.longitude;
+      groupedSites[key].push(specimen);
 
-      if(longitude < 0) {
-        longitude += 360;
-      }
+    });
 
-      latitudes.push(specimen.latitude);
-      longitudes.push(longitude);
-      levels.push(specimen.level);
+    // Go over all grouped specimens
+    Object.values(groupedSites).forEach(function(value, siteIndex) {
 
-      // Save the minimum and maximum ages
-      ages.push(specimen.ageMin, specimen.ageMax);
+      let siteCollection = new Object({
+        "geologies": new Set(),
+        "lithologies": new Set(),
+        "demagnetizationTypes": new Set(),
+        "latitude": value.latitude,
+        "longitude": value.longitude,
+        "ages": new Array()
+      });
 
-      demagnetizationTypes.add(demagnetizationType);
-      lithologies.add(specimen.lithology);
-      geologies.add(specimen.geology);
+      value.forEach(function(specimen) {
 
-      // TODO handling of ages/locations
-      magicSites.push([
-        specimen.name,
-        "location-" + i,
-        "i",
-        "g",
-        demagnetizationType,
-        "This study",
-        specimen.geology,
-        "Not Specified",
-        specimen.lithology,
-        specimen.latitude,
-        longitude,
-        specimen.age,
-        specimen.ageMin,
-        specimen.ageMax,
-        "Ma"
-      ].join(TAB_DELIMITER));
-
-      magicSamples.push([
-        specimen.name,
-        specimen.name,
-        "s",
-        "g",
-        demagnetizationType,
-        "This study",
-        specimen.coreAzimuth,
-        specimen.coreDip,
-        specimen.beddingStrike + 90,
-        specimen.beddingDip,
-        specimen.latitude,
-        longitude
-      ].join(TAB_DELIMITER));
-
-      // Determine minimum and maximum step in correct units
-      var minimumStep = (demagnetizationType === DEMAGNETIZATION_ALTERNATING ? toTesla(specimen.steps[0].step) : toKelvin(specimen.steps[0].step));
-      var maximumStep = (demagnetizationType === DEMAGNETIZATION_ALTERNATING ? toTesla(specimen.steps[specimen.steps.length - 1].step) : toKelvin(specimen.steps[specimen.steps.length - 1].step));
-
-      magicSpecimens.push([
-        specimen.name,
-        specimen.name,
-        "g",
-        demagnetizationType,
-        "This study",
-        minimumStep,
-        maximumStep,
-        getStepUnit(demagnetizationType),
-        specimen.coreAzimuth,
-        specimen.coreDip
-      ].join(TAB_DELIMITER));
-
-      // Add all measurement steps
-      specimen.steps.forEach(function(step, i) {
-
-        // Convert x, y, z in specimen coordinates to a direction
-        var direction = new Coordinates(step.x, step.y, step.z).toVector(Direction);
-
-        // Intensities are in Am^2 in MagIC.
-        // Our values are in μA/m so convert it: for Utrecht bug we already normalised to volume
-        if(isUtrechtIntensityBug(specimen)) {
-          var x = 1E-12 * step.x;
-          var y = 1E-12 * step.y;
-          var z = 1E-12 * step.z;
+        var demagnetizationType;
+      
+        if(specimen.demagnetizationType === "thermal") {
+          demagnetizationType = DEMAGNETIZATION_THERMAL;
+        } else if(specimen.demagnetizationType === "alternating") {
+          demagnetizationType = DEMAGNETIZATION_ALTERNATING;
         } else {
-          var x = 1E-12 * step.x * (specimen.volume || 10.5);
-          var y = 1E-12 * step.y * (specimen.volume || 10.5);
-          var z = 1E-12 * step.z * (specimen.volume || 10.5);
+          throw(new Exception("Could not determine demagnetization type for specimen " + specimen.name));
         }
+      
+        let longitude = specimen.longitude;
+      
+        if(longitude < 0) {
+          longitude += 360;
+        }
+      
+        latitudes.push(specimen.latitude);
+        longitudes.push(longitude);
+        levels.push(specimen.level);
+      
+        // Save the minimum and maximum ages
+        ages.push(specimen.ageMin, specimen.ageMax);
+        demagnetizationTypes.add(demagnetizationType);
+        lithologies.add(specimen.lithology);
+        geologies.add(specimen.geology);
 
-        magicMeasurements.push([
-          specimen.name + "_" + i,
-          specimen.name + "_" + i + "_" + demagnetizationType,
+        // For sites
+        siteCollection.ages.push(specimen.ageMin, specimen.ageMax);
+        siteCollection.demagnetizationTypes.add(demagnetizationType);
+        siteCollection.lithologies.add(specimen.lithology);
+        siteCollection.geologies.add(specimen.geology);
+
+        magicSamples.push([
           specimen.name,
-          experimentCounter++,
-          "u",
+          "site-" + siteIndex,
+          "s",
           "g",
           demagnetizationType,
           "This study",
-          (demagnetizationType === DEMAGNETIZATION_ALTERNATING ? toTesla(step.step) : 0),
-          (demagnetizationType === DEMAGNETIZATION_THERMAL ? toKelvin(step.step) : 293),
-          x,
-          y,
-          z,
-          direction.dec,
-          direction.inc,
-          // A/m
-          1E-6 * direction.length
+          specimen.coreAzimuth,
+          specimen.coreDip,
+          specimen.beddingStrike + 90,
+          specimen.beddingDip,
+          specimen.latitude,
+          longitude
         ].join(TAB_DELIMITER));
-
+      
+        // Determine minimum and maximum step in correct units
+        var minimumStep = (demagnetizationType === DEMAGNETIZATION_ALTERNATING ? toTesla(specimen.steps[0].step) : toKelvin(specimen.steps[0].step));
+        var maximumStep = (demagnetizationType === DEMAGNETIZATION_ALTERNATING ? toTesla(specimen.steps[specimen.steps.length - 1].step) : toKelvin(specimen.steps[specimen.steps.length - 1].step));
+      
+        magicSpecimens.push([
+          specimen.name,
+          specimen.name,
+          "g",
+          demagnetizationType,
+          "This study",
+          minimumStep,
+          maximumStep,
+          getStepUnit(demagnetizationType),
+          specimen.coreAzimuth,
+          specimen.coreDip
+        ].join(TAB_DELIMITER));
+      
+        // Add all measurement steps
+        specimen.steps.forEach(function(step, i) {
+      
+          // Convert x, y, z in specimen coordinates to a direction
+          var direction = new Coordinates(step.x, step.y, step.z).toVector(Direction);
+      
+          // Intensities are in Am^2 in MagIC.
+          // Our values are in μA/m so convert it: for Utrecht bug we already normalised to volume
+          if(isUtrechtIntensityBug(specimen)) {
+            var x = 1E-12 * step.x;
+            var y = 1E-12 * step.y;
+            var z = 1E-12 * step.z;
+          } else {
+            var x = 1E-12 * step.x * (specimen.volume || 10.5);
+            var y = 1E-12 * step.y * (specimen.volume || 10.5);
+            var z = 1E-12 * step.z * (specimen.volume || 10.5);
+          }
+      
+          magicMeasurements.push([
+            specimen.name + "_" + locationIndex,
+            specimen.name + "_" + locationIndex + "_" + demagnetizationType,
+            specimen.name,
+            experimentCounter++,
+            "u",
+            "g",
+            demagnetizationType,
+            "This study",
+            (demagnetizationType === DEMAGNETIZATION_ALTERNATING ? toTesla(step.step) : 0),
+            (demagnetizationType === DEMAGNETIZATION_THERMAL ? toKelvin(step.step) : 293),
+            x,
+            y,
+            z,
+            direction.dec,
+            direction.inc,
+            // A/m
+            1E-6 * direction.length
+          ].join(TAB_DELIMITER));
+      
+        });
+      
       });
+
+      siteCollection.ages.sort(numericSort);
+      let averageSiteAge = siteCollection.ages.reduce((a, b) => a + b) / siteCollection.ages.length;
+
+      // TODO handling of ages/locations
+      magicSites.push([
+        "site-" + siteIndex,
+        "location-" + locationIndex,
+        "i",
+        "g",
+        Array.from(siteCollection.demagnetizationTypes).join(":"),
+        "This study",
+        Array.from(siteCollection.geologies).join(":"),
+        "Not Specified",
+        Array.from(siteCollection.lithologies).join(":"),
+        siteCollection.latitude,
+        siteCollection.longitude,
+        averageSiteAge,
+        siteCollection.ages[0],
+        siteCollection.ages[siteCollection.ages.length - 1],
+        "Ma"
+      ].join(TAB_DELIMITER));
 
     });
 
@@ -534,7 +570,7 @@ function exportMagIC() {
     ages.sort(numericSort);
 
     magicLocations.push([
-      "location-" + i,
+      "location-" + locationIndex,
       determineLocationType(latitudes, longitudes, levels),
       Array.from(geologies.values()).join(":"),
       Array.from(lithologies.values()).join(":"),
