@@ -381,7 +381,8 @@ function exportMagIC() {
     "age_low",
     "age_high",
     "age_unit",
-    "citations"
+    "citations",
+    "software_packages"
   );
 
   var magicSpecimens = new Array();
@@ -581,7 +582,8 @@ function exportMagIC() {
       ages[0],
       ages[ages.length - 1],
       "Ma",
-      "This study"
+      "This study",
+      "paleomagnetism.org-" + __VERSION__
     ].join(TAB_DELIMITER));
 
   });
