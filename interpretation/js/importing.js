@@ -1,3 +1,82 @@
+function importUNESP(file) {
+
+  // Cenieh samples need to be sorted
+  let UNESPSpecimens = new Object();
+
+  let lines = file.data.split(LINE_REGEXP).filter(Boolean);
+  let demagnetizationType = lines[0].split(/\t+/)[1] === "AF Z" ? "alternating" : "thermal";
+
+  // Skip the header
+  lines.slice(1).forEach(function(line) {
+
+    let parameters = line.split(/\t+/);
+    let sampleName = parameters[0];
+
+    // Add a sample to the has map
+    if(!UNESPSpecimens.hasOwnProperty(sampleName)) {
+
+      UNESPSpecimens[sampleName] = new Object({
+        "demagnetizationType": demagnetizationType,
+        "coordinates": "specimen",
+        "format": "UNESP",
+        "version": __VERSION__,
+        "created": new Date().toISOString(),
+        "steps": new Array(),
+        "name": sampleName,
+        "volume": Number(parameters[33]),
+        "longitude": null,
+        "latitude": null,
+        "age": null,
+        "ageMin": null,
+        "ageMax": null,
+        "lithology": null,
+        "sample": sampleName,
+        "beddingStrike": Number(parameters[7]),
+        "beddingDip": Number(parameters[8]),
+        "coreAzimuth": Number(parameters[5]),
+        "coreDip": Number(parameters[6]),
+        "interpretations": new Array()
+      });
+
+    }
+
+    // Extract the measurement parameters
+    let step = parameters[1];
+
+    let declination = Number(parameters[9]);
+    let inclination = Number(parameters[10]);
+
+    // Assume A/m
+    let cartesianCoordinates = new Coordinates(
+      1E6 * Number(parameters[2]),
+      1E6 * Number(parameters[3]),
+      1E6 * Number(parameters[4])
+    );
+
+    // Sanity check geographic coordinates
+    let GDec = Number(parameters[19]);
+    let GInc = Number(parameters[20]);
+
+    let coreAzimuth = Number(parameters[5]);
+    let coreDip = Number(parameters[6]);
+
+    let GDirection = cartesianCoordinates.rotateTo(coreAzimuth, coreDip).toVector(Direction);
+
+    if(Math.abs(GDec - GDirection.dec) > 1 || Math.abs(GInc - GDirection.inc) > 1) {
+      throw(new Exception("Inconsistency detected in geographic vector component."));
+    }
+    
+    UNESPSpecimens[sampleName].steps.push(new Measurement(step, cartesianCoordinates, null));
+	
+  });
+
+  // Add all specimens in the hashmap to the application
+  Object.values(UNESPSpecimens).forEach(function(specimen) {
+    specimens.push(specimen);
+  });
+
+}
+
 function importGTK(file) {
 
   function capitalize(string) {
