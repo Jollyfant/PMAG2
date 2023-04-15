@@ -45,12 +45,16 @@ function importUNESP(file) {
 
     let declination = Number(parameters[9]);
     let inclination = Number(parameters[10]);
+    let volume = Number(parameters[33]);
+
+    // Is in emu (1 Am^2 = 1E3 emu) - divide by volume (in cubic centimeter).
+    let intensity = 1E6 * 1E-3 / (1E-6 * volume);
 
     // Assume A/m
     let cartesianCoordinates = new Coordinates(
-      1E6 * Number(parameters[2]),
-      1E6 * Number(parameters[3]),
-      1E6 * Number(parameters[4])
+      intensity * Number(parameters[2]),
+      intensity * Number(parameters[3]),
+      intensity * Number(parameters[4])
     );
 
     // Sanity check geographic coordinates
