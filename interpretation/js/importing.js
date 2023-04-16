@@ -1,3 +1,77 @@
+function importSpinner(file) {
+
+  /*
+   * function 
+   *
+   */
+
+  let lines = file.data.split(LINE_REGEXP).filter(Boolean);
+  let blocks = new Array();
+
+  for(let i = 0; i < lines.length; i++) {
+    if(lines[i].split(",").length === 1) {
+      blocks.push(i);
+    }
+  }
+
+  let specs = new Array();
+  for(let i = 0; i < blocks.length; i++) {
+    if(i === blocks.length - 1) {
+      specs.push(lines.slice(blocks[i]));
+    } else {
+      specs.push(lines.slice(blocks[i], blocks[i + 1]));
+    }
+  }
+
+  specs.forEach(function(x) {
+
+    let name = x[0];
+    let steps = new Array();
+
+    x.slice(1).forEach(function(line) {
+
+      let parameters = line.split(","); 
+      let step = parameters[2];
+
+      let cartesianCoordinates = new Coordinates(
+        1E6 * Number(parameters[3]),
+        1E6 * Number(parameters[4]),
+        1E6 * Number(parameters[5]),
+      );
+
+      steps.push(new Measurement(step, cartesianCoordinates, null));
+
+    });
+
+    // Add the data to the application
+    specimens.push({
+      "demagnetizationType": null,
+      "coordinates": "specimen",
+      "format": "SPINNER",
+      "version": __VERSION__,
+      "created": new Date().toISOString(),
+      "steps": steps,
+      "level": null,
+      "longitude": null,
+      "latitude": null,
+      "age": null,
+      "ageMin": null,
+      "ageMax": null,
+      "lithology": null,
+      "sample": name,
+      "name": name,
+      "volume": null,
+      "beddingStrike": 0,
+      "beddingDip": 0,
+      "coreAzimuth": 0,
+      "coreDip": 90, 
+      "interpretations": new Array()
+    });
+
+  });
+
+}
+
 function importUNESP(file) {
 
   // Cenieh samples need to be sorted
