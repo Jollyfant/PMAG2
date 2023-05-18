@@ -121,8 +121,8 @@ function importUNESP(file) {
     let inclination = Number(parameters[10]);
     let volume = Number(parameters[33]);
 
-    // Is in emu (1 Am^2 = 1E3 emu) - divide by volume (in cubic centimeter).
-    let intensity = 1E6 * 1E-3 / (1E-6 * volume);
+    // Intensity is in emu/cm which is 1E3 A/m. We need micro so another 1E6!
+    let intensity = 1E6 * 1E3;
 
     // Assume A/m
     let cartesianCoordinates = new Coordinates(
