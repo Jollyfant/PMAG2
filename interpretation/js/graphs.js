@@ -1213,17 +1213,17 @@ function getIntensityCSV(series) {
     "Step",
     "Intensity",
     "Vector Difference Sum",
-    "Unblock Spectrum"
+    "Unblocking Spectrum"
   );
 
   var rows = new Array(HEADER.join(ITEM_DELIMITER));
 
-  for(var i = 0; i < series[0].data.length; i++) {
+  for(var i = 0; i < series[2].data.length; i++) {
     rows.push(new Array(
-      series[0].data[i].x,
-      series[0].data[i].y,
-      series[1].data[i].y,
-      series[2].data[i].y
+      series[2].data[i].x,
+      series[2].data[i].y,
+      series[3].data[i].y,
+      series[4].data[i].y
     ).join(ITEM_DELIMITER));
   }
 		
@@ -1295,7 +1295,7 @@ function getHemisphereCSV(series) {
     "inclination"
   );
 
-  var rows = series[1].data.map(function(x) {
+  var rows = series[1].data.filter(x => x.y !== null).map(function(x) {
     return new Array(x.step, x.x.toFixed(2), x.inc.toFixed(2)).join(ITEM_DELIMITER);
   });
 
