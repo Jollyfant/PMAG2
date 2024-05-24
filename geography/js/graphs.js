@@ -393,6 +393,11 @@ function plotPredictedDirections() {
   
     }
   
+    if(pole.euler === undefined) {
+      notify("danger", "Vaes et al., 2022 does not have a default plate circuit. Please load a GPlates rotation file.")
+      throw(new Exception("Vaes et al., 2022 does not have a default plate circuit. Please load a GPlates rotation file."));
+    }
+
     if(pole.euler.hasOwnProperty(plate)) {
       return new EulerPole(pole.euler[plate].lng, pole.euler[plate].lat, pole.euler[plate].rot);
     }

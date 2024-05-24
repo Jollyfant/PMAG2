@@ -1,5 +1,5 @@
 let __DEBUG__ = false;
-let __VERSION__ = "2.4.0";
+let __VERSION__ = "2.5.0";
 const __DOI__ = "10.5281/zenodo.6380888";
 const RADIANS = Math.PI / 180;
 const PROJECTION_TYPE = "AREA";
@@ -1528,8 +1528,8 @@ function importCSV(file) {
       "coreDip": Number(coreDip),
       "beddingStrike": Number(beddingStrike),
       "beddingDip": Number(beddingDip),
-      "latitude": latitude,
-      "longitude": longitude,
+      "latitude": Number(latitude),
+      "longitude": Number(longitude),
       "level": Number(level),
       "age": Number(age),
       "ageMin": Number(ageMin),

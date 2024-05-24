@@ -1,3 +1,160 @@
+function importSpinner(file) {
+
+  /*
+   * function 
+   *
+   */
+
+  let lines = file.data.split(LINE_REGEXP).filter(Boolean);
+  let blocks = new Array();
+
+  for(let i = 0; i < lines.length; i++) {
+    if(lines[i].split(",").length === 1) {
+      blocks.push(i);
+    }
+  }
+
+  let specs = new Array();
+  for(let i = 0; i < blocks.length; i++) {
+    if(i === blocks.length - 1) {
+      specs.push(lines.slice(blocks[i]));
+    } else {
+      specs.push(lines.slice(blocks[i], blocks[i + 1]));
+    }
+  }
+
+  specs.forEach(function(x) {
+
+    let name = x[0];
+    let steps = new Array();
+
+    x.slice(1).forEach(function(line) {
+
+      let parameters = line.split(","); 
+      let step = parameters[2];
+
+      let cartesianCoordinates = new Coordinates(
+        1E6 * Number(parameters[3]),
+        1E6 * Number(parameters[4]),
+        1E6 * Number(parameters[5]),
+      );
+
+      steps.push(new Measurement(step, cartesianCoordinates, null));
+
+    });
+
+    // Add the data to the application
+    specimens.push({
+      "demagnetizationType": null,
+      "coordinates": "specimen",
+      "format": "SPINNER",
+      "version": __VERSION__,
+      "created": new Date().toISOString(),
+      "steps": steps,
+      "level": null,
+      "longitude": null,
+      "latitude": null,
+      "age": null,
+      "ageMin": null,
+      "ageMax": null,
+      "lithology": null,
+      "sample": name,
+      "name": name,
+      "volume": null,
+      "beddingStrike": 0,
+      "beddingDip": 0,
+      "coreAzimuth": 0,
+      "coreDip": 90, 
+      "interpretations": new Array()
+    });
+
+  });
+
+}
+
+function importUNESP(file) {
+
+  // Cenieh samples need to be sorted
+  let UNESPSpecimens = new Object();
+
+  let lines = file.data.split(LINE_REGEXP).filter(Boolean);
+  let demagnetizationType = lines[0].split(/\t+/)[1] === "AF Z" ? "alternating" : "thermal";
+
+  // Skip the header
+  lines.slice(1).forEach(function(line) {
+
+    let parameters = line.split(/\t+/);
+    let sampleName = parameters[0];
+
+    // Add a sample to the has map
+    if(!UNESPSpecimens.hasOwnProperty(sampleName)) {
+
+      UNESPSpecimens[sampleName] = new Object({
+        "demagnetizationType": demagnetizationType,
+        "coordinates": "specimen",
+        "format": "UNESP",
+        "version": __VERSION__,
+        "created": new Date().toISOString(),
+        "steps": new Array(),
+        "name": sampleName,
+        "volume": Number(parameters[33]),
+        "longitude": null,
+        "latitude": null,
+        "age": null,
+        "ageMin": null,
+        "ageMax": null,
+        "lithology": null,
+        "sample": sampleName,
+        "beddingStrike": Number(parameters[7]),
+        "beddingDip": Number(parameters[8]),
+        "coreAzimuth": Number(parameters[5]),
+        "coreDip": Number(parameters[6]),
+        "interpretations": new Array()
+      });
+
+    }
+
+    // Extract the measurement parameters
+    let step = parameters[1];
+
+    let declination = Number(parameters[9]);
+    let inclination = Number(parameters[10]);
+    let volume = Number(parameters[33]);
+
+    // Intensity is in emu/cm which is 1E3 A/m. We need micro so another 1E6!
+    let intensity = 1E6 * 1E3;
+
+    // Assume A/m
+    let cartesianCoordinates = new Coordinates(
+      intensity * Number(parameters[2]),
+      intensity * Number(parameters[3]),
+      intensity * Number(parameters[4])
+    );
+
+    // Sanity check geographic coordinates
+    let GDec = Number(parameters[19]);
+    let GInc = Number(parameters[20]);
+
+    let coreAzimuth = Number(parameters[5]);
+    let coreDip = Number(parameters[6]);
+
+    let GDirection = cartesianCoordinates.rotateTo(coreAzimuth, coreDip).toVector(Direction);
+
+    if(Math.abs(GDec - GDirection.dec) > 1 || Math.abs(GInc - GDirection.inc) > 1) {
+      throw(new Exception("Inconsistency detected in geographic vector component."));
+    }
+    
+    UNESPSpecimens[sampleName].steps.push(new Measurement(step, cartesianCoordinates, null));
+	
+  });
+
+  // Add all specimens in the hashmap to the application
+  Object.values(UNESPSpecimens).forEach(function(specimen) {
+    specimens.push(specimen);
+  });
+
+}
+
 function importGTK(file) {
 
   function capitalize(string) {
@@ -842,47 +999,61 @@ function importJR5(file) {
   var beddingStrike;
   var beddingDip;
 
-  steps = lines.map(function(line) {
-
-    sampleName = line.slice(0, 10).trim();
-    var step = line.slice(10, 18).trim();
-    var x = Number(line.slice(18, 24));
-    var y = Number(line.slice(24, 30));
-    var z = Number(line.slice(30, 36));
-    var exp = 1E6 * Math.pow(10, Number(line.slice(36, 40)));
-    coreAzimuth = Number(line.slice(40, 44));
-    coreDip = Number(line.slice(44, 48));
-    beddingStrike = Number(line.slice(48, 52));
-    beddingDip = Number(line.slice(56, 60));
-
-    var coordinates = new Coordinates(x * exp, y * exp, z * exp);
-
-    return new Measurement(step, coordinates, null);
-
+  // Collect by samples
+  var collect = new Object();
+  lines.forEach(function(line) {
+    let sample = line.split(/\s+/)[0];
+    if(!collect.hasOwnProperty(sample)) {
+      collect[sample] = [];
+    }
+    collect[sample].push(line);
   });
 
-  specimens.push({
-    "demagnetizationType": null,
-    "coordinates": "specimen",
-    "format": "JR5",
-    "version": __VERSION__,
-    "created": new Date().toISOString(),
-    "steps": steps,
-    "level": null,
-    "longitude": null,
-    "latitude": null,
-    "age": null,
-    "ageMin": null,
-    "ageMax": null,
-    "lithology": null,
-    "sample": sampleName,
-    "name": sampleName,
-    "volume": 10.0,
-    "beddingStrike": beddingStrike,
-    "beddingDip": beddingDip,
-    "coreAzimuth": coreAzimuth,
-    "coreDip": coreDip,
-    "interpretations": new Array()
+  Object.values(collect).forEach(function(lines) {
+
+    steps = lines.map(function(line) {
+
+      sampleName = line.slice(0, 10).trim();
+      var step = line.slice(10, 18).trim();
+      var x = Number(line.slice(18, 24));
+      var y = Number(line.slice(24, 30));
+      var z = Number(line.slice(30, 36));
+      var exp = 1E6 * Math.pow(10, Number(line.slice(36, 40)));
+      coreAzimuth = Number(line.slice(40, 44));
+      coreDip = Number(line.slice(44, 48));
+      beddingStrike = Number(line.slice(48, 52));
+      beddingDip = Number(line.slice(56, 60));
+
+      var coordinates = new Coordinates(x * exp, y * exp, z * exp);
+
+      return new Measurement(step, coordinates, null);
+
+    });
+
+    specimens.push({
+      "demagnetizationType": null,
+      "coordinates": "specimen",
+      "format": "JR5",
+      "version": __VERSION__,
+      "created": new Date().toISOString(),
+      "steps": steps,
+      "level": null,
+      "longitude": null,
+      "latitude": null,
+      "age": null,
+      "ageMin": null,
+      "ageMax": null,
+      "lithology": null,
+      "sample": sampleName,
+      "name": sampleName,
+      "volume": 10.0,
+      "beddingStrike": beddingStrike,
+      "beddingDip": beddingDip,
+      "coreAzimuth": coreAzimuth,
+      "coreDip": coreDip,
+      "interpretations": new Array()
+    });
+
   });
 
 }
@@ -1780,13 +1951,11 @@ function importCaltech(file) {
 
   // First line has the core & bedding parameters
   var coreParameters = lines[1].split(/\s+/).filter(Boolean);
-
-  // Correct core strike to azimuth and hade to plunge
-  var coreAzimuth = (Number(coreParameters[0].trim()) + 270) % 360;
-  var coreDip = 90 - Number(coreParameters[1].trim());
-  var beddingStrike = Number(coreParameters[2].trim());
-  var beddingDip = Number(coreParameters[3].trim());
-  var sampleVolume = Number(coreParameters[4].trim());
+  var coreAzimuth = (Number(lines[1].slice(8, 13).trim()) + 270) % 360;
+  var coreDip = 90 - Number(lines[1].slice(14, 19).trim());
+  var beddingStrike = Number(lines[1].slice(20, 25).trim());
+  var beddingDip = Number(lines[1].slice(26, 32).trim());
+  var sampleVolume = Number(lines[1].slice(33, 38).trim());
  
   var line;
   var steps = new Array();
@@ -1805,7 +1974,24 @@ function importCaltech(file) {
     var a95 = Number(line.slice(40, 45));
     var info = line.slice(85, 113).trim();
 
+    let GDec = Number(line.slice(7, 12).trim());
+    let GInc = Number(line.slice(13, 18).trim());
+
     var coordinates = new Direction(dec, inc, intensity).toCartesian();
+    var GDirection = coordinates.rotateTo(coreAzimuth, coreDip).toVector(Direction);
+	
+    if(Math.abs(GDec - GDirection.dec) > 1 || Math.abs(GInc - GDirection.inc) > 1) {
+      throw(new Exception("Inconsistency detected in geographic vector component."));
+    }
+
+    var TDec = Number(line.slice(19, 24).trim());
+    var TInc = Number(line.slice(25, 30).trim());
+    var TDirection = coordinates.rotateTo(coreAzimuth, coreDip).correctBedding(beddingStrike, beddingDip).toVector(Direction);
+
+    // Check and verify tectonic coordinates
+    if(Math.abs(TDec - TDirection.dec) > 1 || Math.abs(TInc - TDirection.inc) > 1) {
+      throw(new Exception("Inconsistency detected in tectonic vector component."));
+    }
 
     steps.push(new Measurement(step, coordinates, a95));
 
@@ -1853,7 +2039,7 @@ function importApplicationSaveOld(file) {
 
     // Block this: it means the data is incompatible and needs to be patched
     if(specimen.patch !== 1.1) {
-      throw(new Exception("This file contains incompatible specimens. Run this file through old.paleomagnetism.org."));
+      throw(new Exception("This file contains incompatible specimens. Run this file through the <a href='https://jollyfant.github.io/Paleomagnetism.org/Paleomagnetism.org/'>old application</a>."));
     }
 
     // Declination correction BCN2G was stored as property.. just add it to the core azimuth now

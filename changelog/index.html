@@ -79,6 +79,37 @@
         <div id="accordion">
 
           <div class="card">
+            <div class="card-header" id="headingEight">
+              <button class="btn btn-link" data-toggle="collapse" data-target="#collapseEight" aria-expanded="true" aria-controls="collapseEight">
+                Paleomagnetism.org 2.5.0 - New GAPWAP and Fixes <small class="text-muted">&nbsp; 2024-05-24</small>
+              </button>
+            </div>
+            <div id="collapseEight" class="collapse show" aria-labelledby="headingEight" data-parent="#accordion">
+              <div class="card-body">
+              <ul>
+                <p> <b> Features </b>
+                <li> Added Vaes et al., 2023 (submitted) to reference frame list.
+                <li> <a href="https://apwp-online.org">APWP Online</a> by Vaes et al., 2023 is now available!
+                <li> Added new parser for format <b>UNESP</b> (2G enterprises SQUID Long Core).
+                <li> Added new parser for format <b>SPINNER</b> (MAG Instruments spinner).
+              </ul>
+              <ul>
+                <p> <b> Fixes </b>
+                <li> Fixed bug where JR5 format would expect only a single specimen in a file.
+                <li> Fixed CSV exporting of intensity and equal area diagrams in interpretation portal.
+                <li> Fixed reading of Caltech format in the case of a missing specimen header field. Additional sanity checks were added for the measurements.
+                <li> Fixed MagIC headers for the specimens table.
+                <li> MagIC sites are now determined per unique latitude and longitude instead of per sample.
+		<li> Updated team members' insititutions and roles.
+                <li> Added access to <a href="https://jollyfant.github.io/Paleomagnetism.org/Paleomagnetism.org/">Paleomagnetism.org version 1.0.0</a> to convert legacy .dir files when importing them to the intepretation portal. <b>Please do not use this application for anything else</b>.
+              </ul>
+
+              </div>
+            </div>
+          </div>
+          <p>
+
+          <div class="card">
             <div class="card-header" id="headingSeven">
               <button class="btn btn-link" data-toggle="collapse" data-target="#collapseSeven" aria-expanded="true" aria-controls="collapseSeven">
                 Paleomagnetism.org 2.4.0 - Oroclinal, Ages, and MagIC <small class="text-muted">&nbsp; 2022-03-23</small>
