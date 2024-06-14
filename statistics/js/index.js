@@ -128,6 +128,7 @@ function enable() {
   $("#nav-profile-tab").removeClass("disabled");
   $("#nav-fitting-tab").removeClass("disabled");
   $("#nav-ctmd-tab").removeClass("disabled");
+  $("#nav-inclination-tab").removeClass("disabled");
   $("#nav-foldtest-tab").removeClass("disabled");
   $("#nav-shallowing-tab").removeClass("disabled");
 
@@ -242,6 +243,7 @@ function redrawCharts() {
   // Other modules are triggered with dedicated buttons
   eqAreaProjection();
   eqAreaProjectionMean();
+  calculateInclinationOnly();
 
   // Reset to the original position
   window.scrollTo(0, tempScrollTop);

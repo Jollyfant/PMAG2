@@ -2,718 +2,913 @@
 
 <html lang="en">
 
-   <head>
+<head>
 
-      <!-- Required metadata tags -->
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-      <meta name="description" content="Paleomagnetism.org 2 - An online environment for paleomagnetic analysis">
-      <meta name="keywords" content="paleomagnetism, interpretation, zijderveld, pca">
-      <meta name="author" content="Mathijs Koymans">
-      <link rel="shortcut icon" type="image/x-icon" href="../resources/images/hades-icon.png"/>
-      <link rel="stylesheet" href="../css/style.css">
+    <!-- Required metadata tags -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Paleomagnetism.org 2 - An online environment for paleomagnetic analysis">
+    <meta name="keywords" content="paleomagnetism, interpretation, zijderveld, pca">
+    <meta name="author" content="Mathijs Koymans">
+    <link rel="shortcut icon" type="image/x-icon" href="../resources/images/hades-icon.png"/>
+    <link rel="stylesheet" href="../css/style.css">
 
-      <!-- Bootstrap & Font Awesome CSS & Leaflet -->
-      <link rel="stylesheet" href="../lib/bootstrap-4.3.1/dist/css/bootstrap.min.css">
-      <link rel="stylesheet" href="../lib/fontawesome-free-5.7.2-web/css/all.css">
-      <link rel="stylesheet" href="../lib/leaflet-1.4.0/leaflet.css">
+    <!-- Bootstrap & Font Awesome CSS & Leaflet -->
+    <link rel="stylesheet" href="../lib/bootstrap-4.3.1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../lib/fontawesome-free-5.7.2-web/css/all.css">
+    <link rel="stylesheet" href="../lib/leaflet-1.4.0/leaflet.css">
 
-      <!-- Bootstrap Select -->
-      <link rel="stylesheet" href="../lib/bootstrap-select-1.13.6/dist/css/bootstrap-select.min.css">
+    <!-- Bootstrap Select -->
+    <link rel="stylesheet" href="../lib/bootstrap-select-1.13.6/dist/css/bootstrap-select.min.css">
 
-   </head>
+</head>
 
-   <body id="drop_zone" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
-      <!-- Header -->
-      <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-         <a class="navbar-brand" href="http://www.paleomagnetism.org">Paleomagnetism<span class="text-danger">.org</span></a>
-         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
-         <span class="navbar-toggler-icon"></span>
-         </button>
-         <div class="collapse navbar-collapse" id="navbarsExampleDefault">
-            <ul class="navbar-nav mr-auto">
-               <li class="nav-item">
-                  <a class="nav-link" href="../interpretation">Interpretation</a>
-               </li>
-               <li class="nav-item active">
-                  <a class="nav-link" href="../statistics">Statistics</a>
-               </li>
-               <li class="nav-item">
-                  <a class="nav-link" href="../geography">Geography</a>
-               </li>
-               <li class="nav-item">
-                  <a class="nav-link" href="../miscellaneous">Miscellaneous</a>
-               </li>
-               <li class="nav-item">
-                  <span class="nav-link disabled" href="#">|</span>
-               </li>
-               <li class="nav-item">
-                  <a class="nav-link" href="../references">References</a>
-               </li>
-               <li class="nav-item">
-                  <a class="nav-link" href="../team">Team & Contact</a>
-               </li>
-               <li class="nav-item">
-                  <a class="nav-link" href="../magic">MagIC Interface</a>
-               </li>
-            </ul>
-            <form class="form-inline my-2 my-lg-0">
-               <a href="../library" class="btn btn-sm btn-secondary my-2 my-sm-0"><i class="fas fa-book-open"></i><b>&nbsp; Data Library</b></a>
-            </form>
-         </div>
-      </nav>
-      <!-- Main body -->
-      <div class="container">
-         <!-- Container for user notifications -->
-         <div id="notification-container"></div>
-         <!-- Specimen Scroller -->
-         <div class="input-group">
-            <select class="selectpicker form-control text-center" data-actions-box="true" id="specimen-select" title="Select one or multiple collections" multiple></select>
-         </div>
-         <br>
-         <!-- Tab Headers -->
-         <nav>
-            <div class="nav nav-tabs nav-justified" id="nav-tab" role="tablist">
-               <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Data Import</a>
-               <a class="nav-item nav-link disabled" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Directions</a>
-               <a class="nav-item nav-link disabled" id="nav-fitting-tab" data-toggle="tab" href="#nav-fitting" role="tab" aria-controls="nav-profile" aria-selected="false">Means</a>
-               <a class="nav-item nav-link disabled" id="nav-ctmd-tab" data-toggle="tab" href="#nav-ctmd" role="tab" aria-controls="nav-ctmd" aria-selected="false">CTMD</a>
-               <a class="nav-item nav-link disabled" id="nav-foldtest-tab" data-toggle="tab" href="#nav-foldtest" role="tab" aria-controls="nav-foldtest" aria-selected="false">Foldtest</a>
-               <a class="nav-item nav-link disabled" id="nav-shallowing-tab" data-toggle="tab" href="#nav-shallowing" role="tab" aria-controls="nav-shallowing" aria-selected="false">E-I Shallowing</a>
-               <a class="nav-item nav-link" id="nav-settings-tab" data-toggle="tab" href="#nav-settings" role="tab" aria-controls="nav-settings" aria-selected="false">Settings</a>
+<body id="drop_zone" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
+<!-- Header -->
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+    <a class="navbar-brand" href="https://paleomagnetism.org">Paleomagnetism<span class="text-danger">.org</span></a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
+            aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="../interpretation">Interpretation</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="../statistics">Statistics</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="../geography">Geography</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="../miscellaneous">Miscellaneous</a>
+            </li>
+            <li class="nav-item">
+                <span class="nav-link disabled" href="#">|</span>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="../references">References</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="../team">Team & Contact</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="../magic">MagIC Interface</a>
+            </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0">
+            <a href="../library" class="btn btn-sm btn-secondary my-2 my-sm-0"><i class="fas fa-book-open"></i><b>&nbsp;
+                Data Library</b></a>
+        </form>
+    </div>
+</nav>
+<!-- Main body -->
+<div class="container">
+    <!-- Container for user notifications -->
+    <div id="notification-container"></div>
+    <!-- Specimen Scroller -->
+    <div class="input-group">
+        <select class="selectpicker form-control text-center" data-actions-box="true" id="specimen-select"
+                title="Select one or multiple collections" multiple></select>
+    </div>
+    <br>
+    <!-- Tab Headers -->
+    <nav>
+        <div class="nav nav-tabs nav-justified" id="nav-tab" role="tablist">
+            <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab"
+               aria-controls="nav-home" aria-selected="true">Data Import</a>
+            <a class="nav-item nav-link disabled" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab"
+               aria-controls="nav-profile" aria-selected="false">Directions</a>
+            <a class="nav-item nav-link disabled" id="nav-fitting-tab" data-toggle="tab" href="#nav-fitting" role="tab"
+               aria-controls="nav-profile" aria-selected="false">Means</a>
+            <a class="nav-item nav-link disabled" id="nav-ctmd-tab" data-toggle="tab" href="#nav-ctmd" role="tab"
+               aria-controls="nav-ctmd" aria-selected="false">Common Dir.</a>
+            <a class="nav-item nav-link disabled" id="nav-foldtest-tab" data-toggle="tab" href="#nav-foldtest"
+               role="tab" aria-controls="nav-foldtest" aria-selected="false">Foldtest</a>
+            <a class="nav-item nav-link disabled" id="nav-shallowing-tab" data-toggle="tab" href="#nav-shallowing"
+               role="tab" aria-controls="nav-shallowing" aria-selected="false">E-I Shallowing</a>
+            <a class="nav-item nav-link disabled" id="nav-inclination-tab" data-toggle="tab" href="#nav-inclination"
+            role="tab" aria-controls="nav-inclination" aria-selected="false">Inc. Only</a>
+            <a class="nav-item nav-link" id="nav-settings-tab" data-toggle="tab" href="#nav-settings" role="tab"
+               aria-controls="nav-settings" aria-selected="false">Settings</a>
+        </div>
+    </nav>
+    <div class="tab-content">
+
+        <!-- Tab for data importing -->
+        <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+
+            <br>
+
+            <div class="alert alert-light" role="alert">
+                <h5> Paleomagnetism.org 2 (ALMOST THREE-DOT-ZERO - TAKE A LOOK HERE CHANGE THIS SOON) - Statistics </h5>
+                <p> Data from the Paleomagnetism .col format can be imported to the statistics portal. Each selected
+                    file and group will be associated with a new selectable collection. An alternative example of the
+                    <b>default</b> input file can be found <a href="../resources/formats/default.csv">here</a>.
             </div>
-         </nav>
-         <div class="tab-content">
 
-            <!-- Tab for data importing -->
-            <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+            <div class="input-group">
 
-               <br>
+                <!-- Hidden File input -->
+                <input style="display: none;" type="file" class="custom-file-input" id="customFile" multiple>
 
-               <div class="alert alert-light" role="alert">
-                  <h5> Paleomagnetism.org 2 - Statistics </h5>
-                  <p> Data from the Paleomagnetism .col format can be imported to the statistics portal. Each selected file and group will be associated with a new selectable collection. An alternative example of the <b>default</b> input file can be found <a href="../resources/formats/default.csv">here</a>.
-               </div>
+                <!-- Format type selector -->
+                <select class="custom-select" id="format-selection">
 
-               <div class="input-group">
-
-                  <!-- Hidden File input -->
-                  <input style="display: none;" type="file" class="custom-file-input" id="customFile" multiple>
-
-                  <!-- Format type selector -->
-                  <select class="custom-select" id="format-selection">
-
-                     <optgroup label="Application Formats">
-                        <option value="PMAG2">Paleomagnetism.org (2.0.0 .pub) </option>
+                    <optgroup label="Application Formats">
+                        <option value="PMAG2">Paleomagnetism.org (2.0.0 .pub)</option>
                         <option value="DIR2">Paleomagnetism.org (2.0.0 .col)</option>
-                        <option value="PMAG">Paleomagnetism.org (1.0.0 .pmag) </option>
-                     </optgroup>
-                     <optgroup label="Text Formats">
+                        <option value="PMAG">Paleomagnetism.org (1.0.0 .pmag)</option>
+                    </optgroup>
+                    <optgroup label="Text Formats">
                         <option value="MODAL">Input Window</option>
                         <option value="CSV">Default Format (.csv)</option>
-                     </optgroup>
-                  </select>
+                    </optgroup>
+                </select>
 
-                  <div class="custom-file">
-                     <label class="custom-file-label" for="customFile"><i class="fas fa-search"></i> Select files </label>
-                     <input class="custom-file-input" id="defer-input">
-                  </div>
+                <div class="custom-file">
+                    <label class="custom-file-label" for="customFile"><i class="fas fa-search"></i> Select files
+                    </label>
+                    <input class="custom-file-input" id="defer-input">
+                </div>
 
-                  <div class="input-group-append">
-                     <div class="input-group-text">
+                <div class="input-group-append">
+                    <div class="input-group-text">
                         <input id="append-input" type="checkbox" aria-label="Checkbox for following text input">
                         <label class="form-check-label" for="append-input">
-                        &nbsp; Append
+                            &nbsp; Append
                         </label>
-                     </div>
-                  </div>
-               </div>
+                    </div>
+                </div>
             </div>
+        </div>
 
-            <!-- Tab for Directions -->
-            <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
-               <br>
-               <div class="alert alert-light alert-dismissible fade show" role="alert">
-                  <h5> Statistics - Geomagnetic Directions </h5>
-                  <p> Figures showing the selected collections and their geomagnetic directions & <b>distribution</b> of virtual geomagnetic poles. The right figure does not show actual VGP positions. The table lists standard Fisher parameters for this set of directions. When multiple collections are selected, its components will be combined before a cutoff is applied. Press <b>8</b> and <b>5</b> to switch between coordinate frames and confidence ellipses respectively.
-                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <!-- Tab for Directions -->
+        <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+            <br>
+            <div class="alert alert-light alert-dismissible fade show" role="alert">
+                <h5> Statistics - Geomagnetic Directions </h5>
+                <p> Figures showing the selected collections and their geomagnetic directions & <b>distribution</b> of
+                    virtual geomagnetic poles. The right figure does not show actual VGP positions. The table lists
+                    standard Fisher parameters for this set of directions. When multiple collections are selected, its
+                    components will be combined before a cutoff is applied. Press <b>8</b> and <b>5</b> to switch
+                    between coordinate frames and confidence ellipses respectively.
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
-                     </button>
-               </div>
+                    </button>
+            </div>
 
-               <div class="container">
+            <div class="container">
 
-                  <div class="row">
-                     <div class="table-responsive">
+                <div class="row">
+                    <div class="table-responsive">
                         <table class='table table-sm text-center table-striped' id="direction-table"></table>
-                     </div>
+                    </div>
 
-                     <!-- ChRM Directions -->
-                     <div class="col-lg-6">
+                    <!-- ChRM Directions -->
+                    <div class="col-lg-6">
                         <div id="direction-container"></div>
-                     </div>
+                    </div>
 
-                     <!-- VGPs -->
-                     <div class="col-lg-6">
+                    <!-- VGPs -->
+                    <div class="col-lg-6">
                         <div id="pole-container"></div>
-                     </div>
-                  </div>
-                  <p><small><b>Note</b>: The illustrated VGP distribution and cutoff is relative to the mean and does not show true VGP positions. All directions are assumed to come from the same geographic location. </small>
-                  <div class="text-right">
-                     <button class="btn btn-sm btn-light" id="export-png"><i class="far fa-file-image"></i> PNG</button>
-                     <button class="btn btn-sm btn-light" id="export-svg"><i class="far fa-file-image"></i> SVG</button>
-                     <button class="btn btn-sm btn-light" id="export-pdf"><i class="far fa-file-image"></i> PDF</button>
-                  </div>
-               </div>
+                    </div>
+                </div>
+                <p><small><b>Note</b>: The illustrated VGP distribution and cutoff is relative to the mean and does not
+                    show true VGP positions. All directions are assumed to come from the same geographic location.
+                </small>
+                <div class="text-right">
+                    <button class="btn btn-sm btn-light" id="export-png"><i class="far fa-file-image"></i> PNG</button>
+                    <button class="btn btn-sm btn-light" id="export-svg"><i class="far fa-file-image"></i> SVG</button>
+                    <button class="btn btn-sm btn-light" id="export-pdf"><i class="far fa-file-image"></i> PDF</button>
+                </div>
             </div>
+        </div>
 
-            <!-- Tab for mean directions -->
-            <div class="tab-pane fade" id="nav-fitting" role="tabpanel" aria-labelledby="nav-settings-tab">
-               <br>
-               <div class="alert alert-light alert-dismissible fade show" role="alert">
-                  <h5> Statistics - Mean Geomagnetic Directions </h5>
-                  <p> Figures showing the mean direction of the mean of all selected collections seperately. Press <b>8</b> and <b>5</b> to switch between coordinate frames and confidence ellipses respectively. The selected cutoff is applied to each collection.
-                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                     <span aria-hidden="true">&times;</span>
-                     </button>
-               </div>
-               <div class="container">
-                  <div class="row justify-content-md-center">
-                     <div class="table-responsive">
+        <!-- Tab for mean directions -->
+        <div class="tab-pane fade" id="nav-fitting" role="tabpanel" aria-labelledby="nav-settings-tab">
+            <br>
+            <div class="alert alert-light alert-dismissible fade show" role="alert">
+                <h5> Statistics - Mean Geomagnetic Directions </h5>
+                <p> Figures showing the mean direction of the mean of all selected collections seperately. Press
+                    <b>8</b> and <b>5</b> to switch between coordinate frames and confidence ellipses respectively. The
+                    selected cutoff is applied to each collection.
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+            </div>
+            <div class="container">
+                <div class="row justify-content-md-center">
+                    <div class="table-responsive">
                         <table class='table table-sm text-center table-striped' id="mean-table"></table>
-                     </div>
-                     <!-- ChRM Directions -->
-                     <div class="col-lg-6">
+                    </div>
+                    <!-- ChRM Directions -->
+                    <div class="col-lg-6">
                         <div id="mean-container"></div>
-                     </div>
-                  </div>
-               </div>
+                    </div>
+                </div>
             </div>
+        </div>
 
-            <!-- Tab for CTMD test -->
-            <div class="tab-pane fade" id="nav-ctmd" role="tabpanel" aria-labelledby="nav-settings-tab">
-               <br>
-               <div class="alert alert-light alert-dismissible fade show" role="alert">
-                  <h5> Statistics - Common True Mean Directions </h5>
-                  <p> Figures showing <b>1000</b> bootstrapped mean coordinates for the selected collections following the approach of <a href='../references'>Tauxe et al., 2010</a>. Select two collections and click <b>initialize</b> to begin the bootstrap. Overlapping distributions indicidate that two collections are the same within confidence limits.
-                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                     <span aria-hidden="true">&times;</span>
-                     </button>
-               </div>
-               <p> <button onclick="bootstrapCTMD()" type="button" class="btn btn-sm pull-right btn-primary"><i class="fas fa-play"></i> <b>Initialize</b></button> <button onclick="createCTMDGrid()" type="button" class="btn btn-sm pull-right btn-success"><i class="fas fa-th"></i> <b>Grid View</b></button>
-               <div class="container">
-                  <div class="row justify-content-md-center">
-                     <div id="permutation-table"></div>
-                     <div class="table-responsive">
+        <!-- Tab for CTMD test -->
+        <div class="tab-pane fade" id="nav-ctmd" role="tabpanel" aria-labelledby="nav-settings-tab">
+            <br>
+            <div class="alert alert-light alert-dismissible fade show" role="alert">
+                <h5> Statistics - Common Directions </h5>
+                <p> CHANGES ARE NEEDED - CHECK REFERENCES TOO
+                    Figures showing <b>1000</b> bootstrapped mean coordinates for the selected collections following the
+                    approach of <a href='../references'>Tauxe et al., 2010</a>. Select two collections and click <b>initialize</b>
+                    to begin the bootstrap. Overlapping distributions indicidate that two collections are the same
+                    within confidence limits.
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+            </div>
+            <br/>
+
+            <button onclick="bootstrapCTMD()" type="button" class="btn btn-sm pull-right btn-primary"><i
+                    class="fas fa-play"></i> <b>Initialize</b></button>
+            <button onclick="createCTMDGrid()" type="button" class="btn btn-sm pull-right btn-success"><i
+                    class="fas fa-th"></i> <b>Grid Overview</b></button>
+            <br/><br/>
+
+
+            <div class="progress">
+                <div id="CMDT-progress" class="progress-bar progress-bar-striped progress-bar-animated"
+                     style="width: 0%; transition: none;"></div>
+            </div>
+            <div class="alert alert-light" id="grid-overview-note"></div>
+            <div class="container">
+                <div class="row justify-content-md-center">
+
+                    <div id="permutation-table"></div>
+                    <div class="table-responsive">
                         <table class='table table-sm text-center table-striped' id="bootstrap-table"></table>
-                     </div>
+                        <br/>
+                        <table class='table table-sm text-center table-striped' id="bootstrap-table-new"></table>
+                        <br/>
+                        <div id="bootstrap-direction-form"></div>
+                        <table class='table table-sm text-center table-striped'
+                               id="bootstrap-cmdt-direction-table"></table>
+                        <br/>
+                    </div>
 
-                     <!-- X, Y, Z coordinates -->
-                     <div class="col-lg-4">
-                        <div id="ctmd-container-x"></div>
-                     </div>
-                     <div class="col-lg-4">
-                        <div id="ctmd-container-y"></div>
-                     </div>
-                     <div class="col-lg-4">
-                        <div id="ctmd-container-z"></div>
-                     </div>
-                  </div>
+                    <div class="col-lg-12 d-flex justify-content-center align-items-center">
+                        <div class="col-lg-6">
+                            <div id="container-histogram-1"></div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div id="container-dot-chart"></div>
+                        </div>
+                    </div>
 
-                  <br>
+                    <!-- X, Y, Z coordinates -->
+                    <div class="col-lg-12 d-flex" style="margin-top: 50px; margin-bottom: 50px">
+                        <div class="col-lg-4">
+                            <div id="ctmd-container-x"></div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div id="ctmd-container-y"></div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div id="ctmd-container-z"></div>
+                        </div>
+                    </div>
+                </div>
+                <br>
 
-                  <div class="text-right">
-                     <button class="btn btn-sm btn-light" id="export-bootstrap-png"><i class="far fa-file-image"></i> PNG</button>
-                     <button class="btn btn-sm btn-light" id="export-bootstrap-svg"><i class="far fa-file-image"></i> SVG</button>
-                     <button class="btn btn-sm btn-light" id="export-bootstrap-pdf"><i class="far fa-file-image"></i> PDF</button>
-                  </div>
+                <div class="text-right">
+                    <button class="btn btn-sm btn-light" id="export-bootstrap-png"><i class="far fa-file-image"></i> PNG
+                    </button>
+                    <button class="btn btn-sm btn-light" id="export-bootstrap-svg"><i class="far fa-file-image"></i> SVG
+                    </button>
+                    <button class="btn btn-sm btn-light" id="export-bootstrap-pdf"><i class="far fa-file-image"></i> PDF
+                    </button>
+                </div>
 
-               </div>
             </div>
+        </div>
 
-            <!-- Tab for Foldtest -->
-            <div class="tab-pane fade" id="nav-foldtest" role="tabpanel" aria-labelledby="nav-settings-tab">
-               <br>
-               <div class="alert alert-light alert-dismissible fade show" role="alert">
-                  <h5> Statistics - Foldtest </h5>
-                  <p> This module allows the user to do a classical foldtest (<a href="../references">Tauxe & Watson, 1994</a>) on one or multiple collections. <b>No cutoff will be applied</b>. Select any number of collections and click <b>initialize</b> to start. 
-                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                     <span aria-hidden="true">&times;</span>
-                     </button>
-               </div>
-               <div class="input-group mb-3">
-                  <div class="btn-group-toggle" data-toggle="buttons">
-                     <label class="btn btn-sm btn-success active">
-                     <input id="foldtest-bootstrap-checkbox" type="checkbox" checked autocomplete="off"><i class="fas fa-dice"></i>
-                     </label>
-                  </div>
-                  &nbsp;
-                  <p> <button onclick="bootstrapFoldtest()" type="button" class="btn btn-sm pull-right btn-primary"><i class="fas fa-play"></i> <b>Initialize</b></button>
-               </div>
-               <div class="progress">
-                  <div id="foldtest-progress" class="progress-bar progress-bar-striped progress-bar-animated" style="width: 0%; transition: none;"></div>
-               </div>
-               <div class="container">
-                  <div class="row">
-                     <!-- In geographic coordinates -->
-                     <div class="col-lg-6">
+        <!-- Tab for Foldtest -->
+        <div class="tab-pane fade" id="nav-foldtest" role="tabpanel" aria-labelledby="nav-settings-tab">
+            <br>
+            <div class="alert alert-light alert-dismissible fade show" role="alert">
+                <h5> Statistics - Foldtest </h5>
+                <p> This module allows the user to do a classical foldtest (<a href="../references">Tauxe & Watson,
+                    1994</a>) on one or multiple collections. <b>No cutoff will be applied</b>. Select any number of
+                    collections and click <b>initialize</b> to start.
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+            </div>
+            <div class="input-group mb-3">
+                <div class="btn-group-toggle" data-toggle="buttons">
+                    <label class="btn btn-sm btn-success active">
+                        <input id="foldtest-bootstrap-checkbox" type="checkbox" checked autocomplete="off"><i
+                            class="fas fa-dice"></i>
+                    </label>
+                </div>
+                &nbsp;
+                <p>
+                    <button onclick="bootstrapFoldtest()" type="button" class="btn btn-sm pull-right btn-primary"><i
+                            class="fas fa-play"></i> <b>Initialize</b></button>
+            </div>
+            <div class="progress">
+                <div id="foldtest-progress" class="progress-bar progress-bar-striped progress-bar-animated"
+                     style="width: 0%; transition: none;"></div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <!-- In geographic coordinates -->
+                    <div class="col-lg-6">
                         <div id="foldtest-geographic-container"></div>
-                     </div>
-                     <!-- In tectonic coordinates -->
-                     <div class="col-lg-6">
+                    </div>
+                    <!-- In tectonic coordinates -->
+                    <div class="col-lg-6">
                         <div id="foldtest-tectonic-container"></div>
-                     </div>
-                  </div>
-                  <!-- Container for the foldtest itself -->
-                  <div class="row">
-                     <div class="col-lg-12">
+                    </div>
+                </div>
+                <!-- Container for the foldtest itself -->
+                <div class="row">
+                    <div class="col-lg-12">
                         <div id="foldtest-full-container"></div>
-                     </div>
-                  </div>
-               </div>
-
-               <div class="text-right">
-                  <button class="btn btn-sm btn-light" id="export-foldtest-png"><i class="far fa-file-image"></i> PNG</button>
-                  <button class="btn btn-sm btn-light" id="export-foldtest-svg"><i class="far fa-file-image"></i> SVG</button>
-                  <button class="btn btn-sm btn-light" id="export-foldtest-pdf"><i class="far fa-file-image"></i> PDF</button>
-               </div>
-
+                    </div>
+                </div>
             </div>
 
-            <!-- Tab for E/I test -->
-            <div class="tab-pane fade" id="nav-shallowing" role="tabpanel" aria-labelledby="nav-settings-tab">
-               <br>
-               <div class="alert alert-light alert-dismissible fade show" role="alert">
-                  <h5> Statistics - Shallowing </h5>
-                  <p>  The inclination shallowing module unflattens observed inclinations in sediments to fit with the TK03.GAD Field Model (<a href="../references">Tauxe et al., 2008</a>) based on the relationship between the expected elongation (E) (τ2/τ3) and inclination. The flattening function of (King, 1955) is applied. A single collection can be selected and a cutoff will be applied. <b>A minimum of 80 directions are required</b>. The procedure can be bootstrapped <b>1000</b> times to find its confidence limits.
-                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                     <span aria-hidden="true">&times;</span>
-                     </button>
-               </div>
-                  <div class="input-group mb-3">
-                     <div class="btn-group-toggle" data-toggle="buttons">
-                        <label class="btn btn-sm btn-success active">
-                        <input id="shallowing-bootstrap-checkbox" type="checkbox" checked autocomplete="off"><i class="fas fa-dice"></i>
-                        </label>
-                     </div>
-                     &nbsp;
-                     <p> <button onclick="bootstrapShallowing()" type="button" class="btn btn-sm pull-right btn-primary"><i class="fas fa-play"></i> <b>Initialize</b></button>
-                  </div>
-                  <div class="progress">
-                     <div id="shallowing-progress" class="progress-bar progress-bar-striped progress-bar-animated" style="width: 0%; transition: none;"></div>
-               </div>
-               <div class="row">
-                  <div class="col-lg-12">
-                     <div id="ei-bootstrap-container"></div>
-                  </div>
-               </div>
-               <div class="row">
-                  <div class="col-lg-12">
-                     <div id="ei-cdf-container"></div>
-                  </div>
-               </div>
-               <div class="text-right">
-                  <button class="btn btn-sm btn-light" id="export-shallowing-png"><i class="far fa-file-image"></i> PNG</button>
-                  <button class="btn btn-sm btn-light" id="export-shallowing-svg"><i class="far fa-file-image"></i> SVG</button>
-                  <button class="btn btn-sm btn-light" id="export-shallowing-pdf"><i class="far fa-file-image"></i> PDF</button>
-               </div>
+            <div class="text-right">
+                <button class="btn btn-sm btn-light" id="export-foldtest-png"><i class="far fa-file-image"></i> PNG
+                </button>
+                <button class="btn btn-sm btn-light" id="export-foldtest-svg"><i class="far fa-file-image"></i> SVG
+                </button>
+                <button class="btn btn-sm btn-light" id="export-foldtest-pdf"><i class="far fa-file-image"></i> PDF
+                </button>
             </div>
 
-            <!-- Tab for Settings -->
-            <div class="tab-pane fade" id="nav-settings" role="tabpanel" aria-labelledby="nav-settings-tab">
-               <br>
+        </div>
 
-               <!-- Cutoff selector -->
-               <div class="card">
-                  <div class="card-body">
+        <!-- Tab for E/I test -->
+        <div class="tab-pane fade" id="nav-shallowing" role="tabpanel" aria-labelledby="nav-settings-tab">
+            <br>
+            <div class="alert alert-light alert-dismissible fade show" role="alert">
+                <h5> Statistics - Shallowing </h5>
+                <p> The inclination shallowing module unflattens observed inclinations in sediments to fit with the
+                    TK03.GAD Field Model (<a href="../references">Tauxe et al., 2008</a>) based on the relationship
+                    between the expected elongation (E) (τ2/τ3) and inclination. The flattening function of (King, 1955)
+                    is applied. A single collection can be selected and a cutoff will be applied. <b>A minimum of 80
+                    directions are required</b>. The procedure can be bootstrapped <b>1000</b> times to find its
+                    confidence limits.
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+            </div>
+            <div class="input-group mb-3">
+                <div class="btn-group-toggle" data-toggle="buttons">
+                    <label class="btn btn-sm btn-success active">
+                        <input id="shallowing-bootstrap-checkbox" type="checkbox" checked autocomplete="off"><i
+                            class="fas fa-dice"></i>
+                    </label>
+                </div>
+                &nbsp;
+                <p>
+                    <button onclick="bootstrapShallowing()" type="button" class="btn btn-sm pull-right btn-primary"><i
+                            class="fas fa-play"></i> <b>Initialize</b></button>
+            </div>
+            <div class="progress">
+                <div id="shallowing-progress" class="progress-bar progress-bar-striped progress-bar-animated"
+                     style="width: 0%; transition: none;"></div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div id="ei-bootstrap-container"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div id="ei-cdf-container"></div>
+                </div>
+            </div>
+            <div class="text-right">
+                <button class="btn btn-sm btn-light" id="export-shallowing-png"><i class="far fa-file-image"></i> PNG
+                </button>
+                <button class="btn btn-sm btn-light" id="export-shallowing-svg"><i class="far fa-file-image"></i> SVG
+                </button>
+                <button class="btn btn-sm btn-light" id="export-shallowing-pdf"><i class="far fa-file-image"></i> PDF
+                </button>
+            </div>
+        </div>
+        
+        <!-- Tab for Inclination Only -->
+        <div class="tab-pane fade" id="nav-inclination" role="tabpanel" aria-labelledby="nav-settings-tab">
+            <br>
+            <div class="alert alert-light alert-dismissible fade show" role="alert">
+                <h5> Inclination Only Statistics</h5>
+                <p>
+                    Paleomagnetic directions record declinations and inclinations. In some cases, due to
+                    structural problems or lost azimuths in drill cores, only the inclinations are reliable.
+                    Select two collections and click <b>initialize</b> The table shows the inclination-only 
+                    method of Arason and Levy (2010) and plain statistics. The tilt test follows Enkin's (1996)
+                    methodology, where you can choose between the inverse variance or Arason and Levy's 𝑘.
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
 
-                     <h5> Select Cutoff </h5>
-                     <p> A pole-cutoff can be selected that will be applied to the polar distribution.
-                     <div class="input-group mb-6">
+            </div>
+            <p></p>
+            <div class="container">
+                <table class='table table-sm text-center table-striped' id='table-inclination-only'></table>
+                <p></p>
+
+                <h5>Inclination Only Tilt Test</h5>
+                <p></p>
+                <select class="form-control" name="select" id="select-foldtest-io">
+                    <option value="inv" selected>Inverse variance</option>
+                    <option value="k">Arason-Levi's (k)</option>
+                </select>
+                <p></p>
+                <div class="input-group mb-3">
+                    <p>
+                        <button onclick="bootstrapFoldtestIO()" type="button" class="btn btn-sm pull-right btn-primary"><i
+                                class="fas fa-play"></i> <b>Initialize</b></button>
+                </div>
+                <div class="progress">
+                    <div id="foldtest-inclination-only-progress" class="progress-bar progress-bar-striped progress-bar-animated"
+                         style="width: 0%; transition: none;"></div>
+                </div>
+                <p></p>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div id="foldtest-io-full-container"></div>
+                    </div>
+                </div>
+                <p></p>
+            </div>
+
+        </div>
+
+        <!-- Tab for Settings -->
+        <div class="tab-pane fade" id="nav-settings" role="tabpanel" aria-labelledby="nav-settings-tab">
+            <br>
+
+            <!-- Cutoff selector -->
+            <div class="card">
+                <div class="card-body">
+
+                    <h5> Select Cutoff </h5>
+                    <p> A pole-cutoff can be selected that will be applied to the polar distribution.
+                    <div class="input-group mb-6">
                         <div class="input-group-prepend">
-                           <label class="input-group-text" for="cutoff-selection"><i class="fas fa-cut"></i> &nbsp; Cutoff &nbsp; <small><i class="fas fa-angle-right"></i></small></label>
+                            <label class="input-group-text" for="cutoff-selection"><i class="fas fa-cut"></i> &nbsp;
+                                Cutoff &nbsp; <small><i class="fas fa-angle-right"></i></small></label>
                         </div>
                         <select class="custom-select" id="cutoff-selection">
-                           <optgroup label="Recommended Cutoffs">
-                              <option value="CUTOFF45">45° Cutoff</option>
-                           </optgroup>
-                           <optgroup label="Other Cutoffs">
-                              <option value="VANDAMME">Vandamme Cutoff</option>
-                              <!-- <option value="KRIJGSMAN">Krijgsman</option> -->
-                              <option value="">None</option>
-                           </optgroup>
+                            <optgroup label="Recommended Cutoffs">
+                                <option value="CUTOFF45">45° Cutoff</option>
+                            </optgroup>
+                            <optgroup label="Other Cutoffs">
+                                <option value="VANDAMME">Vandamme Cutoff</option>
+                                <!-- <option value="KRIJGSMAN">Krijgsman</option> -->
+                                <option value="">None</option>
+                            </optgroup>
                         </select>
-                     </div>
-                  </div>
-               </div>
+                    </div>
+                </div>
+            </div>
 
-               <p>
+            <p>
 
-               <div class="card">
-                  <div class="card-body">
+            <div class="card">
+                <div class="card-body">
 
-                     <!-- Options for sorting -->
-                     <h5> Sorting Options </h5>
-                     <button onclick="sortCollections('name')" type="button" class="btn btn-sm btn-light"><i class="fas fa-sort"></i> Name</button>
-                     <button onclick="sortCollections('bogo')" type="button" class="btn btn-sm btn-light"><i class="fas fa-sort"></i> Randomly</button>
-                  </div>
-               </div>
- 
-               <p>
-               <!-- Keyboard tips -->
-               <div class="card">
-                  <div class="card-body">
-                     <h5> Keyboard Shortcuts</h5>
-                     <small>
+                    <!-- Options for sorting -->
+                    <h5> Sorting Options </h5>
+                    <button onclick="sortCollections('name')" type="button" class="btn btn-sm btn-light"><i
+                            class="fas fa-sort"></i> Name
+                    </button>
+                    <button onclick="sortCollections('bogo')" type="button" class="btn btn-sm btn-light"><i
+                            class="fas fa-sort"></i> Randomly
+                    </button>
+                </div>
+            </div>
+
+            <p>
+                <!-- Keyboard tips -->
+            <div class="card">
+                <div class="card-body">
+                    <h5> Keyboard Shortcuts</h5>
+                    <small>
                         <div class="table-responsive">
-                           <table class="table table-sm table-striped text-center">
-                              <tr>
-                                 <td>Cycle Confidence Ellipse (α95, A95)</td>
-                                 <td>Cycle Coordinates</td>
-                                 <td>Save Selected Collections</td>
-                                 <td>Remove Selected Collections</td>
-                                 <td>Copy selected collection to clipboard</td>
-                              </tr>
-                              <td>5</td>
-                              <td>8</td>
-                              <td>s</td>
-                              <td>q</td>
-                              <td>e</td>
-                           </table>
+                            <table class="table table-sm table-striped text-center">
+                                <tr>
+                                    <td>Cycle Confidence Ellipse (α95, A95)</td>
+                                    <td>Cycle Coordinates</td>
+                                    <td>Save Selected Collections</td>
+                                    <td>Remove Selected Collections</td>
+                                    <td>Copy selected collection to clipboard</td>
+                                </tr>
+                                <td>5</td>
+                                <td>8</td>
+                                <td>s</td>
+                                <td>q</td>
+                                <td>e</td>
+                            </table>
                         </div>
-                     </small>
-                  </div>
-               </div>
+                    </small>
+                </div>
+            </div>
 
-               <p>
+            <p>
 
-               <!-- Preferences -->
-               <div class="card">
-                  <div class="card-body">
-                     <h5> Preferences </h5>
-                     <div class="form-check form-check-inline">
+                <!-- Preferences -->
+            <div class="card">
+                <div class="card-body">
+                    <h5> Preferences </h5>
+                    <div class="form-check form-check-inline">
                         <input class="form-check-input" type="checkbox" id="auto-save" value="option1" checked>
                         <label class="form-check-label" for="auto-save"> Auto-save </label>
-                     </div>
-                     <div class="form-check form-check-inline">
+                    </div>
+                    <div class="form-check form-check-inline">
                         <input class="form-check-input" type="checkbox" id="enable-sound" value="option1" checked>
                         <label class="form-check-label" for="enable-sound"> Sound </label>
-                     </div>
-                     <div class="form-check form-check-inline">
+                    </div>
+                    <div class="form-check form-check-inline">
                         <input class="form-check-input" type="checkbox" id="enable-deenen" value="option1" checked>
                         <label class="form-check-label" for="enable-deenen"> Show Deenen Criteria </label>
-                     </div>
-                     <div class="form-check form-check-inline">
+                    </div>
+                    <div class="form-check form-check-inline">
                         <input class="form-check-input" type="checkbox" id="flip-ellipse" value="option1" checked>
                         <label class="form-check-label" for="flip-ellipse"> Flip Confidence Ellipses </label>
-                     </div>
-                     <div class="form-check form-check-inline">
+                    </div>
+                    <div class="form-check form-check-inline">
                         <input class="form-check-input" type="checkbox" id="random-mean-color" value="option1" checked>
                         <label class="form-check-label" for="random-mean-color"> Random Mean Color </label>
-                     </div>
-                     <div class="form-check form-check-inline">
+                    </div>
+                    <div class="form-check form-check-inline">
                         <input class="form-check-input" type="checkbox" id="show-samples-mean" value="option1" checked>
                         <label class="form-check-label" for="show-samples-mean"> Show Samples Mean </label>
-                     </div>
-                  </div>
-               </div>
+                    </div>
+                </div>
+            </div>
 
-               <p>
+            <p>
 
-               <!-- Reset the application -->
-               <div class="card">
-                  <div class="card-body">
+                <!-- Reset the application -->
+            <div class="card">
+                <div class="card-body">
 
-                     <h5> Application Reset </h5>
-                     The application will be resetted as local storage will be cleared. Export your data manually to save it.
-                     <hr>
-                     <button onclick="clearLocalStorage('statistics')" type="button" class="btn btn-sm btn-danger">
+                    <h5> Application Reset </h5>
+                    The application will be resetted as local storage will be cleared. Export your data manually to save
+                    it.
+                    <hr>
+                    <button onclick="clearLocalStorage('statistics')" type="button" class="btn btn-sm btn-danger">
                         <i class="fas fa-times"></i>&nbsp; Reset Local Storage
-                     </button>
-                  </div>
-               </div>
-
+                    </button>
+                </div>
             </div>
-         </div>
-      </div>
 
-      <!-- Footer -->
-      <footer id="footer-container" class="container text-muted"></footer>
+        </div>
+    </div>
+</div>
 
-      <br>
+<!-- Footer -->
+<footer id="footer-container" class="container text-muted"></footer>
 
-      <!-- Modal for input -->
-      <div class="modal fade" id="input-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel3" aria-hidden="true">
-         <div class="modal-dialog" role="document">
-            <div class="modal-content">
-               <div class="modal-header">
-                  <h5 class="modal-title">Add New Collection</h5>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                  </button>
-               </div>
-               <div class="modal-body">
-                  <div class="input-group input-group-sm">
-                     <div class="input-group-prepend">
+<br>
+
+<!-- Modal for input -->
+<div class="modal fade" id="input-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel3"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Collection</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group input-group-sm">
+                    <div class="input-group-prepend">
                         <span class="input-group-text" id="">Collection Name</span>
-                     </div>
-                     <input id="site-input-name" class="form-control">
-                  </div>
-                  <p>
-                     <!-- Latitude, Longitude container -->
-                  <div class="form-group">
-                     <div class="row">
+                    </div>
+                    <input id="site-input-name" class="form-control">
+                </div>
+                <p>
+                    <!-- Latitude, Longitude container -->
+                <div class="form-group">
+                    <div class="row">
                         <div class="col">
-                           <div class="input-group input-group-sm">
-                              <input id="site-input-latitude" type="text" class="form-control input-sm" placeholder="Latitude">
-                              <div class="input-group-append">
-                                 <div class="input-group-text">°N</div>
-                              </div>
-                           </div>
+                            <div class="input-group input-group-sm">
+                                <input id="site-input-latitude" type="text" class="form-control input-sm"
+                                       placeholder="Latitude">
+                                <div class="input-group-append">
+                                    <div class="input-group-text">°N</div>
+                                </div>
+                            </div>
                         </div>
                         <div class="col">
-                           <div class="input-group input-group-sm">
-                              <input id="site-input-longitude" type="text" class="form-control input-sm" placeholder="Longitude">
-                              <div class="input-group-append">
-                                 <div class="input-group-text">°E</div>
-                              </div>
-                           </div>
+                            <div class="input-group input-group-sm">
+                                <input id="site-input-longitude" type="text" class="form-control input-sm"
+                                       placeholder="Longitude">
+                                <div class="input-group-append">
+                                    <div class="input-group-text">°E</div>
+                                </div>
+                            </div>
                         </div>
-                     </div>
-                     <p>
-                     <div class="input-group input-group-sm">
-                        <select style="width: 25%" id="specimen-age-select" class="form-control custom-select text-center"></select>
+                    </div>
+                    <p>
+                    <div class="input-group input-group-sm">
+                        <select style="width: 25%" id="specimen-age-select"
+                                class="form-control custom-select text-center"></select>
                         <div class="input-group-prepend ">
-                           <span class="input-group-text" id="">Age</span>
+                            <span class="input-group-text" id="">Age</span>
                         </div>
-                        <input id="age-input"class="form-control">
+                        <input id="age-input" class="form-control">
                         <div class="input-group-prepend">
-                           <span class="input-group-text" id="">Min</span>
+                            <span class="input-group-text" id="">Min</span>
                         </div>
-                        <input id="age-min-input"class="form-control">
+                        <input id="age-min-input" class="form-control">
                         <div class="input-group-prepend">
-                           <span class="input-group-text" id="">Max</span>
+                            <span class="input-group-text" id="">Max</span>
                         </div>
-                        <input id="age-max-input"class="form-control">
-                     </div>
-                  </div>
-                  <p><small><b>Note:</b> metadata is applied to all components in collection. To assign more metadata to each component choose an alternative input method.</small>
-                  <hr>
+                        <input id="age-max-input" class="form-control">
+                    </div>
+                </div>
+                <p><small><b>Note:</b> metadata is applied to all components in collection. To assign more metadata to
+                    each component choose an alternative input method.</small>
+                <hr>
 
-                  <div class="form-group">
-                     <label for="exampleFormControlTextarea1">Components</label>
-                     <div class="input-group">
+                <div class="form-group">
+                    <label for="exampleFormControlTextarea1">Components</label>
+                    <div class="input-group">
 
                         <div class="input-group-prepend">
-                           <span class="input-group-text" id="numbers"></span>
+                            <span class="input-group-text" id="numbers"></span>
                         </div>
-                        <textarea style="height: 254px; resize: none;" id="site-input-area" class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-                     </div>
-                  </div>
+                        <textarea style="height: 254px; resize: none;" id="site-input-area" class="form-control"
+                                  id="exampleFormControlTextarea1" rows="3"></textarea>
+                    </div>
+                </div>
 
-                  <small>Fill in: declination, inclination, ((bedding strike, dip), and name).</small>
-                  <hr>
-                  <p><button class="btn btn-sm btn-primary" id="add-site-input">Add Collection</button>
-               </div>
+                <small>Fill in: declination, inclination, ((bedding strike, dip), and name).</small>
+                <hr>
+                <p>
+                    <button class="btn btn-sm btn-primary" id="add-site-input">Add Collection</button>
             </div>
-         </div>
-      </div>
-      </div>
+        </div>
+    </div>
+</div>
+</div>
 
-      <!-- Modal for generic things -->
-      <div class="modal fade" id="metadata-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
-         <div class="modal-dialog" role="document">
-            <div class="modal-content">
-               <div class="modal-header">
-                 <div id="color-preview" style="width: 16px; margin: auto; margin-left: 10px; margin-right: 10px; background-color: red; height: 16px; border: 1px solid black;"> </div>
-                  <h5 class="modal-title" id="metadata-modal-title"></h5>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                  </button>
-               </div>
-               <div class="modal-body">
+<!-- Modal for generic things -->
+<div class="modal fade" id="metadata-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div id="color-preview"
+                     style="width: 16px; margin: auto; margin-left: 10px; margin-right: 10px; background-color: red; height: 16px; border: 1px solid black;"></div>
+                <h5 class="modal-title" id="metadata-modal-title"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
 
-                  <div class="input-group mb-3">
-                     <div class="input-group-prepend">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
                         <span class="input-group-text" id="basic-addon1">DOI</span>
-                     </div>
-                     <input id="metadata-reference" type="text" class="form-control" placeholder="10.1016/j.cageo.2016.05.007" aria-label="Username" aria-describedby="basic-addon1">
-                  </div>
+                    </div>
+                    <input id="metadata-reference" type="text" class="form-control"
+                           placeholder="10.1016/j.cageo.2016.05.007" aria-label="Username"
+                           aria-describedby="basic-addon1">
+                </div>
 
-                  <div class="input-group mb-3">
-                     <div class="input-group-prepend">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
                         <span class="input-group-text" id="basic-addon1">Authors</span>
-                     </div>
-                     <input id="metadata-authors" type="text" class="form-control" placeholder="Author et al." aria-label="Username" aria-describedby="basic-addon1">
+                    </div>
+                    <input id="metadata-authors" type="text" class="form-control" placeholder="Author et al."
+                           aria-label="Username" aria-describedby="basic-addon1">
 
-                     <div class="input-group-prepend">
+                    <div class="input-group-prepend">
                         <span class="input-group-text" id="basic-addon1">Year</span>
-                     </div>
-                     <input id="metadata-year" type="text" class="form-control" placeholder="2020" aria-label="Username" aria-describedby="basic-addon1">
-                  </div>
+                    </div>
+                    <input id="metadata-year" type="text" class="form-control" placeholder="2020" aria-label="Username"
+                           aria-describedby="basic-addon1">
+                </div>
 
-                 <div class="form-group">
-                   <label for="exampleFormControlTextarea1">Comments</label>
-                   <div class="input-group">
-                     <textarea style="height: 100px; resize: none;" class="form-control" id="metadata-comments" placeholder="Additional comments" rows="3"></textarea>
-                   </div>
-                 </div>
+                <div class="form-group">
+                    <label for="exampleFormControlTextarea1">Comments</label>
+                    <div class="input-group">
+                        <textarea style="height: 100px; resize: none;" class="form-control" id="metadata-comments"
+                                  placeholder="Additional comments" rows="3"></textarea>
+                    </div>
+                </div>
 
-                 <div id="color-picker" style="width: 200px; margin: auto;">
-                   <div style="background-color: #F55;" class="color-item" onclick="changeColor(&quot;#F55&quot;)"></div>
-                   <div style="background-color: #FA5;" class="color-item" onclick="changeColor(&quot;#FA5&quot;)"></div>
-                   <div style="background-color: #FF5;" class="color-item" onclick="changeColor(&quot;#FF5&quot;)"></div>
-                   <div style="background-color: #AF5;" class="color-item" onclick="changeColor(&quot;#AF5&quot;)"></div>
-                   <div style="background-color: #5F5;" class="color-item" onclick="changeColor(&quot;#5F5&quot;)"></div>
-                   <div style="background-color: #5FA;" class="color-item" onclick="changeColor(&quot;#5FA&quot;)"></div>
-                   <div style="background-color: #5FF;" class="color-item" onclick="changeColor(&quot;#5FF&quot;)"></div>
-                   <div style="background-color: #5AF;" class="color-item" onclick="changeColor(&quot;#5AF&quot;)"></div>
-                   <div style="background-color: #55F;" class="color-item" onclick="changeColor(&quot;#55F&quot;)"></div>
-                   <div style="background-color: #A5F;" class="color-item" onclick="changeColor(&quot;#A5F&quot;)"></div>
-                   <div style="background-color: #F5F;" class="color-item" onclick="changeColor(&quot;#F5F&quot;)"></div>
-                   <div style="background-color: #F5A;" class="color-item" onclick="changeColor(&quot;#F5A&quot;)"></div>
-                   <div style="background-color: #A00;" class="color-item" onclick="changeColor(&quot;#A00&quot;)"></div>
-                   <div style="background-color: #A50;" class="color-item" onclick="changeColor(&quot;#A50&quot;)"></div>
-                   <div style="background-color: #AA0;" class="color-item" onclick="changeColor(&quot;#AA0&quot;)"></div>
-                   <div style="background-color: #5A0;" class="color-item" onclick="changeColor(&quot;#5A0&quot;)"></div>
-                   <div style="background-color: #0A0;" class="color-item" onclick="changeColor(&quot;#0A0&quot;)"></div>
-                   <div style="background-color: #0A5;" class="color-item" onclick="changeColor(&quot;#0A5&quot;)"></div>
-                   <div style="background-color: #0AA;" class="color-item" onclick="changeColor(&quot;#0AA&quot;)"></div>
-                   <div style="background-color: #05A;" class="color-item" onclick="changeColor(&quot;#05A&quot;)"></div>
-                   <div style="background-color: #00A;" class="color-item" onclick="changeColor(&quot;#00A&quot;)"></div>
-                   <div style="background-color: #50A;" class="color-item" onclick="changeColor(&quot;#50A&quot;)"></div>
-                   <div style="background-color: #A0A;" class="color-item" onclick="changeColor(&quot;#A0A&quot;)"></div>
-                   <div style="background-color: #A05;" class="color-item" onclick="changeColor(&quot;#A05&quot;)"></div>
-                   <div style="background-color: #FFF;" class="color-item" onclick="changeColor(&quot;#FFF&quot;)"></div>
-                   <div style="background-color: #DDD;" class="color-item" onclick="changeColor(&quot;#DDD&quot;)"></div>
-                   <div style="background-color: #AAA;" class="color-item" onclick="changeColor(&quot;#AAA&quot;)"></div>
-                   <div style="background-color: #888;" class="color-item" onclick="changeColor(&quot;#888&quot;)"></div>
-                   <div style="background-color: #555;" class="color-item" onclick="changeColor(&quot;#555&quot;)"></div>
-                   <div style="background-color: #222;" class="color-item" onclick="changeColor(&quot;#222&quot;)"></div>
-                   <div style="background-color: #000;" class="color-item" onclick="changeColor(&quot;#000&quot;)"></div>
-                 </div>
-               </div>
-               <div class="modal-footer">
-                  <button id="modal-confirm-metadata" type="button" class="btn btn-success" data-dismiss="modal">Save Metadata</button>
-               </div>
+                <div id="color-picker" style="width: 200px; margin: auto;">
+                    <div style="background-color: #F55;" class="color-item"
+                         onclick="changeColor(&quot;#F55&quot;)"></div>
+                    <div style="background-color: #FA5;" class="color-item"
+                         onclick="changeColor(&quot;#FA5&quot;)"></div>
+                    <div style="background-color: #FF5;" class="color-item"
+                         onclick="changeColor(&quot;#FF5&quot;)"></div>
+                    <div style="background-color: #AF5;" class="color-item"
+                         onclick="changeColor(&quot;#AF5&quot;)"></div>
+                    <div style="background-color: #5F5;" class="color-item"
+                         onclick="changeColor(&quot;#5F5&quot;)"></div>
+                    <div style="background-color: #5FA;" class="color-item"
+                         onclick="changeColor(&quot;#5FA&quot;)"></div>
+                    <div style="background-color: #5FF;" class="color-item"
+                         onclick="changeColor(&quot;#5FF&quot;)"></div>
+                    <div style="background-color: #5AF;" class="color-item"
+                         onclick="changeColor(&quot;#5AF&quot;)"></div>
+                    <div style="background-color: #55F;" class="color-item"
+                         onclick="changeColor(&quot;#55F&quot;)"></div>
+                    <div style="background-color: #A5F;" class="color-item"
+                         onclick="changeColor(&quot;#A5F&quot;)"></div>
+                    <div style="background-color: #F5F;" class="color-item"
+                         onclick="changeColor(&quot;#F5F&quot;)"></div>
+                    <div style="background-color: #F5A;" class="color-item"
+                         onclick="changeColor(&quot;#F5A&quot;)"></div>
+                    <div style="background-color: #A00;" class="color-item"
+                         onclick="changeColor(&quot;#A00&quot;)"></div>
+                    <div style="background-color: #A50;" class="color-item"
+                         onclick="changeColor(&quot;#A50&quot;)"></div>
+                    <div style="background-color: #AA0;" class="color-item"
+                         onclick="changeColor(&quot;#AA0&quot;)"></div>
+                    <div style="background-color: #5A0;" class="color-item"
+                         onclick="changeColor(&quot;#5A0&quot;)"></div>
+                    <div style="background-color: #0A0;" class="color-item"
+                         onclick="changeColor(&quot;#0A0&quot;)"></div>
+                    <div style="background-color: #0A5;" class="color-item"
+                         onclick="changeColor(&quot;#0A5&quot;)"></div>
+                    <div style="background-color: #0AA;" class="color-item"
+                         onclick="changeColor(&quot;#0AA&quot;)"></div>
+                    <div style="background-color: #05A;" class="color-item"
+                         onclick="changeColor(&quot;#05A&quot;)"></div>
+                    <div style="background-color: #00A;" class="color-item"
+                         onclick="changeColor(&quot;#00A&quot;)"></div>
+                    <div style="background-color: #50A;" class="color-item"
+                         onclick="changeColor(&quot;#50A&quot;)"></div>
+                    <div style="background-color: #A0A;" class="color-item"
+                         onclick="changeColor(&quot;#A0A&quot;)"></div>
+                    <div style="background-color: #A05;" class="color-item"
+                         onclick="changeColor(&quot;#A05&quot;)"></div>
+                    <div style="background-color: #FFF;" class="color-item"
+                         onclick="changeColor(&quot;#FFF&quot;)"></div>
+                    <div style="background-color: #DDD;" class="color-item"
+                         onclick="changeColor(&quot;#DDD&quot;)"></div>
+                    <div style="background-color: #AAA;" class="color-item"
+                         onclick="changeColor(&quot;#AAA&quot;)"></div>
+                    <div style="background-color: #888;" class="color-item"
+                         onclick="changeColor(&quot;#888&quot;)"></div>
+                    <div style="background-color: #555;" class="color-item"
+                         onclick="changeColor(&quot;#555&quot;)"></div>
+                    <div style="background-color: #222;" class="color-item"
+                         onclick="changeColor(&quot;#222&quot;)"></div>
+                    <div style="background-color: #000;" class="color-item"
+                         onclick="changeColor(&quot;#000&quot;)"></div>
+                </div>
             </div>
-         </div>
-      </div>
-
-      <!-- Modal for generic things -->
-      <div class="modal fade" id="map-modal-2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
-         <div class="modal-dialog" role="document">
-            <div class="modal-content">
-               <div class="modal-header">
-                  <h5 class="modal-title" id="modal-title"></h5>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                  </button>
-               </div>
-               <div class="modal-body">
-                  <div id="modal-container">
-                  </div>
-               </div>
+            <div class="modal-footer">
+                <button id="modal-confirm-metadata" type="button" class="btn btn-success" data-dismiss="modal">Save
+                    Metadata
+                </button>
             </div>
-         </div>
-      </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for generic things -->
+<div class="modal fade" id="map-modal-2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-title"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="modal-container">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 
-      <!-- Modal for saving a site -->
-      <div class="modal fade" id="map-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-         <div class="modal-dialog" role="document">
-            <div class="modal-content">
-               <div class="modal-header">
-                  <h5 class="modal-title">Save Collection</h5>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                  </button>
-               </div>
-               <div class="modal-body">
-                  <p> A new collection can be saved from the currently combined selection. Rejected components can be discarded and all components can be reversed.
-                  <div class="input-group mb-3">
-                     <div class="input-group-prepend">
+<!-- Modal for saving a site -->
+<div class="modal fade" id="map-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Save Collection</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p> A new collection can be saved from the currently combined selection. Rejected components can be
+                    discarded and all components can be reversed.
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
                         <span class="input-group-text" id="basic-addon1">Collection Name</span>
-                     </div>
-                     <input id="modal-name" type="text" class="form-control" placeholder="My Collection" aria-label="Username" aria-describedby="basic-addon1">
-                  </div>
+                    </div>
+                    <input id="modal-name" type="text" class="form-control" placeholder="My Collection"
+                           aria-label="Username" aria-describedby="basic-addon1">
+                </div>
 
-                  <!-- Mirror -->
-		  <div class="input-group">
-  		    <div class="input-group-prepend">
-     		      <div class="input-group-text">
-                        <input id="modal-mirror-components" type="checkbox" value="">
-                        <label class="form-check-label" for="modal-mirror-components">
-                         &nbsp; Flip Components
-                        </label>
-    		      </div>
+                <!-- Mirror -->
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">
+                            <input id="modal-mirror-components" type="checkbox" value="">
+                            <label class="form-check-label" for="modal-mirror-components">
+                                &nbsp; Flip Components
+                            </label>
+                        </div>
                     </div>
                     <select class="custom-select" id="flip-components-direction">
-                      <option value="mirror">Mirror All Directions</option>
-                      <option value="positive">Make All Positive</option>
-                      <option value="negative">Make All Negative</option>
+                        <option value="mirror">Mirror All Directions</option>
+                        <option value="positive">Make All Positive</option>
+                        <option value="negative">Make All Negative</option>
                     </select>
-                  </div>
+                </div>
 
-		  <p>
+                <p>
 
-                  <!-- Discard rejected component checkbox -->
-                  <div class="form-check form-check-inline">
-                     <input id="modal-discard-rejected" class="form-check-input" type="checkbox" value="">
-                     <label class="form-check-label" for="modal-discard-rejected">
-                     Discard rejected components
-                     </label>
-                  </div>
+                    <!-- Discard rejected component checkbox -->
+                <div class="form-check form-check-inline">
+                    <input id="modal-discard-rejected" class="form-check-input" type="checkbox" value="">
+                    <label class="form-check-label" for="modal-discard-rejected">
+                        Discard rejected components
+                    </label>
+                </div>
 
-               </div>
-               <div class="modal-footer">
-                  <button id="modal-confirm" type="button" class="btn btn-success" data-dismiss="modal">Save Collection</button>
-               </div>
             </div>
-         </div>
-      </div>
+            <div class="modal-footer">
+                <button id="modal-confirm" type="button" class="btn btn-success" data-dismiss="modal">Save Collection
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
-   </body>
+</body>
 
-   <!-- jQuery slim and bootstrap -->
-   <script src="../lib/jquery-3.3.1/jquery-3.3.1.slim.min.js"></script>
-   <script src="../lib/bootstrap-4.3.1/dist/js/bootstrap.bundle.min.js"></script>
+<!-- jQuery slim and bootstrap -->
+<script src="../lib/jquery-3.3.1/jquery-3.3.1.slim.min.js"></script>
+<script src="../lib/bootstrap-4.3.1/dist/js/bootstrap.bundle.min.js"></script>
 
-   <!-- Leaflet -->
-   <script src="../lib/leaflet-1.4.0/leaflet.js"></script>
+<!-- Leaflet -->
+<script src="../lib/leaflet-1.4.0/leaflet.js"></script>
 
-   <!-- Highcharts -->
-   <script src="../lib/highcharts-7.0.3/code/highcharts.js"></script>
-   <script src="../lib/highcharts-7.0.3/code/modules/highcharts-heatmap.js"></script>
-   <script src="../lib/highcharts-7.0.3/code/highcharts-more.js"></script>
-   <script src="../lib/highcharts-7.0.3/code/modules/exporting.js"></script>
-   <script src="../lib/highcharts-7.0.3/code/modules/offline-exporting.js"></script>
+<!-- Mathjs -->
+<script src="../lib/mathjs-12.0.0/math.js"></script>
+<script src="../lib/mathjs-12.0.0/math.min.js"></script>
 
-   <!-- Library for multi-select -->	
-   <script src="../lib/bootstrap-select-1.13.6/dist/js/bootstrap-select.min.js"></script>
+<!-- Highcharts -->
+<script src="../lib/highcharts-7.0.3/code/highcharts.js"></script>
+<script src="../lib/highcharts-7.0.3/code/modules/histogram-bellcurve.js"></script>
+<script src="../lib/highcharts-7.0.3/code/modules/accessibility.js"></script>
+<script src="../lib/highcharts-7.0.3/code/modules/highcharts-heatmap.js"></script>
+<script src="../lib/highcharts-7.0.3/code/highcharts-more.js"></script>
+<script src="../lib/highcharts-7.0.3/code/modules/exporting.js"></script>
+<script src="../lib/highcharts-7.0.3/code/modules/offline-exporting.js"></script>
 
-   <!-- Sha -->
-   <script src="../js/lib/sha.js"></script>
+<!-- Library for multi-select -->
+<script src="../lib/bootstrap-select-1.13.6/dist/js/bootstrap-select.min.js"></script>
 
-   <!-- Shared utilities -->
-   <script src="../js/utils.js"></script>
-   <script src="../js/highcharts-patch.js"></script>
-   <script src="../js/ages.js"></script>
+<!-- Sha -->
+<script src="../js/lib/sha.js"></script>
 
-   <!-- Shared classes -->
-   <script src="../js/classes/Exception.js"></script>
-   <script src="../js/classes/Direction.js"></script>
-   <script src="../js/classes/Pole.js"></script>
-   <script src="../js/classes/Location.js"></script>
-   <script src="../js/classes/Coordinates.js"></script>
-   <script src="../js/classes/Site.js"></script>
-   <script src="../js/classes/Distribution.js"></script>
-   <script src="../js/classes/Component.js"></script>
-   <script src="../lib/numeric-js-1.2.6/numeric.js"></script>
+<!-- Shared utilities -->
+<script src="../js/utils.js"></script>
+<script src="../js/highcharts-patch.js"></script>
+<script src="../js/ages.js"></script>
 
-   <!-- Self modules -->
-   <script src="./js/graphs.js"></script>
-   <script src="./js/index.js"></script>
-   <script src="./js/exporting.js"></script>
+<!-- Shared classes -->
+<script src="../js/classes/Exception.js"></script>
+<script src="../js/classes/Direction.js"></script>
+<script src="../js/classes/Pole.js"></script>
+<script src="../js/classes/Location.js"></script>
+<script src="../js/classes/Coordinates.js"></script>
+<script src="../js/classes/Site.js"></script>
+<script src="../js/classes/Distribution.js"></script>
+<script src="../js/classes/Component.js"></script>
+<script src="../lib/numeric-js-1.2.6/numeric.js"></script>
+
+<!-- Self modules -->
+<script src="./js/pal.js"></script>
+<script src="./js/graphs.js"></script>
+<script src="./js/index.js"></script>
+<script src="./js/exporting.js"></script>
 
 </html>
