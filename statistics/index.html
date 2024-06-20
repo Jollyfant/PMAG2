@@ -218,11 +218,11 @@
             <br>
             <div class="alert alert-light alert-dismissible fade show" role="alert">
                 <h5> Statistics - Common Directions </h5>
-                <p> CHANGES ARE NEEDED - CHECK REFERENCES TOO
-                    Figures showing <b>1000</b> bootstrapped mean coordinates for the selected collections following the
-                    approach of <a href='../references'>Tauxe et al., 2010</a>. Select two collections and click <b>initialize</b>
-                    to begin the bootstrap. Overlapping distributions indicidate that two collections are the same
-                    within confidence limits.
+                <p> Select two collections and click <b>initialize</b> to begin the bootstrap. (A) <a href='../references'>Tauxe et al., 2010</a>
+                    Common True Mean Direction (CMTD). Overlapping distributions indicidate that two collections are the same within confidence limits.
+                    (B) Common Mean Direction Test (CMDT) from <a href='../references'>Heslop et al., 2023</a>, showing the histogram of 
+                    &lambda;<sup>(b)</sup><sub>min</sub>. If CMTD value is less than the critical value directions are not different.
+
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -243,29 +243,11 @@
             <div class="alert alert-light" id="grid-overview-note"></div>
             <div class="container">
                 <div class="row justify-content-md-center">
-
                     <div id="permutation-table"></div>
                     <div class="table-responsive">
                         <table class='table table-sm text-center table-striped' id="bootstrap-table"></table>
-                        <br/>
-                        <table class='table table-sm text-center table-striped' id="bootstrap-table-new"></table>
-                        <br/>
-                        <div id="bootstrap-direction-form"></div>
-                        <table class='table table-sm text-center table-striped'
-                               id="bootstrap-cmdt-direction-table"></table>
-                        <br/>
-                    </div>
-
-                    <div class="col-lg-12 d-flex justify-content-center align-items-center">
-                        <div class="col-lg-6">
-                            <div id="container-histogram-1"></div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div id="container-dot-chart"></div>
-                        </div>
-                    </div>
-
-                    <!-- X, Y, Z coordinates -->
+                        
+                        <!-- X, Y, Z coordinates -->
                     <div class="col-lg-12 d-flex" style="margin-top: 50px; margin-bottom: 50px">
                         <div class="col-lg-4">
                             <div id="ctmd-container-x"></div>
@@ -278,8 +260,24 @@
                         </div>
                     </div>
                 </div>
-                <br>
+                <br/><br/><br/><br/>
 
+
+                    <table class='table table-sm text-center table-striped' id="bootstrap-table-new"></table>
+                        <div id="bootstrap-direction-form"></div>
+                        <table class='table table-sm text-center table-striped'
+                               id="bootstrap-cmdt-direction-table"></table>
+                    </div>
+
+                    <!-- Heslop et al., 2023 -->
+                    <div class="col-lg-12 d-flex justify-content-center align-items-center">
+                        <div class="col-lg-6">
+                            <div id="container-histogram-1"></div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div id="container-dot-chart"></div>
+                        </div>
+                    </div>
                 <div class="text-right">
                     <button class="btn btn-sm btn-light" id="export-bootstrap-png"><i class="far fa-file-image"></i> PNG
                     </button>
@@ -288,7 +286,6 @@
                     <button class="btn btn-sm btn-light" id="export-bootstrap-pdf"><i class="far fa-file-image"></i> PDF
                     </button>
                 </div>
-
             </div>
         </div>
 

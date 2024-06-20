@@ -2768,13 +2768,13 @@ function plotHistograms(Lmin_b, B, Lmin, Lmin_c) {
                 {
                     color: HIGHCHARTS_RED,
                     width: 1,
-                    value: Lmin, // Valor para la línea de prueba
-                    zIndex: 5, // Ajusta la capa para asegurarte de que esté sobre las barras del histograma
+                    value: Lmin, // Test line
+                    zIndex: 5, // Fixes layer 
                     label: {
-                        text: 'Test statistic', // Etiqueta para la línea
+                        text: 'Test statistic', // line tag
                         align: 'left',
                         style: {
-                            color: 'gray' // Color de la etiqueta
+                            color: 'gray' // tag color
                         }
                     }
                 },
@@ -2782,13 +2782,13 @@ function plotHistograms(Lmin_b, B, Lmin, Lmin_c) {
                     color: HIGHCHARTS_RED,
                     width: 1,
                     dashStyle: 'Dash',
-                    value: Lmin_c, // Valor para la línea crítica
-                    zIndex: 5, // Ajusta la capa para asegurarte de que esté sobre las barras del histograma
+                    value: Lmin_c, // Critical lambda
+                    zIndex: 5, // Fixes layer
                     label: {
-                        text: 'Critical value', // Etiqueta para la línea
+                        text: 'Critical value', // line tag
                         align: 'left',
                         style: {
-                            color: 'gray' // Color de la etiqueta
+                            color: 'gray' // tag color
                         }
                     }
                 }
@@ -2868,8 +2868,17 @@ function updateCTMDTable(names, xParams, yParams, zParams, CMDTValue, CMDTCritic
     var matchBootstrap = doesMatchBootstrap(xParams, yParams, zParams);
 
     document.getElementById("bootstrap-table").innerHTML = [
+
         "  <caption>1000 bootstrapped Cartesian coordinates for the collections at 95% confidence. " + getMatchHTML(matchBootstrap) + "</caption>",
         "  <thead>",
+        "  <tr>",
+        "  <td> (A) CTMD (Tauxe et al., 2010)</td>",
+        "  <td></td>",
+        "  <td></td>",
+        "  <td></td>",
+        "  <td></td>",
+        "  <td></td>",
+        "  <td></td>",
         "  <tr>",
         "    <td>Collection</td>",
         "    <td>xMinimum</td>",
@@ -2904,6 +2913,11 @@ function updateCTMDTable(names, xParams, yParams, zParams, CMDTValue, CMDTCritic
 
     document.getElementById("bootstrap-table-new").innerHTML = [
         "  <thead>",
+        "  <tr>",
+        "  <td> (B) CMTD (Heslop et al., 2023)</title>",
+        "  <td></td>",
+        "  <td></td>",
+        "  <td></td>",
         "  <tr>",
         "    <td>CMDT value</td>",
         "    <td>CMDT critical value</td>",
