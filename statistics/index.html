@@ -227,13 +227,13 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
             </div>
-            <br/>
+            <br>
 
             <button onclick="bootstrapCTMD()" type="button" class="btn btn-sm pull-right btn-primary"><i
                     class="fas fa-play"></i> <b>Initialize</b></button>
             <button onclick="createCTMDGrid()" type="button" class="btn btn-sm pull-right btn-success"><i
                     class="fas fa-th"></i> <b>Grid Overview</b></button>
-            <br/><br/>
+            <br><br>
 
 
             <div class="progress">
@@ -260,7 +260,7 @@
                         </div>
                     </div>
                 </div>
-                <br/><br/><br/><br/>
+                <br><br><br><br>
 
 
                     <table class='table table-sm text-center table-striped' id="bootstrap-table-new"></table>
@@ -295,12 +295,16 @@
             <div class="alert alert-light alert-dismissible fade show" role="alert">
                 <h5> Statistics - Foldtest </h5>
                 <p> This module allows the user to do a classical foldtest (<a href="../references">Tauxe & Watson,
-                    1994</a>) on one or multiple collections. <b>No cutoff will be applied</b>. Select any number of
-                    collections and click <b>initialize</b> to start.
+                    1994</a>) and an inclination only tilt test (<a href="../references">Enkin & Watson, 1996</a>)
+                    on one or multiple collections. <b>No cutoff will be applied</b>. Select any number of collections 
+                    and click <b>initialize</b> to start.
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
             </div>
+            <br>
+            <h5><p style="color:rgba(0,0,0,0.6)">Bootstrap Foldtest</p></h5>
+            <p></p>
             <div class="input-group mb-3">
                 <div class="btn-group-toggle" data-toggle="buttons">
                     <label class="btn btn-sm btn-success active">
@@ -335,13 +339,57 @@
                     </div>
                 </div>
             </div>
-
+            
+            <br><br>
             <div class="text-right">
                 <button class="btn btn-sm btn-light" id="export-foldtest-png"><i class="far fa-file-image"></i> PNG
                 </button>
                 <button class="btn btn-sm btn-light" id="export-foldtest-svg"><i class="far fa-file-image"></i> SVG
                 </button>
                 <button class="btn btn-sm btn-light" id="export-foldtest-pdf"><i class="far fa-file-image"></i> PDF
+                </button>
+            </div>
+
+            <br><br>
+
+            <!-- Inclination only tilttest -->
+            <h5><p style="color:rgba(0,0,0,0.6)">Bootrstrap Inclination-Only foldtest</p></h5>
+            <p>Pick between Inverse variance and Arason-Levi's &kappa;</p>
+            <select class="form-control" name="select" id="select-foldtest-io">
+                <option value="inv" selected>Inverse variance</option>
+                <option value="k">Arason-Levi's (k)</option>
+            </select>
+            <p></p>
+            <div class="input-group mb-3">
+                <div class="btn-group-toggle" data-toggle="buttons">
+                    <label class="btn btn-sm btn-success active">
+                        <input id="foldtest-bootstrap-checkbox" type="checkbox" checked autocomplete="off"><i
+                            class="fas fa-dice"></i>
+                    </label>
+                </div>
+                &nbsp;
+                <p>
+                    <button onclick="bootstrapFoldtestIO()" type="button" class="btn btn-sm pull-right btn-primary"><i
+                            class="fas fa-play"></i> <b>Initialize</b></button>
+            </div>
+            <div class="progress">
+                <div id="foldtest-inclination-only-progress" class="progress-bar progress-bar-striped progress-bar-animated"
+                     style="width: 0%; transition: none;"></div>
+            </div>
+            <p></p>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div id="foldtest-io-full-container"></div>
+                </div>
+            </div>
+
+            <br><br>
+            <div class="text-right">
+                <button class="btn btn-sm btn-light" id="export-foldtest-io-png"><i class="far fa-file-image"></i> PNG
+                </button>
+                <button class="btn btn-sm btn-light" id="export-foldtest-io-svg"><i class="far fa-file-image"></i> SVG
+                </button>
+                <button class="btn btn-sm btn-light" id="export-foldtest-io-pdf"><i class="far fa-file-image"></i> PDF
                 </button>
             </div>
 
@@ -406,9 +454,8 @@
                 <p>
                     Paleomagnetic directions record declinations and inclinations. In some cases, due to
                     structural problems or lost azimuths in drill cores, only the inclinations are reliable.
-                    Select two collections and click <b>initialize</b> The table shows the inclination-only 
-                    method of Arason and Levy (2010) and plain statistics. The tilt test follows Enkin's (1996)
-                    methodology, where you can choose between the inverse variance or Arason and Levy's 𝑘.
+                    Select at least two collections and click <b>initialize</b> The inclination only tilt test
+                    follows Enkin's (1996) methodology. You can choose between the inverse variance or Arason and Levy's 𝑘.
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -418,31 +465,6 @@
             <div class="container">
                 <table class='table table-sm text-center table-striped' id='table-inclination-only'></table>
                 <p></p>
-
-                <h5>Inclination Only Tilt Test</h5>
-                <p></p>
-                <select class="form-control" name="select" id="select-foldtest-io">
-                    <option value="inv" selected>Inverse variance</option>
-                    <option value="k">Arason-Levi's (k)</option>
-                </select>
-                <p></p>
-                <div class="input-group mb-3">
-                    <p>
-                        <button onclick="bootstrapFoldtestIO()" type="button" class="btn btn-sm pull-right btn-primary"><i
-                                class="fas fa-play"></i> <b>Initialize</b></button>
-                </div>
-                <div class="progress">
-                    <div id="foldtest-inclination-only-progress" class="progress-bar progress-bar-striped progress-bar-animated"
-                         style="width: 0%; transition: none;"></div>
-                </div>
-                <p></p>
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div id="foldtest-io-full-container"></div>
-                    </div>
-                </div>
-                <p></p>
-            </div>
 
         </div>
 

@@ -19,6 +19,27 @@ function exportHandlerFoldtest(event) {
 
 }
 
+function exportHandlerFoldtestIO(event) {
+
+    /*
+     * Function exportHandlerInclinationOnlyFoldtest
+     * Export handler for the foldtest-io module
+     */
+
+    var charts = [
+        $("#foldtest-geographic-container").highcharts(),
+        $("#foldtest-tectonic-container").highcharts(),
+        $("#foldtest-io-full-container").highcharts()
+    ];
+
+    if (charts.includes(undefined)) {
+        return notify("danger", "Could not export unrendered charts.");
+    }
+
+    exportChartsWrapper("foldtest-io", charts, event.target.id);
+
+}
+
 function exportHandlerBootstrap(event) {
 
     /*

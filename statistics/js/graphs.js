@@ -127,7 +127,7 @@ function bootstrapFoldtest() {
             return plotFoldtestCDF(untilts, savedBootstraps);
         }
 
-        // drawBootstrap genera un array aleatorio
+        // drawBootstrap generates a random array
         result = unfold(drawBootstrap(vectors), iteration);
         // result = unfoldInclinationOnly(drawBootstrap(vectors), iteration);
 
