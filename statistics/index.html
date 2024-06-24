@@ -101,7 +101,7 @@
             <br>
 
             <div class="alert alert-light" role="alert">
-                <h5> Paleomagnetism.org 2 (ALMOST THREE-DOT-ZERO - TAKE A LOOK HERE CHANGE THIS SOON) - Statistics </h5>
+                <h5> Paleomagnetism.org 2 - Statistics </h5>
                 <p> Data from the Paleomagnetism .col format can be imported to the statistics portal. Each selected
                     file and group will be associated with a new selectable collection. An alternative example of the
                     <b>default</b> input file can be found <a href="../resources/formats/default.csv">here</a>.
@@ -152,7 +152,7 @@
                     virtual geomagnetic poles. The right figure does not show actual VGP positions. The table lists
                     standard Fisher parameters for this set of directions. When multiple collections are selected, its
                     components will be combined before a cutoff is applied. Press <b>8</b> and <b>5</b> to switch
-                    between coordinate frames and confidence ellipses respectively.
+                    between coordinate frames and confidence ellipses respectively. Below you'll find an inclination-only statistics table.
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -183,6 +183,21 @@
                     <button class="btn btn-sm btn-light" id="export-svg"><i class="far fa-file-image"></i> SVG</button>
                     <button class="btn btn-sm btn-light" id="export-pdf"><i class="far fa-file-image"></i> PDF</button>
                 </div>
+            </div>
+
+            <br><br>
+
+            <!--Inclination Only statistics Table-->
+            <div class="container">
+                <h5><p style="color:rgba(0,0,0,0.6)">Inclination-Only statistics</p></h5>
+                <p> Paleomagnetic directions record declinations and inclinations. In some cases, due to
+                    structural problems or lost azimuths in drill cores, only the inclinations are reliable.
+                    The arithmetic mean for inclination-only data is biased towards shallow inclinations
+                    In this table you can check the differences between the arithmetic mean and inverse variance 
+                    and the <a href="../references">Arason and Levi, 2010</a> Maximum Likelihuud Method that 
+                    estimates &kappa; and &alpha;95.
+                <table class='table table-sm text-center table-striped' id='table-inclination-only'></table>
+                <p></p>
             </div>
         </div>
 
@@ -466,7 +481,7 @@
                             </optgroup>
                             <optgroup label="Other Cutoffs">
                                 <option value="VANDAMME">Vandamme Cutoff</option>
-                                <!-- <option value="KRIJGSMAN">Krijgsman</option> LOL seriously this is still here???--> 
+                                <!-- <option value="KRIJGSMAN">Krijgsman</option> -->
                                 <option value="">None</option>
                             </optgroup>
                         </select>
@@ -474,35 +489,11 @@
                 </div>
             </div>
 
-            <p>        
-        <!-- Tab for Inclination Only -->
-        <!--<div class="tab-pane fade" id="nav-inclination" role="tabpanel" aria-labelledby="nav-settings-tab">
-            <br>
-            <div class="alert alert-light alert-dismissible fade show" role="alert">
-                <h5> Inclination Only Statistics</h5>
-                <p>
-                    Paleomagnetic directions record declinations and inclinations. In some cases, due to
-                    structural problems or lost azimuths in drill cores, only the inclinations are reliable.
-                    Select at least two collections and click <b>initialize</b> The inclination only tilt test
-                    follows Enkin's (1996) methodology. You can choose between the inverse variance or Arason and Levy's 𝑘.
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-
-            </div>
-            <p></p>
-            <div class="container">
-                <table class='table table-sm text-center table-striped' id='table-inclination-only'></table>
-                <p></p>
-
-        </div>-->
-
-
-
+            <p>
+            <!-- Options for sorting -->
             <div class="card">
                 <div class="card-body">
-
-                    <!-- Options for sorting -->
+                    
                     <h5> Sorting Options </h5>
                     <button onclick="sortCollections('name')" type="button" class="btn btn-sm btn-light"><i
                             class="fas fa-sort"></i> Name
