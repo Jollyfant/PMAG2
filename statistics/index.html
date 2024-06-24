@@ -84,13 +84,11 @@
             <a class="nav-item nav-link disabled" id="nav-fitting-tab" data-toggle="tab" href="#nav-fitting" role="tab"
                aria-controls="nav-profile" aria-selected="false">Means</a>
             <a class="nav-item nav-link disabled" id="nav-ctmd-tab" data-toggle="tab" href="#nav-ctmd" role="tab"
-               aria-controls="nav-ctmd" aria-selected="false">Common Dir.</a>
+               aria-controls="nav-ctmd" aria-selected="false">CMTD</a>
             <a class="nav-item nav-link disabled" id="nav-foldtest-tab" data-toggle="tab" href="#nav-foldtest"
                role="tab" aria-controls="nav-foldtest" aria-selected="false">Foldtest</a>
             <a class="nav-item nav-link disabled" id="nav-shallowing-tab" data-toggle="tab" href="#nav-shallowing"
                role="tab" aria-controls="nav-shallowing" aria-selected="false">E-I Shallowing</a>
-            <a class="nav-item nav-link disabled" id="nav-inclination-tab" data-toggle="tab" href="#nav-inclination"
-            role="tab" aria-controls="nav-inclination" aria-selected="false">Inc. Only</a>
             <a class="nav-item nav-link" id="nav-settings-tab" data-toggle="tab" href="#nav-settings" role="tab"
                aria-controls="nav-settings" aria-selected="false">Settings</a>
         </div>
@@ -213,14 +211,15 @@
             </div>
         </div>
 
-        <!-- Tab for CTMD test -->
+        <!-- Tab for CMTD test -->
+        <!-- We are now using CMTD, following Heslop, as teh naming, however all functions are named as CTMD -->
         <div class="tab-pane fade" id="nav-ctmd" role="tabpanel" aria-labelledby="nav-settings-tab">
             <br>
             <div class="alert alert-light alert-dismissible fade show" role="alert">
-                <h5> Statistics - Common Directions </h5>
+                <h5> Statistics - Common Mean Direction Test (CMDT) </h5>
                 <p> Select two collections and click <b>initialize</b> to begin the bootstrap. (A) <a href='../references'>Tauxe et al., 2010</a>
-                    Common True Mean Direction (CTMD). Overlapping distributions indicidate that two collections are the same within confidence limits.
-                    (B) Common Mean Direction Test (CMDT) from <a href='../references'>Heslop et al., 2023</a>, showing the histogram of 
+                    CTMD test. Overlapping distributions indicidate that two collections are the same within confidence limits.
+                    (B) CMDT from <a href='../references'>Heslop et al., 2023</a>, showing the histogram of 
                     &lambda;<sup>(b)</sup><sub>min</sub>. If CMTD value is less than the critical value directions are not different.
 
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -489,7 +488,7 @@
                             </optgroup>
                             <optgroup label="Other Cutoffs">
                                 <option value="VANDAMME">Vandamme Cutoff</option>
-                                <!-- <option value="KRIJGSMAN">Krijgsman</option> -->
+                                <!-- <option value="KRIJGSMAN">Krijgsman</option> LOL seriously this is still here???--> 
                                 <option value="">None</option>
                             </optgroup>
                         </select>

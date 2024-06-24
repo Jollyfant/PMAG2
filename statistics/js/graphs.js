@@ -1311,7 +1311,7 @@ function plotFoldtestInclinationOnly(untilt, savedBootstraps, type) {
             "text": ((type==='inv')?"Highest inverse variance":"Highest Arason-Levi (k)")+" between [" + lower + ", " + upper + "] % unfolding (" + cdf.length + " bootstraps)",
         },
         "exporting": {
-            "filename": "Foldtest",
+            "filename": "Foldtest-IO",
             "sourceWidth": 1200,
             "sourceHeight": 600,
             "buttons": {

@@ -71,6 +71,7 @@
 
             switch (id) {
                 case "foldtest-geographic-container":
+                case "foldtest-io-full-container":
                 case "direction-container":
                 case "ei-bootstrap-container":
                 case "zijderveld-container":
@@ -114,14 +115,14 @@
 
             switch (id) {
                 case "foldtest":
+                case "foldtest-io":
+                case "shallowing":
+                case "interpretation":
                     return {"top": 1200, "width": 1200}
                 case "coordinate-bootstrap":
                     return {"top": 1800, "width": 1200}
                 case "geomagnetic-directions":
                     return {"top": 600, "width": 1200}
-                case "shallowing":
-                case "interpretation":
-                    return {"top": 1200, "width": 1200}
                 case "predicted":
                     return {"top": 1800, "width": 1200}
                 case "magstrat":

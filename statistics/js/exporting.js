@@ -1,5 +1,4 @@
 function exportHandlerFoldtest(event) {
-
     /*
      * Function exportHandlerFoldtest
      * Export handler for the foldtest module
@@ -9,34 +8,34 @@ function exportHandlerFoldtest(event) {
         $("#foldtest-geographic-container").highcharts(),
         $("#foldtest-tectonic-container").highcharts(),
         $("#foldtest-full-container").highcharts()
-    ];
+    ]
 
     if (charts.includes(undefined)) {
-        return notify("danger", "Could not export unrendered charts.");
+        return notify("danger", "Could not export unrendered charts.")
     }
 
-    exportChartsWrapper("foldtest", charts, event.target.id);
+    exportChartsWrapper("foldtest", charts, event.target.id)
 
 }
 
 function exportHandlerFoldtestIO(event) {
-
     /*
      * Function exportHandlerInclinationOnlyFoldtest
      * Export handler for the foldtest-io module
      */
 
-    var charts = [
-        $("#foldtest-geographic-container").highcharts(),
-        $("#foldtest-tectonic-container").highcharts(),
+    var charts = []
+    charts.push(
+        // $("#foldtest-geographic-container").highcharts(),
+        // $("#foldtest-tectonic-container").highcharts(),
         $("#foldtest-io-full-container").highcharts()
-    ];
+    )
 
     if (charts.includes(undefined)) {
-        return notify("danger", "Could not export unrendered charts.");
+        return notify("danger", "Could not export unrendered charts.")
     }
 
-    exportChartsWrapper("foldtest-io", charts, event.target.id);
+    exportChartsWrapper("foldtest-io", charts, event.target.id)
 
 }
 
@@ -265,6 +264,10 @@ document.getElementById("export-bootstrap-svg").addEventListener("click", export
 document.getElementById("export-foldtest-png").addEventListener("click", exportHandlerFoldtest);
 document.getElementById("export-foldtest-pdf").addEventListener("click", exportHandlerFoldtest);
 document.getElementById("export-foldtest-svg").addEventListener("click", exportHandlerFoldtest);
+
+document.getElementById("export-foldtest-io-png").addEventListener("click", exportHandlerFoldtestIO);
+document.getElementById("export-foldtest-io-pdf").addEventListener("click", exportHandlerFoldtestIO);
+document.getElementById("export-foldtest-io-svg").addEventListener("click", exportHandlerFoldtestIO);
 
 document.getElementById("export-shallowing-png").addEventListener("click", exportHandlerShallowing);
 document.getElementById("export-shallowing-pdf").addEventListener("click", exportHandlerShallowing);
