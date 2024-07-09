@@ -141,7 +141,7 @@ function importUNESP(file) {
     let GDirection = cartesianCoordinates.rotateTo(coreAzimuth, coreDip).toVector(Direction);
 
     if(Math.abs(GDec - GDirection.dec) > 1 || Math.abs(GInc - GDirection.inc) > 1) {
-      throw(new Exception("Inconsistency detected in geographic vector component."));
+      notify("warning", "Inconsistency detected in geographic vector component. Check results carefully!")
     }
     
     UNESPSpecimens[sampleName].steps.push(new Measurement(step, cartesianCoordinates, null));
@@ -198,7 +198,7 @@ function importGTK(file) {
 
     // Verify
     if(dir.dec.toFixed(0) !== dec.toFixed(0) || dir.inc.toFixed(0) !== inc.toFixed(0)) {
-      throw("The given geographic coordinates do not match the rotated specimen coordinates for this file!");
+      notify("warning", "Inconsistency detected in geographic vector component. Check results carefully!")
     }
 
     steps.push(new Measurement(step, coordinates, null));
@@ -845,7 +845,7 @@ function importUnknown(file) {
 
     // Check and verify geographic coordinates
     if(GDec.toFixed(2) !== GDirection.dec.toFixed(2) || GInc.toFixed(2) !== GDirection.inc.toFixed(2)) {
-      throw(new Exception("Inconsistency detected in geographic vector component."));
+      notify("warning", "Inconsistency detected in geographic vector component. Check results carefully!")
     }
 
     var TDec = Number(parameters[43]);
@@ -854,7 +854,7 @@ function importUnknown(file) {
 
     // Check and verify tectonic coordinates
     if(TDec.toFixed(2) !== TDirection.dec.toFixed(2) || TInc.toFixed(2) !== TDirection.inc.toFixed(2)) {
-      throw(new Exception("Inconsistency detected in tectonic vector component."));
+      notify("warning", "Inconsistency detected in tectonic vector component. Check results carefully!")
     }
 
     // Intensity is in A/m
@@ -939,7 +939,7 @@ function importBlackMnt(file) {
 
     // Check and verify geographic coordinates
     if(GDec.toFixed(2) !== GDirection.dec.toFixed(2) || GInc.toFixed(2) !== GDirection.inc.toFixed(2)) {
-      throw(new Exception("Inconsistency detected in geographic vector component."));
+      notify("warning", "Inconsistency detected in geographic vector component. Check results carefully!")
     }
 
     var TDec = Number(parameters[16]);
@@ -948,7 +948,7 @@ function importBlackMnt(file) {
 
     // Check and verify tectonic coordinates
     if(TDec.toFixed(2) !== TDirection.dec.toFixed(2) || TInc.toFixed(2) !== TDirection.inc.toFixed(2)) {
-      throw(new Exception("Inconsistency detected in tectonic vector component."));
+      notify("warning", "Inconsistency detected in tectonic vector component. Check results carefully!")
     }
 
     // Intensity is in A/m
@@ -1981,7 +1981,7 @@ function importCaltech(file) {
     var GDirection = coordinates.rotateTo(coreAzimuth, coreDip).toVector(Direction);
 	
     if(Math.abs(GDec - GDirection.dec) > 1 || Math.abs(GInc - GDirection.inc) > 1) {
-      throw(new Exception("Inconsistency detected in geographic vector component."));
+      notify("warning", "Inconsistency detected in geographic vector component. Check results carefully!")
     }
 
     var TDec = Number(line.slice(19, 24).trim());
@@ -1990,7 +1990,7 @@ function importCaltech(file) {
 
     // Check and verify tectonic coordinates
     if(Math.abs(TDec - TDirection.dec) > 1 || Math.abs(TInc - TDirection.inc) > 1) {
-      throw(new Exception("Inconsistency detected in tectonic vector component."));
+      notify("warning", "Inconsistency detected in tectonic vector component. Check results carefully!")
     }
 
     steps.push(new Measurement(step, coordinates, a95));
