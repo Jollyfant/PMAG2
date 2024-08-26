@@ -2555,7 +2555,7 @@ function eqAreaChart(container, dataSeries, plotBands, tickPositions) {
      * Exports ChRM Distribution to CSV file
      */
     
-    const HEADER = new Array("Sample, Declination, Inclination, MAD, Core Azimuth, Core Dip, Bedding Strike, Bedding Dip, Latitude, Longitude, Age, Age Min, Age Max");
+    const HEADER = new Array("#Sample, Declination, Inclination,  Core Azimuth, Core Dip, Bedding Strike, Bedding Dip, Latitude, Longitude, Level, Age, Age Min, Age Max, coordinates");
     
     var csv = HEADER.concat(dataSeries[0].data.map(function(point) {
 
@@ -2563,16 +2563,17 @@ function eqAreaChart(container, dataSeries, plotBands, tickPositions) {
         point.component.name,
         point.x.toFixed(PRECISION),
         point.inc.toFixed(PRECISION),
-        point.component.MAD,
         point.component.coreAzimuth,
         point.component.coreDip,
         point.component.beddingStrike,
         point.component.beddingDip,
         point.component.latitude,
         point.component.longitude,
+        point.component.level,
         point.component.age,
         point.component.ageMin,
-        point.component.ageMax
+        point.component.ageMax,
+        "specimen"
       ).join(ITEM_DELIMITER)
     })).join(LINE_DELIMITER);
     
