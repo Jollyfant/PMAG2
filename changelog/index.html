@@ -100,8 +100,32 @@
             </div>
           </div>
         </div>
+      <div id="accordion">
 
-        <div id="accordion">
+        <div class="card">
+          <div class="card-header" id="headingNine">
+            <button class="btn btn-link" data-toggle="collapse" data-target="#collapseNine" aria-expanded="true" aria-controls="collapseNine">
+              Paleomagnetism.org 2.5.1 - Quality of life improvements <small class="text-muted">&nbsp; 2024-XX-XX</small>
+            </button>
+          </div>
+          <div id="collapseNine" class="collapse show" aria-labelledby="headingNine" data-parent="#accordion">
+            <div class="card-body">
+            <ul>
+              <p> <b> Features </b>
+              <li> None
+            </ul>
+            <ul>
+              <p> <b> Fixes </b>
+              <li> More liberal in accepting Caltech format. Header parameters were expected in certain positions, if this fails the parameters are split by space instead.
+              <li> Changed export of ChRM directions from hamburger menu to be consistent with the default input (.CSV) file. The MAD has been removed and stratigraphic level added to the export.
+              <li> Addressed problem in Vector Difference Sum where it was mistaken for the Vector Intensity Sum. A new line colored in red was added for the VDS.
+
+              </ul>
+
+            </div>
+          </div>
+        </div>
+        <p>
 
           <div class="card">
             <div class="card-header" id="headingEight">

@@ -40,7 +40,7 @@ function getUBS(intensityData) {
 }
 
 
-function getVDS(intensityData) {
+function getVDS2(intensityData) {
 
   /*
    * Function getVDS
@@ -58,9 +58,13 @@ function getVDS(intensityData) {
     for(var j = i; j < intensityData.length + 1; j++) {
 
       if(j === intensityData.length) {
-        sum += Math.abs(intensityData[j-1].y);
+        sum += Math.sqrt(Math.pow(intensityData[j-1].vds.x, 2) + Math.pow(intensityData[j-1].vds.y, 2), Math.pow(intensityData[j-1].vds.z, 2));
       } else {
-        sum += Math.abs(intensityData[j-1].y - intensityData[j].y);
+        sum += Math.sqrt(
+          Math.pow(intensityData[j-1].vds.x - intensityData[j].vds.x, 2) +
+          Math.pow(intensityData[j-1].vds.y - intensityData[j].vds.y, 2) +
+          Math.pow(intensityData[j-1].vds.z - intensityData[j].vds.z, 2)
+        );
       }
 
     }
@@ -73,6 +77,12 @@ function getVDS(intensityData) {
     });
 
   }
+
+  // Get the maximum
+  let m = Math.max(...VDS.map(x => x.y));
+
+  // Normalize
+  VDS.forEach(x => x.y = x.y / m);
 
   return VDS;
 
@@ -129,6 +139,7 @@ function plotIntensityDiagram(hover) {
     intensities.push({
       "x": i,
       "y": new Coordinates(step.x, step.y, step.z).length,
+      "vds": new Coordinates(step.x, step.y, step.z), 
       "stepIndex": i
     });
 
@@ -136,16 +147,21 @@ function plotIntensityDiagram(hover) {
 
   var normalizedIntensities = normalize(intensities);
   var VDS = getVDS(normalizedIntensities);
+  var VDS2 = getVDS2(intensities);
   var UBS = getUBS(normalizedIntensities);
-  var aHover, bHover;
+  var aHover, bHover, cHover;
 
   // Not hovering over a step: hide points
   if(hoverIndex === null) {
     aHover = {"x": null, "y": null}
     bHover = {"x": null, "y": null}
+    cHover = {"x": null, "y": null}
+
   } else {
     aHover = normalizedIntensities[hoverIndex];
     bHover = VDS[hoverIndex];
+    cHover = VDS2[hoverIndex];
+
   }
 
   var chart = $("#intensity-container").highcharts();
@@ -155,6 +171,8 @@ function plotIntensityDiagram(hover) {
 
     chart.series[0].data[0].update(aHover);
     chart.series[1].data[0].update(bHover);
+    chart.series[2].data[0].update(cHover);
+
 
     return;
 
@@ -188,18 +206,41 @@ function plotIntensityDiagram(hover) {
      }
    }
 
+   var hoverVDS2 = {
+    "type": "scatter",
+    "data": [cHover],
+    "zIndex": 2,
+    "linkedTo": "vds2",
+    "marker": {
+      "lineWidth": 1,
+      "symbol": "circle",
+      "radius": MARKER_RADIUS_SELECTED,
+      "lineColor": HIGHCHARTS_RED,
+      "fillColor": HIGHCHARTS_RED
+    }
+  }
+
   // Get the unblocking spectrum (UBS) and vector difference sum (VDS)
-  var plotSeries = new Array(hoverResultant, hoverVDS, {
+  var plotSeries = new Array(hoverResultant, hoverVDS, hoverVDS2, {
     "name": "Resultant Intensity",
     "id": "resultant",
     "data": normalizedIntensities,
     "color": HIGHCHARTS_BLUE,
     "zIndex": 1
   }, {
-    "name": "Vector Difference Sum",
+    "name": "Vector Intensity Sum",
     "id": "vds",
     "data": VDS,
     "color": HIGHCHARTS_ORANGE,
+    "marker": {
+      "symbol": "circle"
+    },
+    "zIndex": 1
+  }, {
+    "name": "Vector Difference Sum",
+    "id": "vds2",
+    "data": VDS2,
+    "color": HIGHCHARTS_RED,
     "marker": {
       "symbol": "circle"
     },
