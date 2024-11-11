@@ -17,3 +17,5 @@ All data processed with Paleomagnetism.org are treated locally and not sent over
 We kindly remind you to cite all sources.
 
 Paleomagnetism.org © 2015-2019. All rights reserved.
+
+HAHAH
