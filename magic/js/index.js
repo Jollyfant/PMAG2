@@ -518,7 +518,7 @@ function exportMagIC() {
           }
       
           magicMeasurements.push([
-            specimen.name + "_" + locationIndex,
+            specimen.name + "_" + locationIndex + "_" + step.step,
             specimen.name + "_" + locationIndex + "_" + demagnetizationType,
             specimen.name,
             experimentCounter++,
