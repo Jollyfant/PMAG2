@@ -1968,6 +1968,16 @@ function importCaltech(file) {
   var beddingStrike = Number(lines[1].slice(20, 25).trim());
   var beddingDip = Number(lines[1].slice(26, 32).trim());
   var sampleVolume = Number(lines[1].slice(33, 38).trim());
+
+  // Hacky fix: if parameters are not in the expected positions split by space and use that instead
+  // Reported by Wentao Huang
+  if(isNaN(coreAzimuth) || isNaN(coreDip) || isNaN(beddingStrike) || isNaN(beddingDip) || isNaN(sampleVolume)) {
+    coreAzimuth = (Number(coreParameters[0].trim()) + 270) % 360;
+    coreDip = 90 - Number(coreParameters[1].trim());
+    beddingStrike = Number(coreParameters[2].trim());
+    beddingDip = Number(coreParameters[3].trim());
+    sampleVolume = Number(coreParameters[4].trim());
+  }
  
   var line;
   var steps = new Array();
