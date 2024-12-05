@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <!-- Required metadata tags -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Paleomagnetism.org 2 - An online environment for paleomagnetic analysis">
+    <meta name="keywords" content="paleomagnetism, interpretation, zijderveld, pca">
+
+    <meta name="author" content="Mathijs Koymans">
+
+    <link rel="shortcut icon" type="image/x-icon" href="../resources/images/hades-icon.png"/>
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <!-- Bootstrap & Font Awesome CSS -->
+    <link rel="stylesheet" href="../lib/bootstrap-4.3.1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../lib/fontawesome-free-5.7.2-web/css/all.css">
+
+</head>
+
+<body>
+
+<!-- Header -->
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+
+    <a class="navbar-brand" href="https://anisotropia.everyware.es">Paleomagnetism<span class="text-danger">.org</span></a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
+            aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="../interpretation">Interpretation</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="../statistics">Statistics</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="../geography">Geography</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="../miscellaneous">Miscellaneous</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="../references">References</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="../team">Team & Contact</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="../magic">MagIC Interface</a>
+            </li>
+        </ul>
+
+        <form class="form-inline my-2 my-lg-0">
+            <a href="../library" class="btn btn-sm btn-secondary my-2 my-sm-0"><i class="fas fa-book-open"></i><b>&nbsp;
+                Data Library</b></a>
+        </form>
+
+    </div>
+
+</nav>
+
+<!-- Main body -->
+<div class="container">
+
+    <!-- Container for user notifications -->
+    <div id="notification-container"></div>
+
+    <div class="alert alert-light" role="alert">
+
+        <h5>Paleomagnetism.org 2 - Sun Compass Shadow to Azimuth </h5>
+    <p>When magnetic compasses do not define properly the azimuth of a core (a strongly magnetized rock, being too close to the magnetic poles...)
+        paleomagnetists use a sun compass. A sun compass is a sun-clock projected over a gnomon. Upload a file and calculate your core azimuths!
+        Data file must contain commas, spaces or tabulation delimited <code>Name, Date (yyyy:mm:dd:hr:min), Δu*, Site Latitude, Site Longitude, Shadow
+        angle</Code>. Δu is the time to  SUBSTRACT from local time for Universal time. An example input file is <a href="./example-suncompass.txt">here</a>.</p>
+    </div>
+
+    <button class="btn btn-primary" id="load-data-suncompass">Load Data</button>
+    <br>
+    <br> 
+    
+    <br><br>
+    <input style="display: none" id="importFile-suncompass" type="file" size="4" name="file"/>
+        
+    <button class="btn btn-primary" id="calculate-suncompass">Calculate</button>
+    
+    <br><br>
+
+    <table class='table table-sm text-center table-striped' id="suncompass-table"></table>
+    <br>
+
+    <footer id="footer-container" class="container text-muted"></footer>
+    <br>
+</div>
+</body>
+
+
+<!-- Mathjs -->
+<script src="../lib/mathjs-12.0.0/math.js"></script>
+<script src="../lib/mathjs-12.0.0/math.min.js"></script>
+
+<!-- jQuery slim and bootstrap -->
+<!-- jQuery slim and bootstrap -->
+<script src="../lib/jquery-3.3.1/jquery-3.3.1.slim.min.js"></script>
+<script src="../lib/bootstrap-4.3.1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/utils.js"></script>
+
+<!-- Highcharts -->
+<script src="../lib/highcharts-7.0.3/code/highcharts.js"></script>
+<script src="../lib/highcharts-7.0.3/code/highcharts-more.js"></script>
+<script src="../lib/highcharts-7.0.3/code/modules/exporting.js"></script>
+<script src="../lib/highcharts-7.0.3/code/modules/offline-exporting.js"></script>
+
+<script src="../js/highcharts-patch.js"></script>
+<script src="./js/index.js"></script>
+
+</html>
