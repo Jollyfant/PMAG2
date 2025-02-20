@@ -2428,7 +2428,6 @@ function importXian(file) {
     // Add the level to the sample name
     var sampleName = parameters[0] + "." + level;
 
-console.log(sampleName);
     // Add a sample to the has map
     if(!xianSpecimens.hasOwnProperty(sampleName)) {
 
