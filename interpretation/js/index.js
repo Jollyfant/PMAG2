@@ -120,6 +120,8 @@ function addDegmagnetizationFiles(format, files) {
       return files.forEach(importNGU);
     case "PALEOMAC":
       return files.forEach(importPaleoMac);
+    case "XIAN":
+      return files.forEach(importXian);
     case "ANGLIA":
       return files.forEach(importAnglia);
     case "OXFORD":
@@ -140,9 +142,7 @@ function addDegmagnetizationFiles(format, files) {
       return files.forEach(importJR6);
     case "CJONES":
       return files.forEach(importPaleoMag);
-      case "XIAN":
-        return files.forEach(importXian);
-      default:
+    default:
       throw(new Exception("Unknown importing format requested."));
   }
 
