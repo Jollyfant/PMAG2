@@ -2395,5 +2395,71 @@ function importHelsinkiBlock(file) {
     "coreDip": Number(coreDip),
     "interpretations": new Array()
   });
+}
+
+function importXian(file) {
+   /*
+    * Function importXian
+    * Imports demagnetization data in the Xi'an Institute of Earth Environment, Chinese Academy of Sciences format (DAT)
+    * The format looks very similar to CNIEH format, but columns have a different order
+    */
+  // XIAN samples need to be sorted
+  var xianSpecimens = new Object();
+
+  var lines = file.data.split(LINE_REGEXP).filter(Boolean);
+ 
+  // Skip the header
+  lines.slice(1).forEach(function(line) {
+
+    var parameters = line.split(/\s+/);
+    var level = parameters[26];
+
+    // Add the level to the sample name
+    var sampleName = parameters[0] + "." + level;
+
+    // Add a sample to the has map
+    if(!xianSpecimens.hasOwnProperty(sampleName)) {
+
+      xianSpecimens[sampleName] = {
+        "demagnetizationType": null,
+        "coordinates": "specimen",
+        "format": "XIAN",
+        "version": __VERSION__,
+        "created": new Date().toISOString(),
+        "steps": new Array(),
+        "name": sampleName,
+        "volume": 10.0,
+        "longitude": null,
+        "latitude": null,
+        "age": null,
+        "ageMin": null,
+        "ageMax": null,
+        "lithology": null,
+        "sample": sampleName,
+        "beddingStrike": 270,
+        "beddingDip": 0,
+        "coreAzimuth": 0,
+        "coreDip": 90,
+        "interpretations": new Array()
+      }
+
+    }
+
+    // Extract the measurement parameters
+    var step = parameters[25];
+    var intensity = Number(parameters[3]);	
+    var declination = Number(parameters[1]);
+    var inclination = Number(parameters[2]);
+	
+    var cartesianCoordinates = new Direction(declination, inclination, intensity * 1E6).toCartesian();
+	
+    xianSpecimens[sampleName].steps.push(new Measurement(step, cartesianCoordinates, null));
+	
+  });
+
+  // Add all specimens in the hashmap to the application
+  Object.keys(xianSpecimens).forEach(function(specimen) {
+    specimens.push(xianSpecimens[specimen]);
+  });
 
 }
