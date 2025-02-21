@@ -2423,10 +2423,11 @@ function importXian(file) {
   lines.slice(1).forEach(function(line) {
 
     var parameters = line.split(/\s+/);
-    var level = parameters[26];
-
-    // Add the level to the sample name
-    var sampleName = parameters[0] + "." + level;
+    // var level = parameters[26];
+	// Apparently depth is not stratigraphic level but position in a tray in Xian file kept it commented just in case
+    // Add the level to the sample name add after parameters [0] the commented line below
+	  //+ "." + level 
+    var sampleName = parameters[0];
 
     // Add a sample to the has map
     if(!xianSpecimens.hasOwnProperty(sampleName)) {
