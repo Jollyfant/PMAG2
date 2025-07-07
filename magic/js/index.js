@@ -475,7 +475,7 @@ function exportMagIC() {
           demagnetizationType,
           "This study",
           specimen.coreAzimuth,
-          specimen.coreDip - 90,
+          specimen.coreDip,
           specimen.beddingStrike + 90,
           specimen.beddingDip,
           specimen.latitude,
@@ -496,7 +496,7 @@ function exportMagIC() {
           maximumStep,
           getStepUnit(demagnetizationType),
           specimen.coreAzimuth,
-          specimen.coreDip - 90
+          specimen.coreDip
         ].join(TAB_DELIMITER));
       
         // Add all measurement steps
@@ -518,7 +518,7 @@ function exportMagIC() {
           }
       
           magicMeasurements.push([
-            specimen.name + "_" + locationIndex + "_" + step.step,
+            specimen.name + "_" + locationIndex,
             specimen.name + "_" + locationIndex + "_" + demagnetizationType,
             specimen.name,
             experimentCounter++,

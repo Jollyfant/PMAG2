@@ -10,11 +10,11 @@
 
     // Marker functions to add 10° markers to equal area projections
     Highcharts.SVGRenderer.prototype.symbols.vertLine = function (x, y, w, h) {
-        return new Array("M", x + 0.5 * w, y + h, "L", x + 0.5 * w, y - 0.25 * h);
+        return ["M", x + 0.5 * w, y + h, "L", x + 0.5 * w, y - 0.25 * h];
     };
 
     Highcharts.SVGRenderer.prototype.symbols.horLine = function (x, y, w, h) {
-        return new Array("M", x + 1.25 * w, y + 0.5 * h, "L", x - 0.25 * w, y + 0.5 * h);
+        return ["M", x + 1.25 * w, y + 0.5 * h, "L", x - 0.25 * w, y + 0.5 * h];
     };
 
     if (Highcharts.VMLRenderer) {
@@ -46,7 +46,7 @@
     // Set global default options for all charts
     Highcharts.setOptions({
         "exporting": {
-            "fallbackToExportServer": false
+            "fallbackToExportServer": false,
         }
     });
 
@@ -63,15 +63,15 @@
         }
 
         function getChartOffsets(id) {
-
             /*
              * Function Highcharts.getSVG::getChartOffsets
              * Returns the individual chart offsets in compilation figures
              */
 
+            var typeBootstrap = document.getElementById("select-foldtest").value
+
             switch (id) {
                 case "foldtest-geographic-container":
-                case "foldtest-io-full-container":
                 case "direction-container":
                 case "ei-bootstrap-container":
                 case "zijderveld-container":
@@ -81,27 +81,37 @@
                     return {"width": 0, "top": 0}
                 case "container-histogram-1":
                     return {"width": 200, "top": 0}
+                case "magstrat-container-inclination":
                 case "magstrat-container-binary":
                     return {"width": 400, "top": 0}
                 case "foldtest-tectonic-container":
+                    return {"width": 600, "top": 0}
                 case "pole-container":
                 case "hemisphere-container":
-                case "magstrat-container-inclination":
                 case "hemispherePlot2":
                 case "container-dot-chart":
-                    return {"width": 600, "top": 0}
-                case "foldtest-full-container":
+                case "magstrat-container-longitude":
+                    return {"width": 800, "top": 0}
+                case "magstrat-container-latitude":
+                    return {"width": 1200, "top": 0}
                 case "ei-cdf-container":
                 case "intensity-container":
                 case "inclination-container":
                 case "paleolatitude-container":
                     return {"width": 0, "top": 1200}
                 case "ctmd-container-x":
-                    return {"width": 0, "top": 400}
+                case "foldtest-full-container":
+                    return {"width": 0, "top": 600}
                  case "ctmd-container-y":
                     return {"width": 400, "top": 400}
                  case "ctmd-container-z":
                     return {"width": 800, "top": 400}
+                case "foldtest-io-full-container":
+                    if (typeBootstrap === 'inclination-only') {
+                        return {"width": 0, "top": 600}
+                    } else {
+                        return {"width": 0, "top": 1200}
+                    }
             }
 
         }
@@ -115,6 +125,7 @@
 
             switch (id) {
                 case "foldtest":
+                    return {"top": 1800, "width": 1200}
                 case "foldtest-io":
                 case "shallowing":
                 case "interpretation":
@@ -126,12 +137,12 @@
                 case "predicted":
                     return {"top": 1800, "width": 1200}
                 case "magstrat":
-                    return {"top": 800, "width": 1000}
+                    return {"top": 800, "width": 1600}
             }
 
         }
 
-        var svgArr = new Array();
+        var svgArr = [];
 
         function addSVG(svgres, id) {
 

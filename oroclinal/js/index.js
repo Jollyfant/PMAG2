@@ -2028,7 +2028,7 @@ function plotGraph(plotSeries, min, max, b) {
 			zoomType: 'xy',
         },
         title: {
-            text: 'Oroclinal Test (Pearsons ρ = ' + pear.toFixed(3) + ')'
+            text: 'Oroclinal Test (Pearsons Ï = ' + pear.toFixed(3) + ')'
         },
         subtitle: {
             text: 'Bootstrapped at 95% Confidence Interval (Slope: ' + lr.slope.toFixed(3) + ')'
@@ -2044,8 +2044,8 @@ function plotGraph(plotSeries, min, max, b) {
 			}
 		},
 		exporting: {
-			 sourceWidth: 900,
-            sourceHeight: 900,
+			 sourceWidth: 1200,
+            sourceHeight: 600,
 			filename: 'Oroclinal_Test',
             buttons: {
                 contextButton: {

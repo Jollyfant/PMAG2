@@ -1,17 +1,23 @@
-var collections = new Array();
-var GPlatesData = new Object();
-var KMLLayers = new Array();
+var collections = [];
+var GPlatesData = {};
+var KMLLayers = [];
 var APWPs, PLATE_NAMES;
-var mapMakers = new Array();
+var mapMakers = [];
 var openedCollection;
 
 $(".selectpicker").selectpicker("show");
 
 var COORDINATES_COUNTER = 0;
+var COORDINATES_COUNTER_DIRECTION = 0;
+var POLARITY_COUNTER = 0;
 var COORDINATES = "specimen";
+var COORDINATES_DIRECTION = "direction";
+var POLARITY = "north";
 
 const MARKER_SIZE = 100;
 const MARKER_OPACITY = 0.5;
+
+var LINES_FILE;
 
 function addMap() {
 
@@ -120,13 +126,13 @@ function mapClickHandler(event) {
    * Function mapClickHandler
    * Handles mouse click event on the map
    */
- 
+
   const LOCATION_PRECISION = 5;
- 
+
   // Extract the latitude, longitude and put it in the HTML input
   document.getElementById("site-longitude-input").value = event.latlng.lng.toPrecision(LOCATION_PRECISION);
   document.getElementById("site-latitude-input").value = event.latlng.lat.toPrecision(LOCATION_PRECISION);
- 
+
 }
 
 function __init__() {
@@ -204,13 +210,15 @@ function keyboardHandler(event) {
    * Handles keyboard inputs and delegates to functions
    */
 
-  const CODES = {
-    "KEYPAD_EIGHT": 56,
-    "ESCAPE_KEY": 27,
-    "E_KEY": 69,
-    "Q_KEY": 81,
-    "S_KEY": 83
-  }
+    const CODES = {
+        "KEYPAD_SIX": 54,
+        "KEYPAD_SEVEN": 55,
+        "KEYPAD_EIGHT": 56,
+        "ESCAPE_KEY": 27,
+        "E_KEY": 69,
+        "Q_KEY": 81,
+        "S_KEY": 83
+    }
 
   if(collections.length === 0) {
     return;
@@ -228,19 +236,23 @@ function keyboardHandler(event) {
 
   event.preventDefault();
 
-  // Delegate to the appropriate handler
-  switch(event.keyCode) {
-    case CODES.KEYPAD_EIGHT:
-      return switchCoordinateReference();
-    case CODES.ESCAPE_KEY:
-      return document.getElementById("notification-container").innerHTML = "";
-    case CODES.E_KEY:
-      return editSelectedCollection();
-    case CODES.S_KEY:
-      return exportSelectedCollections();
-    case CODES.Q_KEY:
-      return deleteSelectedCollections();
-  }
+    // Delegate to the appropriate handler
+    switch (event.keyCode) {
+        case CODES.KEYPAD_EIGHT:
+            return switchCoordinateReference();
+        case CODES.KEYPAD_SEVEN:
+            return switchPolarity();
+        case CODES.KEYPAD_SIX:
+            return switchDirections();
+        case CODES.ESCAPE_KEY:
+            return document.getElementById("notification-container").innerHTML = "";
+        case CODES.E_KEY:
+            return editSelectedCollection();
+        case CODES.S_KEY:
+            return exportSelectedCollections();
+        case CODES.Q_KEY:
+            return deleteSelectedCollections();
+    }
 
 }
 
@@ -323,8 +335,8 @@ function resetMarkers() {
    * Returns an SVG path (parachute) based on an angle and error
    */
 
-  mapMakers.forEach(x => map.removeLayer(x));
-  mapMakers = new Array();
+    mapMakers.forEach(x => map.removeLayer(x));
+    mapMakers = [];
 
 }
 
@@ -338,13 +350,11 @@ function getSVGPath(angle, error) {
   var radError = error * RADIANS;
   var radAngle = Math.PI - angle * RADIANS;
 
-  // SVG path for the marker (2px by 2px size) parachute based on the declination and error
-  return new Array( 
-    "M 1 1",
-    "L", 1 + Math.sin(radAngle + radError), 1 + Math.cos(radAngle + radError),
-    "A 1 1 0 0 1", 1 + Math.sin(radAngle - radError), 1 + Math.cos(radAngle - radError),
-    "Z"
-  ).join(" ");
+    // SVG path for the marker (2px by 2px size) parachute based on the declination and error
+    return ["M 1 1",
+        "L", 1 + Math.sin(radAngle + radError), 1 + Math.cos(radAngle + radError),
+        "A 1 1 0 0 1", 1 + Math.sin(radAngle - radError), 1 + Math.cos(radAngle - radError),
+        "Z"].join(" ");
 
 }
 
@@ -368,7 +378,7 @@ function showCollectionsOnMap() {
 
   // Drop references to old markers
   resetMarkers();
- 
+
   // Individual specimens should be plotted
   if(!document.getElementById("group-collection").checked) {
 
@@ -377,10 +387,10 @@ function showCollectionsOnMap() {
 
     getSelectedComponents().forEach(function(component) {
 
-      // Confirm the component location is valid
-      if(isInvalidLocation(component)) {
-        return;
-      }
+            // Confirm the component location is valid
+            if (isInvalidLocation(component)) {
+                return;
+            }
 
       if(!withinAge(component.age)) {
         return;
@@ -396,7 +406,10 @@ function showCollectionsOnMap() {
         "iconSize": MARKER_SIZE
       });
 
-      mapMakers.push(L.marker([component.latitude, component.longitude], {"icon": markerIcon, "name": null}).addTo(map));
+        mapMakers.push(L.marker([component.latitude, component.longitude], {
+            "icon": markerIcon,
+            "name": null
+        }).addTo(map));
 
     });
 
@@ -406,10 +419,10 @@ function showCollectionsOnMap() {
 
   getSelectedCollections().forEach(function(collection) {
 
-    // Only plot collections with a valid location
-    if(collection.components.some(isInvalidLocation)) {
-      return console.debug("Cannot plot collection " + collection.name + " because the location is invalid.");
-    }
+        // Only plot collections with a valid location
+        if (collection.components.some(isInvalidLocation)) {
+            return console.debug("Cannot plot collection " + collection.name + " because the location is invalid.");
+        }
 
     // Determine an average age for the collection
     var avAge = getAverageAge(collection);
@@ -419,32 +432,34 @@ function showCollectionsOnMap() {
       return;
     }
 
-    // Cutoff and statistics
-    var cutofC = doCutoff(collection.components.map(x => x.inReferenceCoordinates()));
-    var statistics = getStatisticalParameters(cutofC.components);
+        // Cutoff and statistics
+        const cutofC = doCutoff(collection.components.map(x => x.inReferenceCoordinates()));
+        const statistics = getStatisticalParameters(cutofC.components);
 
-    // Get the average site location from all markers
-    var averageLocation = getAverageLocation(collection);
+        // Get the average site location from all markers
+        const averageLocation = getAverageLocation(collection);
 
     if(averageLocation === null) {
       return;
     }
 
-    if(collection.color) {
-      var color = collection.color;
-    } else {
-      var color = (statistics.dir.mean.inc < 0 ? HIGHCHARTS_WHITE : HIGHCHARTS_BLACK);
-    }
+        let color = '';
 
-    var markerPath = getSVGPath(statistics.dir.mean.dec, statistics.butler.dDx);
+        if (collection.color) {
+            color = collection.color;
+        } else {
+            color = (statistics.dir.mean.inc < 0 ? HIGHCHARTS_WHITE : HIGHCHARTS_BLACK);
+        }
 
-    var achenSvgString = getFullSVG(markerPath, color);
+        const markerPath = getSVGPath(statistics.dir.mean.dec, statistics.butler.dDx);
 
-    var markerIcon = L.icon({
-       "iconUrl": getFullSVG(markerPath, color),
-       "opacity": MARKER_OPACITY,
-       "iconSize": MARKER_SIZE
-    });
+        const achenSvgString = getFullSVG(markerPath, color);
+
+        const markerIcon = L.icon({
+            "iconUrl": getFullSVG(markerPath, color),
+            "opacity": MARKER_OPACITY,
+            "iconSize": MARKER_SIZE
+        });
 
     var markerPopupContent = [
       "<h5>" + collection.name.slice(0, 16) + "</h5><i class='fas fa-map-marker' aria-hidden='true'></i> " + averageLocation.lng.toFixed(3) + "°E " + averageLocation.lat.toFixed(3) + "°N",
@@ -454,7 +469,29 @@ function showCollectionsOnMap() {
       "<hr><div id='color-picker'>" + generateColorPalette() + "</div>",
     ].join("<br>");
 
-    mapMakers.push(L.marker([averageLocation.lat, averageLocation.lng], {"icon": markerIcon, "index": collection.index, "name": collection.name}).bindPopup(markerPopupContent).addTo(map));
+        mapMakers.push(L.marker([averageLocation.lat, averageLocation.lng], {
+            "icon": markerIcon,
+            "index": collection.index,
+            "name": collection.name
+        }).bindPopup(markerPopupContent).addTo(map));
+
+        LINES_FILE.forEach(function (line) {
+
+            const direction = new Direction(line.dec, line.inc);
+            const butler = getButlerParameters(line.A95, line.inc);
+
+            const color = (direction.inc < 0 ? HIGHCHARTS_WHITE : HIGHCHARTS_BLACK);
+            const markerPath = getSVGPath(direction.dec, butler.dDx);
+
+            const markerIcon = L.icon({
+                "iconUrl": getFullSVG(markerPath, color),
+                "opacity": MARKER_OPACITY,
+                "iconSize": MARKER_SIZE
+            });
+
+            mapMakers.push(L.marker([line.lat, line.lng], {"icon": markerIcon, "name": null}).addTo(map));
+
+        });
 
   });
 
@@ -508,23 +545,20 @@ function generateColorPalette() {
 
   }
 
-  // Choose from a nice saturated gradient
-  const COLOR_PALETTE = new Array(
-    // First row
-    "#F55", "#FA5", "#FF5",
-    "#AF5", "#5F5", "#5FA",
-    "#5FF", "#5AF", "#55F",
-    "#A5F", "#F5F", "#F5A",
-    // Second row
-    "#A00", "#A50", "#AA0",
-    "#5A0", "#0A0", "#0A5",
-    "#0AA", "#05A", "#00A",
-    "#50A", "#A0A", "#A05",
-    // Third row
-    "#FFF", "#DDD", "#AAA",
-    "#888", "#555", "#222",
-    "#000"
-  );
+    // Choose from a nice saturated gradient
+    const COLOR_PALETTE = ["#F55", "#FA5", "#FF5",
+        "#AF5", "#5F5", "#5FA",
+        "#5FF", "#5AF", "#55F",
+        "#A5F", "#F5F", "#F5A",
+        // Second row
+        "#A00", "#A50", "#AA0",
+        "#5A0", "#0A0", "#0A5",
+        "#0AA", "#05A", "#00A",
+        "#50A", "#A0A", "#A05",
+        // Third row
+        "#FFF", "#DDD", "#AAA",
+        "#888", "#555", "#222",
+        "#000"];
 
   // Create color bar
   return COLOR_PALETTE.map(createColorItem).join("");
@@ -545,16 +579,16 @@ function downloadAsGeoJSON() {
      * Converts collections to GeoJSON features
      */
 
-    return {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": new Array(marker.getLatLng().lng, marker.getLatLng().lat)
-      },
-      "properties": {
-        "icon": marker.options.icon.options.iconUrl
-      }
-    }
+        return {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [marker.getLatLng().lng, marker.getLatLng().lat]
+            },
+            "properties": {
+                "icon": marker.options.icon.options.iconUrl
+            }
+        }
 
   }
 
@@ -650,7 +684,7 @@ function getAverageAge(collection) {
     max = Math.min(max, component.ageMax);
     age += component.age;
   });
-  
+
   return {
     "value": age / collection.components.length,
     "min": min,
@@ -709,8 +743,9 @@ function redrawCharts() {
 
   showCollectionsOnMap();
 
-  // Reset to previous scroll position
-  window.scrollTo(0, tempScrollTop);
+
+    // Reset to previous scroll position
+    window.scrollTo(0, tempScrollTop);
 
 }
 
@@ -754,7 +789,7 @@ function mapPlate(id) {
 function removeKMLLayers() {
 
   /*
-   * Function 
+   * Function
    * Handles selection of KML file from disk
    */
 
@@ -795,7 +830,7 @@ function kmlSelectionHandler(event) {
     var domElements = files.map(file2XMLDOM);
 
     // Convertions to GeoJSON
-    try { 
+    try {
       parseGroundOverlay(domElements);
       var layers = domElements.map(toGeoJSON.kml).map(L.geoJSON);
     } catch(exception) {
@@ -829,18 +864,18 @@ function parseGroundOverlay(documents) {
 
     Array.from(element.children).forEach(function(child) {
 
-      switch(child.nodeName) {
-        case "north":
-          return north = Number(child.innerHTML);
-        case "south":
-          return south = Number(child.innerHTML);
-        case "east":
-          return east = Number(child.innerHTML);
-        case "west":
-          return west = Number(child.innerHTML);
-        default:
-          return;
-      };
+            switch (child.nodeName) {
+                case "north":
+                    return north = Number(child.innerHTML);
+                case "south":
+                    return south = Number(child.innerHTML);
+                case "east":
+                    return east = Number(child.innerHTML);
+                case "west":
+                    return west = Number(child.innerHTML);
+                default:
+                    return;
+            };
 
     });
 
@@ -858,7 +893,7 @@ function parseGroundOverlay(documents) {
   documents.forEach(function(doc) {
 
     Array.from(doc.firstChild.children).forEach(function(child) {
-    
+
       // Skip anything that is not a groundOverlay
       if(child.nodeName !== "GroundOverlay") {
         return;
@@ -867,7 +902,7 @@ function parseGroundOverlay(documents) {
       var url, box;
 
       Array.from(child.children).forEach(function(x) {
-    
+
         switch(x.nodeName) {
           case "Icon":
             return url = x.children[0].innerHTML;
@@ -876,9 +911,9 @@ function parseGroundOverlay(documents) {
           default:
             return;
         }
-    
+
       });
-    
+
       // Validate the URI
       if(!url.startsWith("http") && !url.startsWith("https")) {
         throw(new Exception("The selected groundOverlay image must be a valid URL."));
@@ -886,7 +921,7 @@ function parseGroundOverlay(documents) {
 
       // Save reference for deletion
       KMLLayers.push(L.imageOverlay(url, box).addTo(map));
-    
+
     });
 
   });
@@ -903,14 +938,14 @@ function APWPSelectionHandler(event) {
   readMultipleFiles(Array.from(event.target.files), function(files) {
 
     // Create a hashmap for the plate ID
-    try { 
+    try {
       parseAPWPFile(files);
     } catch(exception) {
       notify("danger", exception.message);
     }
 
   });
- 
+
 }
 
 function parseAPWPFile(files) {
@@ -932,7 +967,7 @@ function parseAPWPFile(files) {
     if(values.length !== 4) {
       throw(new Exception("Invalid APWP input file. Each row must contain pole longitude, latitude, A95, and age seperated by a comma."));
     }
-	
+
     return {
       "lng": values[0],
       "lat": values[1],
@@ -983,34 +1018,45 @@ function litSelectionHandler(event) {
 
   function parse(line) {
 
-    parameters = line.split(/\s+/);
+        parameters = line.split(',');
 
-    return {
-      "lat": Number(parameters[0]),
-      "lng": Number(parameters[1]),
-      "dec": Number(parameters[2]),
-      "inc": Number(parameters[3]),
-      "delta": Number(parameters[4]),
-      "color": parameters[5]
-    }
+        return {
+            "name": parameters[0],
+            "age": Number(parameters[1]),
+            "min_age": Number(parameters[2]),
+            "max_age": Number(parameters[3]),
+            "lat": Number(parameters[4]),
+            "lng": Number(parameters[5]),
+            "N": Number(parameters[6]),
+            "K": Number(parameters[7]),
+            "A95": Number(parameters[8]),
+            "plat": Number(parameters[9]),
+            "plon": Number(parameters[10]),
+            "dec": Number(parameters[11]),
+            "inc": Number(parameters[12])
+        }
 
   }
 
   readMultipleFiles(Array.from(event.target.files), function(files) {
 
-    lines = files[0].data.split(/\r?\n/).map(parse).slice(0, -1);
+        LINES_FILE = files[0].data.split(/\r?\n/).map(parse).slice(0, -1);
 
-    lines.forEach(function(line) {
+        LINES_FILE.shift();
 
-      var direction = new Direction(line.dec, line.inc);
-      var color = (direction.inc < 0 ? HIGHCHARTS_WHITE : HIGHCHARTS_BLACK);
-      var markerPath = getSVGPath(direction.dec, line.delta);
+        LINES_FILE.forEach(function (line) {
 
-      var markerIcon = L.icon({
-        "iconUrl": getFullSVG(markerPath, line.color),
-        "opacity": MARKER_OPACITY,
-        "iconSize": MARKER_SIZE
-      });
+            var direction = new Direction(line.dec, line.inc);
+            var butler  = getButlerParameters(line.A95, line.inc);
+
+            var color = (direction.inc < 0 ? HIGHCHARTS_WHITE : HIGHCHARTS_BLACK);
+            var markerPath = getSVGPath(direction.dec, butler.dDx);
+
+            var markerIcon = L.icon({
+                "iconUrl": getFullSVG(markerPath, color),
+                "opacity": MARKER_OPACITY,
+                "iconSize": MARKER_SIZE
+            });
 
       mapMakers.push(L.marker([line.lat, line.lng], {"icon": markerIcon, "name": null}).addTo(map));
 
@@ -1030,14 +1076,14 @@ function eulerSelectionHandler(event) {
   readMultipleFiles(Array.from(event.target.files), function(files) {
 
     // Create a hashmap for the plate ID
-    try { 
+    try {
       parseGPlatesRotationFile(files);
     } catch(exception) {
       notify("danger", exception.message);
     }
 
   });
- 
+
 }
 
 function fileSelectionHandler(event) {

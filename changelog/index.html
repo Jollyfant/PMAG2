@@ -75,56 +75,54 @@
           <h5> Paleomagnetism.org 2 - Changelog </h5>
           <p> The following page records changes that were made and fixes that were applied to the application. 
         </div>
-        <div class="card">
-          <div class="card-header" id="headingEight">
-            <button class="btn btn-link" data-toggle="collapse" data-target="#collapseEight" aria-expanded="true" aria-controls="collapseEight">
-              Paleomagnetism.org 2.6.0 - New Tools and Fixes! <small class="text-muted">&nbsp; 2024-06-14</small>
-            </button>
-          </div>
-          <div id="collapseEight" class="collapse show" aria-labelledby="headingEight" data-parent="#accordion">
-            <div class="card-body">
-            <ul>
-              <p> <b> Features </b>
-              <li> Added Inclinination Only statistics into the Statistics Portal.
-              <li> Added Bootstrap Common Mean Direction Test from Heslop et al. (2023)
-              <li> Added a Sun Compass to Core Azimuth converter into the Miscellaneous portal.
-              <li> Not yet added but working on it: Changes into the Magstrat portal
-            </ul>
-            <ul>
-              <p> <b> Fixes </b>
-              <li> Fixed Vaes et al., 2023 reference
-              <li> Fixed <a href="https://apwp-online.org">APWP Online</a> by Vaes et al., 2024 reference
-              <li> Removing references to the old and deprecated Paleomagnetism.org 1.0
-            </ul>
 
+        <div id="accordion">
+   <div class="card">
+            <div class="card-header" id="headingNine">
+              <button class="btn btn-link" data-toggle="collapse" data-target="#collapseTen" aria-expanded="true" aria-controls="collapseTen">
+                Paleomagnetism.org 2.6.0 - New features! <small class="text-muted">&nbsp; 2025-02-20</small>
+              </button>
+            </div>
+            <div id="collapseTen" class="collapse show" aria-labelledby="headingTen" data-parent="#accordion">
+              <div class="card-body">
+              <ul>
+                <p> <b> Features </b>
+                <li> Inclination only statistics in the statsitics portal -below the stereonets under the Directions tab
+                <li> Added the inclination only foldtest of Enkin (1996) that complements the Tauxe and Watson (1994)
+                <li> Added the CMDT from Heslop et al. (2023)
+                <li> New function in the geography portal, now it is possible to add literature data using the format of APW-online.org
+                <li> Sun Compass to Azimuth tool has been added in the Miscellaneous portal.
+		            <li> Xi'an input format has been added to the interpretation portal.
+              </ul>
+              </div>
             </div>
           </div>
-        </div>
-      <div id="accordion">
+          <p>
+          <div class="card">
+            <div class="card-header" id="headingNine">
+              <button class="btn btn-link" data-toggle="collapse" data-target="#collapseNine" aria-expanded="true" aria-controls="collapseNine">
+                Paleomagnetism.org 2.5.1 - MagIC and Intensity Diagram Fixes <small class="text-muted">&nbsp; 2024-11-27</small>
+              </button>
+            </div>
+            <div id="collapseNine" class="collapse show" aria-labelledby="headingNine" data-parent="#accordion">
+              <div class="card-body">
+              <ul>
+                <p> <b> Features </b>
+                <li> None
+              </ul>
+              <ul>
+                <p> <b> Fixes </b>
+                <li> More liberal in accepting Caltech format. Header parameters were expected in certain positions, if this fails the parameters are split by space instead.
+                <li> Changed export of ChRM directions from hamburger menu to be consistent with the default input (.CSV) file. The MAD has been removed and stratigraphic level added to the export.
+                <li> Addressed problem in Vector Difference Sum where it was mistaken for the Vector Intensity Sum. A new line colored in red was added for the VDS.
+                <li> Fix in core-dip for MagIC export
 
-        <div class="card">
-          <div class="card-header" id="headingNine">
-            <button class="btn btn-link" data-toggle="collapse" data-target="#collapseNine" aria-expanded="true" aria-controls="collapseNine">
-              Paleomagnetism.org 2.5.1 - Quality of life improvements <small class="text-muted">&nbsp; 2024-XX-XX</small>
-            </button>
-          </div>
-          <div id="collapseNine" class="collapse show" aria-labelledby="headingNine" data-parent="#accordion">
-            <div class="card-body">
-            <ul>
-              <p> <b> Features </b>
-              <li> None
-            </ul>
-            <ul>
-              <p> <b> Fixes </b>
-              <li> More liberal in accepting Caltech format. Header parameters were expected in certain positions, if this fails the parameters are split by space instead.
-              <li> Changed export of ChRM directions from hamburger menu to be consistent with the default input (.CSV) file. The MAD has been removed and stratigraphic level added to the export.
-              <li> Addressed problem in Vector Difference Sum where it was mistaken for the Vector Intensity Sum. A new line colored in red was added for the VDS.
               </ul>
 
+              </div>
             </div>
           </div>
-        </div>
-        <p>
+          <p>
 
           <div class="card">
             <div class="card-header" id="headingEight">
@@ -148,7 +146,7 @@
                 <li> Fixed reading of Caltech format in the case of a missing specimen header field. Additional sanity checks were added for the measurements.
                 <li> Fixed MagIC headers for the specimens table.
                 <li> MagIC sites are now determined per unique latitude and longitude instead of per sample.
-		            <li> Updated team members' insititutions and roles.
+		<li> Updated team members' insititutions and roles.
                 <li> Added access to <a href="https://jollyfant.github.io/Paleomagnetism.org/Paleomagnetism.org/">Paleomagnetism.org version 1.0.0</a> to convert legacy .dir files when importing them to the intepretation portal. <b>Please do not use this application for anything else</b>.
               </ul>
 

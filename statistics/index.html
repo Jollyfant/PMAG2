@@ -2,31 +2,31 @@
 
 <html lang="en">
 
-<head>
+   <head>
 
-    <!-- Required metadata tags -->
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="Paleomagnetism.org 2 - An online environment for paleomagnetic analysis">
-    <meta name="keywords" content="paleomagnetism, interpretation, zijderveld, pca">
-    <meta name="author" content="Mathijs Koymans">
-    <link rel="shortcut icon" type="image/x-icon" href="../resources/images/hades-icon.png"/>
-    <link rel="stylesheet" href="../css/style.css">
+      <!-- Required metadata tags -->
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      <meta name="description" content="Paleomagnetism.org 2 - An online environment for paleomagnetic analysis">
+      <meta name="keywords" content="paleomagnetism, interpretation, zijderveld, pca">
+      <meta name="author" content="Mathijs Koymans">
+      <link rel="shortcut icon" type="image/x-icon" href="../resources/images/hades-icon.png"/>
+      <link rel="stylesheet" href="../css/style.css">
 
-    <!-- Bootstrap & Font Awesome CSS & Leaflet -->
-    <link rel="stylesheet" href="../lib/bootstrap-4.3.1/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../lib/fontawesome-free-5.7.2-web/css/all.css">
-    <link rel="stylesheet" href="../lib/leaflet-1.4.0/leaflet.css">
+      <!-- Bootstrap & Font Awesome CSS & Leaflet -->
+      <link rel="stylesheet" href="../lib/bootstrap-4.3.1/dist/css/bootstrap.min.css">
+      <link rel="stylesheet" href="../lib/fontawesome-free-5.7.2-web/css/all.css">
+      <link rel="stylesheet" href="../lib/leaflet-1.4.0/leaflet.css">
 
-    <!-- Bootstrap Select -->
-    <link rel="stylesheet" href="../lib/bootstrap-select-1.13.6/dist/css/bootstrap-select.min.css">
+      <!-- Bootstrap Select -->
+      <link rel="stylesheet" href="../lib/bootstrap-select-1.13.6/dist/css/bootstrap-select.min.css">
 
-</head>
+   </head>
 
 <body id="drop_zone" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
 <!-- Header -->
 <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-    <a class="navbar-brand" href="https://paleomagnetism.org">Paleomagnetism<span class="text-danger">.org</span></a>
+    <a class="navbar-brand" href="http://www.paleomagnetism.org">Paleomagnetism<span class="text-danger">.org</span></a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
             aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -95,10 +95,10 @@
     </nav>
     <div class="tab-content">
 
-        <!-- Tab for data importing -->
-        <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+            <!-- Tab for data importing -->
+            <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
 
-            <br>
+               <br>
 
             <div class="alert alert-light" role="alert">
                 <h5> Paleomagnetism.org 2 - Statistics </h5>
@@ -107,24 +107,24 @@
                     <b>default</b> input file can be found <a href="../resources/formats/default.csv">here</a>.
             </div>
 
-            <div class="input-group">
+               <div class="input-group">
 
-                <!-- Hidden File input -->
-                <input style="display: none;" type="file" class="custom-file-input" id="customFile" multiple>
+                  <!-- Hidden File input -->
+                  <input style="display: none;" type="file" class="custom-file-input" id="customFile" multiple>
 
-                <!-- Format type selector -->
-                <select class="custom-select" id="format-selection">
+                  <!-- Format type selector -->
+                  <select class="custom-select" id="format-selection">
 
-                    <optgroup label="Application Formats">
-                        <option value="PMAG2">Paleomagnetism.org (2.0.0 .pub)</option>
+                     <optgroup label="Application Formats">
+                        <option value="PMAG2">Paleomagnetism.org (2.0.0 .pub) </option>
                         <option value="DIR2">Paleomagnetism.org (2.0.0 .col)</option>
-                        <option value="PMAG">Paleomagnetism.org (1.0.0 .pmag)</option>
-                    </optgroup>
-                    <optgroup label="Text Formats">
+                        <option value="PMAG">Paleomagnetism.org (1.0.0 .pmag) </option>
+                     </optgroup>
+                     <optgroup label="Text Formats">
                         <option value="MODAL">Input Window</option>
                         <option value="CSV">Default Format (.csv)</option>
-                    </optgroup>
-                </select>
+                     </optgroup>
+                  </select>
 
                 <div class="custom-file">
                     <label class="custom-file-label" for="customFile"><i class="fas fa-search"></i> Select files
@@ -132,16 +132,16 @@
                     <input class="custom-file-input" id="defer-input">
                 </div>
 
-                <div class="input-group-append">
-                    <div class="input-group-text">
+                  <div class="input-group-append">
+                     <div class="input-group-text">
                         <input id="append-input" type="checkbox" aria-label="Checkbox for following text input">
                         <label class="form-check-label" for="append-input">
-                            &nbsp; Append
+                        &nbsp; Append
                         </label>
-                    </div>
-                </div>
+                     </div>
+                  </div>
+               </div>
             </div>
-        </div>
 
         <!-- Tab for Directions -->
         <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
@@ -152,31 +152,33 @@
                     virtual geomagnetic poles. The right figure does not show actual VGP positions. The table lists
                     standard Fisher parameters for this set of directions. When multiple collections are selected, its
                     components will be combined before a cutoff is applied. Press <b>8</b> and <b>5</b> to switch
-                    between coordinate frames and confidence ellipses respectively. Below you'll find an inclination-only statistics table.
+                    between coordinate frames and confidence ellipses respectively. Below you'll find an
+                    inclination-only statistics table.
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
-                    </button>
-            </div>
+                     </button>
+               </div>
 
-            <div class="container">
+               <div class="container">
 
-                <div class="row">
-                    <div class="table-responsive">
+                  <div class="row">
+                     <div class="table-responsive">
                         <table class='table table-sm text-center table-striped' id="direction-table"></table>
-                    </div>
+                     </div>
 
-                    <!-- ChRM Directions -->
-                    <div class="col-lg-6">
+                     <!-- ChRM Directions -->
+                     <div class="col-lg-6">
                         <div id="direction-container"></div>
-                    </div>
+                     </div>
 
-                    <!-- VGPs -->
-                    <div class="col-lg-6">
+                     <!-- VGPs -->
+                     <div class="col-lg-6">
                         <div id="pole-container"></div>
                     </div>
                 </div>
-                <p><small><b>Note</b>: The illustrated VGP distribution and cutoff is relative to the mean and does not
-                    show true VGP positions. All directions are assumed to come from the same geographic location.
+                <p><small><b>Note</b>: The illustrated zenital VGP distribution and cutoff is relative to the mean and
+                    does not show true VGP positions. In that projection all directions are assumed to come from the
+                    same geographic location.
                 </small>
                 <div class="text-right">
                     <button class="btn btn-sm btn-light" id="export-png"><i class="far fa-file-image"></i> PNG</button>
@@ -188,16 +190,21 @@
             <br><br>
 
             <!--Inclination Only statistics Table-->
-            <div class="container">
-                <h5><p style="color:rgba(0,0,0,0.6)">Inclination-Only statistics</p></h5>
+            <div class="alert alert-light alert-dismissible fade show" role="alert">
+                <h5>Inclination-Only statistics</h5>
                 <p> Paleomagnetic directions record declinations and inclinations. In some cases, due to
                     structural problems or lost azimuths in drill cores, only the inclinations are reliable.
                     The arithmetic mean for inclination-only data is biased towards shallow inclinations
-                    In this table you can check the differences between the arithmetic mean and inverse variance 
-                    and the <a href="../references">Arason and Levi, 2010</a> Maximum Likelihood Method that 
+                    In this table you can check the differences between the arithmetic mean and inverse variance
+                    and the <a href="../references">Arason and Levi, 2010</a> Maximum Likelihood Method that
                     estimates &kappa; and &alpha;95.
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+            </div>
+
+            <div class="table-responsive">
                 <table class='table table-sm text-center table-striped' id='table-inclination-only'></table>
-                <p></p>
             </div>
         </div>
 
@@ -217,14 +224,14 @@
                 <div class="row justify-content-md-center">
                     <div class="table-responsive">
                         <table class='table table-sm text-center table-striped' id="mean-table"></table>
-                    </div>
-                    <!-- ChRM Directions -->
-                    <div class="col-lg-6">
+                     </div>
+                     <!-- ChRM Directions -->
+                     <div class="col-lg-6">
                         <div id="mean-container"></div>
-                    </div>
-                </div>
+                     </div>
+                  </div>
+               </div>
             </div>
-        </div>
 
         <!-- Tab for CMTD test -->
         <!-- We are now using CMTD, following Heslop, as teh naming, however all functions are named as CTMD -->
@@ -232,10 +239,13 @@
             <br>
             <div class="alert alert-light alert-dismissible fade show" role="alert">
                 <h5> Statistics - Common Mean Direction Test (CMDT) </h5>
-                <p> Select two collections and click <b>initialize</b> to begin the bootstrap. (A) <a href='../references'>Tauxe et al., 2010</a>
-                    CTMD test. Overlapping distributions indicidate that two collections are the same within confidence limits.
-                    (B) CMDT from <a href='../references'>Heslop et al., 2023</a>, showing the histogram of 
-                    &lambda;<sup>(b)</sup><sub>min</sub>. If CMTD value is less than the critical value directions are not different.
+                <p> Select two collections and click <b>initialize</b> to begin the bootstrap. (A) <a
+                        href='../references'>Tauxe et al., 2010</a>
+                    CTMD test. Overlapping distributions indicidate that two collections are the same within confidence
+                    limits.
+                    (B) CMDT from <a href='../references'>Heslop et al., 2023</a>, showing the histogram of
+                    &lambda;<sup>(b)</sup><sub>min</sub>. If CMTD value is less than the critical value directions are
+                    not different.
 
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -260,38 +270,38 @@
                     <div id="permutation-table"></div>
                     <div class="table-responsive">
                         <table class='table table-sm text-center table-striped' id="bootstrap-table"></table>
-                        
+
                         <!-- X, Y, Z coordinates -->
-                    <div class="col-lg-12 d-flex" style="margin-top: 50px; margin-bottom: 50px">
-                        <div class="col-lg-4">
-                            <div id="ctmd-container-x"></div>
-                        </div>
-                        <div class="col-lg-4">
-                            <div id="ctmd-container-y"></div>
-                        </div>
-                        <div class="col-lg-4">
-                            <div id="ctmd-container-z"></div>
+                        <div class="col-lg-12 d-flex" style="margin-top: 50px; margin-bottom: 50px">
+                            <div class="col-lg-4">
+                                <div id="ctmd-container-x"></div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div id="ctmd-container-y"></div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div id="ctmd-container-z"></div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <br><br><br><br>
+                    <br><br><br><br>
 
 
                     <table class='table table-sm text-center table-striped' id="bootstrap-table-new"></table>
-                        <div id="bootstrap-direction-form"></div>
-                        <table class='table table-sm text-center table-striped'
-                               id="bootstrap-cmdt-direction-table"></table>
-                    </div>
+                    <div id="bootstrap-direction-form"></div>
+                    <table class='table table-sm text-center table-striped'
+                           id="bootstrap-cmdt-direction-table"></table>
+                </div>
 
-                    <!-- Heslop et al., 2023 -->
-                    <div class="col-lg-12 d-flex justify-content-center align-items-center">
-                        <div class="col-lg-6">
-                            <div id="container-histogram-1"></div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div id="container-dot-chart"></div>
-                        </div>
+                <!-- Heslop et al., 2023 -->
+                <div class="col-lg-12 d-flex justify-content-center align-items-center">
+                    <div class="col-lg-6">
+                        <div id="container-histogram-1"></div>
                     </div>
+                    <div class="col-lg-6">
+                        <div id="container-dot-chart"></div>
+                    </div>
+                </div>
                 <div class="text-right">
                     <button class="btn btn-sm btn-light" id="export-bootstrap-png"><i class="far fa-file-image"></i> PNG
                     </button>
@@ -310,14 +320,27 @@
                 <h5> Statistics - Foldtest </h5>
                 <p> This module allows the user to do a classical foldtest (<a href="../references">Tauxe & Watson,
                     1994</a>) and an inclination only tilt test (<a href="../references">Enkin & Watson, 1996</a>)
-                    on one or multiple collections. <b>No cutoff will be applied</b>. Select any number of collections 
+                    on one or multiple collections. <b>No cutoff will be applied</b>. Select any number of collections
                     and click <b>initialize</b> to start.
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
             </div>
             <br>
-            <h5><p style="color:rgba(0,0,0,0.6)">Bootstrap Foldtest</p></h5>
+
+            <p>Pick which foldtest you want to execute</p>
+            <select class="form-control" name="select" id="select-foldtest">
+                <option value="classical" selected>Classical Foldtest (Tauxe & Watson, 1994)</option>
+                <option value="inclination-only">Inclination-Only Foldtest (Enkin & Watson, 1996)</option>
+                <option value="both">Both</option>
+            </select>
+            <p></p>
+            <p>Pick between Inverse variance and Arason-Levi's &kappa; (only needed in case you want to execute Inclination-Only Foldtest)</p>
+            <select class="form-control" name="select" id="select-foldtest-io">
+                <option value="inv" selected>Inverse variance</option>
+                <option value="k">Arason-Levi's (k)</option>
+            </select>
+
             <p></p>
             <div class="input-group mb-3">
                 <div class="btn-group-toggle" data-toggle="buttons">
@@ -328,7 +351,7 @@
                 </div>
                 &nbsp;
                 <p>
-                    <button onclick="bootstrapFoldtest()" type="button" class="btn btn-sm pull-right btn-primary"><i
+                    <button onclick="selectBootstrap()" type="button" class="btn btn-sm pull-right btn-primary"><i
                             class="fas fa-play"></i> <b>Initialize</b></button>
             </div>
             <div class="progress">
@@ -340,20 +363,27 @@
                     <!-- In geographic coordinates -->
                     <div class="col-lg-6">
                         <div id="foldtest-geographic-container"></div>
-                    </div>
-                    <!-- In tectonic coordinates -->
-                    <div class="col-lg-6">
+                     </div>
+                     <!-- In tectonic coordinates -->
+                     <div class="col-lg-6">
                         <div id="foldtest-tectonic-container"></div>
-                    </div>
-                </div>
-                <!-- Container for the foldtest itself -->
-                <div class="row">
-                    <div class="col-lg-12">
+                     </div>
+                  </div>
+                  <!-- Container for the foldtest itself -->
+                  <div class="row">
+                     <div class="col-lg-12">
                         <div id="foldtest-full-container"></div>
                     </div>
                 </div>
             </div>
-            
+            <br><br>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div id="foldtest-io-full-container"></div>
+                </div>
+            </div>
+
             <br><br>
             <div class="text-right">
                 <button class="btn btn-sm btn-light" id="export-foldtest-png"><i class="far fa-file-image"></i> PNG
@@ -364,50 +394,7 @@
                 </button>
             </div>
 
-            <br><br>
-
-            <!-- Inclination only tilttest -->
-            <h5><p style="color:rgba(0,0,0,0.6)">Bootrstrap Inclination-Only foldtest</p></h5>
-            <p>Pick between Inverse variance and Arason-Levi's &kappa;</p>
-            <select class="form-control" name="select" id="select-foldtest-io">
-                <option value="inv" selected>Inverse variance</option>
-                <option value="k">Arason-Levi's (k)</option>
-            </select>
-            <p></p>
-            <div class="input-group mb-3">
-                <div class="btn-group-toggle" data-toggle="buttons">
-                    <label class="btn btn-sm btn-success active">
-                        <input id="foldtest-bootstrap-checkbox" type="checkbox" checked autocomplete="off"><i
-                            class="fas fa-dice"></i>
-                    </label>
-                </div>
-                &nbsp;
-                <p>
-                    <button onclick="bootstrapFoldtestIO()" type="button" class="btn btn-sm pull-right btn-primary"><i
-                            class="fas fa-play"></i> <b>Initialize</b></button>
             </div>
-            <div class="progress">
-                <div id="foldtest-inclination-only-progress" class="progress-bar progress-bar-striped progress-bar-animated"
-                     style="width: 0%; transition: none;"></div>
-            </div>
-            <p></p>
-            <div class="row">
-                <div class="col-lg-12">
-                    <div id="foldtest-io-full-container"></div>
-                </div>
-            </div>
-
-            <br><br>
-            <div class="text-right">
-                <button class="btn btn-sm btn-light" id="export-foldtest-io-png"><i class="far fa-file-image"></i> PNG
-                </button>
-                <button class="btn btn-sm btn-light" id="export-foldtest-io-svg"><i class="far fa-file-image"></i> SVG
-                </button>
-                <button class="btn btn-sm btn-light" id="export-foldtest-io-pdf"><i class="far fa-file-image"></i> PDF
-                </button>
-            </div>
-
-        </div>
 
         <!-- Tab for E/I test -->
         <div class="tab-pane fade" id="nav-shallowing" role="tabpanel" aria-labelledby="nav-settings-tab">
@@ -418,7 +405,7 @@
                     TK03.GAD Field Model (<a href="../references">Tauxe et al., 2008</a>) based on the relationship
                     between the expected elongation (E) (τ2/τ3) and inclination. The flattening function of (King, 1955)
                     is applied. A single collection can be selected and a cutoff will be applied. <b>A minimum of 80
-                    directions are required</b>. The procedure can be bootstrapped <b>1000</b> times to find its
+                        directions are required</b>. The procedure can be bootstrapped <b>1000</b> times to find its
                     confidence limits.
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -460,40 +447,40 @@
             </div>
         </div>
 
-        <!-- Tab for Settings -->
-        <div class="tab-pane fade" id="nav-settings" role="tabpanel" aria-labelledby="nav-settings-tab">
-            <br>
+            <!-- Tab for Settings -->
+            <div class="tab-pane fade" id="nav-settings" role="tabpanel" aria-labelledby="nav-settings-tab">
+               <br>
 
-            <!-- Cutoff selector -->
-            <div class="card">
-                <div class="card-body">
+               <!-- Cutoff selector -->
+               <div class="card">
+                  <div class="card-body">
 
-                    <h5> Select Cutoff </h5>
-                    <p> A pole-cutoff can be selected that will be applied to the polar distribution.
-                    <div class="input-group mb-6">
+                     <h5> Select Cutoff </h5>
+                     <p> A pole-cutoff can be selected that will be applied to the polar distribution.
+                     <div class="input-group mb-6">
                         <div class="input-group-prepend">
                             <label class="input-group-text" for="cutoff-selection"><i class="fas fa-cut"></i> &nbsp;
                                 Cutoff &nbsp; <small><i class="fas fa-angle-right"></i></small></label>
                         </div>
                         <select class="custom-select" id="cutoff-selection">
-                            <optgroup label="Recommended Cutoffs">
-                                <option value="CUTOFF45">45° Cutoff</option>
-                            </optgroup>
-                            <optgroup label="Other Cutoffs">
-                                <option value="VANDAMME">Vandamme Cutoff</option>
-                                <!-- <option value="KRIJGSMAN">Krijgsman</option> -->
-                                <option value="">None</option>
-                            </optgroup>
+                           <optgroup label="Recommended Cutoffs">
+                              <option value="CUTOFF45">45° Cutoff</option>
+                           </optgroup>
+                           <optgroup label="Other Cutoffs">
+                              <option value="VANDAMME">Vandamme Cutoff</option>
+                              <!-- <option value="KRIJGSMAN">Krijgsman</option> -->
+                              <option value="">None</option>
+                           </optgroup>
                         </select>
-                    </div>
-                </div>
-            </div>
+                     </div>
+                  </div>
+               </div>
 
             <p>
-            <!-- Options for sorting -->
+                <!-- Options for sorting -->
             <div class="card">
                 <div class="card-body">
-                    
+
                     <h5> Sorting Options </h5>
                     <button onclick="sortCollections('name')" type="button" class="btn btn-sm btn-light"><i
                             class="fas fa-sort"></i> Name
@@ -511,63 +498,63 @@
                     <h5> Keyboard Shortcuts</h5>
                     <small>
                         <div class="table-responsive">
-                            <table class="table table-sm table-striped text-center">
-                                <tr>
-                                    <td>Cycle Confidence Ellipse (α95, A95)</td>
-                                    <td>Cycle Coordinates</td>
-                                    <td>Save Selected Collections</td>
-                                    <td>Remove Selected Collections</td>
-                                    <td>Copy selected collection to clipboard</td>
-                                </tr>
-                                <td>5</td>
-                                <td>8</td>
-                                <td>s</td>
-                                <td>q</td>
-                                <td>e</td>
-                            </table>
+                           <table class="table table-sm table-striped text-center">
+                              <tr>
+                                 <td>Cycle Confidence Ellipse (α95, A95)</td>
+                                 <td>Cycle Coordinates</td>
+                                 <td>Save Selected Collections</td>
+                                 <td>Remove Selected Collections</td>
+                                 <td>Copy selected collection to clipboard</td>
+                              </tr>
+                              <td>5</td>
+                              <td>8</td>
+                              <td>s</td>
+                              <td>q</td>
+                              <td>e</td>
+                           </table>
                         </div>
-                    </small>
-                </div>
-            </div>
+                     </small>
+                  </div>
+               </div>
 
-            <p>
+               <p>
 
-                <!-- Preferences -->
-            <div class="card">
-                <div class="card-body">
-                    <h5> Preferences </h5>
-                    <div class="form-check form-check-inline">
+               <!-- Preferences -->
+               <div class="card">
+                  <div class="card-body">
+                     <h5> Preferences </h5>
+                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="checkbox" id="auto-save" value="option1" checked>
                         <label class="form-check-label" for="auto-save"> Auto-save </label>
-                    </div>
-                    <div class="form-check form-check-inline">
+                     </div>
+                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="checkbox" id="enable-sound" value="option1" checked>
                         <label class="form-check-label" for="enable-sound"> Sound </label>
-                    </div>
-                    <div class="form-check form-check-inline">
+                     </div>
+                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="checkbox" id="enable-deenen" value="option1" checked>
                         <label class="form-check-label" for="enable-deenen"> Show Deenen Criteria </label>
-                    </div>
-                    <div class="form-check form-check-inline">
+                     </div>
+                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="checkbox" id="flip-ellipse" value="option1" checked>
                         <label class="form-check-label" for="flip-ellipse"> Flip Confidence Ellipses </label>
-                    </div>
-                    <div class="form-check form-check-inline">
+                     </div>
+                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="checkbox" id="random-mean-color" value="option1" checked>
                         <label class="form-check-label" for="random-mean-color"> Random Mean Color </label>
-                    </div>
-                    <div class="form-check form-check-inline">
+                     </div>
+                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="checkbox" id="show-samples-mean" value="option1" checked>
                         <label class="form-check-label" for="show-samples-mean"> Show Samples Mean </label>
-                    </div>
-                </div>
-            </div>
+                     </div>
+                  </div>
+               </div>
 
-            <p>
+               <p>
 
-                <!-- Reset the application -->
-            <div class="card">
-                <div class="card-body">
+               <!-- Reset the application -->
+               <div class="card">
+                  <div class="card-body">
 
                     <h5> Application Reset </h5>
                     The application will be resetted as local storage will be cleared. Export your data manually to save
@@ -575,18 +562,18 @@
                     <hr>
                     <button onclick="clearLocalStorage('statistics')" type="button" class="btn btn-sm btn-danger">
                         <i class="fas fa-times"></i>&nbsp; Reset Local Storage
-                    </button>
-                </div>
+                     </button>
+                  </div>
+               </div>
+
             </div>
+         </div>
+      </div>
 
-        </div>
-    </div>
-</div>
+      <!-- Footer -->
+      <footer id="footer-container" class="container text-muted"></footer>
 
-<!-- Footer -->
-<footer id="footer-container" class="container text-muted"></footer>
-
-<br>
+      <br>
 
 <!-- Modal for input -->
 <div class="modal fade" id="input-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel3"
@@ -602,7 +589,7 @@
             <div class="modal-body">
                 <div class="input-group input-group-sm">
                     <div class="input-group-prepend">
-                        <span class="input-group-text" id="">Collection Name</span>
+                        <span class="input-group-text">Collection Name</span>
                     </div>
                     <input id="site-input-name" class="form-control">
                 </div>
@@ -634,15 +621,15 @@
                         <select style="width: 25%" id="specimen-age-select"
                                 class="form-control custom-select text-center"></select>
                         <div class="input-group-prepend ">
-                            <span class="input-group-text" id="">Age</span>
+                            <span class="input-group-text">Age</span>
                         </div>
-                        <input id="age-input" class="form-control">
+                        <input id="age-input"class="form-control">
                         <div class="input-group-prepend">
-                            <span class="input-group-text" id="">Min</span>
+                            <span class="input-group-text">Min</span>
                         </div>
-                        <input id="age-min-input" class="form-control">
+                        <input id="age-min-input"class="form-control">
                         <div class="input-group-prepend">
-                            <span class="input-group-text" id="">Max</span>
+                            <span class="input-group-text">Max</span>
                         </div>
                         <input id="age-max-input" class="form-control">
                     </div>
@@ -651,12 +638,12 @@
                     each component choose an alternative input method.</small>
                 <hr>
 
-                <div class="form-group">
-                    <label for="exampleFormControlTextarea1">Components</label>
-                    <div class="input-group">
+                  <div class="form-group">
+                     <label for="exampleFormControlTextarea1">Components</label>
+                     <div class="input-group">
 
                         <div class="input-group-prepend">
-                            <span class="input-group-text" id="numbers"></span>
+                           <span class="input-group-text" id="numbers"></span>
                         </div>
                         <textarea style="height: 254px; resize: none;" id="site-input-area" class="form-control"
                                   id="exampleFormControlTextarea1" rows="3"></textarea>
@@ -690,7 +677,7 @@
 
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1">DOI</span>
+                        <span class="input-group-text">DOI</span>
                     </div>
                     <input id="metadata-reference" type="text" class="form-control"
                            placeholder="10.1016/j.cageo.2016.05.007" aria-label="Username"
@@ -699,13 +686,13 @@
 
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1">Authors</span>
+                        <span class="input-group-text">Authors</span>
                     </div>
                     <input id="metadata-authors" type="text" class="form-control" placeholder="Author et al."
                            aria-label="Username" aria-describedby="basic-addon1">
 
                     <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1">Year</span>
+                        <span class="input-group-text">Year</span>
                     </div>
                     <input id="metadata-year" type="text" class="form-control" placeholder="2020" aria-label="Username"
                            aria-describedby="basic-addon1">
@@ -829,38 +816,38 @@
                     discarded and all components can be reversed.
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1">Collection Name</span>
+                        <span class="input-group-text">Collection Name</span>
                     </div>
                     <input id="modal-name" type="text" class="form-control" placeholder="My Collection"
                            aria-label="Username" aria-describedby="basic-addon1">
                 </div>
 
-                <!-- Mirror -->
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <div class="input-group-text">
-                            <input id="modal-mirror-components" type="checkbox" value="">
-                            <label class="form-check-label" for="modal-mirror-components">
-                                &nbsp; Flip Components
-                            </label>
-                        </div>
+                  <!-- Mirror -->
+		  <div class="input-group">
+  		    <div class="input-group-prepend">
+     		      <div class="input-group-text">
+                        <input id="modal-mirror-components" type="checkbox" value="">
+                        <label class="form-check-label" for="modal-mirror-components">
+                         &nbsp; Flip Components
+                        </label>
+    		      </div>
                     </div>
                     <select class="custom-select" id="flip-components-direction">
-                        <option value="mirror">Mirror All Directions</option>
-                        <option value="positive">Make All Positive</option>
-                        <option value="negative">Make All Negative</option>
+                      <option value="mirror">Mirror All Directions</option>
+                      <option value="positive">Make All Positive</option>
+                      <option value="negative">Make All Negative</option>
                     </select>
-                </div>
+                  </div>
 
-                <p>
+		  <p>
 
-                    <!-- Discard rejected component checkbox -->
-                <div class="form-check form-check-inline">
-                    <input id="modal-discard-rejected" class="form-check-input" type="checkbox" value="">
-                    <label class="form-check-label" for="modal-discard-rejected">
-                        Discard rejected components
-                    </label>
-                </div>
+                  <!-- Discard rejected component checkbox -->
+                  <div class="form-check form-check-inline">
+                     <input id="modal-discard-rejected" class="form-check-input" type="checkbox" value="">
+                     <label class="form-check-label" for="modal-discard-rejected">
+                     Discard rejected components
+                     </label>
+                  </div>
 
             </div>
             <div class="modal-footer">
@@ -871,14 +858,14 @@
     </div>
 </div>
 
-</body>
+   </body>
 
-<!-- jQuery slim and bootstrap -->
-<script src="../lib/jquery-3.3.1/jquery-3.3.1.slim.min.js"></script>
-<script src="../lib/bootstrap-4.3.1/dist/js/bootstrap.bundle.min.js"></script>
+   <!-- jQuery slim and bootstrap -->
+   <script src="../lib/jquery-3.3.1/jquery-3.3.1.slim.min.js"></script>
+   <script src="../lib/bootstrap-4.3.1/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Leaflet -->
-<script src="../lib/leaflet-1.4.0/leaflet.js"></script>
+   <!-- Leaflet -->
+   <script src="../lib/leaflet-1.4.0/leaflet.js"></script>
 
 <!-- Mathjs -->
 <script src="../lib/mathjs-12.0.0/math.js"></script>
@@ -893,27 +880,27 @@
 <script src="../lib/highcharts-7.0.3/code/modules/exporting.js"></script>
 <script src="../lib/highcharts-7.0.3/code/modules/offline-exporting.js"></script>
 
-<!-- Library for multi-select -->
-<script src="../lib/bootstrap-select-1.13.6/dist/js/bootstrap-select.min.js"></script>
+   <!-- Library for multi-select -->
+   <script src="../lib/bootstrap-select-1.13.6/dist/js/bootstrap-select.min.js"></script>
 
-<!-- Sha -->
-<script src="../js/lib/sha.js"></script>
+   <!-- Sha -->
+   <script src="../js/lib/sha.js"></script>
 
-<!-- Shared utilities -->
-<script src="../js/utils.js"></script>
-<script src="../js/highcharts-patch.js"></script>
-<script src="../js/ages.js"></script>
+   <!-- Shared utilities -->
+   <script src="../js/utils.js"></script>
+   <script src="../js/highcharts-patch.js"></script>
+   <script src="../js/ages.js"></script>
 
-<!-- Shared classes -->
-<script src="../js/classes/Exception.js"></script>
-<script src="../js/classes/Direction.js"></script>
-<script src="../js/classes/Pole.js"></script>
-<script src="../js/classes/Location.js"></script>
-<script src="../js/classes/Coordinates.js"></script>
-<script src="../js/classes/Site.js"></script>
-<script src="../js/classes/Distribution.js"></script>
-<script src="../js/classes/Component.js"></script>
-<script src="../lib/numeric-js-1.2.6/numeric.js"></script>
+   <!-- Shared classes -->
+   <script src="../js/classes/Exception.js"></script>
+   <script src="../js/classes/Direction.js"></script>
+   <script src="../js/classes/Pole.js"></script>
+   <script src="../js/classes/Location.js"></script>
+   <script src="../js/classes/Coordinates.js"></script>
+   <script src="../js/classes/Site.js"></script>
+   <script src="../js/classes/Distribution.js"></script>
+   <script src="../js/classes/Component.js"></script>
+   <script src="../lib/numeric-js-1.2.6/numeric.js"></script>
 
 <!-- Self modules -->
 <script src="./js/pal.js"></script>
