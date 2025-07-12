@@ -45,8 +45,145 @@ function plotExpected(container, dataSeries, site) {
   var PLOT_SPECIMENS = !document.getElementById("group-collection").checked;
   var AGE_SCATTER = document.getElementById("age-scatter").checked;
 
-  // Add collection data
-  getSelectedCollections().forEach(function(collection) {
+
+    if (LINES_FILE) {
+
+        LINES_FILE.forEach(function (line) {
+            line.dec = isNaN(line.dec) ? 0 : line.dec
+            line.inc = isNaN(line.inc) ? 0 : line.inc
+            line.A95 = isNaN(line.A95) ? 0 : line.A95
+
+            var butler = getButlerParameters(line.A95, line.inc);
+
+            if (line.dec > 180) {
+                line.dec -= 360;
+            }
+
+            if (container === "inclination-container") {
+                dataSeries.push({
+                    "name": line.name,
+                    "color": HIGHCHARTS_RED,
+                    "data": [{
+                        "x": line.age,
+                        "y": line.inc,
+                        "lower": (line.inc - butler.dIx),
+                        "upper": (line.inc + butler.dIx)
+                    }]
+                }, {
+                    "name": "Confidence",
+                    "type": "line",
+                    "linkedTo": ":previous",
+                    "enableMouseTracking": false,
+                    "lineWidth": 1,
+                    "color": HIGHCHARTS_RED,
+                    "marker": {
+                        "enabled": false
+                    },
+                    "data": [{
+                        "x": line.min_age,
+                        "y": line.inc
+                    }, {
+                        "x": line.max_age,
+                        "y": line.inc
+                    }, {
+                        "x": null,
+                        "y": null
+                    }, {
+                        "x": line.age,
+                        "y": line.inc + butler.dIx
+                    }, {
+                        "x": line.age,
+                        "y": line.inc - butler.dIx
+                    }]
+                });
+            } else if (container === "declination-container") {
+
+                dataSeries.push({
+                    "name": line.name,
+                    "color": HIGHCHARTS_RED,
+                    "data": [{
+                        "x": line.age,
+                        "y": line.dec,
+                        "lower": (line.dec - butler.dDx),
+                        "upper": (line.dec + butler.dDx)
+                    }]
+                }, {
+                    "name": "Confidence",
+                    "type": "line",
+                    "linkedTo": ":previous",
+                    "enableMouseTracking": false,
+                    "lineWidth": 1,
+                    "color": HIGHCHARTS_RED,
+                    "marker": {
+                        "enabled": false
+                    },
+                    "data": [{
+                        "x": line.min_age,
+                        "y": line.dec
+                    }, {
+                        "x": line.max_age,
+                        "y": line.dec
+                    }, {
+                        "x": null,
+                        "y": null
+                    }, {
+                        "x": line.age,
+                        "y": line.dec + butler.dDx
+                    }, {
+                        "x": line.age,
+                        "y": line.dec - butler.dDx
+                    }]
+                });
+            } else if (container === "paleolatitude-container") {
+                // Paleolatitude confidence is assymetrical
+                var minPaleolatitude = paleolatitude(line.inc - butler.dIx);
+                var maxPaleolatitude = paleolatitude(line.inc + butler.dIx);
+                var lambda = paleolatitude(line.inc)
+
+                dataSeries.push({
+                    "name": line.name,
+                    "color": HIGHCHARTS_RED,
+                    "data": [{
+                        "x": line.age,
+                        "y": lambda,
+                        "lower": minPaleolatitude,
+                        "upper": maxPaleolatitude
+                    }]
+                }, {
+                    "name": "Confidence",
+                    "type": "line",
+                    "linkedTo": ":previous",
+                    "enableMouseTracking": false,
+                    "lineWidth": 1,
+                    "color": HIGHCHARTS_RED,
+                    "marker": {
+                        "enabled": false
+                    },
+                    "data": [{
+                        "x": line.min_age,
+                        "y": lambda
+                    }, {
+                        "x": line.max_age,
+                        "y": lambda
+                    }, {
+                        "x": null,
+                        "y": null
+                    }, {
+                        "x": line.age,
+                        "y": minPaleolatitude
+                    }, {
+                        "x": line.age,
+                        "y": maxPaleolatitude
+                    }]
+                });
+
+            }
+        })
+
+    }
+
+    // Add collection data
+    getSelectedCollections().forEach(function (collection) {
 
     // Cutoff and statistics
     var cutofC = doCutoff(collection.components.map(x => x.inReferenceCoordinates()));
@@ -241,68 +378,69 @@ function plotExpected(container, dataSeries, site) {
 
   });
 
-  new Highcharts.chart(container, {
-    "chart": {
-      "zoomType": "xy",
-      "animation": false,
-      "renderTo": container
-    },
-    "title": {
-      "text": title
-    },
-    "subtitle": {
-      "text": "At site <b>" + site.lat + "</b>°N, <b>" + site.lng + "</b>°E"
-    },
-    "xAxis": {
-      "reversed": true,
-      "title": {
-        "text": "Age (Ma)"
-      }
-    },
-    "yAxis": {
-      "title": {
-        "text": title + " (°)"
-      }
-    },
-    "plotOptions": {
-      "series": {
-        "animation": false
-      },
-      "arearange": {
-        "enableMouseTracking": false,
-        "fillOpacity": 0.3,
-      },
-      "line": {
-        "turboThreshold": 0,
-        "marker": {
-          "symbol": "circle"
-        }
-      }
-    },
-    "exporting": {
-      "filename": "expected-" + title,
-      "sourceWidth": 1200,
-      "sourceHeight": 600,
-      "buttons": {
-        "contextButton": {
-          "symbolStroke": HIGHCHARTS_BLUE,
-          "align": "right"
-        }
-      }
-    },
-    "legend": {
-      "maxHeight": 60
-    },
-    "tooltip": {
-      "formatter": tooltip
-    },
-    "credits": {
-      "enabled": ENABLE_CREDITS,
-      "text": "Paleomagnetism.org [Expected Polar wander] - <i>after van Hinsbergen et al., 2015 </i>",
-      "href": ""
-    },
-    "series": dataSeries
-  });
+    new Highcharts.chart(container, {
+        "chart": {
+            "zoomType": "xy",
+            "animation": false,
+            "renderTo": container
+        },
+        "title": {
+            "text": title
+        },
+        "subtitle": {
+            "text": "At site <b>" + site.lat + "</b>°N, <b>" + site.lng + "</b>°E"
+        },
+        "xAxis": {
+            "reversed": true,
+            "title": {
+                "text": "Age (Ma)"
+            }
+        },
+        "yAxis": {
+            "title": {
+                "text": title + " (°)"
+            }
+        },
+        "plotOptions": {
+            "series": {
+                "animation": false
+            },
+            "arearange": {
+                "enableMouseTracking": false,
+                "fillOpacity": 0.3,
+            },
+            "line": {
+                "turboThreshold": 0,
+                "marker": {
+                    "symbol": "circle"
+                }
+            }
+        },
+        "exporting": {
+            "filename": "expected-" + title,
+            "sourceWidth": 1200,
+            "sourceHeight": 600,
+            "buttons": {
+                "contextButton": {
+                    "symbolStroke": HIGHCHARTS_BLUE,
+                    "align": "right"
+                }
+            }
+        },
+        "legend": {
+            // "maxHeight": 60
+            "enabled": false
+        },
+        "tooltip": {
+            "formatter": tooltip
+        },
+        "credits": {
+            "enabled": ENABLE_CREDITS,
+            "text": "Paleomagnetism.org [Expected Polar wander] - <i>after van Hinsbergen et al., 2015 </i>",
+            "href": ""
+        },
+        "series": dataSeries
+    });
 
 }
 
@@ -346,7 +484,7 @@ function plotPredictedDirections() {
      * Creates Highcharts series
      */
 
-    return [{ 
+    return [{
       "name": name,
       "data": data,
       "color": color
@@ -362,7 +500,7 @@ function plotPredictedDirections() {
   }
 
   function getParticularEulerPole(plate, pole) {
-  
+
     /*
      * Function plotPredictedDirections::getParticularEulerPole
      * Returns a particular Euler pole
@@ -370,7 +508,7 @@ function plotPredictedDirections() {
 
     // Check the GPlates data first
     if(GPlatesData.hasOwnProperty(plate)) {
-  
+
        try {
 
          var poleMove = readGPlatesRotation(plate, pole.age);
@@ -390,9 +528,9 @@ function plotPredictedDirections() {
        } catch(exception) {
          throw(new Exception("Could not extract Euler pole from GPlates rotation file."));
        }
-  
+
     }
-  
+
     if(pole.euler === undefined) {
       notify("danger", "Vaes et al., 2022 does not have a default plate circuit. Please load a GPlates rotation file.")
       throw(new Exception("Vaes et al., 2022 does not have a default plate circuit. Please load a GPlates rotation file."));
@@ -401,10 +539,10 @@ function plotPredictedDirections() {
     if(pole.euler.hasOwnProperty(plate)) {
       return new EulerPole(pole.euler[plate].lng, pole.euler[plate].lat, pole.euler[plate].rot);
     }
-  
+
     // Not exist for age
     return null;
-  
+
   }
 
   // Create a site from the input
@@ -413,10 +551,10 @@ function plotPredictedDirections() {
     Number(document.getElementById("site-latitude-input").value)
   );
 
-  var dataSeriesDeclination = new Array();
-  var dataSeriesInclination = new Array();
-  var dataSeriesPaleolatitude = new Array();
-  var dataSeriesPoles = new Array();
+    var dataSeriesDeclination = [];
+    var dataSeriesInclination = [];
+    var dataSeriesPaleolatitude = [];
+    var dataSeriesPoles = [];
 
   var counter = 0;
 
@@ -443,17 +581,17 @@ function plotPredictedDirections() {
     // Go over all plates
     plates.forEach(function(plate) {
 
-      var dataDeclination = new Array();
-      var dataInclination = new Array();
-      var dataPaleolatitude = new Array();
+            var dataDeclination = [];
+            var dataInclination = [];
+            var dataPaleolatitude = [];
 
-      var poleSeries = new Array();
+            var poleSeries = [];
 
-      var dataDeclinationRange = new Array();
-      var dataInclinationRange = new Array();
-      var dataPaleolatitudeRange = new Array();
+            var dataDeclinationRange = [];
+            var dataInclinationRange = [];
+            var dataPaleolatitudeRange = [];
 
-      var poleSeriesConfidence = new Array();
+            var poleSeriesConfidence = [];
 
       // Go over each pole
       APWP.poles.forEach(function(pole) {
@@ -496,21 +634,44 @@ function plotPredictedDirections() {
         var minPaleolatitude = butler.palatMin;
         var maxPaleolatitude = butler.palatMax;
 
-        // The actual line data series
-        // Lower and upper are for tooltip display
-        dataDeclination.push({"x": pole.age, "y": directions.dec, "lower": minDeclination, "upper": maxDeclination});
-        dataInclination.push({"x": pole.age, "y": directions.inc, "lower": minInclination, "upper": maxInclination});
-        dataPaleolatitude.push({"x": pole.age, "y": paleolatitude(directions.inc), "lower": minPaleolatitude, "upper": maxPaleolatitude});
+                // The actual line data series
+                // Lower and upper are for tooltip display
+                dataDeclination.push({
+                    "x": pole.age,
+                    "y": directions.dec,
+                    "lower": minDeclination,
+                    "upper": maxDeclination
+                });
+                dataInclination.push({
+                    "x": pole.age,
+                    "y": directions.inc,
+                    "lower": minInclination,
+                    "upper": maxInclination
+                });
+                dataPaleolatitude.push({
+                    "x": pole.age,
+                    "y": paleolatitude(directions.inc),
+                    "lower": minPaleolatitude,
+                    "upper": maxPaleolatitude
+                });
 
         // Confidence ranges
         dataDeclinationRange.push({"x": pole.age, "low": minDeclination, "high": maxDeclination});
         dataInclinationRange.push({"x": pole.age, "low": minInclination, "high": maxInclination});
         dataPaleolatitudeRange.push({"x": pole.age, "low": minPaleolatitude, "high": maxPaleolatitude});
 
-        // The pole series
-        poleSeries.push({"x": rPole.lng, "y": projectInclination(rPole.lat), "inc": rPole.lat, "age": pole.age});
-        poleSeriesConfidence = poleSeriesConfidence.concat(getPlaneData({"dec": rPole.lng, "inc": rPole.lat}, pole.A95));
-        poleSeriesConfidence.push({"x": null, "y": null});
+                // The pole series
+                poleSeries.push({
+                    "x": rPole.lng,
+                    "y": projectInclination(rPole.lat),
+                    "inc": rPole.lat,
+                    "age": pole.age
+                });
+                poleSeriesConfidence = poleSeriesConfidence.concat(getPlaneData({
+                    "dec": rPole.lng,
+                    "inc": rPole.lat
+                }, pole.A95));
+                poleSeriesConfidence.push({"x": null, "y": null});
 
       });
 
@@ -613,96 +774,146 @@ function plotPoles(dataSeries) {
 
     }
 
-    dataSeries.push({
-      "name": collection.name,
-      "data": [{
-        "x": statistics.dir.mean.dec,
-        "y": projectInclination(statistics.dir.mean.inc),
-        "inc": statistics.dir.mean.inc,
-        "age": 0
-      }],
-      "lineWidth": 1,
-      "color": HIGHCHARTS_ORANGE,
-      "marker": {
-        "symbol": "circle"
-      }
-    }, {
-      "data": getPlaneData({"dec": statistics.dir.mean.dec, "inc": statistics.dir.mean.inc}, statistics.pole.confidence),
-      "type": "line",
-      "color": HIGHCHARTS_ORANGE,
-      "lineWidth": 1,
-      "dashStyle": "ShortDash",
-      "enableMouseTracking": false,
-      "linkedTo": ":previous",
-      "marker": {
-        "enabled": false
-      }
-    });
+        dataSeries.push({
+            "name": collection.name,
+            "data": [{
+                "x": statistics.dir.mean.dec,
+                "y": projectInclination(statistics.dir.mean.inc),
+                "inc": statistics.dir.mean.inc,
+                "age": 0
+            }],
+            "lineWidth": 1,
+            "color": HIGHCHARTS_ORANGE,
+            "marker": {
+                "symbol": "circle"
+            }
+        }, {
+            "data": getPlaneData({
+                "dec": statistics.dir.mean.dec,
+                "inc": statistics.dir.mean.inc
+            }, statistics.pole.confidence),
+            "type": "line",
+            "color": HIGHCHARTS_ORANGE,
+            "lineWidth": 1,
+            "dashStyle": "ShortDash",
+            "enableMouseTracking": false,
+            "linkedTo": ":previous",
+            "marker": {
+                "enabled": false
+            }
+        });
 
-  });
+        if (LINES_FILE) {
+            LINES_FILE.forEach(function (line) {
+                line.plon = isNaN(line.plon) ? 0 : line.plon;
+                line.plat = isNaN(line.plat) ? 0 : line.plat;
+                line.inc = isNaN(line.inc) ? 0 : line.inc;
+                line.dec = isNaN(line.dec) ? 0 : line.dec;
+                line.A95 = isNaN(line.A95) ? 0 : line.A95;
+
+                dataSeries.push({
+                    "name": collection.name,
+                    "data": [{
+                        "x": line.plon,
+                        "y": projectInclination(line.plat),
+                        "inc": line.plat,
+                        "age": line.age ? line.age : 0,
+                        "marker": {
+                            "symbol": "circle"
+                        }
+                    }],
+                    "lineWidth": 1,
+                    "color": HIGHCHARTS_RED,
+                    "marker": {
+                        "symbol": "circle"
+                    }
+                }, {
+                    "data": getPlaneData({
+                        "inc": line.plat,
+                        "dec": line.plon
+                    }, line.A95),
+                    "type": "line",
+                    "color": HIGHCHARTS_RED,
+                    "lineWidth": 1,
+                    "dashStyle": "ShortDash",
+                    "enableMouseTracking": false,
+                    "linkedTo": ":previous",
+                    "marker": {
+                        "enabled": false
+                    }
+                })
+            })
+        }
+
+
+
+        });
 
   const CHART_CONTAINER = "poles-container";
 
-  Highcharts.chart(CHART_CONTAINER, {
-    "chart": {
-      "polar": true,
-      "animation": false,
-      "height": 800,
-    },
-    "exporting": {
-      "filename": "hemisphere-projection",
-      "sourceWidth": 600,
-      "sourceHeight": 600,
-      "buttons": {
-        "contextButton": {
-          "symbolStroke": HIGHCHARTS_BLUE,
-          "align": "right"
-        }
-      }
-    },
-    "title": {
-      "text": "Apparant Polar Wander Paths"
-    },
-    "pane": {
-      "startAngle": 0,
-      "endAngle": 360
-    },
-    "yAxis": {
-      "type": "linear",
-      "reversed": true,
-      "labels": {
-        "enabled": false
-      },
-      "tickInterval": 90,
-      "min": 0,
-      "max": 90,
-    },
-    "credits": {
-      "enabled": ENABLE_CREDITS,
-      "text": "Paleomagnetism.org (Equal Area Projection)",
-      "href": ""
-    },
-    "xAxis": {
-      "minorTickPosition": "inside",
-      "type": "linear",
-      "min": 0,
-      "max": 360,
-      "minorGridLineWidth": 0,
-      "tickPositions": [0, 90, 180, 270, 360],
-      "minorTickInterval": 10,
-      "minorTickLength": 5,
-      "minorTickWidth": 1
-    },
-    "tooltip": {
-      "formatter": tooltip
-    },
-    "plotOptions": {
-      "series": {
-        "turboThreshold": 0,
-        "animation": false
-      }
-    },
-    "series": dataSeries
-  });
+        Highcharts.chart(CHART_CONTAINER, {
+            "chart": {
+                "polar": true,
+                "animation": false,
+                "height": 800,
+            },
+            "exporting": {
+                "filename": "hemisphere-projection",
+                "sourceWidth": 600,
+                "sourceHeight": 600,
+                "buttons": {
+                    "contextButton": {
+                        "symbolStroke": HIGHCHARTS_BLUE,
+                        "align": "right"
+                    }
+                }
+            },
+            "title": {
+                "text": "Apparant Polar Wander Paths"
+            },
+            "legend": {
+                "enabled": false
+            },
+            "pane": {
+                "startAngle": 0,
+                "endAngle": 360
+            },
+            "yAxis": {
+                "type": "linear",
+                "reversed": true,
+                "labels": {
+                    "enabled": false
+                },
+                "tickInterval": 90,
+                "min": 0,
+                "max": 90,
+            },
+            "credits": {
+                "enabled": ENABLE_CREDITS,
+                "text": "Paleomagnetism.org (Equal Area Projection)",
+                "href": ""
+            },
+            "xAxis": {
+                "minorTickPosition": "inside",
+                "type": "linear",
+                "min": 0,
+                "max": 360,
+                "minorGridLineWidth": 0,
+                "tickPositions": [0, 90, 180, 270, 360],
+                "minorTickInterval": 10,
+                "minorTickLength": 5,
+                "minorTickWidth": 1
+            },
+            "tooltip": {
+                "formatter": tooltip
+            },
+            "plotOptions": {
+                "series": {
+                    "turboThreshold": 0,
+                    "animation": false
+                }
+            },
+            "series": dataSeries
+        });
 
 }

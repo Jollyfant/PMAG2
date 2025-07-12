@@ -1,21 +1,63 @@
-function exportHandlerFoldtest(event) {
+function exportFoldtest(event) {
+    var typeBootstrap = document.getElementById("select-foldtest").value
 
-  /*
-   * Function exportHandlerFoldtest
-   * Export handler for the foldtest module
-   */
+    switch (typeBootstrap) {
+        case 'classical':
+            exportHandlerFoldtest(event, typeBootstrap)
+            break;
+        case 'inclination-only':
+            exportHandlerFoldtestIO(event)
+            break;
+        case 'both':
+            exportHandlerFoldtest(event, typeBootstrap)
+            break;
+    }
+}
 
-  var charts = [
-    $("#foldtest-geographic-container").highcharts(),
-    $("#foldtest-tectonic-container").highcharts(),
-    $("#foldtest-full-container").highcharts()
-  ];
+function exportHandlerFoldtest(event, typeBootstrap) {
+    /*
+     * Function exportHandlerFoldtest
+     * Export handler for the foldtest module
+     */
 
-  if(charts.includes(undefined)) {
-    return notify("danger", "Could not export unrendered charts.");
-  }
+    var charts = [
+        $("#foldtest-geographic-container").highcharts(),
+        $("#foldtest-tectonic-container").highcharts(),
+        $("#foldtest-full-container").highcharts()
+    ]
 
-  exportChartsWrapper("foldtest", charts, event.target.id);
+    if (typeBootstrap === "both") {
+        charts.push($("#foldtest-io-full-container").highcharts())
+    }
+
+    console.log('CHARTS', charts)
+
+    if (charts.includes(undefined)) {
+        return notify("danger", "Could not export unrendered charts.")
+    }
+
+    exportChartsWrapper("foldtest", charts, event.target.id)
+
+}
+
+function exportHandlerFoldtestIO(event) {
+    /*
+     * Function exportHandlerInclinationOnlyFoldtest
+     * Export handler for the foldtest-io module
+     */
+
+    var charts = []
+    charts.push(
+        $("#foldtest-geographic-container").highcharts(),
+        $("#foldtest-tectonic-container").highcharts(),
+        $("#foldtest-io-full-container").highcharts()
+    )
+
+    if (charts.includes(undefined)) {
+        return notify("danger", "Could not export unrendered charts.")
+    }
+
+    exportChartsWrapper("foldtest-io", charts, event.target.id)
 
 }
 
@@ -26,11 +68,13 @@ function exportHandlerBootstrap(event) {
    * Export handler for the CTMD module
    */
 
-  var charts = [
-    $("#ctmd-container-x").highcharts(),
-    $("#ctmd-container-y").highcharts(),
-    $("#ctmd-container-z").highcharts()
-  ];
+    var charts = [
+        $("#container-dot-chart").highcharts(),
+        $("#container-histogram-1").highcharts(),
+        $("#ctmd-container-x").highcharts(),
+        $("#ctmd-container-y").highcharts(),
+        $("#ctmd-container-z").highcharts()
+    ];
 
   if(charts.includes(undefined)) {
     return notify("danger", "Could not export unrendered charts.");
@@ -77,7 +121,7 @@ function exportMeanJSON() {
         var site = new Site(x.longitude, x.latitude);
         return new Component(x, site.poleFrom(literalToCoordinates(x.coordinates).toVector(Direction)).toCartesian());
       });
-      
+
       var poleStatistics = getStatisticalParameters(convertedComps);
       pLon = poleStatistics.dir.mean.dec.toFixed(PRECISION);
       pLat = poleStatistics.dir.mean.inc.toFixed(PRECISION);
@@ -131,8 +175,8 @@ function exportMeanCSV() {
     return notify("failure", "No collections are selected for exporting.");
   }
 
-  // Add the header as the first row
-  var statisticsRows = new Array(new Array("Collection", "Latitude", "Longitude", "N", "Ns", "Cutoff", "S", "Dec", "Inc", "R", "k", "a95", "K", "A95", "A95Min", "A95Max", "ΔDx", "ΔIx", "λ", "Pole Lng", "Pole Lat").join(","));
+    // Add the header as the first row
+    var statisticsRows = new Array(["Collection", "Latitude", "Longitude", "N", "Ns", "Cutoff", "S", "Dec", "Inc", "R", "k", "a95", "K", "A95", "A95Min", "A95Max", "ΔDx", "ΔIx", "λ", "Pole Lng", "Pole Lat"].join(","));
 
   selectedCollections.forEach(function(site) {
 
@@ -153,7 +197,7 @@ function exportMeanCSV() {
         var site = new Site(x.longitude, x.latitude);
         return new Component(x, site.poleFrom(literalToCoordinates(x.coordinates).toVector(Direction)).toCartesian());
       });
-      
+
       var poleStatistics = getStatisticalParameters(convertedComps);
       pLon = poleStatistics.dir.mean.dec.toFixed(PRECISION);
       pLat = poleStatistics.dir.mean.inc.toFixed(PRECISION);
@@ -239,9 +283,9 @@ document.getElementById("export-bootstrap-png").addEventListener("click", export
 document.getElementById("export-bootstrap-pdf").addEventListener("click", exportHandlerBootstrap);
 document.getElementById("export-bootstrap-svg").addEventListener("click", exportHandlerBootstrap);
 
-document.getElementById("export-foldtest-png").addEventListener("click", exportHandlerFoldtest);
-document.getElementById("export-foldtest-pdf").addEventListener("click", exportHandlerFoldtest);
-document.getElementById("export-foldtest-svg").addEventListener("click", exportHandlerFoldtest);
+document.getElementById("export-foldtest-png").addEventListener("click", exportFoldtest);
+document.getElementById("export-foldtest-pdf").addEventListener("click", exportFoldtest);
+document.getElementById("export-foldtest-svg").addEventListener("click", exportFoldtest);
 
 document.getElementById("export-shallowing-png").addEventListener("click", exportHandlerShallowing);
 document.getElementById("export-shallowing-pdf").addEventListener("click", exportHandlerShallowing);

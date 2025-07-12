@@ -152,6 +152,12 @@
                   <div class="col-md-3">
                      <div id="magstrat-container-inclination"></div>
                   </div>
+                  <div class="col-md-3">
+                     <div id="magstrat-container-longitude"></div>
+                  </div>
+                  <div class="col-md-3">
+                     <div id="magstrat-container-latitude"></div>
+                  </div>
                </div>
                <div class="text-right">
                   <button class="btn btn-sm btn-light" id="export-magstrat-png"><i class="far fa-file-image"></i> PNG</button>
@@ -165,7 +171,7 @@
                <br>
                <div class="alert alert-light alert-dismissible fade show" role="alert">
                   <h5> Geography - Map Overview & APWPs </h5>
-                                   <p> This map overview illustrates vertical-axis rotations for the selected sites including confidence parachutes (ΔDx). Declinations, inclinations, paleolatitudes, and apparent polar wander paths can be plotted for major plates. <p> <b>Tip!</b> You can create your own APWPs using <a href='https://apwp-online.org'>APWP-Online</a> by Vaes et al., 2023.
+                                   <p> This map overview illustrates vertical-axis rotations for the selected sites including confidence parachutes (ΔDx). Declinations, inclinations, paleolatitudes, and apparent polar wander paths can be plotted for major plates. <p> <b>Tip!</b> You can create your own APWPs using <a href='https://apwp-online.org'>APWP-Online</a> by Vaes et al., 2024.
                   <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                      <span aria-hidden="true">&times;</span>
                   </button>
@@ -187,12 +193,12 @@
                            <div class="card-header" id="headingOne" style='padding: 0px'>
                               <h5 class="mb-0">
                                  <button class="btn btn-link btn-sm" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                 Map Settings <small>(expand)</small>
+                                 Plot Settings <small>(expand)</small>
                                  </button>
                               </h5>
                            </div>
                            <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
-                              <div class="card-body" style='text-align: center;'>
+                              <div class="card-body" style='text-align: left;'>
                                  <div class="form-check form-check-inline">
                                     <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" checked>
                                     <label class="form-check-label" for="defaultCheck1">
@@ -214,7 +220,7 @@
                                     <div class="row">
                                        <div class="col">
                                           <div class="input-group mb-6">
-                                             <input id='site-longitude-input' type="text" class="form-control input-sm" placeholder="Longitude">
+                                             <input id='site-longitude-input' type="text" class="form-control input-sm" placeholder="Lon">
                                              <div class="input-group-append">
                                                 <div class="input-group-text">°E</div>
                                              </div>
@@ -222,7 +228,7 @@
                                        </div>
                                        <div class="col">
                                           <div class="input-group mb-6">
-                                             <input id='site-latitude-input' type="text" class="form-control input-sm" placeholder="Latitude">
+                                             <input id='site-latitude-input' type="text" class="form-control input-sm" placeholder="Lat">
                                              <div class="input-group-append">
                                                 <div class="input-group-text">°N</div>
                                              </div>
@@ -234,11 +240,11 @@
                                     <div class="input-group-prepend">
                                        <div class="input-group-text">Age </div>
                                     </div>
-                                    <input id='site-age-min-input' type="text" class="form-control input-sm" placeholder="Minimum">
+                                    <input id='site-age-min-input' type="text" class="form-control input-sm" placeholder="Min">
                                     <div class="input-group-append">
                                        <div class="input-group-text">to</div>
                                     </div>
-                                    <input id='site-age-max-input' type="text" class="form-control input-sm" placeholder="Maximum">
+                                    <input id='site-age-max-input' type="text" class="form-control input-sm" placeholder="Max">
                                     <div class="input-group-append">
                                        <div class="input-group-text">Ma</div>
                                     </div>
@@ -250,18 +256,18 @@
                                     </div>
                                     <div class="custom-file">
                                        <input type="file" class="custom-file-input" id="kml-upload" multiple>
-                                       <label class="custom-file-label" for="kml-upload">Custom KML Overlay</label>
+                                       <label class="custom-file-label" for="kml-upload">Custom KML</label>
                                     </div>
                                  </div>
                                  <p>
                                     <!-- Euler poles upload handler -->
                                  <div class="input-group">
                                     <div class="input-group-prepend">
-                                       <button type="button" class="btn btn-primary example-popover" data-toggle="popover" data-placement="left" title="Add Euler Rotations" data-content="Select a custom GPlates file (.rot) from disk to add to the application."><i class="fas fa-info-circle"></i></button>
+                                       <button type="button" class="btn btn-primary example-popover" data-toggle="popover" data-placement="left" title="Add Custom Euler Rotations" data-content="Select a custom GPlates file (.rot) from disk to add to the application."><i class="fas fa-info-circle"></i></button>
                                     </div>
                                     <div class="custom-file">
                                        <input type="file" class="custom-file-input" id="euler-upload">
-                                       <label class="custom-file-label" for="euler-upload">Custom Euler Rotations</label>
+                                       <label class="custom-file-label" for="euler-upload"> Custom Euler </label>
                                     </div>
                                  </div>
                                  <p>
@@ -276,13 +282,15 @@
                                     </div>
                                  </div>
 				<p>
+                                   <!-- Literature data -->
+
                                  <div class="input-group">
                                     <div class="input-group-prepend">
-                                       <button type="button" class="btn btn-primary example-popover" data-toggle="popover" data-placement="left" title="Add Literature Data" data-content="Select literature directions (lat, lng, dec, inc, ΔDx, color) on each line, comma delimited for displaying on the map."><i class="fas fa-info-circle"></i></button>
+                                       <button type="button" class="btn btn-primary example-popover" data-toggle="popover" data-placement="left" title="Add Literature Data" data-content="Add pmag data from literature to the map and plots directions using APWP-online type .csv files (check  https://apwp-online.org/#!/apwptool) for reference"><i class="fas fa-info-circle"></i></button>
                                     </div>
                                     <div class="custom-file">
                                        <input type="file" class="custom-file-input" id="lit-upload">
-                                       <label class="custom-file-label" for="euler-upload">Literature Data</label>
+                                       <label class="custom-file-label" for="literature-upload">Literature Data</label>
                                     </div>
                                  </div>
 
@@ -586,6 +594,10 @@
    <script src="../lib/highcharts-7.0.3/code/highcharts-more.js"></script>
    <script src="../lib/highcharts-7.0.3/code/modules/exporting.js"></script>
    <script src="../lib/highcharts-7.0.3/code/modules/offline-exporting.js"></script>
+
+   <!-- Mathjs -->
+   <script src="../lib/mathjs-12.0.0/math.js"></script>
+   <script src="../lib/mathjs-12.0.0/math.min.js"></script>
 
    <!-- Library for multi-select -->
    <script src="../lib/bootstrap-select-1.13.6/dist/js/bootstrap-select.min.js"></script>

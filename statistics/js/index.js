@@ -2,6 +2,7 @@ var collections = new Array();
 var COORDINATES_COUNTER = 0;
 var COORDINATES = "specimen";
 var A95_CONFIDENCE = true;
+var VGP = false;
 var map;
 
 function addMap() {
@@ -128,6 +129,7 @@ function enable() {
   $("#nav-profile-tab").removeClass("disabled");
   $("#nav-fitting-tab").removeClass("disabled");
   $("#nav-ctmd-tab").removeClass("disabled");
+  $("#nav-inclination-tab").removeClass("disabled");
   $("#nav-foldtest-tab").removeClass("disabled");
   $("#nav-shallowing-tab").removeClass("disabled");
 
@@ -150,6 +152,7 @@ function keyboardHandler(event) {
 
   const CODES = {
     "KEYPAD_FIVE": 53,
+    "KEYPAD_SEVEN": 55,
     "KEYPAD_EIGHT": 56,
     "ESCAPE_KEY": 27,
     "E_KEY": 69,
@@ -177,6 +180,10 @@ function keyboardHandler(event) {
   switch(event.keyCode) {
     case CODES.KEYPAD_EIGHT:
       return switchCoordinateReference();
+    case CODES.KEYPAD_SEVEN:
+      VGP = !VGP;
+      notify("info", "Switched to <b>" + (VGP ? "real" : "zential") + "</b> VGP distribution.");
+      return redrawCharts();
     case CODES.ESCAPE_KEY:
       return document.getElementById("notification-container").innerHTML = "";
     case CODES.E_KEY:
@@ -240,8 +247,9 @@ function redrawCharts() {
 
   // Redraw the hemisphere projections
   // Other modules are triggered with dedicated buttons
-  eqAreaProjection();
+  eqAreaProjectionStatistics(VGP);
   eqAreaProjectionMean();
+  calculateInclinationOnly();
 
   // Reset to the original position
   window.scrollTo(0, tempScrollTop);

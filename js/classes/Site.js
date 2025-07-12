@@ -42,10 +42,11 @@ Site.prototype.poleFrom = function(direction) {
   var poleLatitude = Math.asin(Math.sin(siteLatitude) * Math.cos(p) + Math.cos(siteLatitude) * Math.sin(p) * Math.cos(declination))
   var beta = Math.asin(Math.sin(p) * Math.sin(declination) / Math.cos(poleLatitude));
 
+  var poleLongitude = 0
   if(Math.cos(p) - Math.sin(poleLatitude) * Math.sin(siteLatitude) < 0) {
-    var poleLongitude = siteLongitude + Math.PI - beta;
+    poleLongitude = siteLongitude + Math.PI - beta;
   } else {
-    var poleLongitude = siteLongitude + beta;
+    poleLongitude = siteLongitude + beta;
   }
 	
   // Bind the plate longitude between [0, 360]
