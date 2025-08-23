@@ -2408,14 +2408,14 @@ function importHelsinkiBlock(file) {
 
 }
 
-function importXian(file) {
+function importXianTh(file) {
    /*
-    * Function importXian
-    * Imports demagnetization data in the Xi'an Institute of Earth Environment, Chinese Academy of Sciences format (DAT)
-    * The format looks very similar to CNIEH format, but columns have a different order
+    * Function importXianTh
+    * Imports demagnetization data in the Xi'an Institute of Earth Environment, Chinese Academy of Sciences format (DAT) for thermal demagnetization
+    * Format does not include information on core and bedding orientations that become by default 0,90 (core) and 270,0 (bedding)
     */
-  // XIAN samples need to be sorted
-  var xianSpecimens = new Object();
+  // XIAN-TH samples need to be sorted
+  var xianThSpecimens = new Object();
 
   var lines = file.data.split(LINE_REGEXP).filter(Boolean);
 
@@ -2430,12 +2430,12 @@ function importXian(file) {
     var sampleName = parameters[0];
 
     // Add a sample to the has map
-    if(!xianSpecimens.hasOwnProperty(sampleName)) {
+    if(!xianThSpecimens.hasOwnProperty(sampleName)) {
 
-      xianSpecimens[sampleName] = {
-        "demagnetizationType": null,
+      xianThSpecimens[sampleName] = {
+        "demagnetizationType": "thermal",
         "coordinates": "specimen",
-        "format": "XIAN",
+        "format": "XIAN-TH",
         "version": __VERSION__,
         "created": new Date().toISOString(),
         "steps": new Array(),
@@ -2465,13 +2465,84 @@ function importXian(file) {
 
     var cartesianCoordinates = new Direction(declination, inclination, intensity * 1E6).toCartesian();
 
-    xianSpecimens[sampleName].steps.push(new Measurement(step, cartesianCoordinates, null));
+    xianThSpecimens[sampleName].steps.push(new Measurement(step, cartesianCoordinates, null));
 
   });
 
   // Add all specimens in the hashmap to the application
-  Object.keys(xianSpecimens).forEach(function(specimen) {
-    specimens.push(xianSpecimens[specimen]);
+  Object.keys(xianThSpecimens).forEach(function(specimen) {
+    specimens.push(xianThSpecimens[specimen]);
   });
+
+}
+
+function importXianAf(file) {
+  /*
+   * Function importXianAf
+   * Imports demagnetization data in the Xi'an Institute of Earth Environment, Chinese Academy of Sciences format (DAT) for Alternating Fields demagnetization
+   * Format does not include information on core and bedding orientations that become by default 0,90 (core) and 270,0 (bedding)
+   */
+ // XIAN-AF samples need to be sorted
+ var xianAfSpecimens = new Object();
+
+ var lines = file.data.split(LINE_REGEXP).filter(Boolean);
+
+ // Skip the header
+ lines.slice(1).forEach(function(line) {
+
+   var parameters = line.split(/\t+/);
+   // var level = parameters[26];
+ // Apparently depth is not stratigraphic level but position in a tray in Xian file kept it commented just in case
+   // Add the level to the sample name add after parameters [0] the commented line below
+   //+ "." + level 
+   var sampleName = parameters[0];
+
+   // Add a sample to the has map
+   if(!xianAfSpecimens.hasOwnProperty(sampleName)) {
+
+     xianAfSpecimens[sampleName] = {
+       "demagnetizationType": "alternating",
+       "coordinates": "specimen",
+       "format": "XIAN-AF",
+       "version": __VERSION__,
+       "created": new Date().toISOString(),
+       "steps": new Array(),
+       "name": sampleName,
+       "volume": 10.0,
+       "longitude": null,
+       "latitude": null,
+       "age": null,
+       "ageMin": null,
+       "ageMax": null,
+       "lithology": null,
+       "sample": sampleName,
+       "beddingStrike": 270,
+       "beddingDip": 0,
+       "coreAzimuth": 0,
+       "coreDip": 90,
+       "interpretations": new Array()
+     }
+
+   }
+   
+   // Extract the measurement parameters, AF steps are given in Gaus in Xian format. 1 Gauss = 1E-1 mT.
+   // Pretty sure that there is a far more elegant way to divide by 10 the AF steps and give them back as a string but coder was a geologist
+
+   var StepinmT = Number(parameters[16] * 1E-1);
+   var step = StepinmT.toString()
+   var intensity = Number(parameters[3]);	
+   var declination = Number(parameters[1]);
+   var inclination = Number(parameters[2]);
+
+   var cartesianCoordinates = new Direction(declination, inclination, intensity * 1E6).toCartesian();
+
+   xianAfSpecimens[sampleName].steps.push(new Measurement(step, cartesianCoordinates, null));
+
+ });
+
+ // Add all specimens in the hashmap to the application
+ Object.keys(xianAfSpecimens).forEach(function(specimen) {
+   specimens.push(xianAfSpecimens[specimen]);
+ });
 
 }

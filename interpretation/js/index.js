@@ -120,8 +120,10 @@ function addDegmagnetizationFiles(format, files) {
       return files.forEach(importNGU);
     case "PALEOMAC":
       return files.forEach(importPaleoMac);
-    case "XIAN":
-      return files.forEach(importXian);
+    case "XIAN-TH":
+      return files.forEach(importXianTh);
+    case "XIAN-AF":
+      return files.forEach(importXianAf);
     case "ANGLIA":
       return files.forEach(importAnglia);
     case "OXFORD":
