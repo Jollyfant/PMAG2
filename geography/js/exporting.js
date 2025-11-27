@@ -1,10 +1,14 @@
 function exportHandlerMagstrat(event) {
 
-  var charts = new Array(
-    $("#magstrat-container-declination").highcharts(),
-    $("#magstrat-container-binary").highcharts(),
-    $("#magstrat-container-inclination").highcharts()
-  );
+    var charts = [
+        $("#magstrat-container-declination").highcharts(),
+        $("#magstrat-container-inclination").highcharts(),
+        $("#magstrat-container-longitude").highcharts(),
+        $("#magstrat-container-latitude").highcharts(),
+        $("#magstrat-container-declination").highcharts(),
+        $("#magstrat-container-binary").highcharts(),
+        $("#magstrat-container-inclination").highcharts()
+    ];
 
   if(charts.includes(undefined)) {
     return notify("danger", "Can not export charts that are not rendered.");
@@ -16,11 +20,11 @@ function exportHandlerMagstrat(event) {
 
 function exportHandlerPredicted(event) {
 
-  var charts = new Array(
-    $("#declination-container").highcharts(),
-    $("#inclination-container").highcharts(),
-    $("#paleolatitude-container").highcharts()
-  );
+    var charts = [
+        $("#declination-container").highcharts(),
+        $("#inclination-container").highcharts(),
+        $("#paleolatitude-container").highcharts()
+    ];
 
   if(charts.includes(undefined)) {
     return notify("danger", "Can not export charts that are not rendered.");

@@ -2,7 +2,7 @@
 
 <html lang="en">
 
-  <head>
+<head>
 
     <!-- Required metadata tags -->
     <meta charset="UTF-8">
@@ -20,125 +20,137 @@
     <link rel="stylesheet" href="../lib/bootstrap-4.3.1/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="../lib/fontawesome-free-5.7.2-web/css/all.css">
 
-  </head>
+</head>
 
-  <body>
+<body>
 
-    <!-- Header -->
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+<!-- Header -->
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
 
-      <a class="navbar-brand" href="http://www.paleomagnetism.org">Paleomagnetism<span class="text-danger">.org</span></a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+    <a class="navbar-brand" href="https://anisotropia.everyware.es">Paleomagnetism<span class="text-danger">.org</span></a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
+            aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
-      </button>
+    </button>
 
-      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+    <div class="collapse navbar-collapse" id="navbarsExampleDefault">
         <ul class="navbar-nav mr-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="../interpretation">Interpretation</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="../statistics">Statistics</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="../geography">Geography</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active" href="../miscellaneous">Miscellaneous</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="../references">References</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="../team">Team & Contact</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="../magic">MagIC Interface</a>
-          </li>
+            <li class="nav-item">
+                <a class="nav-link" href="../interpretation">Interpretation</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="../statistics">Statistics</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="../geography">Geography</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="../miscellaneous">Miscellaneous</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="../references">References</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="../team">Team & Contact</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="../magic">MagIC Interface</a>
+            </li>
         </ul>
 
         <form class="form-inline my-2 my-lg-0">
-          <a href="../library" class="btn btn-sm btn-secondary my-2 my-sm-0"><i class="fas fa-book-open"></i><b>&nbsp; Data Library</b></a>
+            <a href="../library" class="btn btn-sm btn-secondary my-2 my-sm-0"><i class="fas fa-book-open"></i><b>&nbsp;
+                Data Library</b></a>
         </form>
 
-      </div>
+    </div>
 
-    </nav>
+</nav>
 
-    <!-- Main body -->
-    <div class="container">
+<!-- Main body -->
+<div class="container">
 
-      <!-- Container for user notifications -->
-      <div id="notification-container"></div>
+    <!-- Container for user notifications -->
+    <div id="notification-container"></div>
 
-        <div class="alert alert-light" role="alert">
-          <h5>Paleomagnetism.org 2 - Miscellaneous Portal </h5>
-          <p> The following set of miscellaneous tools do not fit within one of the portals. Tools that are not yet ported to the new application can be found on the <a href="http://old.paleomagnetism.org/miscellaneous.html">old website</a>.
+    <div class="alert alert-light" role="alert">
+        <h5>Paleomagnetism.org 2 - Miscellaneous Portal </h5>
+        <p> A toolbox with miscellaneous webapps that do not fit within one of the portals.</a>.
+    </div>
+
+
+    <div class="card-deck">
+
+        <div class="card" style="border: none;">
+            <img style="" class="card-img-top" src="../resources/images/NTR.png" alt="Card image cap">
+            <div class="card-body">
+                <h6 class="card-title"><a href="../ntr/"><i class="fas fa-undo"></i> Net Tectonic Rotation</a></h6>
+                <hr>
+                <p class="card-text text-muted text-justify">This tool can restore the orientation of dyke with a
+                    geomagnetic reference to its original vertical position.</p>
+            </div>
         </div>
 
+        <div class="card" style="border: none;">
+            <img style="" class="card-img-top" src="../resources/images/parametric.png" alt="Card image cap">
+            <div class="card-body">
+                <h6 class="card-title"><a href="../parametric/"><i class="fa fa-dice"></i> Parametric Sampling</a></h6>
+                <hr>
+                <p class="card-text text-muted text-justify">This tool can be used to parametrically sample a Fisherian
+                    distribution of poles or directions and generate declination, inclination pairs.</p>
+            </div>
+        </div>
 
-  <div class="card-deck"> 
+        <div class="card" style="border: none;">
+            <img style="" class="card-img-top" src="../resources/images/parametric.png" alt="Card image cap">
+            <div class="card-body">
+                <h6 class="card-title"><a href="../palpole/"><i class="fa fa-life-ring"></i> Directions & Poles</a></h6>
+                <hr>
+                <p class="card-text text-muted text-justify">This tool can be used to convert between magnetic
+                    directions and virtual geomagnetic poles at site locations following the GAD model.</p>
+            </div>
+        </div>
 
-    <div class="card" style="border: none;">
-    <img style="" class="card-img-top" src="../resources/images/NTR.png" alt="Card image cap">
-    <div class="card-body">
-      <h6 class="card-title"><a href="../ntr/"><i class="fas fa-undo"></i> Net Tectonic Rotation</a></h6>
-     <hr>
-      <p class="card-text text-muted text-justify">This tool can restore the orientation of dyke with a geomagnetic reference to its original vertical position.</p>
+        <div class="card" style="border: none;">
+            <img style="" class="card-img-top" src="../resources/images/oroclinal.png" alt="Card image cap">
+            <div class="card-body">
+                <h6 class="card-title"><a href="../oroclinal/"><i class="fa fa-grip-lines-vertical"></i><i
+                        class="fa fa-grip-lines"></i><i class="fa fa-grip-lines-vertical"></i> Oroclinal Test</a></h6>
+                <hr>
+                <p class="card-text text-muted text-justify">Implementation of a bootstrapped Oroclinal Test using a TLS
+                    regression between bedding strike and magnetic declination.</p>
+            </div>
+        </div>
+
+        <div class="card" style="border: none;">
+            <img style="" class="card-img-top" src="../resources/images/SunDec.png" alt="Card image cap">
+            <div class="card-body">
+                <h6 class="card-title"><a href="../suncompass/"><i class="far fa-compass"></i> Sun Compass</a></h6>
+                <hr>
+                <p class="card-text text-muted text-justify">A tool to transform sun shadows to core azimuths.</p>
+            </div>
+        </div>
+
     </div>
-  </div>
+    <br>
+</div>
 
-    <div class="card" style="border: none;">
-    <img style="" class="card-img-top" src="../resources/images/parametric.png" alt="Card image cap">
-    <div class="card-body">
-      <h6 class="card-title"><a href="../parametric/"><i class="fa fa-dice"></i> Parametric Sampling</a></h6>
-     <hr>
-      <p class="card-text text-muted text-justify">This tool can be used to parametrically sample a Fisherian distribution of poles or directions and generate declination, inclination pairs.</p>
-    </div>
-  </div>
+<footer id="footer-container" class="container text-muted"></footer>
 
-    <div class="card" style="border: none;">
-    <img style="" class="card-img-top" src="../resources/images/parametric.png" alt="Card image cap">
-    <div class="card-body">
-      <h6 class="card-title"><a href="../palpole/"><i class="fa fa-life-ring"></i> Directions & Poles</a></h6>
-     <hr>
-      <p class="card-text text-muted text-justify">This tool can be used to convert between magnetic directions and virtual geomagnetic poles at site locations following the GAD model.</p>
-    </div>
+<br>
 
+</body>
 
-  </div>
+<!-- jQuery slim and bootstrap -->
+<script src="../lib/jquery-3.3.1/jquery-3.3.1.slim.min.js"></script>
+<script src="../lib/bootstrap-4.3.1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/utils.js"></script>
 
-    <div class="card" style="border: none;">
-    <img style="" class="card-img-top" src="../resources/images/oroclinal.png" alt="Card image cap">
-    <div class="card-body">
-      <h6 class="card-title"><a href="../oroclinal/"><i class="fa fa-grip-lines-vertical"></i><i class="fa fa-grip-lines"></i><i class="fa fa-grip-lines-vertical"></i> Oroclinal Test</a></h6>
-     <hr>
-      <p class="card-text text-muted text-justify">Implementation of a bootstrapped Oroclinal Test using a TLS regression between bedding strike and magnetic declination.</p>
-    </div>
-
-
-  </div>
-
-  </div>
-  <br>
-    </div>
-
-    <footer id="footer-container" class="container text-muted"></footer>
-
-    <br> 
-
-  </body>
-
-  <!-- jQuery slim and bootstrap -->
-  <script src="../lib/jquery-3.3.1/jquery-3.3.1.slim.min.js"></script>
-  <script src="../lib/bootstrap-4.3.1/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="../js/utils.js"></script>
-
-  <script>
+<script>
     document.getElementById("__doi__").innerHTML = "<a href='https://doi.org/" + __DOI__ + "'>" + __DOI__ + "</a>";
     document.getElementById("__version__").innerHTML = __VERSION__;
     document.getElementById("__year__").innerHTML = new Date().getFullYear();
-  </script>
+</script>
 
 
 </html>
