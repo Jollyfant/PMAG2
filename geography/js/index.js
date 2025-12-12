@@ -17,7 +17,7 @@ var POLARITY = "north";
 const MARKER_SIZE = 100;
 const MARKER_OPACITY = 0.5;
 
-var LINES_FILE;
+var LINES_FILE = new Array();
 
 function addMap() {
 
