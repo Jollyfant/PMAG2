@@ -27,6 +27,10 @@
         options = Highcharts.merge(Highcharts.getOptions().exporting, options);
         Highcharts.getSVG(charts, options, function (svg) {
             Highcharts.downloadSVGLocal(svg, options, function (e) {
+                if (options.type === "application/pdf") {
+                    options.scale = 1;
+                }
+                console.log('Error: ', e)
                 notify("danger", "Failured to export figure.");
             });
         });
@@ -58,6 +62,7 @@
              * Function Highcharts.getSVG::fail
              * Callback function fired when exporting fails
              */
+            console.error('Export fail: ', e)
             notify("danger", "Could not export charts.");
 
         }
@@ -68,7 +73,10 @@
              * Returns the individual chart offsets in compilation figures
              */
 
-            var typeBootstrap = document.getElementById("select-foldtest").value
+            const el = document.getElementById("select-foldtest");
+            const typeBootstrap = el ? el.value : "default";
+
+            console.log('getChartOffsets', id);
 
             switch (id) {
                 case "foldtest-geographic-container":
@@ -94,14 +102,16 @@
                     return {"width": 800, "top": 0}
                 case "magstrat-container-latitude":
                     return {"width": 1200, "top": 0}
-                case "ei-cdf-container":
-                case "intensity-container":
-                case "inclination-container":
-                case "paleolatitude-container":
-                    return {"width": 0, "top": 1200}
                 case "ctmd-container-x":
+                case "inclination-container":
                 case "foldtest-full-container":
                     return {"width": 0, "top": 600}
+                case "ei-cdf-container":
+                case "intensity-container":
+                case "paleolatitude-container":
+                    return {"width": 0, "top": 1200}
+                case "poles-container":
+                    return {"width": 0, "top": 1800}
                  case "ctmd-container-y":
                     return {"width": 400, "top": 400}
                  case "ctmd-container-z":
@@ -113,6 +123,8 @@
                         return {"width": 0, "top": 1200}
                     }
             }
+
+            return { width: 0, top: 0 };
 
         }
 
@@ -135,10 +147,12 @@
                 case "geomagnetic-directions":
                     return {"top": 600, "width": 1200}
                 case "predicted":
-                    return {"top": 1800, "width": 1200}
+                    return {"top": 2400, "width": 1200}
                 case "magstrat":
                     return {"top": 800, "width": 1600}
             }
+
+            return { top: 1200, width: 1200 };
 
         }
 
