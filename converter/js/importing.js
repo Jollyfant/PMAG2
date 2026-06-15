@@ -1,3 +1,27 @@
+var Measurement = function(step, coordinates, error) {
+
+  /*
+   * Class Measurement
+   * Container for a single demagnetization step
+   */
+
+  this.step = step.trim();
+
+  this.x = Number(coordinates.x);
+  this.y = Number(coordinates.y);
+  this.z = Number(coordinates.z);
+
+  if(isNaN(this.x) || isNaN(this.y) || isNaN(this.z)) {
+    throw new Exception("Components are not a number for demagnetization step: " + step + ".");
+  }
+
+  this.error = Number(error);
+
+  this.visible = true;
+  this.selected = false;
+
+}
+
 function importSpinner(file) {
 
   /*
@@ -65,7 +89,8 @@ function importSpinner(file) {
       "beddingDip": 0,
       "coreAzimuth": 0,
       "coreDip": 90, 
-      "interpretations": new Array()
+      "interpretations": new Array(),
+	  "originalFile": file.name
     });
 
   });
@@ -75,7 +100,7 @@ function importSpinner(file) {
 function importUNESP(file) {
 
   // Cenieh samples need to be sorted
-  let UNESPSpecimens = new Object();
+  let UNESPspecimens = new Object();
 
   let lines = file.data.split(LINE_REGEXP).filter(Boolean);
   let demagnetizationType = lines[0].split(/\t+/)[1] === "AF Z" ? "alternating" : "thermal";
@@ -87,9 +112,9 @@ function importUNESP(file) {
     let sampleName = parameters[0];
 
     // Add a sample to the has map
-    if(!UNESPSpecimens.hasOwnProperty(sampleName)) {
+    if(!UNESPspecimens.hasOwnProperty(sampleName)) {
 
-      UNESPSpecimens[sampleName] = new Object({
+      UNESPspecimens[sampleName] = new Object({
         "demagnetizationType": demagnetizationType,
         "coordinates": "specimen",
         "format": "UNESP",
@@ -109,7 +134,8 @@ function importUNESP(file) {
         "beddingDip": Number(parameters[8]),
         "coreAzimuth": Number(parameters[5]),
         "coreDip": Number(parameters[6]),
-        "interpretations": new Array()
+        "interpretations": new Array(),
+	"originalFile": file.name
       });
 
     }
@@ -146,12 +172,12 @@ function importUNESP(file) {
       }, 0);
     }
     
-    UNESPSpecimens[sampleName].steps.push(new Measurement(step, cartesianCoordinates, null));
+    UNESPspecimens[sampleName].steps.push(new Measurement(step, cartesianCoordinates, null));
 	
   });
 
   // Add all specimens in the hashmap to the application
-  Object.values(UNESPSpecimens).forEach(function(specimen) {
+  Object.values(UNESPspecimens).forEach(function(specimen) {
     specimens.push(specimen);
   });
 
@@ -231,7 +257,8 @@ function importGTK(file) {
     "beddingDip": beddingDip,
     "coreAzimuth": coreAzimuth,
     "coreDip": coreDip, 
-    "interpretations": new Array()
+    "interpretations": new Array(),
+	"originalFile": file.name
   });
 
 }
@@ -279,7 +306,8 @@ function importMontpellier(file) {
         "beddingDip": dip,
         "coreAzimuth": azimuth,
         "coreDip": plunge,
-        "interpretations": new Array()
+        "interpretations": new Array(),
+		"originalFile": file.name
       }
     }
  
@@ -312,6 +340,7 @@ function importRennes(file) {
     var volume = lines[3].split(/\s+/)[2];
     var latitude = lines[4].split(/\s+/)[2];
     var longitude = lines[4].split(/\s+/)[5];
+
     // Lazily implement AGICO: may defer call to convertAgico but that does not support P1, P3 yet
     if(!lines[9].includes("A12_0_3_9")) {
       throw new Exception("Currently only supporting Agico format 12, 0, 3, 9. The other orientations still need to be implemented for this format.");
@@ -360,7 +389,8 @@ function importRennes(file) {
       "beddingDip": beddingDip,
       "coreAzimuth": coreAzimuth,
       "coreDip": coreDip, 
-      "interpretations": new Array()
+      "interpretations": new Array(),
+	  "originalFile": file.name
     });
 
   });
@@ -681,7 +711,8 @@ function importPaleoMag(file) {
     "beddingDip": beddingDip,
     "coreAzimuth": coreAzimuth,
     "coreDip": coreDip, 
-    "interpretations": new Array()
+    "interpretations": new Array(),
+	"originalFile": file.name
   });
 
 }
@@ -820,7 +851,8 @@ function importUnknown(file) {
     "beddingDip": beddingDips.values().next().value,
     "coreAzimuth": coreAzimuths.values().next().value,
     "coreDip": coreDips.values().next().value,
-    "interpretations": new Array()
+    "interpretations": new Array(),
+	"originalFile": file.name
   });
 
 }
@@ -922,9 +954,9 @@ function importBlackMnt(file) {
     "beddingDip": beddingDips.values().next().value,
     "coreAzimuth": coreAzimuths.values().next().value,
     "coreDip": coreDips.values().next().value,
-    "interpretations": new Array()
-  });
-
+    "interpretations": new Array(),
+	"originalFile": file.name
+	})
 }
 
 function importJR5(file) {
@@ -988,7 +1020,8 @@ function importJR5(file) {
       "beddingDip": beddingDip,
       "coreAzimuth": coreAzimuth,
       "coreDip": coreDip,
-      "interpretations": new Array()
+      "interpretations": new Array(),
+	  "originalFile": file.name
     });
 
   });
@@ -997,7 +1030,7 @@ function importJR5(file) {
 
 function importJR6(file) {
 
-  var specimenSortObject = new Object();
+  var specimensortObject = new Object();
 
   var lines = file.data.split(LINE_REGEXP).filter(Boolean);
 
@@ -1020,11 +1053,12 @@ function importJR6(file) {
     var P2 = Number(line.slice(68, 71));
     var P3 = Number(line.slice(71, 74));
     var P4 = Number(line.slice(74, 77));
+
     // Convert AGICO orientations
     orientations = convertAgico(P1, P2, P3, P4, coreAzimuth, coreDip, beddingStrike, beddingDip);
 
-    if(!specimenSortObject.hasOwnProperty(sampleName)) {
-      specimenSortObject[sampleName] = {
+    if(!specimensortObject.hasOwnProperty(sampleName)) {
+      specimensortObject[sampleName] = {
         "demagnetizationType": null,
         "coordinates": "specimen",
         "format": "JR6",
@@ -1045,18 +1079,19 @@ function importJR6(file) {
         "beddingDip": orientations.beddingDip,
         "coreAzimuth": orientations.coreAzimuth,
         "coreDip": orientations.coreDip,
-        "interpretations": new Array()
+        "interpretations": new Array(),
+		"originalFile": file.name
       }
 
     }
 
-    specimenSortObject[sampleName].steps.push(
+    specimensortObject[sampleName].steps.push(
       new Measurement(step, coordinates, a95)
     );
 
   });
 
-  Object.values(specimenSortObject).forEach(function(specimen) {
+  Object.values(specimensortObject).forEach(function(specimen) {
     specimens.push(specimen);
   });
 
@@ -1147,25 +1182,24 @@ function importRS3(file) {
   // Bedding parameters
   var beddingStrike = Number(header.slice(86, 90).trim());
   var beddingDip = Number(header.slice(92, 95).trim());
-
   var orientations = convertAgico(P1, P2, P3, P4, coreAzimuth, coreDip, beddingStrike, beddingDip);
 
   // Go over each demagnetization step
   var steps = lines.slice(2).map(function(line) {
 
     var step = line.slice(3, 6).trim();
+
     // Intensity is in A/m
     var intensity = 1E6 * Number(line.slice(15, 27));
     var declination = Number(line.slice(28, 33));
     var inclination = Number(line.slice(34, 39));
     var a95 = Number(line.slice(77, 80))
-
     var coordinates = new Direction(declination, inclination, intensity).toCartesian();
 
     return new Measurement(step, coordinates, a95);
 
   });
-  
+
   // Add the data to the application
   specimens.push({
     "demagnetizationType": demagnetizationType, 
@@ -1183,12 +1217,13 @@ function importRS3(file) {
     "lithology": null,
     "sample": sampleName,
     "name": sampleName,
-    "volume": null,
+    "volume": 1, //rs3 doesn't have volume, but we need volume in order to convert to other formats so we use 1 as a dummy volume
     "beddingStrike": orientations.beddingStrike,
     "beddingDip": orientations.beddingDip,
     "coreAzimuth": orientations.coreAzimuth,
     "coreDip": orientations.coreDip,
-    "interpretations": new Array()
+    "interpretations": new Array(),
+	"originalFile": file.name
   });
 
 }
@@ -1259,11 +1294,11 @@ function importPaleoMac(file) {
     "beddingDip": Number(beddingDip),
     "coreAzimuth": Number(coreAzimuth),
     "coreDip": Number(coreDip),
-    "interpretations": new Array()
+    "interpretations": new Array(),
+	"originalFile": file.name
   });
 
 }
-
 
 function importOxford(file) {
 
@@ -1336,85 +1371,11 @@ function importOxford(file) {
     "beddingDip": Number(beddingDip),
     "coreAzimuth": Number(coreAzimuth),
     "coreDip": Number(coreDip),
-    "interpretations": new Array()
+    "interpretations": new Array(),
+	"originalFile": file.name
   });
     
 }
-
-function importSouthampton(file) {
-
-   /*
-   * Function importSouthampton
-   * Parses files from the Southampton format
-   */
-
-  var lines = file.data.split(LINE_REGEXP).filter(Boolean);
-  var parsedData = new Array();
- 
-  // Get specimen metadata from the first second line
-  var parameters = lines[2].split(/[\t]+/);
-	
-  var coreAzimuth = Number(parameters[14]);
-  var coreDip = Number(parameters[15]);
-  
-  var beddingStrike = (Number(parameters[16]) + 270) % 360;
-  var beddingDip = Number(parameters[17]);
-  
-  var sampleName = parameters[0];
-  var sampleVolume = Math.abs(Number(parameters[5]));
-
-  // Determine what column to use
-  // Assume anything with 'Thermal' is TH, and 'Degauss' is AF.
-  if(/Thermal/.test(parameters[59])) {
-    var stepIndex = 66;
-    var demagnetizationType = "thermal";
-  } else if(/Degauss/.test(parameters[59])) {
-    var stepIndex = 62;
-    var demagnetizationType = "alternating";
-  } else {
-    throw(new Exception("Could not determine type of demagnetization."));
-  }
-  
-  var steps = lines.slice(1).map(function(line) {
-	
-    // Southampton is delimted by tabs
-    var parameters = line.split(/[\t]+/);
-    
-    var intensity = 1E6 * Number(parameters[13]) / sampleVolume;
-    var dec = Number(parameters[10]);
-    var inc = Number(parameters[7]);
-
-    var coordinates = new Direction(dec, inc, intensity).toCartesian();
-
-    return new Measurement(parameters[stepIndex], coordinates, null);
-
-  });
-  specimens.push({
-    "demagnetizationType": demagnetizationType,
-    "coordinates": "specimen",
-    "format": "SOUTHAMPTON",
-    "version": __VERSION__,
-    "created": new Date().toISOString(),
-    "steps": steps,
-    "level": null,
-    "longitude": null,
-    "latitude": null,
-    "age": null,
-    "ageMin": null,
-    "ageMax": null,
-    "lithology": null,
-    "sample": sampleName,
-    "name": sampleName,
-    "volume": sampleVolume,
-    "beddingStrike": beddingStrike,
-    "beddingDip": beddingDip,
-    "coreAzimuth": coreAzimuth,
-    "coreDip": coreDip,
-    "interpretations": []
-  });
-
-}
-
 
 function importAnglia(file) {
 
@@ -1479,7 +1440,8 @@ function importAnglia(file) {
     "beddingDip": Number(beddingDip),
     "coreAzimuth": Number(coreAzimuth),
     "coreDip": Number(coreDip),
-    "interpretations": new Array()
+    "interpretations": new Array(),
+	"originalFile": file.name
   });
 
 }
@@ -1557,7 +1519,6 @@ function importNGU(file) {
 
 }
 
-
 function importCenieh(file) {
 
   /*
@@ -1566,7 +1527,7 @@ function importCenieh(file) {
    */
   
   // Cenieh samples need to be sorted
-  var ceniehSpecimens = new Object();
+  var ceniehspecimens = new Object();
 
   var lines = file.data.split(LINE_REGEXP).filter(Boolean);
  
@@ -1580,9 +1541,9 @@ function importCenieh(file) {
     var sampleName = parameters[0] + "." + level;
 
     // Add a sample to the has map
-    if(!ceniehSpecimens.hasOwnProperty(sampleName)) {
+    if(!ceniehspecimens.hasOwnProperty(sampleName)) {
 
-      ceniehSpecimens[sampleName] = {
+      ceniehspecimens[sampleName] = {
         "demagnetizationType": null,
         "coordinates": "specimen",
         "format": "CENIEH",
@@ -1602,7 +1563,8 @@ function importCenieh(file) {
         "beddingDip": 0,
         "coreAzimuth": 0,
         "coreDip": 90,
-        "interpretations": new Array()
+        "interpretations": new Array(),
+		"originalFile": file.name
       }
 
     }
@@ -1615,13 +1577,13 @@ function importCenieh(file) {
 	
     var cartesianCoordinates = new Direction(declination, inclination, intensity * 1E6).toCartesian();
 	
-    ceniehSpecimens[sampleName].steps.push(new Measurement(step, cartesianCoordinates, null));
+    ceniehspecimens[sampleName].steps.push(new Measurement(step, cartesianCoordinates, null));
 	
   });
 
   // Add all specimens in the hashmap to the application
-  Object.keys(ceniehSpecimens).forEach(function(specimen) {
-    specimens.push(ceniehSpecimens[specimen]);
+  Object.keys(ceniehspecimens).forEach(function(specimen) {
+    specimens.push(ceniehspecimens[specimen]);
   });
 
 }
@@ -1721,11 +1683,11 @@ function importCeniehRegular(file) {
     "beddingDip": Number(beddingDip),
     "coreAzimuth": Number(coreAzimuth),
     "coreDip": Number(coreDip),
-    "interpretations": new Array()
+    "interpretations": new Array(),
+	"originalFile": file.name
   });
 
 }
-
 
 function importMunich(file) {
 
@@ -1808,7 +1770,8 @@ function importMunich(file) {
     "beddingDip": Number(beddingDip),
     "coreAzimuth": Number(coreAzimuth),
     "coreDip": Number(coreDip),
-    "interpretations": new Array()
+    "interpretations": new Array(),
+	"originalFile": file.name
   });
 
 }
@@ -1935,7 +1898,8 @@ function importLDGO(file) {
         "beddingDip": Number(beddingDip),
         "coreAzimuth": Number(coreAzimuth),
         "coreDip": Number(coreDip),
-        "interpretations": new Array()
+        "interpretations": new Array(),
+		"originalFile": file.name
       }
     }
 
@@ -2090,7 +2054,8 @@ function importApplicationSaveOld(file) {
       "beddingDip": Number(specimen.bedDip),
       "coreAzimuth": Number(specimen.coreAzi),
       "coreDip": Number(specimen.coreDip),
-      "interpretations": new Array()
+      "interpretations": new Array(),
+	  "originalFile": file.name
     }
 
     // Try re-doing all the interpretations
@@ -2143,11 +2108,6 @@ function importApplicationSave(file) {
 
   var json = JSON.parse(file.data);
 
-  // Confirm the file was not tampered with 
-  if(document.getElementById("confirm-integrity").checked && json.hash !== forge_sha256(JSON.stringify(json.specimens))) {
-    throw(new Exception("Could not verify the integrity of this specimen file."));
-  }
-
   // Add all specimens
   json.specimens.forEach(function(specimen) {
     specimens.push(specimen);
@@ -2196,9 +2156,9 @@ function importUtrecht(file) {
 
     // Slice the file header information
     if(i === 0) { 
-      var blockLines = specimen.split(LINE_REGEXP).slice(1);
+      var blockLines = specimen.split(/\r?\n/).slice(1);
     } else {
-      var blockLines = specimen.split(LINE_REGEXP).slice(0);
+      var blockLines = specimen.split(/\r?\n/).slice(0);
     }
 
     var header = blockLines.shift();
@@ -2214,17 +2174,25 @@ function importUtrecht(file) {
     blockLines.forEach(function(measurement) {
 
       var [step, a, b, c, error, _, _] = measurement.split(/,[\s]*/);
-	  
+
       // Step is in pico Am^2 .. divide by sample volume to get uAm/m!
       a = Number(a) / sampleVolume;
       b = Number(b) / sampleVolume;
       c = Number(c) / sampleVolume;
 
-      var coordinates = new Coordinates(-b, c, -a);
+      var coordinates = {x: -b, y: c, z: -a};
 
-      steps.push(new Measurement(step, coordinates, error));
-
+      steps.push({
+        step: step,
+        x: coordinates.x,
+        y: coordinates.y,
+        z: coordinates.z,
+        error: Number(error) || null,
+        visible: true,
+        selected: false
+      });
     });
+
     specimens.push({
       "demagnetizationType": demagnetizationType,
       "coordinates": "specimen",
@@ -2246,12 +2214,10 @@ function importUtrecht(file) {
       "beddingDip": Number(beddingDip),
       "coreAzimuth": Number(coreAzimuth),
       "coreDip": Number(coreDip),
-      "interpretations": new Array()
+      "interpretations": new Array(),
+	  "originalFile": file.name
     });
-
   });
-
-
 }
 
 function importHelsinki(file) {
@@ -2262,7 +2228,6 @@ function importHelsinki(file) {
    */
 
   var lines = file.data.split(LINE_REGEXP);
-
   // Get some header metadata
   var sampleName = lines[5].split(";")[1]
   var coreAzimuth = Number(lines[5].split(";")[7])
@@ -2318,7 +2283,8 @@ function importHelsinki(file) {
     "beddingDip": Number(beddingDip),
     "coreAzimuth": Number(coreAzimuth),
     "coreDip": Number(coreDip),
-    "interpretations": new Array()
+    "interpretations": new Array(),
+	"originalFile": file.name
   });
 
 }
@@ -2338,7 +2304,7 @@ function importHelsinkiBlock(file) {
   var coreAzimuth = (Number(lines[5].split(";")[7]) - 90).toFixed(1);
   // 90 is vertical, 0 is horizontal (other convention)
   var coreDip = 90 - Number(lines[6].split(";")[7]);
-  var sampleVolume = Number(lines[7].split(";")[2]);
+  var sampleVolume = Number(lines[7].split(";")[2]); 
   var demagnetizationType = lines[7].split(";")[7];
 
   // Bedding is not included: always set to 0, 0
@@ -2392,75 +2358,81 @@ function importHelsinkiBlock(file) {
     "beddingDip": Number(beddingDip),
     "coreAzimuth": Number(coreAzimuth),
     "coreDip": Number(coreDip),
-    "interpretations": new Array()
+    "interpretations": new Array(),
+	"originalFile": file.name
   });
 
 }
+function importSouthampton(file) {
 
-function importXian(file) {
    /*
-    * Function importXian
-    * Imports demagnetization data in the Xi'an Institute of Earth Environment, Chinese Academy of Sciences format (DAT)
-    * The format looks very similar to CNIEH format, but columns have a different order
-    */
-  // XIAN samples need to be sorted
-  var xianSpecimens = new Object();
+   * Function importSouthampton
+   * Parses files from the Southampton format
+   */
 
   var lines = file.data.split(LINE_REGEXP).filter(Boolean);
+  var parsedData = new Array();
+ 
+  // Get specimen metadata from the first second line
+  var parameters = lines[2].split(/[\t]+/);
+	
+  var coreAzimuth = Number(parameters[14]);
+  var coreDip = Number(parameters[15]);
+  
+  var beddingStrike = (Number(parameters[16]) + 270) % 360;
+  var beddingDip = Number(parameters[17]);
+  
+  var sampleName = parameters[0];
+  var sampleVolume = Math.abs(Number(parameters[5]));
 
-  // Skip the header
-  lines.slice(1).forEach(function(line) {
+  // Determine what column to use
+  // Assume anything with 'Thermal' is TH, and 'Degauss' is AF.
+  if(/Thermal/.test(parameters[59])) {
+    var stepIndex = 66;
+    var demagnetizationType = "thermal";
+  } else if(/Degauss/.test(parameters[59])) {
+    var stepIndex = 62;
+    var demagnetizationType = "alternating";
+  } else {
+    throw(new Exception("Could not determine type of demagnetization."));
+  }
+  
+  var steps = lines.slice(1).map(function(line) {
+	
+    // Southampton is delimted by tabs
+    var parameters = line.split(/[\t]+/);
+    
+    var intensity = 1E6 * Number(parameters[13]) / sampleVolume;
+    var dec = Number(parameters[10]);
+    var inc = Number(parameters[7]);
 
-    var parameters = line.split(/\s+/);
-    // var level = parameters[26];
-	// Apparently depth is not stratigraphic level but position in a tray in Xian file kept it commented just in case
-    // Add the level to the sample name add after parameters [0] the commented line below
-	  //+ "." + level 
-    var sampleName = parameters[0];
+    var coordinates = new Direction(dec, inc, intensity).toCartesian();
 
-    // Add a sample to the has map
-    if(!xianSpecimens.hasOwnProperty(sampleName)) {
-
-      xianSpecimens[sampleName] = {
-        "demagnetizationType": null,
-        "coordinates": "specimen",
-        "format": "XIAN",
-        "version": __VERSION__,
-        "created": new Date().toISOString(),
-        "steps": new Array(),
-        "name": sampleName,
-        "volume": 10.0,
-        "longitude": null,
-        "latitude": null,
-        "age": null,
-        "ageMin": null,
-        "ageMax": null,
-        "lithology": null,
-        "sample": sampleName,
-        "beddingStrike": 270,
-        "beddingDip": 0,
-        "coreAzimuth": 0,
-        "coreDip": 90,
-        "interpretations": new Array()
-      }
-
-    }
-
-    // Extract the measurement parameters
-    var step = parameters[25];
-    var intensity = Number(parameters[3]);	
-    var declination = Number(parameters[1]);
-    var inclination = Number(parameters[2]);
-
-    var cartesianCoordinates = new Direction(declination, inclination, intensity * 1E6).toCartesian();
-
-    xianSpecimens[sampleName].steps.push(new Measurement(step, cartesianCoordinates, null));
+    return new Measurement(parameters[stepIndex], coordinates, null);
 
   });
-
-  // Add all specimens in the hashmap to the application
-  Object.keys(xianSpecimens).forEach(function(specimen) {
-    specimens.push(xianSpecimens[specimen]);
+  specimens.push({
+    "demagnetizationType": demagnetizationType,
+    "coordinates": "specimen",
+    "format": "SOUTHAMPTON",
+    "version": __VERSION__,
+    "created": new Date().toISOString(),
+    "steps": steps,
+    "level": null,
+    "longitude": null,
+    "latitude": null,
+    "age": null,
+    "ageMin": null,
+    "ageMax": null,
+    "lithology": null,
+    "sample": sampleName,
+    "name": sampleName,
+    "volume": sampleVolume,
+    "beddingStrike": beddingStrike,
+    "beddingDip": beddingDip,
+    "coreAzimuth": coreAzimuth,
+    "coreDip": coreDip,
+    "interpretations": []
   });
 
 }
@@ -2628,3 +2600,69 @@ function importCryoThing(sitFile, meaFile) {
     specimens.push(specimen);
   });
 }
+
+function handleCryoThingImport(files) {
+  const sitFiles = files.filter(file => file.name.toLowerCase().endsWith('.sit'));
+  const meaFiles = files.filter(file => file.name.toLowerCase().endsWith('.mea'));
+
+  sitFiles.forEach(sitFile => {
+    const baseName = sitFile.name.replace(/\.sit$/i, '');
+    const matchingMeaFile = meaFiles.find(meaFile => meaFile.name.replace(/\.mea$/i, '') === baseName);
+    if (matchingMeaFile) {
+      importCryoThing(sitFile, matchingMeaFile);
+    } else {
+      console.warn(`No matching .mea file found for ${sitFile.name}`);
+    }
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const convertBtn = document.getElementById("convert-btn");
+  const fileInput = document.getElementById("customFile");
+  const outputFormat = document.getElementById("output-format-selection");
+  const inputFormat = document.getElementById("format-selection");
+  const appendInput = document.getElementById("append-input");
+  const alsoColInput = document.getElementById("download-col-input");
+
+  convertBtn.addEventListener("click", async () => {
+
+    const files = Array.from(fileInput.files || []);
+    if (files.length === 0) {
+      alert("Please select a file first.");
+      return;
+    }
+
+    if (!appendInput.checked) {
+      specimens = [];
+    }
+
+    const inputFormatValue = inputFormat.value;
+    if (inputFormatValue === 'importCryoThing') {
+      const loadedFiles = await Promise.all(files.map(async file => ({
+        name: file.name,
+        data: await file.text()
+      })));
+      handleCryoThingImport(loadedFiles);
+    } else if (typeof window[inputFormatValue] === "function") {
+      for (const file of files) {
+        const text = await file.text();
+        window[inputFormatValue]({ name: file.name, data: text });
+      }
+    } else {
+      alert("Unknown input format: " + inputFormatValue);
+      return;
+    }
+
+    // Export depending on output format
+    const selected = outputFormat.value;
+    if (typeof window[selected] === "function") {
+	  await window[selected]();  // e.g. convert_UTRECHT()
+      if (alsoColInput && alsoColInput.checked && selected !== "convert_APPLICATIONSAVE") {
+        await convert_APPLICATIONSAVE();
+      }
+      fileInput.value = null;
+    } else {
+      alert("Unknown output format: " + selected);
+    }
+  });
+});

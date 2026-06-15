@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <!-- Required metadata tags -->
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      <meta name="description" content="Paleomagnetism.org 2 - An online environment for paleomagnetic analysis">
+      <meta name="keywords" content="paleomagnetism, interpretation, zijderveld, pca">
+      <meta name="author" content="Mathijs Koymans">
+      <link rel="shortcut icon" type="image/x-icon" href="../resources/images/hades-icon.png" />
+      <link rel="stylesheet" href="../css/style.css">
+
+      <!-- Bootstrap & Font Awesome CSS & Leaflet -->
+      <link rel="stylesheet" href="../lib/bootstrap-4.3.1/dist/css/bootstrap.min.css">
+      </link>
+      <link rel="stylesheet" href="../lib/fontawesome-free-5.7.2-web/css/all.css">
+      <link rel="stylesheet" href="../lib/leaflet-1.4.0/leaflet.css">
+
+   </head>
+
+   <body id="drop_zone" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
+
+      <!-- Site Header -->
+      <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+
+         <a class="navbar-brand" href="http://www.paleomagnetism.org">Paleomagnetism<span class="text-danger">.org</span></a>
+
+         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+           <span class="navbar-toggler-icon"></span>
+         </button>
+
+         <!-- Header Items -->
+         <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+            <ul class="navbar-nav mr-auto">
+               <li class="nav-item">
+                  <a class="nav-link" href="../interpretation">Interpretation</a>
+               </li>
+               <li class="nav-item">
+                  <a class="nav-link" href="../statistics">Statistics</a>
+               </li>
+               <li class="nav-item">
+                  <a class="nav-link" href="../geography">Geography</a>
+               </li>
+               <li class="nav-item">
+                  <a class="nav-link" href="../miscellaneous">Miscellaneous</a>
+               </li>
+			      <li class="nav-item">
+                  <a class="nav-link active" href="../converter">Converter <span class="text-danger"><b>[BETA]</b></span></a>
+               </li>
+               <li class="nav-item">
+                  <a class="nav-link" href="../references">References</a>
+               </li>
+               <li class="nav-item">
+                  <a class="nav-link" href="../team">Team & Contact</a>
+               </li>
+               <li class="nav-item">
+                  <a class="nav-link" href="../magic">MagIC Interface</a>
+               </li>
+            </ul>
+            <form class="form-inline my-2 my-lg-0">
+               <a href="../library/" class="btn btn-sm btn-secondary my-2 my-sm-0">
+                 <i class="fas fa-book-open"></i><b>&nbsp; Data Library</b>
+               </a>
+            </form>
+         </div>
+      </nav>
+
+     <!-- Main body -->
+    <div class="container">
+
+      <!-- Container for user notifications -->
+      <div id="notification-container"></div>
+
+        <div class="alert alert-light" role="alert">
+          <h5>Paleomagnetism.org 2 - File Format Converter <span class="text-danger"><b>[BETA]</b></span> </h5>
+          <p>This is a converter tool for paleomagnetic directional data files from all major laboratory formats. NB: This is a BETA version, if you notice errors in the conversion, write us an e-mail.
+          <p>P.S. While you're at it, upload your data in our Data Library, and in the MagIC database!
+        </div>
+
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text">Input Format</span>
+          </div>
+          <select class="custom-select" id="format-selection">
+            <optgroup label="Application Formats">
+                        <option value="importApplicationSave">Paleomagnetism.org (2.0.0 .col)</option>
+                        <option value="importApplicationSaveOld">Paleomagnetism.org (1.0.0. .dir)</option>
+                     </optgroup>
+                     <optgroup label="Institution Formats">
+                        <option value="importBlackMnt">Black Mountain Lab (.xPCA)</option>
+                        <option value="importUnknown">Black Mountain Lab (.dms)</option>
+                        <option value="importCaltech">Caltech Institute of Technology</option>
+                        <option value="importCenieh">Cenieh Core</option>
+                        <option value="importCeniehRegular">Cenieh Regular</option>
+                        <option value="importBCN2G">PGL Beijing</option>
+                        <option value="importLDGO">University of Plymouth</option>
+                        <option value="importGTK">Geological Survey of Finland</option>
+                        <option value="importUNESP">USPMag</option>
+                        <!-- Uses BCN2G -->
+                        <option value="importNGU">Geological Survey of Norway</option>
+                        <option value="importBCN2G">University of Barcelona</option>
+                        <!-- Uses BCN2G -->
+                        <option value="importHelsinki">University of Helsinki</option>
+                        <option value="importHelsinkiBlock">University of Helsinki (Block)</option>
+                        <option value="importMontpellier">University of Montpellier</option>
+                        <option value="importOxford">University of Oxford</option>
+                        <option value="importAnglia">University of East Anglia</option>
+                        <option value="importRS3">University of Oslo</option>
+                        <option value="importMunich">University of Munich</option>
+                        <option value="importRennes">University of Rennes</option>
+                        <option value="importUtrecht">University of Utrecht</option>
+                        <option value="SOUTHAMPTON">University of Southampton</option>
+                     </optgroup>
+                     <optgroup label="Software Formats">
+                        <option value="importMagic">MagIC</option>
+                        <option value="importPaleoMag">PaleoMag (orientation error: don't use)</option>
+                        <option value="importPaleoMac">PaleoMac</option>
+                        <option value="importSpinner">Spinner</option>
+                        <option value="importBCN2G">BCN2G</option>
+                        <option value="importRS3">Remasoft</option>
+                        <option value="importJR5">JR5 (experimental)</option>
+                        <option value="importJR6">JR6 (experimental)</option>
+                        <option value="importCryoThing">CryoThing (.mea + .sit)</option>
+                     </optgroup>
+                  </select>
+
+
+
+          <div class="custom-file">
+            <input type="file" class="custom-file-input" id="customFile" multiple accept="*/*">
+            <label class="custom-file-label" for="customFile">
+              <i class="fas fa-search"></i> Select files
+            </label>
+          </div>
+		  <!-- Toggle for appending -->
+                  <div class="input-group-append">
+                     <div class="input-group-text">
+                        <input id="append-input" type="checkbox" aria-label="Checkbox for following text input">
+                        <label class="form-check-label" for="append-input">
+                        &nbsp; Append
+                        </label>
+                     </div>
+                  </div>
+        </div>
+		
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text">Output Format</span>
+          </div>
+          <select class="custom-select" id="output-format-selection">
+            <optgroup label="Application Formats">
+                        <option value="convert_APPLICATIONSAVE">Paleomagnetism.org (2.0.0 .col)</option>
+                        <option value="convert_APPLICATIONSAVEOLD">Paleomagnetism.org (1.0.0. .dir)</option>
+                     </optgroup>
+                     <optgroup label="Institution Formats">
+                        <option value="convert_BLACKMOUNTAIN">Black Mountain Lab (.xPCA)</option>
+                        <option value="convert_UNKNOWN">Black Mountain Lab (.dms)</option>
+                        <option value="convert_CALTECH">Caltech Institute of Technology</option>
+                        <option value="convert_CENIEH">Cenieh Core</option>
+                        <option value="convert_CENIEHREGULAR">Cenieh Regular</option>
+                        <option value="convert_BCN2G">PGL Beijing</option>
+                        <option value="convert_LDGO">University of Plymouth</option>
+                        <option value="convert_GTK">Geological Survey of Finland</option>
+                        <option value="convert_UNESP">USPMag</option>
+                        <!-- Uses BCN2G -->
+                        <option value="convert_NGU">Geological Survey of Norway</option>
+                        <option value="convert_BCN2G">University of Barcelona</option>
+                        <!-- Uses BCN2G -->
+                        <option value="convert_HELSINKI">University of Helsinki</option>
+                        <option value="convert_HELSINKIBLOCK">University of Helsinki (Block)</option>
+                        <option value="convert_MONTPELLIER">University of Montpellier</option>
+                        <option value="convert_OXFORD">University of Oxford</option>
+                        <option value="convert_ANGLIA">University of East Anglia</option>
+                        <option value="convert_RS3">University of Oslo</option>
+                        <option value="convert_SOUTHAMPTON">University of Southampton</option>
+                        <option value="convert_MUNICH">University of Munich</option>
+                        <option value="convert_RENNES">University of Rennes</option>
+                        <option value="convert_UTRECHT">University of Utrecht</option>
+                     </optgroup>
+                     <optgroup label="Software Formats">
+                        <option value="convert_MAGIC">MagIC</option>
+                        <option value="convert_PALEOMAG">PaleoMag (orientation error: don't use)</option>
+                        <option value="convert_PALEOMAC">PaleoMac</option>
+                        <option value="convert_SPINNER">Spinner</option>
+                        <option value="convert_BCN2G">BCN2G</option>
+                        <option value="convert_RS3">Remasoft</option>
+                        <option value="convert_JR5">JR5 (experimental)</option>
+                        <option value="convert_JR6">JR6 (experimental)</option>
+                        <option value="convert_CRYOTHING">CryoThing</option>
+                     </optgroup>
+                  </select>
+        </div>
+<div class="d-flex align-items-center mb-3">
+  <button id="convert-btn" class="btn btn-primary flex-grow-1 me-2">
+    <i class="fas fa-file-export"></i> Convert
+  </button>
+
+ <div class="input-group-append">
+    <div class="input-group-text">
+      <input id="download-col-input" type="checkbox" checked aria-label="Checkbox for following text input">
+      <label class="form-check-label ms-1" for="download-col-input">
+       &nbsp; Also download .col format
+      </label>
+    </div>
+  </div>
+</div>
+
+
+
+        <figcaption class="figure-caption text-right">
+          <i class="far fa-frown"></i> Your format missing? Write us an <a href='../team'>e-mail</a>.
+        </figcaption>
+
+        <br>
+    </div>
+
+    <footer id="footer-container" class="container text-muted"></footer>
+
+    <br> 
+
+  </body>
+
+   
+   <!-- jQuery slim and bootstrap -->
+   <script src="../lib/jquery-3.3.1/jquery-3.3.1.slim.min.js"></script>
+   <script src="../lib/bootstrap-4.3.1/dist/js/bootstrap.bundle.min.js"></script>
+
+   <!-- Fix for UTF-8 exporting -->
+   <script src="../lib/svg2pdf.min.js"></script>
+   <script src="../lib/jspdf.min.js"></script>
+   <script src="../lib/l_10646-normal.js"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+
+   <!-- Highcharts -->
+   <script src="../lib/highcharts-7.0.3/code/highcharts.js"></script>
+   <script src="../lib/highcharts-7.0.3/code/highcharts-more.js"></script>
+   <script src="../lib/highcharts-7.0.3/code/modules/exporting.js"></script>
+   <script src="../lib/highcharts-7.0.3/code/modules/offline-exporting.js"></script>
+
+   <!-- Leaflet -->
+   <script src="../lib/leaflet-1.4.0/leaflet.js"></script>
+
+   <!-- SHA256 & numeric lib for PCA -->
+   <script src="../js/lib/sha.js"></script>
+   <script src="../lib/numeric-js-1.2.6/numeric.js"></script>
+
+   <!-- General Utilities -->
+   <script src="../js/utils.js"></script>
+   <script src="../js/highcharts-patch.js"></script>
+   <script src="../js/ages.js"></script>
+
+   <!-- Shared Classes -->
+   <script src="../js/classes/Exception.js"></script>
+   <script src="../js/classes/Direction.js"></script>
+   <script src="../js/classes/Coordinates.js"></script>
+
+   <!-- Intepretation Portal -->
+   <script src="./js/importing.js"></script>
+   <script src="./js/converting.js"></script>

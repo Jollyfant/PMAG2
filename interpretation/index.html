@@ -48,6 +48,9 @@
                   <a class="nav-link" href="../miscellaneous">Miscellaneous</a>
                </li>
                <li class="nav-item">
+                  <a class="nav-link" href="../converter">Converter <span class="text-danger"><b>[BETA]</b></span></a>
+               </li>
+               <li class="nav-item">
                   <a class="nav-link" href="../references">References</a>
                </li>
                <li class="nav-item">
@@ -78,6 +81,7 @@
                <a class="nav-item nav-link disabled" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Interpretation</a>
                <a class="nav-item nav-link disabled" id="nav-fitting-tab" data-toggle="tab" href="#nav-fitting" role="tab" aria-controls="nav-profile" aria-selected="false">Fitting & Export</a>
                <a class="nav-item nav-link" id="nav-settings-tab" data-toggle="tab" href="#nav-settings" role="tab" aria-controls="nav-settings" aria-selected="false">Settings</a>
+			   <a class="nav-item nav-link" id="nav-export-tab" data-toggle="tab" href="#nav-export" role="tab" aria-controls="nav-export" aria-selected="false">Export As</a>
             </div>
          </nav>
 
@@ -127,6 +131,7 @@
                         <option value="MUNICH">University of Munich</option>
                         <option value="RENNES">University of Rennes</option>
                         <option value="UTRECHT">University of Utrecht</option>
+						      <option value="SOUTHAMPTON">University of Southampton</option>
                         <option value="XIAN">Xi'an Institute of Earth Environment</option>
                      </optgroup>
                      <optgroup label="Software Formats">
@@ -138,12 +143,13 @@
                         <option value="RS3">Remasoft</option>
                         <option value="JR5">JR5 (experimental)</option>
                         <option value="JR6">JR6 (experimental)</option>
+                        <option value="CRYOTHING">CryoThing (.mea + .sit)</option>
                      </optgroup>
                   </select>
 
                   <!-- File input -->
                   <div class="custom-file">
-                     <input type="file" class="custom-file-input" id="customFile" multiple>
+                     <input type="file" class="custom-file-input" id="customFile" multiple accept="*/*">
                      <label class="custom-file-label" for="customFile">
                        <i class="fas fa-search"></i> Select files
                      </label>
@@ -460,6 +466,20 @@
                </div>
 
             </div>
+			
+			
+			<!-- Tab for exporting to specific format -->
+			<div class="tab-pane fade" id="nav-export" role="tabpanel" aria-labelledby="nav-export-tab">
+			   <br>
+			   <div class="alert alert-light" role="alert">
+				  <h5>Export As: Utrecht Format</h5>
+				  <p>You can export your current dataset (from the .col format) to Utrecht format.</p>
+			   </div>
+			   <div class="text-right">
+				  <button class="btn btn-sm btn-primary" onclick="exportUtrecht()"><i class="fas fa-file-export"></i> Export Utrecht File</button>
+			   </div>
+			</div>
+			
          </div>
       </div>
 
