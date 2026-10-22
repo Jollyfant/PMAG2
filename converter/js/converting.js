@@ -1419,17 +1419,24 @@ function convert_MAGIC() {
 
         bed_dip_direction:
           specimen.beddingStrike != null
-            ? specimen.beddingStrike + 90
+            ? roundToPrecisionOf(normalizeDec(specimen.beddingStrike + 90), specimen.beddingStrike)
             : "",
 
         bed_dip:
-          specimen.beddingDip || "",
+          specimen.beddingDip != null
+            ? specimen.beddingDip
+            : "",
 
         azimuth:
-          specimen.coreAzimuth || "",
+          specimen.coreAzimuth != null
+            ? roundToPrecisionOf(normalizeDec(specimen.coreAzimuth), specimen.coreAzimuth)
+            : "",
 
+        // MagIC dip is the plunge of the specimen X-axis (positive down)
         dip:
-          specimen.coreDip || ""
+          specimen.coreDip != null
+            ? roundToPrecisionOf(specimen.coreDip - 90, specimen.coreDip)
+            : ""
 
       };
 

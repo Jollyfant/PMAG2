@@ -500,6 +500,10 @@ function importMagic(file) {
           var level = NaNTo(sample.level, null);
           var volume = NaNTo(object.volume, 1E-5);
 
+          // MagIC dip is the plunge of the specimen X-axis: coreDip = dip + 90.
+          // A missing dip gives coreDip 90 and a missing azimuth 0: geographic = specimen coordinates.
+          var dip = Number(sample["dip"]) || 0;
+
           try {
             var methods = object["method_codes"].split(":");
           } catch(e) {
@@ -536,7 +540,7 @@ function importMagic(file) {
             "beddingStrike": Number(sample["bed_dip_direction"]) - 90 || 0,
             "beddingDip": Number(sample["bed_dip"]) || 0,
             "coreAzimuth": Number(sample["azimuth"]) || 0,
-            "coreDip": Number(sample["dip"]) || 0,
+            "coreDip": roundToPrecisionOf(dip + 90, dip),
             "interpretations": new Array()
           };
         });

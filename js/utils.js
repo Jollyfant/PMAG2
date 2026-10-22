@@ -111,6 +111,19 @@ function getRotationMatrix(lambda, phi) {
 
 }
 
+function roundToPrecisionOf(value, reference) {
+
+    /*
+     * Function roundToPrecisionOf
+     * Rounds a value derived from an angle (e.g. azimuth % 360, core dip - 90)
+     * to the number of decimals of that angle, removing floating point noise
+     */
+
+    var decimals = String(reference).split(".")[1];
+    return Number(value.toFixed(decimals ? decimals.length : 0));
+
+}
+
 function parseParameters(parameters) {
 
     /*

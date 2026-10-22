@@ -474,9 +474,9 @@ function exportMagIC() {
           "g",
           demagnetizationType,
           "This study",
-          specimen.coreAzimuth,
-          specimen.coreDip,
-          specimen.beddingStrike + 90,
+          roundToPrecisionOf(specimen.coreAzimuth % 360, specimen.coreAzimuth),
+          roundToPrecisionOf(specimen.coreDip - 90, specimen.coreDip),
+          roundToPrecisionOf((specimen.beddingStrike + 90) % 360, specimen.beddingStrike),
           specimen.beddingDip,
           specimen.latitude,
           longitude
@@ -495,8 +495,8 @@ function exportMagIC() {
           minimumStep,
           maximumStep,
           getStepUnit(demagnetizationType),
-          specimen.coreAzimuth,
-          specimen.coreDip
+          roundToPrecisionOf(specimen.coreAzimuth % 360, specimen.coreAzimuth),
+          roundToPrecisionOf(specimen.coreDip - 90, specimen.coreDip)
         ].join(TAB_DELIMITER));
       
         // Add all measurement steps
@@ -518,7 +518,7 @@ function exportMagIC() {
           }
       
           magicMeasurements.push([
-            specimen.name + "_" + locationIndex,
+            specimen.name + "_" + locationIndex + "_" + step.step,
             specimen.name + "_" + locationIndex + "_" + demagnetizationType,
             specimen.name,
             experimentCounter++,
