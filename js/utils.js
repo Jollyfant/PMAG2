@@ -1,5 +1,5 @@
 let __DEBUG__ = false;
-let __VERSION__ = "2.6.0";
+let __VERSION__ = "2.7.0";
 const __DOI__ = "10.5281/zenodo.17737832"; // to be updated with the release
 const RADIANS = Math.PI / 180;
 const PROJECTION_TYPE = "AREA";
