@@ -24,46 +24,91 @@
 
   <body>
 
-    <!-- Header -->
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+<!-- Site Header -->
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
 
-      <a class="navbar-brand" href="http://www.paleomagnetism.org">Paleomagnetism<span class="text-danger">.org</span></a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+    <a class="navbar-brand" href="http://www.paleomagnetism.org">
+        Paleomagnetism<span class="text-danger">.org</span>
+    </a>
+
+    <button class="navbar-toggler" type="button"
+            data-toggle="collapse"
+            data-target="#navbarsExampleDefault"
+            aria-controls="navbarsExampleDefault"
+            aria-expanded="false"
+            aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
-      </button>
+    </button>
 
-      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+    <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+
+        <!-- Main portals -->
         <ul class="navbar-nav mr-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="../interpretation">Interpretation</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="../statistics">Statistics</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="../geography">Geography</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="../miscellaneous">Miscellaneous</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="../references">References</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active" href="../team">Team & Contact</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="../magic">MagIC Interface</a>
-          </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="../interpretation">
+                    Interpretation
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="../statistics">
+                    Statistics
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="../geography">
+                    Geography
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="../miscellaneous">
+                    Miscellaneous
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="../references">
+                    References
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link active" href="../team">
+                    Team &amp; Contact
+                </a>
+            </li>
+
         </ul>
 
-        <form class="form-inline my-2 my-lg-0">
-          <a href="../library" class="btn btn-sm btn-secondary my-2 my-sm-0"><i class="fas fa-book-open"></i><b>&nbsp; Data Library</b></a>
-        </form>
+        <!-- Utility tools -->
+        <div class="form-inline my-2 my-lg-0">
 
-      </div>
+            <a href="../converter"
+               class="btn btn-sm btn-secondary nav-tool mr-2 mb-2 mb-lg-0">
+                <i class="fas fa-file-export"></i>
+                <strong>&nbsp;Converter</strong>
 
-    </nav>
+            </a>
+            <a href="../magic"
+               class="btn btn-sm btn-secondary nav-tool mr-2 mb-2 mb-lg-0">
+                <i class="fas fa-database"></i>
+                <strong>&nbsp;MagIC Interface</strong>
+            </a>
+
+            <a href="../library"
+               class="btn btn-sm btn-secondary nav-tool">
+                <i class="fas fa-book-open"></i>
+                <strong>&nbsp;Data Library</strong>
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>
 
     <!-- Main body -->
     <div class="container">
@@ -117,7 +162,7 @@
     <div class="card-body">
       <h5 class="card-title">Daniel Pastor-Galán <a style="float: right;" href="https://www.danielpastorgalan.com/"><i class="fas fa-home"></i></a></h5>
      <hr>
-      <p class="card-text text-muted text-justify">Daniel earned his PhD degree in Geology from Salamanca University in 2012, worked as a post-doc at Fort Hoofddijk until 2016 and is currently a Scientist at CSIC (Spain) and Assistant Professor at Tohoku University (Japan). His research is focused on using paleomagnetism and other tools to plate kinematics, tectonic processes and global geodynamics.</p>
+      <p class="card-text text-muted text-justify">Daniel earned his PhD degree in Geology from Salamanca University in 2012, worked as a post-doc at Fort Hoofddijk until 2016 and is currently a Scientist at CSIC (Spain) and Assistant Professor at Tohoku University (Japan). His research is focused on using paleomagnetism and other tools to plate kinematics, tectonic processes and global geodynamics. He tries and fails programming stuff in paleomagnetism.org</p>
     </div>
   </div>
 
@@ -142,7 +187,16 @@
     </div>
   </div>
 
-  <div class="card" style="border: none;"> </div>
+  <div class="card" style="border: none;">
+    <img style="padding: 20px;" class="card-img-top" src="../resources/images/dvdm.jpg" alt="Card image cap">
+    <div class="card-body">
+      <h5 class="card-title">Djurre van der Molen <a style="float: right;" href="https://www.uu.nl/staff/DvanderMolen"><i class="fas fa-home"></i></a></h5>
+      <hr>
+      <p class="card-text text-muted text-justify">Djurre is part of the Numerical Support team of Earthsciences at Utrecht University. With a expertise in AI and Data Science, he helps out with development and implementation of various tools and applications around the department. He first implemented the converter tool of paleomagnetism.org and is currently involved in the maintenance of Paleomagnetism.org.
+    </div>
+  </div>
+
+  
 
 </div>
 <br>

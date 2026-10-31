@@ -24,46 +24,96 @@
    </head>
 
 <body id="drop_zone" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
-<!-- Header -->
-<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-    <a class="navbar-brand" href="http://www.paleomagnetism.org">Paleomagnetism<span class="text-danger">.org</span></a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
-            aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarsExampleDefault">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                <a class="nav-link" href="../interpretation">Interpretation</a>
-            </li>
-            <li class="nav-item active">
-                <a class="nav-link" href="../statistics">Statistics</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="../geography">Geography</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="../miscellaneous">Miscellaneous</a>
-            </li>
-            <li class="nav-item">
-                <span class="nav-link disabled" href="#">|</span>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="../references">References</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="../team">Team & Contact</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="../magic">MagIC Interface</a>
-            </li>
-        </ul>
-        <form class="form-inline my-2 my-lg-0">
-            <a href="../library" class="btn btn-sm btn-secondary my-2 my-sm-0"><i class="fas fa-book-open"></i><b>&nbsp;
-                Data Library</b></a>
-        </form>
-    </div>
-</nav>
+
+ <body id="drop_zone"
+      ondrop="dropHandler(event);"
+      ondragover="dragOverHandler(event);">
+
+    <!-- Site Header -->
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+
+        <a class="navbar-brand" href="http://www.paleomagnetism.org">
+            Paleomagnetism<span class="text-danger">.org</span>
+        </a>
+
+        <button class="navbar-toggler"
+                type="button"
+                data-toggle="collapse"
+                data-target="#navbarsExampleDefault"
+                aria-controls="navbarsExampleDefault"
+                aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+
+            <ul class="navbar-nav mr-auto">
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../interpretation">
+                        Interpretation
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link active" href="../statistics">
+                        Statistics
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../geography">
+                        Geography
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../miscellaneous">
+                        Miscellaneous
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../references">
+                        References
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../team">
+                        Team &amp; Contact
+                    </a>
+                </li>
+
+            </ul>
+
+            <div class="form-inline my-2 my-lg-0">
+
+                <a href="../converter"
+                   class="btn btn-sm btn-secondary mr-2">
+                    <i class="fas fa-file-export"></i>
+                    <strong>&nbsp;Converter</strong>
+                </a>
+
+                <a href="../magic"
+                   class="btn btn-sm btn-secondary mr-2">
+                    <i class="fas fa-database"></i>
+                    <strong>&nbsp;MagIC Interface</strong>
+                </a>
+
+                <a href="../library"
+                   class="btn btn-sm btn-secondary">
+                    <i class="fas fa-book-open"></i>
+                    <strong>&nbsp;Data Library</strong>
+                </a>
+
+            </div>
+
+        </div>
+
+    </nav>
+
 <!-- Main body -->
 <div class="container">
     <!-- Container for user notifications -->
@@ -74,6 +124,7 @@
                 title="Select one or multiple collections" multiple></select>
     </div>
     <br>
+
     <!-- Tab Headers -->
     <nav>
         <div class="nav nav-tabs nav-justified" id="nav-tab" role="tablist">
@@ -93,6 +144,7 @@
                aria-controls="nav-settings" aria-selected="false">Settings</a>
         </div>
     </nav>
+
     <div class="tab-content">
 
             <!-- Tab for data importing -->

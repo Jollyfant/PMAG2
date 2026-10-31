@@ -1,0 +1,4865 @@
+{
+  "hash": "dbcb28bc0ec7ed367617c949b3dc674ef0d0c28100eaef914f105950da1633f8",
+  "specimens": [
+    {
+      "demagnetizationType": "thermal",
+      "coordinates": "specimen",
+      "format": "UTRECHT",
+      "version": "2.5.1",
+      "created": "2025-11-20T10:44:30.156Z",
+      "steps": [
+        {
+          "step": "25.00",
+          "x": 83.33333333333333,
+          "y": 112.38095238095238,
+          "z": -10.380952380952381,
+          "error": 3.26,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "150.00",
+          "x": -27.523809523809526,
+          "y": 23.61904761904762,
+          "z": -16.19047619047619,
+          "error": 7.11,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "180.00",
+          "x": -24.857142857142858,
+          "y": 14.857142857142858,
+          "z": -20.285714285714285,
+          "error": 7.62,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "210.00",
+          "x": -34.285714285714285,
+          "y": 17.047619047619047,
+          "z": -23.904761904761905,
+          "error": 5.54,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "240.00",
+          "x": -46.666666666666664,
+          "y": 14.952380952380953,
+          "z": -13.523809523809524,
+          "error": 4.22,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "270.00",
+          "x": -44.57142857142857,
+          "y": 3.5333333333333337,
+          "z": -46.19047619047619,
+          "error": 19.9,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "300.00",
+          "x": -54.095238095238095,
+          "y": -32.476190476190474,
+          "z": -56.95238095238095,
+          "error": 15.66,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "330.00",
+          "x": 3.3714285714285714,
+          "y": 50.19047619047619,
+          "z": -20.952380952380953,
+          "error": 28.96,
+          "visible": true,
+          "selected": false
+        }
+      ],
+      "level": null,
+      "longitude": null,
+      "latitude": null,
+      "age": null,
+      "ageMin": null,
+      "ageMax": null,
+      "lithology": null,
+      "sample": "GR_01",
+      "name": "GR_01",
+      "volume": 10.5,
+      "beddingStrike": 78,
+      "beddingDip": 58,
+      "coreAzimuth": 304,
+      "coreDip": 55,
+      "interpretations": [],
+      "originalFile": "utrecht_in_col"
+    },
+    {
+      "demagnetizationType": "thermal",
+      "coordinates": "specimen",
+      "format": "UTRECHT",
+      "version": "2.5.1",
+      "created": "2025-11-20T10:44:30.156Z",
+      "steps": [
+        {
+          "step": "25.00",
+          "x": 1.5047619047619047,
+          "y": 160,
+          "z": 84,
+          "error": 3.46,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "150.00",
+          "x": -83.42857142857143,
+          "y": 140,
+          "z": -53.142857142857146,
+          "error": 3.17,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "180.00",
+          "x": -68.76190476190476,
+          "y": 126.66666666666667,
+          "z": -52.95238095238095,
+          "error": 3.45,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "210.00",
+          "x": -77.80952380952381,
+          "y": 100.95238095238095,
+          "z": -58.95238095238095,
+          "error": 3.87,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "240.00",
+          "x": -65.80952380952381,
+          "y": 107.61904761904762,
+          "z": -49.142857142857146,
+          "error": 3.67,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "270.00",
+          "x": -43.04761904761905,
+          "y": 92.28571428571429,
+          "z": -64.38095238095238,
+          "error": 3.8,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "300.00",
+          "x": -73.42857142857143,
+          "y": 68.66666666666667,
+          "z": -51.04761904761905,
+          "error": 16.44,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "330.00",
+          "x": -26.285714285714285,
+          "y": 61.523809523809526,
+          "z": -28.476190476190474,
+          "error": 6.78,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "360.00",
+          "x": -27.428571428571427,
+          "y": 37.333333333333336,
+          "z": -26.476190476190474,
+          "error": 9.78,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "390.00",
+          "x": -3.8476190476190473,
+          "y": 27.61904761904762,
+          "z": -20.571428571428573,
+          "error": 14.96,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "420.00",
+          "x": -33.80952380952381,
+          "y": 23.714285714285715,
+          "z": 15.142857142857142,
+          "error": 18.08,
+          "visible": true,
+          "selected": false
+        }
+      ],
+      "level": null,
+      "longitude": null,
+      "latitude": null,
+      "age": null,
+      "ageMin": null,
+      "ageMax": null,
+      "lithology": null,
+      "sample": "GR_02",
+      "name": "GR_02",
+      "volume": 10.5,
+      "beddingStrike": 78,
+      "beddingDip": 58,
+      "coreAzimuth": 299,
+      "coreDip": 89,
+      "interpretations": [],
+      "originalFile": "utrecht_in_col"
+    },
+    {
+      "demagnetizationType": "thermal",
+      "coordinates": "specimen",
+      "format": "UTRECHT",
+      "version": "2.5.1",
+      "created": "2025-11-20T10:44:30.156Z",
+      "steps": [
+        {
+          "step": "25.00",
+          "x": -367.6190476190476,
+          "y": 28.761904761904763,
+          "z": -149.52380952380952,
+          "error": 1.46,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "150.00",
+          "x": -143.8095238095238,
+          "y": 58.38095238095238,
+          "z": 53.23809523809524,
+          "error": 2.88,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "180.00",
+          "x": -120.95238095238095,
+          "y": 72.95238095238095,
+          "z": 58.38095238095238,
+          "error": 3.41,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "210.00",
+          "x": -108.57142857142857,
+          "y": 62.857142857142854,
+          "z": 61.142857142857146,
+          "error": 3.49,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "240.00",
+          "x": -103.80952380952381,
+          "y": 56.095238095238095,
+          "z": 56.76190476190476,
+          "error": 3.22,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "270.00",
+          "x": -88,
+          "y": 43.04761904761905,
+          "z": 48.095238095238095,
+          "error": 6.33,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "300.00",
+          "x": -96.19047619047619,
+          "y": 30.857142857142858,
+          "z": 58,
+          "error": 3.22,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "330.00",
+          "x": -82.0952380952381,
+          "y": 31.238095238095237,
+          "z": 53.523809523809526,
+          "error": 5.5,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "360.00",
+          "x": -24.761904761904763,
+          "y": 36.19047619047619,
+          "z": 29.047619047619047,
+          "error": 8.49,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "390.00",
+          "x": -34.666666666666664,
+          "y": 35.142857142857146,
+          "z": 11.142857142857142,
+          "error": 7.45,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "420.00",
+          "x": -14.857142857142858,
+          "y": 17.714285714285715,
+          "z": 3.2666666666666666,
+          "error": 21.1,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "450.00",
+          "x": -42.95238095238095,
+          "y": 76.85714285714286,
+          "z": -51.904761904761905,
+          "error": 21.04,
+          "visible": true,
+          "selected": false
+        }
+      ],
+      "level": null,
+      "longitude": null,
+      "latitude": null,
+      "age": null,
+      "ageMin": null,
+      "ageMax": null,
+      "lithology": null,
+      "sample": "GR_03",
+      "name": "GR_03",
+      "volume": 10.5,
+      "beddingStrike": 93,
+      "beddingDip": 65,
+      "coreAzimuth": 264,
+      "coreDip": 52,
+      "interpretations": [],
+      "originalFile": "utrecht_in_col"
+    },
+    {
+      "demagnetizationType": "thermal",
+      "coordinates": "specimen",
+      "format": "UTRECHT",
+      "version": "2.5.1",
+      "created": "2025-11-20T10:44:30.156Z",
+      "steps": [
+        {
+          "step": "25.00",
+          "x": -72.66666666666667,
+          "y": 103.80952380952381,
+          "z": -76.85714285714286,
+          "error": 5.62,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "150.00",
+          "x": -103.80952380952381,
+          "y": 24.285714285714285,
+          "z": -57.142857142857146,
+          "error": 3.16,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "180.00",
+          "x": -92.85714285714286,
+          "y": 26.857142857142858,
+          "z": -59.333333333333336,
+          "error": 2.89,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "210.00",
+          "x": -95.23809523809524,
+          "y": 3.8095238095238093,
+          "z": -50,
+          "error": 3.42,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "240.00",
+          "x": -86.47619047619048,
+          "y": 0.9266666666666667,
+          "z": -62.666666666666664,
+          "error": 5.09,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "270.00",
+          "x": -92,
+          "y": 4.980952380952381,
+          "z": -43.04761904761905,
+          "error": 3.11,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "300.00",
+          "x": -93.23809523809524,
+          "y": -23.61904761904762,
+          "z": -34.476190476190474,
+          "error": 3.77,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "330.00",
+          "x": -83.9047619047619,
+          "y": 16.285714285714285,
+          "z": -30.666666666666668,
+          "error": 4.34,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "360.00",
+          "x": -73.71428571428571,
+          "y": -15.714285714285714,
+          "z": -32.38095238095238,
+          "error": 4.83,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "390.00",
+          "x": -65.9047619047619,
+          "y": -8.904761904761905,
+          "z": -18.38095238095238,
+          "error": 4.77,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "420.00",
+          "x": -36.38095238095238,
+          "y": -39.333333333333336,
+          "z": -29.80952380952381,
+          "error": 5.53,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "450.00",
+          "x": -31.333333333333332,
+          "y": 71.71428571428571,
+          "z": -27.61904761904762,
+          "error": 20.08,
+          "visible": true,
+          "selected": false
+        }
+      ],
+      "level": null,
+      "longitude": null,
+      "latitude": null,
+      "age": null,
+      "ageMin": null,
+      "ageMax": null,
+      "lithology": null,
+      "sample": "GR_04",
+      "name": "GR_04",
+      "volume": 10.5,
+      "beddingStrike": 93,
+      "beddingDip": 65,
+      "coreAzimuth": 264,
+      "coreDip": 57,
+      "interpretations": [],
+      "originalFile": "utrecht_in_col"
+    },
+    {
+      "demagnetizationType": "thermal",
+      "coordinates": "specimen",
+      "format": "UTRECHT",
+      "version": "2.5.1",
+      "created": "2025-11-20T10:44:30.156Z",
+      "steps": [
+        {
+          "step": "25.00",
+          "x": -436.1904761904762,
+          "y": 181.9047619047619,
+          "z": 44.857142857142854,
+          "error": 1.92,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "150.00",
+          "x": -203.8095238095238,
+          "y": 30.952380952380953,
+          "z": -69.52380952380952,
+          "error": 2.69,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "180.00",
+          "x": -179.04761904761904,
+          "y": 3.457142857142857,
+          "z": -77.33333333333333,
+          "error": 2.89,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "210.00",
+          "x": -163.8095238095238,
+          "y": -4.095238095238095,
+          "z": -93.42857142857143,
+          "error": 3.08,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "240.00",
+          "x": -151.42857142857142,
+          "y": -25.714285714285715,
+          "z": -97.14285714285714,
+          "error": 3.3,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "270.00",
+          "x": -155.23809523809524,
+          "y": -29.238095238095237,
+          "z": -79.80952380952381,
+          "error": 3.71,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "300.00",
+          "x": -139.04761904761904,
+          "y": -32.666666666666664,
+          "z": -89.9047619047619,
+          "error": 3.7,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "330.00",
+          "x": -149.52380952380952,
+          "y": -29.047619047619047,
+          "z": -81.14285714285714,
+          "error": 3.69,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "360.00",
+          "x": -73.33333333333333,
+          "y": 19.333333333333332,
+          "z": -18.857142857142858,
+          "error": 7.5,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "390.00",
+          "x": -34.285714285714285,
+          "y": 19.80952380952381,
+          "z": -42.19047619047619,
+          "error": 11.68,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "420.00",
+          "x": -17.714285714285715,
+          "y": 12.857142857142858,
+          "z": -9.904761904761905,
+          "error": 40.43,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "450.00",
+          "x": -30.761904761904763,
+          "y": 61.142857142857146,
+          "z": -78.47619047619048,
+          "error": 17.9,
+          "visible": true,
+          "selected": false
+        }
+      ],
+      "level": null,
+      "longitude": null,
+      "latitude": null,
+      "age": null,
+      "ageMin": null,
+      "ageMax": null,
+      "lithology": null,
+      "sample": "GR_05",
+      "name": "GR_05",
+      "volume": 10.5,
+      "beddingStrike": 93,
+      "beddingDip": 65,
+      "coreAzimuth": 264,
+      "coreDip": 48,
+      "interpretations": [],
+      "originalFile": "utrecht_in_col"
+    },
+    {
+      "demagnetizationType": "thermal",
+      "coordinates": "specimen",
+      "format": "UTRECHT",
+      "version": "2.5.1",
+      "created": "2025-11-20T10:44:30.156Z",
+      "steps": [
+        {
+          "step": "25.00",
+          "x": -41.523809523809526,
+          "y": 25.428571428571427,
+          "z": -80.66666666666667,
+          "error": 3.74,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "150.00",
+          "x": -98.0952380952381,
+          "y": 25.714285714285715,
+          "z": -97.14285714285714,
+          "error": 3.4,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "180.00",
+          "x": -106.66666666666667,
+          "y": 25.333333333333332,
+          "z": -77.80952380952381,
+          "error": 7.72,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "210.00",
+          "x": -100.95238095238095,
+          "y": 18.19047619047619,
+          "z": -74.0952380952381,
+          "error": 6.51,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "240.00",
+          "x": -100,
+          "y": 6.457142857142857,
+          "z": -74.66666666666667,
+          "error": 3.93,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "270.00",
+          "x": -92,
+          "y": -12.952380952380953,
+          "z": -75.80952380952381,
+          "error": 2.5,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "300.00",
+          "x": -96.19047619047619,
+          "y": -27.714285714285715,
+          "z": -78.28571428571429,
+          "error": 5.24,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "330.00",
+          "x": -94.38095238095238,
+          "y": -8.695238095238095,
+          "z": -78.28571428571429,
+          "error": 2.27,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "360.00",
+          "x": -63.04761904761905,
+          "y": -16.476190476190474,
+          "z": -59.523809523809526,
+          "error": 2.97,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "390.00",
+          "x": -21.428571428571427,
+          "y": -7.590476190476191,
+          "z": -18.857142857142858,
+          "error": 10.89,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "420.00",
+          "x": -31.523809523809526,
+          "y": -12.476190476190476,
+          "z": -37.04761904761905,
+          "error": 7.27,
+          "visible": true,
+          "selected": false
+        }
+      ],
+      "level": null,
+      "longitude": null,
+      "latitude": null,
+      "age": null,
+      "ageMin": null,
+      "ageMax": null,
+      "lithology": null,
+      "sample": "GR_06",
+      "name": "GR_06",
+      "volume": 10.5,
+      "beddingStrike": 93,
+      "beddingDip": 65,
+      "coreAzimuth": 265,
+      "coreDip": 53,
+      "interpretations": [],
+      "originalFile": "utrecht_in_col"
+    },
+    {
+      "demagnetizationType": "thermal",
+      "coordinates": "specimen",
+      "format": "UTRECHT",
+      "version": "2.5.1",
+      "created": "2025-11-20T10:44:30.156Z",
+      "steps": [
+        {
+          "step": "25.00",
+          "x": -412.3809523809524,
+          "y": 63.23809523809524,
+          "z": -238.0952380952381,
+          "error": 1.83,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "150.00",
+          "x": -146.66666666666666,
+          "y": -56.95238095238095,
+          "z": -114.28571428571429,
+          "error": 2.69,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "180.00",
+          "x": -134.28571428571428,
+          "y": -50,
+          "z": -95.04761904761905,
+          "error": 2.9,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "210.00",
+          "x": -115.23809523809524,
+          "y": -66.85714285714286,
+          "z": -62.95238095238095,
+          "error": 5.07,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "240.00",
+          "x": -110.47619047619048,
+          "y": -55.61904761904762,
+          "z": -67.04761904761905,
+          "error": 2.89,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "270.00",
+          "x": -100,
+          "y": -66.66666666666667,
+          "z": -61.80952380952381,
+          "error": 4.56,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "300.00",
+          "x": -84.76190476190476,
+          "y": -90.66666666666667,
+          "z": -28.761904761904763,
+          "error": 4.76,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "330.00",
+          "x": -77.33333333333333,
+          "y": -74.28571428571429,
+          "z": -22.857142857142858,
+          "error": 4.64,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "360.00",
+          "x": -75.42857142857143,
+          "y": -41.142857142857146,
+          "z": -34.285714285714285,
+          "error": 4.37,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "390.00",
+          "x": -42.19047619047619,
+          "y": -5.104761904761905,
+          "z": -9.714285714285714,
+          "error": 9.54,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "420.00",
+          "x": -37.333333333333336,
+          "y": -7.704761904761905,
+          "z": 1.7523809523809522,
+          "error": 10.2,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "450.00",
+          "x": -37.61904761904762,
+          "y": 1.380952380952381,
+          "z": -25.61904761904762,
+          "error": 9.75,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "480.00",
+          "x": -19.80952380952381,
+          "y": -28.19047619047619,
+          "z": -8.59047619047619,
+          "error": 14.59,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "520.00",
+          "x": -34.857142857142854,
+          "y": -13.714285714285714,
+          "z": -40.19047619047619,
+          "error": 10.86,
+          "visible": true,
+          "selected": false
+        }
+      ],
+      "level": null,
+      "longitude": null,
+      "latitude": null,
+      "age": null,
+      "ageMin": null,
+      "ageMax": null,
+      "lithology": null,
+      "sample": "GR_07",
+      "name": "GR_07",
+      "volume": 10.5,
+      "beddingStrike": 93,
+      "beddingDip": 65,
+      "coreAzimuth": 190,
+      "coreDip": 90,
+      "interpretations": [],
+      "originalFile": "utrecht_in_col"
+    },
+    {
+      "demagnetizationType": "thermal",
+      "coordinates": "specimen",
+      "format": "UTRECHT",
+      "version": "2.5.1",
+      "created": "2025-11-20T10:44:30.156Z",
+      "steps": [
+        {
+          "step": "25.00",
+          "x": 26.095238095238095,
+          "y": 32.19047619047619,
+          "z": 152.38095238095238,
+          "error": 2.93,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "150.00",
+          "x": 58.095238095238095,
+          "y": 97.14285714285714,
+          "z": 62.476190476190474,
+          "error": 3.17,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "180.00",
+          "x": 55.142857142857146,
+          "y": 80.19047619047619,
+          "z": 43.714285714285715,
+          "error": 4.68,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "210.00",
+          "x": 49.714285714285715,
+          "y": 71.71428571428571,
+          "z": 26.285714285714285,
+          "error": 5.45,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "240.00",
+          "x": 47.61904761904762,
+          "y": 69.33333333333333,
+          "z": 18.19047619047619,
+          "error": 5.36,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "270.00",
+          "x": -317.14285714285717,
+          "y": 467.6190476190476,
+          "z": 236.1904761904762,
+          "error": 2.19,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "270.00",
+          "x": 39.61904761904762,
+          "y": 61.904761904761905,
+          "z": 9.238095238095237,
+          "error": 7.12,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "300.00",
+          "x": 7.447619047619048,
+          "y": 14.571428571428571,
+          "z": -29.238095238095237,
+          "error": 63.59,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "330.00",
+          "x": 58.285714285714285,
+          "y": 81.71428571428571,
+          "z": 1.3047619047619048,
+          "error": 27.08,
+          "visible": true,
+          "selected": false
+        }
+      ],
+      "level": null,
+      "longitude": null,
+      "latitude": null,
+      "age": null,
+      "ageMin": null,
+      "ageMax": null,
+      "lithology": null,
+      "sample": "GR_08",
+      "name": "GR_08",
+      "volume": 10.5,
+      "beddingStrike": 93,
+      "beddingDip": 65,
+      "coreAzimuth": 189,
+      "coreDip": 75,
+      "interpretations": [],
+      "originalFile": "utrecht_in_col"
+    },
+    {
+      "demagnetizationType": "thermal",
+      "coordinates": "specimen",
+      "format": "UTRECHT",
+      "version": "2.5.1",
+      "created": "2025-11-20T10:44:30.156Z",
+      "steps": [
+        {
+          "step": "25.00",
+          "x": -853.3333333333334,
+          "y": 746.6666666666666,
+          "z": 219.04761904761904,
+          "error": 2.56,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "150.00",
+          "x": -483.8095238095238,
+          "y": 584.7619047619048,
+          "z": 290.4761904761905,
+          "error": 1.94,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "180.00",
+          "x": -427.6190476190476,
+          "y": 532.3809523809524,
+          "z": 199.04761904761904,
+          "error": 1.97,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "210.00",
+          "x": -380.95238095238096,
+          "y": 584.7619047619048,
+          "z": 258.0952380952381,
+          "error": 1.26,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "240.00",
+          "x": -573.3333333333334,
+          "y": 418.0952380952381,
+          "z": 187.61904761904762,
+          "error": 1.62,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "270.00",
+          "x": -396.1904761904762,
+          "y": 427.6190476190476,
+          "z": 195.23809523809524,
+          "error": 2.07,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "300.00",
+          "x": -320,
+          "y": 419.04761904761904,
+          "z": 211.42857142857142,
+          "error": 3.24,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "330.00",
+          "x": -393.3333333333333,
+          "y": 477.14285714285717,
+          "z": 198.0952380952381,
+          "error": 3.69,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "360.00",
+          "x": -334.2857142857143,
+          "y": 425.7142857142857,
+          "z": 209.52380952380952,
+          "error": 2.81,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "390.00",
+          "x": -346.6666666666667,
+          "y": 304.76190476190476,
+          "z": 228.57142857142858,
+          "error": 2.77,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "420.00",
+          "x": -273.3333333333333,
+          "y": 429.5238095238095,
+          "z": 175.23809523809524,
+          "error": 2.76,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "450.00",
+          "x": -289.5238095238095,
+          "y": 414.2857142857143,
+          "z": 99.04761904761905,
+          "error": 5.12,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "480.00",
+          "x": -343.8095238095238,
+          "y": 264.76190476190476,
+          "z": 352.3809523809524,
+          "error": 4.2,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "520.00",
+          "x": -351.42857142857144,
+          "y": 161.9047619047619,
+          "z": 127.61904761904762,
+          "error": 4.66,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "580.00",
+          "x": -333.3333333333333,
+          "y": 40.285714285714285,
+          "z": 3.7904761904761903,
+          "error": 4.32,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "610.00",
+          "x": -69.9047619047619,
+          "y": 191.42857142857142,
+          "z": 87.52380952380952,
+          "error": 7.78,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "640.00",
+          "x": -64,
+          "y": -116.19047619047619,
+          "z": -55.333333333333336,
+          "error": 9.97,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "670.00",
+          "x": 88.47619047619048,
+          "y": -21.238095238095237,
+          "z": -5.523809523809524,
+          "error": 11.47,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "700.00",
+          "x": 83.04761904761905,
+          "y": -105.71428571428571,
+          "z": -58.19047619047619,
+          "error": 7.06,
+          "visible": true,
+          "selected": false
+        }
+      ],
+      "level": null,
+      "longitude": null,
+      "latitude": null,
+      "age": null,
+      "ageMin": null,
+      "ageMax": null,
+      "lithology": null,
+      "sample": "GR_09",
+      "name": "GR_09",
+      "volume": 10.5,
+      "beddingStrike": 93,
+      "beddingDip": 65,
+      "coreAzimuth": 194,
+      "coreDip": 74,
+      "interpretations": [],
+      "originalFile": "utrecht_in_col"
+    },
+    {
+      "demagnetizationType": "thermal",
+      "coordinates": "specimen",
+      "format": "UTRECHT",
+      "version": "2.5.1",
+      "created": "2025-11-20T10:44:30.156Z",
+      "steps": [
+        {
+          "step": "25.00",
+          "x": -39.333333333333336,
+          "y": -279.04761904761904,
+          "z": -130.47619047619048,
+          "error": 1.84,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "150.00",
+          "x": 58.476190476190474,
+          "y": -108.57142857142857,
+          "z": -33.42857142857143,
+          "error": 7.5,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "180.00",
+          "x": 52.38095238095238,
+          "y": -91.33333333333333,
+          "z": -23.047619047619047,
+          "error": 3.04,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "210.00",
+          "x": 63.23809523809524,
+          "y": -72.0952380952381,
+          "z": -27.238095238095237,
+          "error": 2.72,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "240.00",
+          "x": 58.19047619047619,
+          "y": -65.42857142857143,
+          "z": -12.571428571428571,
+          "error": 3.4,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "270.00",
+          "x": 85.04761904761905,
+          "y": -43.904761904761905,
+          "z": 4.885714285714285,
+          "error": 3.27,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "300.00",
+          "x": 68.38095238095238,
+          "y": -36.76190476190476,
+          "z": 5.733333333333333,
+          "error": 3.91,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "330.00",
+          "x": 57.61904761904762,
+          "y": -28.285714285714285,
+          "z": 13.80952380952381,
+          "error": 3.92,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "360.00",
+          "x": 51.23809523809524,
+          "y": -21.904761904761905,
+          "z": 3.4380952380952383,
+          "error": 3.8,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "390.00",
+          "x": 10.571428571428571,
+          "y": -24.761904761904763,
+          "z": 9.714285714285714,
+          "error": 5.3,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "420.00",
+          "x": 16.476190476190474,
+          "y": -20.857142857142858,
+          "z": 22.285714285714285,
+          "error": 6.43,
+          "visible": true,
+          "selected": false
+        }
+      ],
+      "level": null,
+      "longitude": null,
+      "latitude": null,
+      "age": null,
+      "ageMin": null,
+      "ageMax": null,
+      "lithology": null,
+      "sample": "GR_10",
+      "name": "GR_10",
+      "volume": 10.5,
+      "beddingStrike": 93,
+      "beddingDip": 65,
+      "coreAzimuth": 175,
+      "coreDip": 75,
+      "interpretations": [],
+      "originalFile": "utrecht_in_col"
+    },
+    {
+      "demagnetizationType": "thermal",
+      "coordinates": "specimen",
+      "format": "UTRECHT",
+      "version": "2.5.1",
+      "created": "2025-11-20T10:44:30.156Z",
+      "steps": [
+        {
+          "step": "25.00",
+          "x": -278.0952380952381,
+          "y": 200,
+          "z": 406.6666666666667,
+          "error": 1.36,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "150.00",
+          "x": -197.14285714285714,
+          "y": 269.5238095238095,
+          "z": 291.42857142857144,
+          "error": 1.54,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "180.00",
+          "x": -160.95238095238096,
+          "y": 234.28571428571428,
+          "z": 255.23809523809524,
+          "error": 1.44,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "210.00",
+          "x": -173.33333333333334,
+          "y": 211.42857142857142,
+          "z": 252.38095238095238,
+          "error": 1.53,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "240.00",
+          "x": -149.52380952380952,
+          "y": 223.8095238095238,
+          "z": 260.95238095238096,
+          "error": 1.63,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "270.00",
+          "x": -161.9047619047619,
+          "y": 163.8095238095238,
+          "z": 224.76190476190476,
+          "error": 1.74,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "300.00",
+          "x": -182.85714285714286,
+          "y": 151.42857142857142,
+          "z": 230.47619047619048,
+          "error": 1.5,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "330.00",
+          "x": -175.23809523809524,
+          "y": 179.04761904761904,
+          "z": 235.23809523809524,
+          "error": 1.97,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "360.00",
+          "x": -142.85714285714286,
+          "y": 235.23809523809524,
+          "z": 194.28571428571428,
+          "error": 1.45,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "390.00",
+          "x": -117.14285714285714,
+          "y": 191.42857142857142,
+          "z": 155.23809523809524,
+          "error": 1.93,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "420.00",
+          "x": -77.9047619047619,
+          "y": 104.76190476190476,
+          "z": 200,
+          "error": 1.79,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "450.00",
+          "x": -108.57142857142857,
+          "y": 140.95238095238096,
+          "z": 89.80952380952381,
+          "error": 2.1,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "480.00",
+          "x": -1.8190476190476192,
+          "y": 72.19047619047619,
+          "z": 167.61904761904762,
+          "error": 6.03,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "520.00",
+          "x": -35.42857142857143,
+          "y": 135.23809523809524,
+          "z": 81.52380952380952,
+          "error": 5.36,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "550.00",
+          "x": 5.6952380952380945,
+          "y": 168.57142857142858,
+          "z": 11.428571428571429,
+          "error": 4.62,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "580.00",
+          "x": -101.9047619047619,
+          "y": -48.095238095238095,
+          "z": 33.23809523809524,
+          "error": 3.77,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "610.00",
+          "x": 31.238095238095237,
+          "y": 34.095238095238095,
+          "z": 77.52380952380952,
+          "error": 6.94,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "640.00",
+          "x": 64.66666666666667,
+          "y": 107.61904761904762,
+          "z": 16.857142857142858,
+          "error": 12.86,
+          "visible": true,
+          "selected": false
+        }
+      ],
+      "level": null,
+      "longitude": null,
+      "latitude": null,
+      "age": null,
+      "ageMin": null,
+      "ageMax": null,
+      "lithology": null,
+      "sample": "GR_11",
+      "name": "GR_11",
+      "volume": 10.5,
+      "beddingStrike": 93,
+      "beddingDip": 65,
+      "coreAzimuth": 318,
+      "coreDip": 81,
+      "interpretations": [],
+      "originalFile": "utrecht_in_col"
+    },
+    {
+      "demagnetizationType": "thermal",
+      "coordinates": "specimen",
+      "format": "UTRECHT",
+      "version": "2.5.1",
+      "created": "2025-11-20T10:44:30.156Z",
+      "steps": [
+        {
+          "step": "25.00",
+          "x": 37.04761904761905,
+          "y": 261.9047619047619,
+          "z": 136.1904761904762,
+          "error": 1.46,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "150.00",
+          "x": -79.42857142857143,
+          "y": 152.38095238095238,
+          "z": 134.28571428571428,
+          "error": 2.02,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "180.00",
+          "x": -90.66666666666667,
+          "y": 98.0952380952381,
+          "z": 111.42857142857143,
+          "error": 1.77,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "210.00",
+          "x": -59.61904761904762,
+          "y": 113.33333333333333,
+          "z": 113.33333333333333,
+          "error": 1.52,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "240.00",
+          "x": -76.76190476190476,
+          "y": 106.66666666666667,
+          "z": 120,
+          "error": 1.79,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "270.00",
+          "x": -56.857142857142854,
+          "y": 93.42857142857143,
+          "z": 76.57142857142857,
+          "error": 1.33,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "300.00",
+          "x": -32.095238095238095,
+          "y": 58.476190476190474,
+          "z": 8.866666666666665,
+          "error": 2.91,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "330.00",
+          "x": -17.047619047619047,
+          "y": 72.76190476190476,
+          "z": 5.428571428571429,
+          "error": 4.26,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "360.00",
+          "x": -37.333333333333336,
+          "y": 65.23809523809524,
+          "z": 57.42857142857143,
+          "error": 1.11,
+          "visible": true,
+          "selected": false
+        }
+      ],
+      "level": null,
+      "longitude": null,
+      "latitude": null,
+      "age": null,
+      "ageMin": null,
+      "ageMax": null,
+      "lithology": null,
+      "sample": "GR_12",
+      "name": "GR_12",
+      "volume": 10.5,
+      "beddingStrike": 93,
+      "beddingDip": 65,
+      "coreAzimuth": 315,
+      "coreDip": 82,
+      "interpretations": [],
+      "originalFile": "utrecht_in_col"
+    },
+    {
+      "demagnetizationType": "thermal",
+      "coordinates": "specimen",
+      "format": "UTRECHT",
+      "version": "2.5.1",
+      "created": "2025-11-20T10:44:30.156Z",
+      "steps": [
+        {
+          "step": "25.00",
+          "x": 311.42857142857144,
+          "y": 187.61904761904762,
+          "z": -140,
+          "error": 1.43,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "150.00",
+          "x": 115.23809523809524,
+          "y": 139.04761904761904,
+          "z": 41.523809523809526,
+          "error": 7.77,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "180.00",
+          "x": 87.14285714285714,
+          "y": 94,
+          "z": 62.285714285714285,
+          "error": 7.05,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "210.00",
+          "x": 84.38095238095238,
+          "y": 86.19047619047619,
+          "z": 59.333333333333336,
+          "error": 5.44,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "240.00",
+          "x": 63.42857142857143,
+          "y": 70.28571428571429,
+          "z": 71.33333333333333,
+          "error": 6.89,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "270.00",
+          "x": 53.523809523809526,
+          "y": 64.95238095238095,
+          "z": 57.23809523809524,
+          "error": 2.95,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "300.00",
+          "x": -60.095238095238095,
+          "y": 14.380952380952381,
+          "z": 16.761904761904763,
+          "error": 29.64,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "330.00",
+          "x": -26.952380952380953,
+          "y": 117.14285714285714,
+          "z": 41.23809523809524,
+          "error": 14.06,
+          "visible": true,
+          "selected": false
+        }
+      ],
+      "level": null,
+      "longitude": null,
+      "latitude": null,
+      "age": null,
+      "ageMin": null,
+      "ageMax": null,
+      "lithology": null,
+      "sample": "GR_13",
+      "name": "GR_13",
+      "volume": 10.5,
+      "beddingStrike": 93,
+      "beddingDip": 65,
+      "coreAzimuth": 296,
+      "coreDip": 80,
+      "interpretations": [],
+      "originalFile": "utrecht_in_col"
+    },
+    {
+      "demagnetizationType": "thermal",
+      "coordinates": "specimen",
+      "format": "UTRECHT",
+      "version": "2.5.1",
+      "created": "2025-11-20T10:44:30.156Z",
+      "steps": [
+        {
+          "step": "25.00",
+          "x": -198.0952380952381,
+          "y": 323.8095238095238,
+          "z": 89.61904761904762,
+          "error": 1.88,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "150.00",
+          "x": -82,
+          "y": 121.9047619047619,
+          "z": -29.523809523809526,
+          "error": 2.17,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "180.00",
+          "x": -74,
+          "y": 77.23809523809524,
+          "z": -25.714285714285715,
+          "error": 5.47,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "210.00",
+          "x": -68.85714285714286,
+          "y": 67.52380952380952,
+          "z": -29.428571428571427,
+          "error": 8.94,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "240.00",
+          "x": -59.61904761904762,
+          "y": 46.57142857142857,
+          "z": -16,
+          "error": 7.02,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "270.00",
+          "x": -77.42857142857143,
+          "y": 42.285714285714285,
+          "z": -25.428571428571427,
+          "error": 3.35,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "300.00",
+          "x": -89.71428571428571,
+          "y": 145.71428571428572,
+          "z": -114.28571428571429,
+          "error": 9.97,
+          "visible": true,
+          "selected": false
+        }
+      ],
+      "level": null,
+      "longitude": null,
+      "latitude": null,
+      "age": null,
+      "ageMin": null,
+      "ageMax": null,
+      "lithology": null,
+      "sample": "GR_14",
+      "name": "GR_14",
+      "volume": 10.5,
+      "beddingStrike": 93,
+      "beddingDip": 65,
+      "coreAzimuth": 288,
+      "coreDip": 87,
+      "interpretations": [],
+      "originalFile": "utrecht_in_col"
+    },
+    {
+      "demagnetizationType": "thermal",
+      "coordinates": "specimen",
+      "format": "UTRECHT",
+      "version": "2.5.1",
+      "created": "2025-11-20T10:44:30.156Z",
+      "steps": [
+        {
+          "step": "25.00",
+          "x": -311.42857142857144,
+          "y": -85.71428571428571,
+          "z": -151.42857142857142,
+          "error": 1.78,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "150.00",
+          "x": -51.333333333333336,
+          "y": -10.476190476190476,
+          "z": -72.76190476190476,
+          "error": 4.47,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "180.00",
+          "x": -24.285714285714285,
+          "y": -17.047619047619047,
+          "z": -54.57142857142857,
+          "error": 6.8,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "210.00",
+          "x": -24.666666666666668,
+          "y": -22.095238095238095,
+          "z": -59.714285714285715,
+          "error": 5.56,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "240.00",
+          "x": 2.2095238095238097,
+          "y": -12.285714285714286,
+          "z": -38.19047619047619,
+          "error": 8.99,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "270.00",
+          "x": 8.180952380952382,
+          "y": -10.571428571428571,
+          "z": -32.57142857142857,
+          "error": 9.68,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "300.00",
+          "x": 18.571428571428573,
+          "y": -26,
+          "z": -13.047619047619047,
+          "error": 9.24,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "330.00",
+          "x": 24.666666666666668,
+          "y": -18.952380952380953,
+          "z": -24,
+          "error": 7.89,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "360.00",
+          "x": -1.6,
+          "y": -15.238095238095237,
+          "z": -26.285714285714285,
+          "error": 9.95,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "390.00",
+          "x": 5.819047619047619,
+          "y": -19.80952380952381,
+          "z": -19.61904761904762,
+          "error": 9.11,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "420.00",
+          "x": 4.980952380952381,
+          "y": -8.17142857142857,
+          "z": -6.39047619047619,
+          "error": 24.23,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "450.00",
+          "x": 5.79047619047619,
+          "y": -7.809523809523809,
+          "z": -18.38095238095238,
+          "error": 17.43,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "480.00",
+          "x": 11.904761904761905,
+          "y": -21.61904761904762,
+          "z": -10.571428571428571,
+          "error": 13.58,
+          "visible": true,
+          "selected": false
+        }
+      ],
+      "level": null,
+      "longitude": null,
+      "latitude": null,
+      "age": null,
+      "ageMin": null,
+      "ageMax": null,
+      "lithology": null,
+      "sample": "GR_15",
+      "name": "GR_15",
+      "volume": 10.5,
+      "beddingStrike": 96,
+      "beddingDip": 60,
+      "coreAzimuth": 218,
+      "coreDip": 58,
+      "interpretations": [],
+      "originalFile": "utrecht_in_col"
+    },
+    {
+      "demagnetizationType": "thermal",
+      "coordinates": "specimen",
+      "format": "UTRECHT",
+      "version": "2.5.1",
+      "created": "2025-11-20T10:44:30.157Z",
+      "steps": [
+        {
+          "step": "25.00",
+          "x": -10285.714285714286,
+          "y": 17904.761904761905,
+          "z": -12190.47619047619,
+          "error": 1.43,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "150.00",
+          "x": -8876.190476190477,
+          "y": 18380.95238095238,
+          "z": -10095.238095238095,
+          "error": 1.54,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "180.00",
+          "x": -10380.952380952382,
+          "y": 15523.809523809523,
+          "z": -9809.52380952381,
+          "error": 1.86,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "210.00",
+          "x": -10666.666666666666,
+          "y": 16000,
+          "z": -9466.666666666666,
+          "error": 1.76,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "240.00",
+          "x": -9714.285714285714,
+          "y": 14476.190476190477,
+          "z": -9485.714285714286,
+          "error": 1.44,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "270.00",
+          "x": -10095.238095238095,
+          "y": 14190.47619047619,
+          "z": -8857.142857142857,
+          "error": 1.47,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "300.00",
+          "x": -8371.42857142857,
+          "y": 12476.190476190477,
+          "z": -8333.333333333334,
+          "error": 1.52,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "330.00",
+          "x": -9466.666666666666,
+          "y": 12190.47619047619,
+          "z": -8228.57142857143,
+          "error": 1.52,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "360.00",
+          "x": -7438.0952380952385,
+          "y": 13238.095238095239,
+          "z": -8323.809523809523,
+          "error": 1.39,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "390.00",
+          "x": -7828.571428571428,
+          "y": 12857.142857142857,
+          "z": -7571.428571428572,
+          "error": 1.54,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "420.00",
+          "x": -8838.095238095239,
+          "y": 12190.47619047619,
+          "z": -7038.0952380952385,
+          "error": 1.62,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "450.00",
+          "x": -5752.380952380952,
+          "y": 12476.190476190477,
+          "z": -8219.047619047618,
+          "error": 2.05,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "480.00",
+          "x": -5409.523809523809,
+          "y": 13047.619047619048,
+          "z": -7447.619047619048,
+          "error": 2.75,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "520.00",
+          "x": -6285.714285714285,
+          "y": 12095.238095238095,
+          "z": -7809.523809523809,
+          "error": 1.31,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "550.00",
+          "x": -5657.142857142857,
+          "y": 12380.952380952382,
+          "z": -6876.190476190476,
+          "error": 1.79,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "580.00",
+          "x": -4971.428571428572,
+          "y": 11428.57142857143,
+          "z": -7933.333333333333,
+          "error": 3.25,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "610.00",
+          "x": -5333.333333333333,
+          "y": 11142.857142857143,
+          "z": -7114.285714285715,
+          "error": 1.33,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "640.00",
+          "x": -4933.333333333333,
+          "y": 10761.904761904761,
+          "z": -6800,
+          "error": 2,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "670.00",
+          "x": 6.266666666666667,
+          "y": 386.6666666666667,
+          "z": -223.8095238095238,
+          "error": 2.55,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "700.00",
+          "x": 500,
+          "y": 237.14285714285714,
+          "z": -204.76190476190476,
+          "error": 1.7,
+          "visible": true,
+          "selected": false
+        }
+      ],
+      "level": null,
+      "longitude": null,
+      "latitude": null,
+      "age": null,
+      "ageMin": null,
+      "ageMax": null,
+      "lithology": null,
+      "sample": "SD_04",
+      "name": "SD_04",
+      "volume": 10.5,
+      "beddingStrike": 262,
+      "beddingDip": 63,
+      "coreAzimuth": 248,
+      "coreDip": 78,
+      "interpretations": [],
+      "originalFile": "utrecht_in_col"
+    },
+    {
+      "demagnetizationType": "thermal",
+      "coordinates": "specimen",
+      "format": "UTRECHT",
+      "version": "2.5.1",
+      "created": "2025-11-20T10:44:30.157Z",
+      "steps": [
+        {
+          "step": "25.00",
+          "x": -5885.714285714285,
+          "y": 7209.523809523809,
+          "z": -3971.4285714285716,
+          "error": 1.64,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "150.00",
+          "x": -2666.6666666666665,
+          "y": 8323.809523809523,
+          "z": -3504.7619047619046,
+          "error": 2.04,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "180.00",
+          "x": -2828.5714285714284,
+          "y": 7009.523809523809,
+          "z": -3714.285714285714,
+          "error": 2.09,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "210.00",
+          "x": -3380.9523809523807,
+          "y": 7371.428571428572,
+          "z": -3438.095238095238,
+          "error": 2.76,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "240.00",
+          "x": -2666.6666666666665,
+          "y": 6390.476190476191,
+          "z": -2876.190476190476,
+          "error": 3.56,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "270.00",
+          "x": -3114.285714285714,
+          "y": 5942.857142857143,
+          "z": -2990.4761904761904,
+          "error": 3.81,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "300.00",
+          "x": -3380.9523809523807,
+          "y": 5238.0952380952385,
+          "z": -2628.5714285714284,
+          "error": 2.06,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "330.00",
+          "x": -2800,
+          "y": 5523.809523809524,
+          "z": -2819.0476190476193,
+          "error": 1.96,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "360.00",
+          "x": -2457.1428571428573,
+          "y": 5552.380952380952,
+          "z": -2647.6190476190477,
+          "error": 1.96,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "390.00",
+          "x": -3038.095238095238,
+          "y": 5333.333333333333,
+          "z": -2333.3333333333335,
+          "error": 18.44,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "420.00",
+          "x": -2266.6666666666665,
+          "y": 5352.380952380952,
+          "z": -2800,
+          "error": 2,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "450.00",
+          "x": -2666.6666666666665,
+          "y": 5009.523809523809,
+          "z": -2552.3809523809523,
+          "error": 2.13,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "480.00",
+          "x": -2847.6190476190477,
+          "y": 4714.285714285715,
+          "z": -2752.3809523809523,
+          "error": 2.39,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "520.00",
+          "x": -2333.3333333333335,
+          "y": 4704.761904761905,
+          "z": -2714.285714285714,
+          "error": 2.14,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "550.00",
+          "x": -2400,
+          "y": 4533.333333333333,
+          "z": -2609.5238095238096,
+          "error": 2.89,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "580.00",
+          "x": -2104.7619047619046,
+          "y": 4247.619047619048,
+          "z": -2371.4285714285716,
+          "error": 2.33,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "610.00",
+          "x": -1885.7142857142858,
+          "y": 4314.285714285715,
+          "z": -2428.5714285714284,
+          "error": 3.5,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "640.00",
+          "x": -1380.952380952381,
+          "y": 3933.3333333333335,
+          "z": -2152.3809523809523,
+          "error": 1.26,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "670.00",
+          "x": 74.38095238095238,
+          "y": 67.80952380952381,
+          "z": 60,
+          "error": 10.94,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "700.00",
+          "x": 104.76190476190476,
+          "y": -58.095238095238095,
+          "z": -21.61904761904762,
+          "error": 15.05,
+          "visible": true,
+          "selected": false
+        }
+      ],
+      "level": null,
+      "longitude": null,
+      "latitude": null,
+      "age": null,
+      "ageMin": null,
+      "ageMax": null,
+      "lithology": null,
+      "sample": "SD_05",
+      "name": "SD_05",
+      "volume": 10.5,
+      "beddingStrike": 262,
+      "beddingDip": 53,
+      "coreAzimuth": 250,
+      "coreDip": 71,
+      "interpretations": [],
+      "originalFile": "utrecht_in_col"
+    },
+    {
+      "demagnetizationType": "thermal",
+      "coordinates": "specimen",
+      "format": "UTRECHT",
+      "version": "2.5.1",
+      "created": "2025-11-20T10:44:30.157Z",
+      "steps": [
+        {
+          "step": "25.00",
+          "x": -2133.3333333333335,
+          "y": 5380.952380952381,
+          "z": -2885.714285714286,
+          "error": 2.03,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "150.00",
+          "x": -2047.6190476190477,
+          "y": 4638.0952380952385,
+          "z": -2942.8571428571427,
+          "error": 3.28,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "180.00",
+          "x": -2285.714285714286,
+          "y": 4333.333333333333,
+          "z": -2552.3809523809523,
+          "error": 2.37,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "210.00",
+          "x": -2485.714285714286,
+          "y": 3390.4761904761904,
+          "z": -2961.904761904762,
+          "error": 1.66,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "240.00",
+          "x": -1504.7619047619048,
+          "y": 4076.190476190476,
+          "z": -2609.5238095238096,
+          "error": 1.92,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "270.00",
+          "x": -1752.3809523809523,
+          "y": 3219.0476190476193,
+          "z": -2085.714285714286,
+          "error": 1.27,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "300.00",
+          "x": -1838.095238095238,
+          "y": 3352.3809523809523,
+          "z": -1752.3809523809523,
+          "error": 1.86,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "330.00",
+          "x": -1628.5714285714287,
+          "y": 3152.3809523809523,
+          "z": -1866.6666666666667,
+          "error": 1.3,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "360.00",
+          "x": -1457.142857142857,
+          "y": 3142.8571428571427,
+          "z": -1752.3809523809523,
+          "error": 1.17,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "390.00",
+          "x": -1152.3809523809523,
+          "y": 3285.714285714286,
+          "z": -1695.2380952380952,
+          "error": 1.35,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "420.00",
+          "x": -1609.5238095238096,
+          "y": 3019.0476190476193,
+          "z": -1657.142857142857,
+          "error": 2.26,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "450.00",
+          "x": -1561.904761904762,
+          "y": 2961.904761904762,
+          "z": -1457.142857142857,
+          "error": 1.76,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "480.00",
+          "x": -1790.4761904761904,
+          "y": 2771.4285714285716,
+          "z": -1428.5714285714287,
+          "error": 2.21,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "520.00",
+          "x": -1523.8095238095239,
+          "y": 2800,
+          "z": -1390.4761904761904,
+          "error": 2.22,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "550.00",
+          "x": -1561.904761904762,
+          "y": 2590.4761904761904,
+          "z": -1400,
+          "error": 3.74,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "580.00",
+          "x": -1666.6666666666667,
+          "y": 2323.809523809524,
+          "z": -1219.047619047619,
+          "error": 1.3,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "610.00",
+          "x": -1457.142857142857,
+          "y": 2266.6666666666665,
+          "z": -1171.4285714285713,
+          "error": 3.06,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "640.00",
+          "x": -872.3809523809524,
+          "y": 2257.1428571428573,
+          "z": -1133.3333333333333,
+          "error": 1.39,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "670.00",
+          "x": -0.029619047619047618,
+          "y": 86.76190476190476,
+          "z": -117.14285714285714,
+          "error": 6.85,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "700.00",
+          "x": -14.761904761904763,
+          "y": -121.9047619047619,
+          "z": -17.80952380952381,
+          "error": 6.82,
+          "visible": true,
+          "selected": false
+        }
+      ],
+      "level": null,
+      "longitude": null,
+      "latitude": null,
+      "age": null,
+      "ageMin": null,
+      "ageMax": null,
+      "lithology": null,
+      "sample": "SD_06",
+      "name": "SD_06",
+      "volume": 10.5,
+      "beddingStrike": 262,
+      "beddingDip": 53,
+      "coreAzimuth": 250,
+      "coreDip": 75,
+      "interpretations": [],
+      "originalFile": "utrecht_in_col"
+    },
+    {
+      "demagnetizationType": "thermal",
+      "coordinates": "specimen",
+      "format": "UTRECHT",
+      "version": "2.5.1",
+      "created": "2025-11-20T10:44:30.157Z",
+      "steps": [
+        {
+          "step": "25.00",
+          "x": -303.8095238095238,
+          "y": 508.57142857142856,
+          "z": 858.0952380952381,
+          "error": 2.31,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "150.00",
+          "x": -267.6190476190476,
+          "y": 380,
+          "z": 577.1428571428571,
+          "error": 1.47,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "180.00",
+          "x": -297.14285714285717,
+          "y": 296.1904761904762,
+          "z": 480.95238095238096,
+          "error": 1.55,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "210.00",
+          "x": -210.47619047619048,
+          "y": 361.9047619047619,
+          "z": 429.5238095238095,
+          "error": 2.01,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "240.00",
+          "x": -152.38095238095238,
+          "y": 365.7142857142857,
+          "z": 403.8095238095238,
+          "error": 1.39,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "270.00",
+          "x": -154.28571428571428,
+          "y": 299.04761904761904,
+          "z": 316.1904761904762,
+          "error": 1.53,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "300.00",
+          "x": -200.95238095238096,
+          "y": 274.2857142857143,
+          "z": 302.85714285714283,
+          "error": 4.22,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "330.00",
+          "x": -134.28571428571428,
+          "y": 254.28571428571428,
+          "z": 295.23809523809524,
+          "error": 2.14,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "360.00",
+          "x": -131.42857142857142,
+          "y": 157.14285714285714,
+          "z": 247.61904761904762,
+          "error": 4.01,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "390.00",
+          "x": -160,
+          "y": 223.8095238095238,
+          "z": 232.38095238095238,
+          "error": 3.04,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "420.00",
+          "x": -140,
+          "y": 192.38095238095238,
+          "z": 260.95238095238096,
+          "error": 2.41,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "450.00",
+          "x": -90.19047619047619,
+          "y": 142.85714285714286,
+          "z": 242.85714285714286,
+          "error": 2.83,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "480.00",
+          "x": -85.80952380952381,
+          "y": 175.23809523809524,
+          "z": 240,
+          "error": 3.41,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "520.00",
+          "x": -107.61904761904762,
+          "y": 123.80952380952381,
+          "z": 199.04761904761904,
+          "error": 3.32,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "550.00",
+          "x": -82.19047619047619,
+          "y": 141.9047619047619,
+          "z": 167.61904761904762,
+          "error": 4.59,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "580.00",
+          "x": -78.47619047619048,
+          "y": 125.71428571428571,
+          "z": 150.47619047619048,
+          "error": 4.93,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "610.00",
+          "x": -100,
+          "y": 167.61904761904762,
+          "z": 199.04761904761904,
+          "error": 2.41,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "640.00",
+          "x": -47.904761904761905,
+          "y": 107.61904761904762,
+          "z": 43.04761904761905,
+          "error": 4.49,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "670.00",
+          "x": 88.28571428571429,
+          "y": 22.095238095238095,
+          "z": -4.2,
+          "error": 13.87,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "700.00",
+          "x": 0.8676190476190475,
+          "y": -54.857142857142854,
+          "z": -47.714285714285715,
+          "error": 4.79,
+          "visible": true,
+          "selected": false
+        }
+      ],
+      "level": null,
+      "longitude": null,
+      "latitude": null,
+      "age": null,
+      "ageMin": null,
+      "ageMax": null,
+      "lithology": null,
+      "sample": "CC_01",
+      "name": "CC_01",
+      "volume": 10.5,
+      "beddingStrike": 76,
+      "beddingDip": 70,
+      "coreAzimuth": 315,
+      "coreDip": 70,
+      "interpretations": [],
+      "originalFile": "utrecht_in_col"
+    },
+    {
+      "demagnetizationType": "thermal",
+      "coordinates": "specimen",
+      "format": "UTRECHT",
+      "version": "2.5.1",
+      "created": "2025-11-20T10:44:30.157Z",
+      "steps": [
+        {
+          "step": "25.00",
+          "x": -31.428571428571427,
+          "y": -480,
+          "z": 687.6190476190476,
+          "error": 1.19,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "150.00",
+          "x": 21.61904761904762,
+          "y": -97.14285714285714,
+          "z": 238.0952380952381,
+          "error": 0.67,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "180.00",
+          "x": 19.904761904761905,
+          "y": -84.66666666666667,
+          "z": 229.52380952380952,
+          "error": 1.17,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "210.00",
+          "x": 32,
+          "y": -58.76190476190476,
+          "z": 201.9047619047619,
+          "error": 1.25,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "240.00",
+          "x": 11.428571428571429,
+          "y": -67.61904761904762,
+          "z": 194.28571428571428,
+          "error": 0.98,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "270.00",
+          "x": 14.571428571428571,
+          "y": -51.333333333333336,
+          "z": 168.57142857142858,
+          "error": 1.09,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "300.00",
+          "x": 11.619047619047619,
+          "y": -46,
+          "z": 172.38095238095238,
+          "error": 1.34,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "330.00",
+          "x": 1.3142857142857143,
+          "y": -51.904761904761905,
+          "z": 125.71428571428571,
+          "error": 0.7,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "360.00",
+          "x": -55.142857142857146,
+          "y": 11.523809523809524,
+          "z": 25.523809523809526,
+          "error": 26.62,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "390.00",
+          "x": -16.476190476190474,
+          "y": 4.219047619047619,
+          "z": 4.142857142857143,
+          "error": 117.48,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "420.00",
+          "x": -36.95238095238095,
+          "y": 5.123809523809523,
+          "z": -6.60952380952381,
+          "error": 54.53,
+          "visible": true,
+          "selected": false
+        }
+      ],
+      "level": null,
+      "longitude": null,
+      "latitude": null,
+      "age": null,
+      "ageMin": null,
+      "ageMax": null,
+      "lithology": null,
+      "sample": "CC_02",
+      "name": "CC_02",
+      "volume": 10.5,
+      "beddingStrike": 76,
+      "beddingDip": 70,
+      "coreAzimuth": 340,
+      "coreDip": 70,
+      "interpretations": [],
+      "originalFile": "utrecht_in_col"
+    },
+    {
+      "demagnetizationType": "thermal",
+      "coordinates": "specimen",
+      "format": "UTRECHT",
+      "version": "2.5.1",
+      "created": "2025-11-20T10:44:30.157Z",
+      "steps": [
+        {
+          "step": "25.00",
+          "x": 475.23809523809524,
+          "y": 0.11619047619047619,
+          "z": 506.6666666666667,
+          "error": 1.89,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "150.00",
+          "x": 78.57142857142857,
+          "y": -4.819047619047619,
+          "z": 217.14285714285714,
+          "error": 3.32,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "180.00",
+          "x": 75.33333333333333,
+          "y": 6.9714285714285715,
+          "z": 181.9047619047619,
+          "error": 3.52,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "210.00",
+          "x": 42.95238095238095,
+          "y": 10.285714285714286,
+          "z": 148.57142857142858,
+          "error": 5.44,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "240.00",
+          "x": 46.095238095238095,
+          "y": 7.0285714285714285,
+          "z": 138.0952380952381,
+          "error": 4.54,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "270.00",
+          "x": 48.285714285714285,
+          "y": 41.523809523809526,
+          "z": 105.71428571428571,
+          "error": 6.32,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "300.00",
+          "x": 39.80952380952381,
+          "y": 34.76190476190476,
+          "z": 109.52380952380952,
+          "error": 6.37,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "330.00",
+          "x": 81.33333333333333,
+          "y": 34.19047619047619,
+          "z": 122.85714285714286,
+          "error": 4.28,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "360.00",
+          "x": -6.580952380952381,
+          "y": 10.285714285714286,
+          "z": 121.9047619047619,
+          "error": 10.89,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "390.00",
+          "x": 781.9047619047619,
+          "y": 1019.047619047619,
+          "z": 1047.6190476190477,
+          "error": 7.29,
+          "visible": true,
+          "selected": false
+        }
+      ],
+      "level": null,
+      "longitude": null,
+      "latitude": null,
+      "age": null,
+      "ageMin": null,
+      "ageMax": null,
+      "lithology": null,
+      "sample": "CC_03",
+      "name": "CC_03",
+      "volume": 10.5,
+      "beddingStrike": 76,
+      "beddingDip": 70,
+      "coreAzimuth": 350,
+      "coreDip": 71,
+      "interpretations": [],
+      "originalFile": "utrecht_in_col"
+    },
+    {
+      "demagnetizationType": "thermal",
+      "coordinates": "specimen",
+      "format": "UTRECHT",
+      "version": "2.5.1",
+      "created": "2025-11-20T10:44:30.157Z",
+      "steps": [
+        {
+          "step": "25.00",
+          "x": -60.857142857142854,
+          "y": -224.76190476190476,
+          "z": 613.3333333333334,
+          "error": 1,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "150.00",
+          "x": 39.42857142857143,
+          "y": -94.47619047619048,
+          "z": 354.2857142857143,
+          "error": 1.14,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "180.00",
+          "x": 41.904761904761905,
+          "y": -94.0952380952381,
+          "z": 318.0952380952381,
+          "error": 1.25,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "210.00",
+          "x": 27.428571428571427,
+          "y": -74.95238095238095,
+          "z": 289.5238095238095,
+          "error": 1.18,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "240.00",
+          "x": 10.095238095238095,
+          "y": -81.61904761904762,
+          "z": 270.4761904761905,
+          "error": 1.05,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "270.00",
+          "x": -28.38095238095238,
+          "y": -98.0952380952381,
+          "z": 233.33333333333334,
+          "error": 1.12,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "300.00",
+          "x": -25.142857142857142,
+          "y": -93.61904761904762,
+          "z": 222.85714285714286,
+          "error": 1.65,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "330.00",
+          "x": -60.666666666666664,
+          "y": -59.142857142857146,
+          "z": 187.61904761904762,
+          "error": 4.75,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "360.00",
+          "x": -419.04761904761904,
+          "y": 222.85714285714286,
+          "z": -248.57142857142858,
+          "error": 25.15,
+          "visible": true,
+          "selected": false
+        }
+      ],
+      "level": null,
+      "longitude": null,
+      "latitude": null,
+      "age": null,
+      "ageMin": null,
+      "ageMax": null,
+      "lithology": null,
+      "sample": "CC_04",
+      "name": "CC_04",
+      "volume": 10.5,
+      "beddingStrike": 76,
+      "beddingDip": 70,
+      "coreAzimuth": 345,
+      "coreDip": 63,
+      "interpretations": [],
+      "originalFile": "utrecht_in_col"
+    },
+    {
+      "demagnetizationType": "thermal",
+      "coordinates": "specimen",
+      "format": "UTRECHT",
+      "version": "2.5.1",
+      "created": "2025-11-20T10:44:30.157Z",
+      "steps": [
+        {
+          "step": "25.00",
+          "x": -245.71428571428572,
+          "y": -330.4761904761905,
+          "z": -448.57142857142856,
+          "error": 1.25,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "150.00",
+          "x": -44.857142857142854,
+          "y": -135.23809523809524,
+          "z": -56.285714285714285,
+          "error": 2.29,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "180.00",
+          "x": -42.38095238095238,
+          "y": -110.47619047619048,
+          "z": -43.333333333333336,
+          "error": 3.17,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "210.00",
+          "x": -18.095238095238095,
+          "y": -95.23809523809524,
+          "z": -42.095238095238095,
+          "error": 4.66,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "240.00",
+          "x": -30.38095238095238,
+          "y": -78.66666666666667,
+          "z": -44.19047619047619,
+          "error": 3.9,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "270.00",
+          "x": -30.38095238095238,
+          "y": -46,
+          "z": -23.142857142857142,
+          "error": 5.33,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "300.00",
+          "x": -36.57142857142857,
+          "y": -42.95238095238095,
+          "z": -5.79047619047619,
+          "error": 5.32,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "330.00",
+          "x": -27.142857142857142,
+          "y": -46.38095238095238,
+          "z": 12.285714285714286,
+          "error": 6.18,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "360.00",
+          "x": -27.61904761904762,
+          "y": -26.761904761904763,
+          "z": -21.238095238095237,
+          "error": 6.5,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "390.00",
+          "x": -1.4095238095238096,
+          "y": -17.61904761904762,
+          "z": -9.80952380952381,
+          "error": 14.96,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "420.00",
+          "x": 1.4476190476190476,
+          "y": -50.285714285714285,
+          "z": 15.619047619047619,
+          "error": 4.72,
+          "visible": true,
+          "selected": false
+        }
+      ],
+      "level": null,
+      "longitude": null,
+      "latitude": null,
+      "age": null,
+      "ageMin": null,
+      "ageMax": null,
+      "lithology": null,
+      "sample": "CC_05",
+      "name": "CC_05",
+      "volume": 10.5,
+      "beddingStrike": 80,
+      "beddingDip": 85,
+      "coreAzimuth": 65,
+      "coreDip": 105,
+      "interpretations": [],
+      "originalFile": "utrecht_in_col"
+    },
+    {
+      "demagnetizationType": "thermal",
+      "coordinates": "specimen",
+      "format": "UTRECHT",
+      "version": "2.5.1",
+      "created": "2025-11-20T10:44:30.157Z",
+      "steps": [
+        {
+          "step": "25.00",
+          "x": -147.61904761904762,
+          "y": -80.76190476190476,
+          "z": -25.61904761904762,
+          "error": 1.54,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "150.00",
+          "x": -47.23809523809524,
+          "y": 4.352380952380953,
+          "z": -34.666666666666664,
+          "error": 4.59,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "180.00",
+          "x": -32.095238095238095,
+          "y": 12.095238095238095,
+          "z": -24,
+          "error": 4.49,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "210.00",
+          "x": -24.571428571428573,
+          "y": 19.047619047619047,
+          "z": -41.23809523809524,
+          "error": 6.08,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "240.00",
+          "x": -28.952380952380953,
+          "y": 7.6380952380952385,
+          "z": -43.142857142857146,
+          "error": 3.3,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "270.00",
+          "x": -34.57142857142857,
+          "y": 9.904761904761905,
+          "z": -26.285714285714285,
+          "error": 4.31,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "300.00",
+          "x": -45.904761904761905,
+          "y": -3.4952380952380957,
+          "z": -32.285714285714285,
+          "error": 2.37,
+          "visible": true,
+          "selected": false
+        }
+      ],
+      "level": null,
+      "longitude": null,
+      "latitude": null,
+      "age": null,
+      "ageMin": null,
+      "ageMax": null,
+      "lithology": null,
+      "sample": "CC_06",
+      "name": "CC_06",
+      "volume": 10.5,
+      "beddingStrike": 80,
+      "beddingDip": 85,
+      "coreAzimuth": 75,
+      "coreDip": 95,
+      "interpretations": [],
+      "originalFile": "utrecht_in_col"
+    },
+    {
+      "demagnetizationType": "thermal",
+      "coordinates": "specimen",
+      "format": "UTRECHT",
+      "version": "2.5.1",
+      "created": "2025-11-20T10:44:30.157Z",
+      "steps": [
+        {
+          "step": "25.00",
+          "x": -181.9047619047619,
+          "y": 20.476190476190474,
+          "z": 301.9047619047619,
+          "error": 1.18,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "150.00",
+          "x": -135.23809523809524,
+          "y": 11.333333333333334,
+          "z": 87.52380952380952,
+          "error": 1.63,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "180.00",
+          "x": -124.76190476190476,
+          "y": -5.419047619047619,
+          "z": 93.33333333333333,
+          "error": 1.84,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "210.00",
+          "x": -113.33333333333333,
+          "y": -28.476190476190474,
+          "z": 84.76190476190476,
+          "error": 3.44,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "240.00",
+          "x": -119.04761904761905,
+          "y": -17.142857142857142,
+          "z": 82,
+          "error": 2.18,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "270.00",
+          "x": -103.80952380952381,
+          "y": 10,
+          "z": 87.61904761904762,
+          "error": 2.89,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "300.00",
+          "x": -83.23809523809524,
+          "y": 23.61904761904762,
+          "z": 40.857142857142854,
+          "error": 4.39,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "330.00",
+          "x": -85.71428571428571,
+          "y": 45.42857142857143,
+          "z": 50.19047619047619,
+          "error": 3.25,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "360.00",
+          "x": -44.38095238095238,
+          "y": 20.095238095238095,
+          "z": 15.714285714285714,
+          "error": 13.82,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "390.00",
+          "x": -18.476190476190474,
+          "y": 81.42857142857143,
+          "z": -73.23809523809524,
+          "error": 16.08,
+          "visible": true,
+          "selected": false
+        }
+      ],
+      "level": null,
+      "longitude": null,
+      "latitude": null,
+      "age": null,
+      "ageMin": null,
+      "ageMax": null,
+      "lithology": null,
+      "sample": "CC_07",
+      "name": "CC_07",
+      "volume": 10.5,
+      "beddingStrike": 80,
+      "beddingDip": 85,
+      "coreAzimuth": 128,
+      "coreDip": 26,
+      "interpretations": [],
+      "originalFile": "utrecht_in_col"
+    },
+    {
+      "demagnetizationType": "thermal",
+      "coordinates": "specimen",
+      "format": "UTRECHT",
+      "version": "2.5.1",
+      "created": "2025-11-20T10:44:30.157Z",
+      "steps": [
+        {
+          "step": "25.00",
+          "x": -284.76190476190476,
+          "y": -104.76190476190476,
+          "z": 150.47619047619048,
+          "error": 1.3,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "150.00",
+          "x": -92.76190476190476,
+          "y": -78.95238095238095,
+          "z": 37.61904761904762,
+          "error": 2.44,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "180.00",
+          "x": -72.57142857142857,
+          "y": -57.523809523809526,
+          "z": 44.095238095238095,
+          "error": 3.28,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "210.00",
+          "x": -58.19047619047619,
+          "y": -58.285714285714285,
+          "z": 35.04761904761905,
+          "error": 3.38,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "240.00",
+          "x": -62.95238095238095,
+          "y": -52.57142857142857,
+          "z": 24.571428571428573,
+          "error": 2.19,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "270.00",
+          "x": -49.523809523809526,
+          "y": -38.57142857142857,
+          "z": 19.428571428571427,
+          "error": 5,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "300.00",
+          "x": -32.476190476190474,
+          "y": -53.904761904761905,
+          "z": 48.666666666666664,
+          "error": 2.17,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "330.00",
+          "x": -26.666666666666668,
+          "y": -37.333333333333336,
+          "z": 40.95238095238095,
+          "error": 6.37,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "360.00",
+          "x": -9.047619047619047,
+          "y": -5.419047619047619,
+          "z": 35.523809523809526,
+          "error": 6.74,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "390.00",
+          "x": 2.2476190476190476,
+          "y": -39.523809523809526,
+          "z": 41.333333333333336,
+          "error": 3.97,
+          "visible": true,
+          "selected": false
+        }
+      ],
+      "level": null,
+      "longitude": null,
+      "latitude": null,
+      "age": null,
+      "ageMin": null,
+      "ageMax": null,
+      "lithology": null,
+      "sample": "CC_08",
+      "name": "CC_08",
+      "volume": 10.5,
+      "beddingStrike": 80,
+      "beddingDip": 85,
+      "coreAzimuth": 126,
+      "coreDip": 21,
+      "interpretations": [],
+      "originalFile": "utrecht_in_col"
+    },
+    {
+      "demagnetizationType": "thermal",
+      "coordinates": "specimen",
+      "format": "UTRECHT",
+      "version": "2.5.1",
+      "created": "2025-11-20T10:44:30.157Z",
+      "steps": [
+        {
+          "step": "25.00",
+          "x": -162.85714285714286,
+          "y": 100.95238095238095,
+          "z": -44.76190476190476,
+          "error": 2.79,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "150.00",
+          "x": -72.95238095238095,
+          "y": 20.857142857142858,
+          "z": 47.333333333333336,
+          "error": 3.32,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "180.00",
+          "x": -78.0952380952381,
+          "y": 7.466666666666667,
+          "z": 38.95238095238095,
+          "error": 5.13,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "210.00",
+          "x": -71.42857142857143,
+          "y": -14.095238095238095,
+          "z": 22.476190476190474,
+          "error": 5.04,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "240.00",
+          "x": -63.04761904761905,
+          "y": -27.428571428571427,
+          "z": 10,
+          "error": 5.33,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "270.00",
+          "x": -45.142857142857146,
+          "y": -28.38095238095238,
+          "z": -10.857142857142858,
+          "error": 7.05,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "300.00",
+          "x": -36.285714285714285,
+          "y": -45.523809523809526,
+          "z": 1.1619047619047618,
+          "error": 6.07,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "330.00",
+          "x": -44.666666666666664,
+          "y": -37.142857142857146,
+          "z": -5.742857142857143,
+          "error": 8.54,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "360.00",
+          "x": -1.7523809523809522,
+          "y": -8.485714285714286,
+          "z": -26.285714285714285,
+          "error": 14.95,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "390.00",
+          "x": 8.00952380952381,
+          "y": 32.285714285714285,
+          "z": 3.9047619047619047,
+          "error": 10.98,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "420.00",
+          "x": -15.80952380952381,
+          "y": 3.6380952380952385,
+          "z": -13.428571428571429,
+          "error": 24.47,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "450.00",
+          "x": 28.666666666666668,
+          "y": 12.571428571428571,
+          "z": -30.095238095238095,
+          "error": 22.85,
+          "visible": true,
+          "selected": false
+        }
+      ],
+      "level": null,
+      "longitude": null,
+      "latitude": null,
+      "age": null,
+      "ageMin": null,
+      "ageMax": null,
+      "lithology": null,
+      "sample": "WH_01",
+      "name": "WH_01",
+      "volume": 10.5,
+      "beddingStrike": 57,
+      "beddingDip": 72,
+      "coreAzimuth": 324,
+      "coreDip": 86,
+      "interpretations": [],
+      "originalFile": "utrecht_in_col"
+    },
+    {
+      "demagnetizationType": "thermal",
+      "coordinates": "specimen",
+      "format": "UTRECHT",
+      "version": "2.5.1",
+      "created": "2025-11-20T10:44:30.157Z",
+      "steps": [
+        {
+          "step": "25.00",
+          "x": -180,
+          "y": 80.0952380952381,
+          "z": 158.0952380952381,
+          "error": 4.65,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "150.00",
+          "x": -92.66666666666667,
+          "y": 38.285714285714285,
+          "z": 49.142857142857146,
+          "error": 2.45,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "180.00",
+          "x": -71.71428571428571,
+          "y": 15.714285714285714,
+          "z": 26,
+          "error": 4.82,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "210.00",
+          "x": -68.38095238095238,
+          "y": 4.171428571428571,
+          "z": 20.761904761904763,
+          "error": 4.03,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "240.00",
+          "x": -64.76190476190476,
+          "y": -0.06342857142857143,
+          "z": 19.904761904761905,
+          "error": 4.21,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "270.00",
+          "x": -67.33333333333333,
+          "y": 3.2,
+          "z": 9.904761904761905,
+          "error": 3.54,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "300.00",
+          "x": -67.42857142857143,
+          "y": 0.5657142857142857,
+          "z": 15.714285714285714,
+          "error": 4.15,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "330.00",
+          "x": -67.71428571428571,
+          "y": 3.9047619047619047,
+          "z": 18.571428571428573,
+          "error": 4,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "360.00",
+          "x": -10.857142857142858,
+          "y": 15.904761904761905,
+          "z": 17.714285714285715,
+          "error": 16.48,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "390.00",
+          "x": 28.19047619047619,
+          "y": 63.333333333333336,
+          "z": 23.238095238095237,
+          "error": 10.6,
+          "visible": true,
+          "selected": false
+        }
+      ],
+      "level": null,
+      "longitude": null,
+      "latitude": null,
+      "age": null,
+      "ageMin": null,
+      "ageMax": null,
+      "lithology": null,
+      "sample": "WH_02",
+      "name": "WH_02",
+      "volume": 10.5,
+      "beddingStrike": 57,
+      "beddingDip": 72,
+      "coreAzimuth": 310,
+      "coreDip": 78,
+      "interpretations": [],
+      "originalFile": "utrecht_in_col"
+    },
+    {
+      "demagnetizationType": "thermal",
+      "coordinates": "specimen",
+      "format": "UTRECHT",
+      "version": "2.5.1",
+      "created": "2025-11-20T10:44:30.157Z",
+      "steps": [
+        {
+          "step": "25.00",
+          "x": 74.76190476190476,
+          "y": 288.57142857142856,
+          "z": 23.80952380952381,
+          "error": 1.87,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "150.00",
+          "x": -10.666666666666666,
+          "y": 146.66666666666666,
+          "z": 37.523809523809526,
+          "error": 2.65,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "180.00",
+          "x": -4.409523809523809,
+          "y": 98.0952380952381,
+          "z": 49.80952380952381,
+          "error": 2.79,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "210.00",
+          "x": -8.057142857142857,
+          "y": 85.33333333333333,
+          "z": 50.38095238095238,
+          "error": 3.62,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "240.00",
+          "x": -8.514285714285714,
+          "y": 58.285714285714285,
+          "z": 52.19047619047619,
+          "error": 3.74,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "270.00",
+          "x": -5.457142857142857,
+          "y": 58.666666666666664,
+          "z": 71.42857142857143,
+          "error": 3.11,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "300.00",
+          "x": 2.6476190476190475,
+          "y": 25.80952380952381,
+          "z": 63.714285714285715,
+          "error": 4.6,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "330.00",
+          "x": 8.361904761904762,
+          "y": 43.23809523809524,
+          "z": 75.80952380952381,
+          "error": 5.08,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "360.00",
+          "x": 2.8666666666666667,
+          "y": 29.904761904761905,
+          "z": 75.04761904761905,
+          "error": 4.95,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "390.00",
+          "x": 4.257142857142857,
+          "y": 47.142857142857146,
+          "z": -10.19047619047619,
+          "error": 13.11,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "420.00",
+          "x": 22.476190476190474,
+          "y": -3.4857142857142858,
+          "z": 11.238095238095237,
+          "error": 29.67,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "470.00",
+          "x": -1.2095238095238094,
+          "y": 70.85714285714286,
+          "z": 5.171428571428571,
+          "error": 5.6,
+          "visible": true,
+          "selected": false
+        }
+      ],
+      "level": null,
+      "longitude": null,
+      "latitude": null,
+      "age": null,
+      "ageMin": null,
+      "ageMax": null,
+      "lithology": null,
+      "sample": "WH_03",
+      "name": "WH_03",
+      "volume": 10.5,
+      "beddingStrike": 57,
+      "beddingDip": 72,
+      "coreAzimuth": 278,
+      "coreDip": 95,
+      "interpretations": [],
+      "originalFile": "utrecht_in_col"
+    },
+    {
+      "demagnetizationType": "thermal",
+      "coordinates": "specimen",
+      "format": "UTRECHT",
+      "version": "2.5.1",
+      "created": "2025-11-20T10:44:30.157Z",
+      "steps": [
+        {
+          "step": "25.00",
+          "x": -159.04761904761904,
+          "y": -9.20952380952381,
+          "z": -13.904761904761905,
+          "error": 3.38,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "150.00",
+          "x": -51.904761904761905,
+          "y": 14.952380952380953,
+          "z": 87.80952380952381,
+          "error": 3.85,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "180.00",
+          "x": -24.761904761904763,
+          "y": -8.161904761904761,
+          "z": 102.85714285714286,
+          "error": 4.17,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "210.00",
+          "x": -20.761904761904763,
+          "y": -9.80952380952381,
+          "z": 98.0952380952381,
+          "error": 4.64,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "240.00",
+          "x": -13.523809523809524,
+          "y": -12,
+          "z": 101.9047619047619,
+          "error": 4.25,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "270.00",
+          "x": 0.5028571428571429,
+          "y": -2.3047619047619046,
+          "z": 106.66666666666667,
+          "error": 4.06,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "300.00",
+          "x": 5.142857142857143,
+          "y": -21.80952380952381,
+          "z": 35.04761904761905,
+          "error": 12.73,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "330.00",
+          "x": -0.6257142857142858,
+          "y": -12.476190476190476,
+          "z": 45.04761904761905,
+          "error": 11.4,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "360.00",
+          "x": 1.6857142857142857,
+          "y": -20.285714285714285,
+          "z": 14.285714285714286,
+          "error": 20.87,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "390.00",
+          "x": 7.666666666666667,
+          "y": 10.380952380952381,
+          "z": 12.952380952380953,
+          "error": 75.33,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "420.00",
+          "x": -12.761904761904763,
+          "y": 5.857142857142857,
+          "z": -47.23809523809524,
+          "error": 33.64,
+          "visible": true,
+          "selected": false
+        }
+      ],
+      "level": null,
+      "longitude": null,
+      "latitude": null,
+      "age": null,
+      "ageMin": null,
+      "ageMax": null,
+      "lithology": null,
+      "sample": "WH_04",
+      "name": "WH_04",
+      "volume": 10.5,
+      "beddingStrike": 57,
+      "beddingDip": 72,
+      "coreAzimuth": 277,
+      "coreDip": 84,
+      "interpretations": [],
+      "originalFile": "utrecht_in_col"
+    },
+    {
+      "demagnetizationType": "thermal",
+      "coordinates": "specimen",
+      "format": "UTRECHT",
+      "version": "2.5.1",
+      "created": "2025-11-20T10:44:30.157Z",
+      "steps": [
+        {
+          "step": "25.00",
+          "x": 148.57142857142858,
+          "y": 971.4285714285714,
+          "z": 2009.5238095238096,
+          "error": 1.01,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "150.00",
+          "x": 328.57142857142856,
+          "y": 1066.6666666666667,
+          "z": 1809.5238095238096,
+          "error": 1.13,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "180.00",
+          "x": 175.23809523809524,
+          "y": 895.2380952380952,
+          "z": 1552.3809523809523,
+          "error": 1.12,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "210.00",
+          "x": 248.57142857142858,
+          "y": 896.1904761904761,
+          "z": 1542.857142857143,
+          "error": 1.11,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "240.00",
+          "x": 279.04761904761904,
+          "y": 853.3333333333334,
+          "z": 1485.7142857142858,
+          "error": 1.04,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "270.00",
+          "x": 279.04761904761904,
+          "y": 830.4761904761905,
+          "z": 1447.6190476190477,
+          "error": 1.24,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "300.00",
+          "x": 211.42857142857142,
+          "y": 596.1904761904761,
+          "z": 1038.095238095238,
+          "error": 1.21,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "330.00",
+          "x": 212.38095238095238,
+          "y": 639.047619047619,
+          "z": 1057.142857142857,
+          "error": 1.23,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "360.00",
+          "x": 259.04761904761904,
+          "y": 611.4285714285714,
+          "z": 1085.7142857142858,
+          "error": 1.1,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "390.00",
+          "x": -1123.8095238095239,
+          "y": 1638.095238095238,
+          "z": 376.1904761904762,
+          "error": 134.43,
+          "visible": true,
+          "selected": false
+        }
+      ],
+      "level": null,
+      "longitude": null,
+      "latitude": null,
+      "age": null,
+      "ageMin": null,
+      "ageMax": null,
+      "lithology": null,
+      "sample": "WH_05",
+      "name": "WH_05",
+      "volume": 10.5,
+      "beddingStrike": 57,
+      "beddingDip": 72,
+      "coreAzimuth": 330,
+      "coreDip": 62,
+      "interpretations": [],
+      "originalFile": "utrecht_in_col"
+    },
+    {
+      "demagnetizationType": "thermal",
+      "coordinates": "specimen",
+      "format": "UTRECHT",
+      "version": "2.5.1",
+      "created": "2025-11-20T10:44:30.157Z",
+      "steps": [
+        {
+          "step": "25.00",
+          "x": 32.38095238095238,
+          "y": 136.1904761904762,
+          "z": 909.5238095238095,
+          "error": 1.01,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "150.00",
+          "x": 131.42857142857142,
+          "y": 134.28571428571428,
+          "z": 216.1904761904762,
+          "error": 1.97,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "180.00",
+          "x": 70.28571428571429,
+          "y": 100.95238095238095,
+          "z": 177.14285714285714,
+          "error": 1.35,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "210.00",
+          "x": 85.80952380952381,
+          "y": 90.57142857142857,
+          "z": 152.38095238095238,
+          "error": 2.5,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "240.00",
+          "x": 48.666666666666664,
+          "y": 50.857142857142854,
+          "z": 149.52380952380952,
+          "error": 1.8,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "270.00",
+          "x": 25.80952380952381,
+          "y": 47.333333333333336,
+          "z": 133.33333333333334,
+          "error": 4.04,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "300.00",
+          "x": 39.80952380952381,
+          "y": 20.571428571428573,
+          "z": 136.1904761904762,
+          "error": 2.35,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "330.00",
+          "x": 64.38095238095238,
+          "y": 45.04761904761905,
+          "z": 136.1904761904762,
+          "error": 3.17,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "360.00",
+          "x": 58,
+          "y": 24.761904761904763,
+          "z": 125.71428571428571,
+          "error": 2.28,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "390.00",
+          "x": 45.333333333333336,
+          "y": 39.714285714285715,
+          "z": 31.047619047619047,
+          "error": 3.67,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "420.00",
+          "x": 1.7619047619047619,
+          "y": 49.42857142857143,
+          "z": 114.28571428571429,
+          "error": 5.14,
+          "visible": true,
+          "selected": false
+        }
+      ],
+      "level": null,
+      "longitude": null,
+      "latitude": null,
+      "age": null,
+      "ageMin": null,
+      "ageMax": null,
+      "lithology": null,
+      "sample": "WH_06",
+      "name": "WH_06",
+      "volume": 10.5,
+      "beddingStrike": 57,
+      "beddingDip": 72,
+      "coreAzimuth": 341,
+      "coreDip": 45,
+      "interpretations": [],
+      "originalFile": "utrecht_in_col"
+    },
+    {
+      "demagnetizationType": "thermal",
+      "coordinates": "specimen",
+      "format": "UTRECHT",
+      "version": "2.5.1",
+      "created": "2025-11-20T10:44:30.157Z",
+      "steps": [
+        {
+          "step": "25.00",
+          "x": 116.19047619047619,
+          "y": 174.28571428571428,
+          "z": 952.3809523809524,
+          "error": 0.97,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "150.00",
+          "x": -5.180952380952381,
+          "y": 228.57142857142858,
+          "z": 264.76190476190476,
+          "error": 1.57,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "180.00",
+          "x": 19.428571428571427,
+          "y": 193.33333333333334,
+          "z": 205.71428571428572,
+          "error": 1.37,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "210.00",
+          "x": 37.42857142857143,
+          "y": 168.57142857142858,
+          "z": 215.23809523809524,
+          "error": 2.4,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "240.00",
+          "x": -3.1904761904761907,
+          "y": 167.61904761904762,
+          "z": 160.95238095238096,
+          "error": 2.02,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "270.00",
+          "x": -0.9619047619047618,
+          "y": 181.9047619047619,
+          "z": 155.23809523809524,
+          "error": 1.9,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "300.00",
+          "x": 2.1809523809523808,
+          "y": 126.66666666666667,
+          "z": 77.23809523809524,
+          "error": 1.68,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "330.00",
+          "x": 5.904761904761905,
+          "y": 160,
+          "z": 65.9047619047619,
+          "error": 1.91,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "360.00",
+          "x": -3.6380952380952385,
+          "y": 166.66666666666666,
+          "z": 73.42857142857143,
+          "error": 1.72,
+          "visible": true,
+          "selected": false
+        }
+      ],
+      "level": null,
+      "longitude": null,
+      "latitude": null,
+      "age": null,
+      "ageMin": null,
+      "ageMax": null,
+      "lithology": null,
+      "sample": "WH_07",
+      "name": "WH_07",
+      "volume": 10.5,
+      "beddingStrike": 57,
+      "beddingDip": 72,
+      "coreAzimuth": 294,
+      "coreDip": 38,
+      "interpretations": [],
+      "originalFile": "utrecht_in_col"
+    },
+    {
+      "demagnetizationType": "thermal",
+      "coordinates": "specimen",
+      "format": "UTRECHT",
+      "version": "2.5.1",
+      "created": "2025-11-20T10:44:30.157Z",
+      "steps": [
+        {
+          "step": "25.00",
+          "x": 5.3047619047619055,
+          "y": 540.952380952381,
+          "z": 208.57142857142858,
+          "error": 4.27,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "150.00",
+          "x": 56.857142857142854,
+          "y": 140.95238095238096,
+          "z": 92.28571428571429,
+          "error": 2.8,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "180.00",
+          "x": 34.19047619047619,
+          "y": 125.71428571428571,
+          "z": 80.19047619047619,
+          "error": 2.61,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "210.00",
+          "x": 40.95238095238095,
+          "y": 76.95238095238095,
+          "z": 68.85714285714286,
+          "error": 2.51,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "240.00",
+          "x": 42.76190476190476,
+          "y": 60.57142857142857,
+          "z": 47.61904761904762,
+          "error": 6.42,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "270.00",
+          "x": 72.0952380952381,
+          "y": 42.095238095238095,
+          "z": 11.619047619047619,
+          "error": 3.99,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "300.00",
+          "x": 53.80952380952381,
+          "y": 53.23809523809524,
+          "z": 33.333333333333336,
+          "error": 4.47,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "330.00",
+          "x": 64.28571428571429,
+          "y": 46.285714285714285,
+          "z": 25.047619047619047,
+          "error": 4.06,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "360.00",
+          "x": 17.714285714285715,
+          "y": 24.857142857142858,
+          "z": 15.333333333333334,
+          "error": 9.57,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "390.00",
+          "x": 13.904761904761905,
+          "y": 13.333333333333334,
+          "z": 32.76190476190476,
+          "error": 7.31,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "420.00",
+          "x": 8.352380952380953,
+          "y": 2.5333333333333337,
+          "z": 26.571428571428573,
+          "error": 12.74,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "470.00",
+          "x": 119.04761904761905,
+          "y": 894.2857142857143,
+          "z": -395.23809523809524,
+          "error": 6.87,
+          "visible": true,
+          "selected": false
+        }
+      ],
+      "level": null,
+      "longitude": null,
+      "latitude": null,
+      "age": null,
+      "ageMin": null,
+      "ageMax": null,
+      "lithology": null,
+      "sample": "WH_08",
+      "name": "WH_08",
+      "volume": 10.5,
+      "beddingStrike": 57,
+      "beddingDip": 72,
+      "coreAzimuth": 316,
+      "coreDip": 55,
+      "interpretations": [],
+      "originalFile": "utrecht_in_col"
+    },
+    {
+      "demagnetizationType": "thermal",
+      "coordinates": "specimen",
+      "format": "UTRECHT",
+      "version": "2.5.1",
+      "created": "2025-11-20T10:44:30.157Z",
+      "steps": [
+        {
+          "step": "25.00",
+          "x": -362.85714285714283,
+          "y": -6.171428571428571,
+          "z": 182.85714285714286,
+          "error": 2.52,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "150.00",
+          "x": -2.8190476190476192,
+          "y": 9.2,
+          "z": -132.38095238095238,
+          "error": 8.43,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "180.00",
+          "x": 15.238095238095237,
+          "y": 7.676190476190476,
+          "z": -127.61904761904762,
+          "error": 9.16,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "210.00",
+          "x": 28.952380952380953,
+          "y": 4.6761904761904765,
+          "z": -161.9047619047619,
+          "error": 6.91,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "240.00",
+          "x": 33.42857142857143,
+          "y": -12.380952380952381,
+          "z": -136.1904761904762,
+          "error": 7.44,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "270.00",
+          "x": 42.19047619047619,
+          "y": -45.523809523809526,
+          "z": -158.0952380952381,
+          "error": 7.19,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "300.00",
+          "x": 37.523809523809526,
+          "y": -20.476190476190474,
+          "z": -151.42857142857142,
+          "error": 8.03,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "330.00",
+          "x": 30.666666666666668,
+          "y": -53.142857142857146,
+          "z": -103.80952380952381,
+          "error": 11.48,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "360.00",
+          "x": 13.333333333333334,
+          "y": -4.419047619047619,
+          "z": -75.61904761904762,
+          "error": 19.12,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "390.00",
+          "x": -24.761904761904763,
+          "y": -59.80952380952381,
+          "z": -90.47619047619048,
+          "error": 17.46,
+          "visible": true,
+          "selected": false
+        }
+      ],
+      "level": null,
+      "longitude": null,
+      "latitude": null,
+      "age": null,
+      "ageMin": null,
+      "ageMax": null,
+      "lithology": null,
+      "sample": "WH_09",
+      "name": "WH_09",
+      "volume": 10.5,
+      "beddingStrike": 57,
+      "beddingDip": 72,
+      "coreAzimuth": 156,
+      "coreDip": 87,
+      "interpretations": [],
+      "originalFile": "utrecht_in_col"
+    },
+    {
+      "demagnetizationType": "thermal",
+      "coordinates": "specimen",
+      "format": "UTRECHT",
+      "version": "2.5.1",
+      "created": "2025-11-20T10:44:30.157Z",
+      "steps": [
+        {
+          "step": "25.00",
+          "x": -54.57142857142857,
+          "y": -67.71428571428571,
+          "z": -894.2857142857143,
+          "error": 1.63,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "150.00",
+          "x": -63.714285714285715,
+          "y": -10.285714285714286,
+          "z": -295.23809523809524,
+          "error": 3.38,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "180.00",
+          "x": -65.33333333333333,
+          "y": -6.552380952380952,
+          "z": -255.23809523809524,
+          "error": 4.26,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "210.00",
+          "x": -37.61904761904762,
+          "y": -1.2095238095238094,
+          "z": -241.9047619047619,
+          "error": 4.58,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "240.00",
+          "x": -38.19047619047619,
+          "y": 7.780952380952381,
+          "z": -220.95238095238096,
+          "error": 4.75,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "270.00",
+          "x": -32.38095238095238,
+          "y": -23.714285714285715,
+          "z": -169.52380952380952,
+          "error": 6.83,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "300.00",
+          "x": 5.761904761904762,
+          "y": -8.41904761904762,
+          "z": -146.66666666666666,
+          "error": 7.42,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "330.00",
+          "x": -1.7714285714285716,
+          "y": -11.714285714285714,
+          "z": -135.23809523809524,
+          "error": 10.42,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "360.00",
+          "x": -39.42857142857143,
+          "y": 84.57142857142857,
+          "z": -66.95238095238095,
+          "error": 19.43,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "390.00",
+          "x": 205.71428571428572,
+          "y": -15.523809523809524,
+          "z": -162.85714285714286,
+          "error": 14.65,
+          "visible": true,
+          "selected": false
+        }
+      ],
+      "level": null,
+      "longitude": null,
+      "latitude": null,
+      "age": null,
+      "ageMin": null,
+      "ageMax": null,
+      "lithology": null,
+      "sample": "WH_10",
+      "name": "WH_10",
+      "volume": 10.5,
+      "beddingStrike": 57,
+      "beddingDip": 72,
+      "coreAzimuth": 154,
+      "coreDip": 83,
+      "interpretations": [],
+      "originalFile": "utrecht_in_col"
+    },
+    {
+      "demagnetizationType": "thermal",
+      "coordinates": "specimen",
+      "format": "UTRECHT",
+      "version": "2.5.1",
+      "created": "2025-11-20T10:44:30.157Z",
+      "steps": [
+        {
+          "step": "25.00",
+          "x": -96.19047619047619,
+          "y": -677.1428571428571,
+          "z": -170.47619047619048,
+          "error": 2.03,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "150.00",
+          "x": -36.38095238095238,
+          "y": -202.85714285714286,
+          "z": -91.52380952380952,
+          "error": 3.2,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "180.00",
+          "x": -29.523809523809526,
+          "y": -188.57142857142858,
+          "z": -89.61904761904762,
+          "error": 3.16,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "210.00",
+          "x": 7.2285714285714295,
+          "y": -191.42857142857142,
+          "z": -91.71428571428571,
+          "error": 3.06,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "240.00",
+          "x": -15.238095238095237,
+          "y": -180,
+          "z": -73.52380952380952,
+          "error": 3.4,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "270.00",
+          "x": -30.571428571428573,
+          "y": -179.04761904761904,
+          "z": -58,
+          "error": 4.52,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "300.00",
+          "x": -29.142857142857142,
+          "y": -159.04761904761904,
+          "z": -52.095238095238095,
+          "error": 5.81,
+          "visible": true,
+          "selected": false
+        },
+        {
+          "step": "330.00",
+          "x": -19.904761904761905,
+          "y": -249.52380952380952,
+          "z": -113.33333333333333,
+          "error": 5.88,
+          "visible": true,
+          "selected": false
+        }
+      ],
+      "level": null,
+      "longitude": null,
+      "latitude": null,
+      "age": null,
+      "ageMin": null,
+      "ageMax": null,
+      "lithology": null,
+      "sample": "WH_11",
+      "name": "WH_11",
+      "volume": 10.5,
+      "beddingStrike": 57,
+      "beddingDip": 72,
+      "coreAzimuth": 151,
+      "coreDip": 84,
+      "interpretations": [],
+      "originalFile": "utrecht_in_col"
+    }
+  ],
+  "version": "2.5.1",
+  "created": "2025-11-20T10:44:30.160Z"
+}
