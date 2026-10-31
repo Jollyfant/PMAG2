@@ -24,49 +24,91 @@
 
   <body>
 
-    <!-- Header -->
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+   <!-- Site Header -->
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
 
-      <a class="navbar-brand" href="http://www.paleomagnetism.org">Paleomagnetism<span class="text-danger">.org</span></a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+    <a class="navbar-brand" href="http://www.paleomagnetism.org">
+        Paleomagnetism<span class="text-danger">.org</span>
+    </a>
+
+    <button class="navbar-toggler" type="button"
+            data-toggle="collapse"
+            data-target="#navbarsExampleDefault"
+            aria-controls="navbarsExampleDefault"
+            aria-expanded="false"
+            aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
-      </button>
+    </button>
 
-      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+    <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+
+        <!-- Main portals -->
         <ul class="navbar-nav mr-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="../interpretation">Interpretation</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="../statistics">Statistics</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="../geography">Geography</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="../miscellaneous">Miscellaneous</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="../converter">Converter <span class="text-danger"><b>[BETA]</b></span></a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="../references">References</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="../team">Team & Contact</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="../magic">MagIC Interface</a>
-          </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="../interpretation">
+                    Interpretation
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="../statistics">
+                    Statistics
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="../geography">
+                    Geography
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="../miscellaneous">
+                    Miscellaneous
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="../references">
+                    References
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="../team">
+                    Team &amp; Contact
+                </a>
+            </li>
+
         </ul>
 
-        <form class="form-inline my-2 my-lg-0">
-          <a href="../library" class="btn btn-sm btn-secondary my-2 my-sm-0"><i class="fas fa-book-open"></i><b>&nbsp; Data Library</b></a>
-        </form>
+        <!-- Utility tools -->
+        <div class="form-inline my-2 my-lg-0">
 
-      </div>
+            <a href="../converter"
+               class="btn btn-sm btn-secondary nav-tool mr-2 mb-2 mb-lg-0">
+                <i class="fas fa-file-export"></i>
+                <strong>&nbsp;Converter</strong>
 
-    </nav>
+            </a>
+            <a href="../magic"
+               class="btn btn-sm btn-secondary nav-tool mr-2 mb-2 mb-lg-0">
+                <i class="fas fa-database"></i>
+                <strong>&nbsp;MagIC Interface</strong>
+            </a>
+
+            <a href="../library"
+               class="btn btn-sm btn-secondary nav-tool">
+                <i class="fas fa-book-open"></i>
+                <strong>&nbsp;Data Library</strong>
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>
 
     <!-- Main body -->
     <div class="container">
@@ -83,16 +125,21 @@
       <div class="card">
             <div class="card-header" id="headingEleven">
               <button class="btn btn-link" data-toggle="collapse" data-target="#collapseTen" aria-expanded="true" aria-controls="collapseTen">
-                Paleomagnetism.org 2.X - New features! <small class="text-muted">&nbsp; 2025-07-07</small>
+                Paleomagnetism.org 2.7 - Format converter and fixes <small class="text-muted">&nbsp; 2025-07-07</small>
               </button>
             </div>
-            <div id="collapseTen" class="collapse show" aria-labelledby="headingTen" data-parent="#accordion">
+            <div id="collapseEleven" class="collapse show" aria-labelledby="headingEleven" data-parent="#accordion">
               <div class="card-body">
               <ul>
                 <p> <b> Features </b>
-                <li> A new format converter that goes both ways, better options to share
-                <li> New visualization in the geography portal and an updtaed Vaes et al., 2023 APWP
+                <li> A new format converter that goes both ways to help sharing data between labs
+                <li> New visualization in the geography portal
 
+              </ul>
+              <ul>
+                <p> <b> Fixes </b>
+                <li> Fix in core-dip for MagIC export and import (MagIC dip = core dip - 90) in the MagIC page, the converter and the interpretation portal. Measurement names in the MagIC page export are unique again.
+				<li> Updtaed version of Vaes et al., 2023 global APWP in the Geography portal
               </ul>
               </div>
             </div>

@@ -10,7 +10,7 @@
     <meta name="description" content="Paleomagnetism.org 2 - An online environment for paleomagnetic analysis">
     <meta name="keywords" content="paleomagnetism, interpretation, zijderveld, pca">
 
-    <meta name="author" content="Mathijs Koymans">
+    <meta name="author" content="Mathijs Koymans & Daniel Pastor-Galán">
 
     <link rel="shortcut icon" type="image/x-icon" href="./resources/images/hades-icon.png"/>
     <link rel="stylesheet" href="./css/style.css">
@@ -23,48 +23,91 @@
 
   <body>
 
-    <!-- Header -->
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-      <a class="navbar-brand" href="http://www.paleomagnetism.org">Paleomagnetism<span class="text-danger">.org</span></a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+<!-- Site Header -->
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
 
-      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+    <a class="navbar-brand" href="http://www.paleomagnetism.org">
+        Paleomagnetism<span class="text-danger">.org</span>
+    </a>
+
+    <button class="navbar-toggler" type="button"
+            data-toggle="collapse"
+            data-target="#navbarsExampleDefault"
+            aria-controls="navbarsExampleDefault"
+            aria-expanded="false"
+            aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+
+        <!-- Main portals -->
         <ul class="navbar-nav mr-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="./interpretation">Interpretation</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="./statistics">Statistics</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="./geography">Geography</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="../miscellaneous">Miscellaneous</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="./converter">Converter <span class="text-danger"><b>[BETA]</b></span></a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="./references">References</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="./team">Team & Contact</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="./magic">MagIC interface</a>
-          </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="../interpretation">
+                    Interpretation
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="../statistics">
+                    Statistics
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="../geography">
+                    Geography
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link active" href="../miscellaneous">
+                    Miscellaneous
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="../references">
+                    References
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="../team">
+                    Team &amp; Contact
+                </a>
+            </li>
+
         </ul>
 
-        <form class="form-inline my-2 my-lg-0">
-          <a href="./library" class="btn btn-sm btn-secondary my-2 my-sm-0"><i class="fas fa-book-open"></i><b>&nbsp; Data Library</b></a>
-        </form>
+        <!-- Utility tools -->
+        <div class="form-inline my-2 my-lg-0">
 
-      </div>
+            <a href="../converter"
+               class="btn btn-sm btn-secondary nav-tool mr-2 mb-2 mb-lg-0">
+                <i class="fas fa-file-export"></i>
+                <strong>&nbsp;Converter</strong>
 
-    </nav>
+            </a>
+            <a href="../magic"
+               class="btn btn-sm btn-secondary nav-tool mr-2 mb-2 mb-lg-0">
+                <i class="fas fa-database"></i>
+                <strong>&nbsp;MagIC Interface</strong>
+            </a>
+
+            <a href="../library"
+               class="btn btn-sm btn-secondary nav-tool">
+                <i class="fas fa-book-open"></i>
+                <strong>&nbsp;Data Library</strong>
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>
 
     <!-- Main body -->
     <div class="container">

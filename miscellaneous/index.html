@@ -24,47 +24,87 @@
 
 <body>
 
-<!-- Header -->
+<!-- Site Header -->
 <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
 
-    <a class="navbar-brand" href="https://anisotropia.everyware.es">Paleomagnetism<span class="text-danger">.org</span></a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
-            aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+    <a class="navbar-brand" href="http://www.paleomagnetism.org">
+        Paleomagnetism<span class="text-danger">.org</span>
+    </a>
+
+    <button class="navbar-toggler" type="button"
+            data-toggle="collapse"
+            data-target="#navbarsExampleDefault"
+            aria-controls="navbarsExampleDefault"
+            aria-expanded="false"
+            aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
 
     <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+
+        <!-- Main portals -->
         <ul class="navbar-nav mr-auto">
+
             <li class="nav-item">
-                <a class="nav-link" href="../interpretation">Interpretation</a>
+                <a class="nav-link" href="../interpretation">
+                    Interpretation
+                </a>
             </li>
+
             <li class="nav-item">
-                <a class="nav-link" href="../statistics">Statistics</a>
+                <a class="nav-link" href="../statistics">
+                    Statistics
+                </a>
             </li>
+
             <li class="nav-item">
-                <a class="nav-link" href="../geography">Geography</a>
+                <a class="nav-link" href="../geography">
+                    Geography
+                </a>
             </li>
+
             <li class="nav-item">
-                <a class="nav-link active" href="../miscellaneous">Miscellaneous</a>
+                <a class="nav-link active" href="../miscellaneous">
+                    Miscellaneous
+                </a>
             </li>
+
             <li class="nav-item">
-              <a class="nav-link" href="../converter">Converter <span class="text-danger"><b>[BETA]</b></span></a>
+                <a class="nav-link" href="../references">
+                    References
+                </a>
             </li>
+
             <li class="nav-item">
-                <a class="nav-link" href="../references">References</a>
+                <a class="nav-link" href="../team">
+                    Team &amp; Contact
+                </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="../team">Team & Contact</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="../magic">MagIC Interface</a>
-            </li>
+
         </ul>
 
-        <form class="form-inline my-2 my-lg-0">
-            <a href="../library" class="btn btn-sm btn-secondary my-2 my-sm-0"><i class="fas fa-book-open"></i><b>&nbsp;
-                Data Library</b></a>
-        </form>
+        <!-- Utility tools -->
+        <div class="form-inline my-2 my-lg-0">
+
+            <a href="../converter"
+               class="btn btn-sm btn-secondary nav-tool mr-2 mb-2 mb-lg-0">
+                <i class="fas fa-file-export"></i>
+                <strong>&nbsp;Converter</strong>
+
+            </a>
+            <a href="../magic"
+               class="btn btn-sm btn-secondary nav-tool mr-2 mb-2 mb-lg-0">
+                <i class="fas fa-database"></i>
+                <strong>&nbsp;MagIC Interface</strong>
+            </a>
+
+            <a href="../library"
+               class="btn btn-sm btn-secondary nav-tool">
+                <i class="fas fa-book-open"></i>
+                <strong>&nbsp;Data Library</strong>
+            </a>
+
+        </div>
 
     </div>
 
@@ -81,61 +121,112 @@
         <p> A toolbox with miscellaneous webapps that do not fit within one of the portals.</a>.
     </div>
 
+    <!-- First row -->
+    <div class="row justify-content-center">
 
-    <div class="card-deck">
-
-        <div class="card" style="border: none;">
-            <img style="" class="card-img-top" src="../resources/images/NTR.png" alt="Card image cap">
-            <div class="card-body">
-                <h6 class="card-title"><a href="../ntr/"><i class="fas fa-undo"></i> Net Tectonic Rotation</a></h6>
-                <hr>
-                <p class="card-text text-muted text-justify">This tool can restore the orientation of dyke with a
-                    geomagnetic reference to its original vertical position.</p>
+        <div class="col-12 col-md-4 mb-4">
+            <div class="card h-100 border-0">
+                <img class="card-img-top" src="../resources/images/NTR.png" alt="Net Tectonic Rotation">
+                <div class="card-body">
+                    <h6 class="card-title">
+                        <a href="../ntr/">
+                            <i class="fas fa-undo"></i> Net Tectonic Rotation
+                        </a>
+                    </h6>
+                    <hr>
+                    <p class="card-text text-muted text-justify">
+                        This tool can restore the orientation of dyke with a geomagnetic
+                        reference to its original vertical position.
+                    </p>
+                </div>
             </div>
         </div>
 
-        <div class="card" style="border: none;">
-            <img style="" class="card-img-top" src="../resources/images/parametric.png" alt="Card image cap">
-            <div class="card-body">
-                <h6 class="card-title"><a href="../parametric/"><i class="fa fa-dice"></i> Parametric Sampling</a></h6>
-                <hr>
-                <p class="card-text text-muted text-justify">This tool can be used to parametrically sample a Fisherian
-                    distribution of poles or directions and generate declination, inclination pairs.</p>
+        <div class="col-12 col-md-4 mb-4">
+            <div class="card h-100 border-0">
+                <img class="card-img-top" src="../resources/images/parametric.png" alt="Parametric Sampling">
+                <div class="card-body">
+                    <h6 class="card-title">
+                        <a href="../parametric/">
+                            <i class="fa fa-dice"></i> Parametric Sampling
+                        </a>
+                    </h6>
+                    <hr>
+                    <p class="card-text text-muted text-justify">
+                        This tool can be used to parametrically sample a Fisherian
+                        distribution of poles or directions and generate
+                        declination-inclination pairs.
+                    </p>
+                </div>
             </div>
         </div>
 
-        <div class="card" style="border: none;">
-            <img style="" class="card-img-top" src="../resources/images/parametric.png" alt="Card image cap">
-            <div class="card-body">
-                <h6 class="card-title"><a href="../palpole/"><i class="fa fa-life-ring"></i> Directions & Poles</a></h6>
-                <hr>
-                <p class="card-text text-muted text-justify">This tool can be used to convert between magnetic
-                    directions and virtual geomagnetic poles at site locations following the GAD model.</p>
-            </div>
-        </div>
-
-        <div class="card" style="border: none;">
-            <img style="" class="card-img-top" src="../resources/images/oroclinal.png" alt="Card image cap">
-            <div class="card-body">
-                <h6 class="card-title"><a href="../oroclinal/"><i class="fa fa-grip-lines-vertical"></i><i
-                        class="fa fa-grip-lines"></i><i class="fa fa-grip-lines-vertical"></i> Oroclinal Test</a></h6>
-                <hr>
-                <p class="card-text text-muted text-justify">Implementation of a bootstrapped Oroclinal Test using a TLS
-                    regression between bedding strike and magnetic declination.</p>
-            </div>
-        </div>
-
-        <div class="card" style="border: none;">
-            <img style="" class="card-img-top" src="../resources/images/SunDec.png" alt="Card image cap">
-            <div class="card-body">
-                <h6 class="card-title"><a href="../suncompass/"><i class="far fa-compass"></i> Sun Compass</a></h6>
-                <hr>
-                <p class="card-text text-muted text-justify">A tool to transform sun shadows to core azimuths.</p>
+        <div class="col-12 col-md-4 mb-4">
+            <div class="card h-100 border-0">
+                <img class="card-img-top" src="../resources/images/parametric.png" alt="Directions and Poles">
+                <div class="card-body">
+                    <h6 class="card-title">
+                        <a href="../palpole/">
+                            <i class="fa fa-life-ring"></i> Directions &amp; Poles
+                        </a>
+                    </h6>
+                    <hr>
+                    <p class="card-text text-muted text-justify">
+                        This tool can be used to convert between magnetic directions
+                        and virtual geomagnetic poles at site locations following
+                        the GAD model.
+                    </p>
+                </div>
             </div>
         </div>
 
     </div>
-    <br>
+
+    <!-- Second row -->
+    <div class="row justify-content-center">
+
+        <div class="col-12 col-md-4 mb-4">
+            <div class="card h-100 border-0">
+                <img class="card-img-top" src="../resources/images/oroclinal.png" alt="Oroclinal Test">
+                <div class="card-body">
+                    <h6 class="card-title">
+                        <a href="../oroclinal/">
+                            <i class="fa fa-grip-lines-vertical"></i>
+                            <i class="fa fa-grip-lines"></i>
+                            <i class="fa fa-grip-lines-vertical"></i>
+                            Oroclinal Test
+                        </a>
+                    </h6>
+                    <hr>
+                    <p class="card-text text-muted text-justify">
+                        Implementation of a bootstrapped Oroclinal Test using a TLS
+                        regression between bedding strike and magnetic declination.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4 mb-4">
+            <div class="card h-100 border-0">
+                <img class="card-img-top" src="../resources/images/SunDec.png" alt="Sun Compass">
+                <div class="card-body">
+                    <h6 class="card-title">
+                        <a href="../suncompass/">
+                            <i class="far fa-compass"></i> Sun Compass
+                        </a>
+                    </h6>
+                    <hr>
+                    <p class="card-text text-muted text-justify">
+                        A tool to transform sun shadows to core azimuths.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
 </div>
 
 <footer id="footer-container" class="container text-muted"></footer>
