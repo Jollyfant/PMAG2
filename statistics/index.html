@@ -24,98 +24,96 @@
    </head>
 
 <body id="drop_zone" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
-<!-- Header -->
-<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-    <a class="navbar-brand" href="http://www.paleomagnetism.org">Paleomagnetism<span class="text-danger">.org</span></a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
-            aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-<!-- Site Header -->
-<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
 
-    <a class="navbar-brand" href="http://www.paleomagnetism.org">
-        Paleomagnetism<span class="text-danger">.org</span>
-    </a>
+ <body id="drop_zone"
+      ondrop="dropHandler(event);"
+      ondragover="dragOverHandler(event);">
 
-    <button class="navbar-toggler" type="button"
-            data-toggle="collapse"
-            data-target="#navbarsExampleDefault"
-            aria-controls="navbarsExampleDefault"
-            aria-expanded="false"
-            aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
+    <!-- Site Header -->
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
 
-    <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <a class="navbar-brand" href="http://www.paleomagnetism.org">
+            Paleomagnetism<span class="text-danger">.org</span>
+        </a>
 
-        <!-- Main portals -->
-        <ul class="navbar-nav mr-auto">
+        <button class="navbar-toggler"
+                type="button"
+                data-toggle="collapse"
+                data-target="#navbarsExampleDefault"
+                aria-controls="navbarsExampleDefault"
+                aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-            <li class="nav-item">
-                <a class="nav-link" href="../interpretation">
-                    Interpretation
+        <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+
+            <ul class="navbar-nav mr-auto">
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../interpretation">
+                        Interpretation
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link active" href="../statistics">
+                        Statistics
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../geography">
+                        Geography
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../miscellaneous">
+                        Miscellaneous
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../references">
+                        References
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../team">
+                        Team &amp; Contact
+                    </a>
+                </li>
+
+            </ul>
+
+            <div class="form-inline my-2 my-lg-0">
+
+                <a href="../converter"
+                   class="btn btn-sm btn-secondary mr-2">
+                    <i class="fas fa-file-export"></i>
+                    <strong>&nbsp;Converter</strong>
                 </a>
-            </li>
 
-            <li class="nav-item">
-                <a class="nav-link" href="../statistics">
-                    Statistics
+                <a href="../magic"
+                   class="btn btn-sm btn-secondary mr-2">
+                    <i class="fas fa-database"></i>
+                    <strong>&nbsp;MagIC Interface</strong>
                 </a>
-            </li>
 
-            <li class="nav-item">
-                <a class="nav-link" href="../geography">
-                    Geography
+                <a href="../library"
+                   class="btn btn-sm btn-secondary">
+                    <i class="fas fa-book-open"></i>
+                    <strong>&nbsp;Data Library</strong>
                 </a>
-            </li>
 
-            <li class="nav-item">
-                <a class="nav-link active" href="../miscellaneous">
-                    Miscellaneous
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="../references">
-                    References
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="../team">
-                    Team &amp; Contact
-                </a>
-            </li>
-
-        </ul>
-
-        <!-- Utility tools -->
-        <div class="form-inline my-2 my-lg-0">
-
-            <a href="../converter"
-               class="btn btn-sm btn-secondary nav-tool mr-2 mb-2 mb-lg-0">
-                <i class="fas fa-file-export"></i>
-                <strong>&nbsp;Converter</strong>
-
-            </a>
-            <a href="../magic"
-               class="btn btn-sm btn-secondary nav-tool mr-2 mb-2 mb-lg-0">
-                <i class="fas fa-database"></i>
-                <strong>&nbsp;MagIC Interface</strong>
-            </a>
-
-            <a href="../library"
-               class="btn btn-sm btn-secondary nav-tool">
-                <i class="fas fa-book-open"></i>
-                <strong>&nbsp;Data Library</strong>
-            </a>
+            </div>
 
         </div>
 
-    </div>
+    </nav>
 
-</nav>
 <!-- Main body -->
 <div class="container">
     <!-- Container for user notifications -->
@@ -126,6 +124,7 @@
                 title="Select one or multiple collections" multiple></select>
     </div>
     <br>
+
     <!-- Tab Headers -->
     <nav>
         <div class="nav nav-tabs nav-justified" id="nav-tab" role="tablist">
@@ -145,6 +144,7 @@
                aria-controls="nav-settings" aria-selected="false">Settings</a>
         </div>
     </nav>
+
     <div class="tab-content">
 
             <!-- Tab for data importing -->
