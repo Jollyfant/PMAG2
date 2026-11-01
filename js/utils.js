@@ -1,5 +1,5 @@
 let __DEBUG__ = false;
-let __VERSION__ = "2.6.0";
+let __VERSION__ = "2.7.0";
 const __DOI__ = "10.5281/zenodo.17737832"; // to be updated with the release
 const RADIANS = Math.PI / 180;
 const PROJECTION_TYPE = "AREA";
@@ -108,6 +108,19 @@ function getRotationMatrix(lambda, phi) {
         new Array(Math.sin(phi) * Math.sin(lambda), Math.cos(lambda), Math.sin(lambda) * Math.cos(phi)),
         new Array(-Math.cos(phi), 0, Math.sin(phi))
     );
+
+}
+
+function roundToPrecisionOf(value, reference) {
+
+    /*
+     * Function roundToPrecisionOf
+     * Rounds a value derived from an angle (e.g. azimuth % 360, core dip - 90)
+     * to the number of decimals of that angle, removing floating point noise
+     */
+
+    var decimals = String(reference).split(".")[1];
+    return Number(value.toFixed(decimals ? decimals.length : 0));
 
 }
 

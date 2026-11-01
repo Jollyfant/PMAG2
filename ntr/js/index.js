@@ -252,7 +252,7 @@ function updateTable(values) {
     "  </tbody>",
     "</table>"
   ].join("");
-
+window.ntrResults = values;
   document.getElementById("NTRSolutionTable").innerHTML = [
     "<table class='table table-striped text-center'>",
     "  <thead>",
@@ -867,16 +867,104 @@ function drawGraph(plotSeries, container) {
     "tooltip": {
       "formatter": tooltip, 
     },
-    "exporting": { 
-      "enabled": true,
-      "filename": "NTR",
-      "buttons": {
-        "contextButton": {
-          "symbolStroke": "#7798BF",
-          "align": "right"
-        }
+"exporting": {
+  "enabled": true,
+  "filename": "NTR",
+//Added here the CSV exporter, unsure if this is the correct place
+ "getCSV": function() {
+
+  let csv = "";
+
+  if (container === "initialPlot") {
+
+    const v = window.ntrResults;
+
+    csv =
+      "Solution,Declination,Inclination,Rotation,Sense,PlaneAngle,DykeStrike,DykeDip\n";
+
+    csv += [
+      "Solution 1",
+      v.intersectionVectorOne.dec.toFixed(1),
+      v.intersectionVectorOne.inc.toFixed(1),
+      v.angleOne.toFixed(1),
+      v.typeOne,
+      v.anglePlaneOne.toFixed(1),
+      ((v.interceptVectorOne.dec + 90) % 360).toFixed(1),
+      (90 - v.interceptVectorOne.inc).toFixed(1)
+    ].join(",") + "\n";
+
+    csv += [
+      "Solution 2",
+      v.intersectionVectorTwo.dec.toFixed(1),
+      v.intersectionVectorTwo.inc.toFixed(1),
+      v.angleTwo.toFixed(1),
+      v.typeTwo,
+      v.anglePlaneTwo.toFixed(1),
+      ((v.interceptVectorTwo.dec + 90) % 360).toFixed(1),
+      (90 - v.interceptVectorTwo.inc).toFixed(1)
+    ].join(",") + "\n";
+
+  }
+
+  if (container === "iterationPlot") {
+
+    csv =
+      "Solution,Declination,Inclination,Rotation,Sense,DykeStrike,DykeDip\n";
+
+    chartFoldLeft.series.forEach(function(series) {
+
+      if (
+        series.name === "Solution 1 (Confidence Interval)" ||
+        series.name === "Solution 2 (Confidence Interval)"
+      ) {
+
+        series.data.forEach(function(point) {
+
+          csv += [
+            series.name,
+            point.x,
+            point.inc,
+            point.rotation,
+            point.rotationSense,
+            point.dykeStrike,
+            point.dykeDip
+          ].join(",") + "\n";
+
+        });
+
       }
-    },
+
+    });
+
+  }
+
+  const blob = new Blob(
+    [csv],
+    { type: "text/csv;charset=utf-8;" }
+  );
+
+  const link = document.createElement("a");
+
+  link.href = URL.createObjectURL(blob);
+
+  link.download =
+    (container === "initialPlot")
+      ? "NTR.csv"
+      : "NTR_Confidence_Intervals.csv";
+
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+
+},
+
+  "buttons": {
+    "contextButton": {
+      "symbolStroke": "#7798BF",
+      "align": "right"
+    }
+  }
+},
     "credits": {
       "enabled": ENABLE_CREDITS,
       "text": "Paleomagnetism.org (NTR Analysis) - <i> after Allerton and Vine, 1987, Morris et al., 1998 </i>",

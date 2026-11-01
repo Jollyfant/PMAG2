@@ -174,7 +174,17 @@ function plotExpected(container, dataSeries, site) {
                     }, {
                         "x": line.age,
                         "y": maxPaleolatitude
-                    }]
+                    }],
+                    "legend": {
+                        "enabled": true,
+                        "floating": true,
+                        "align": 'right',
+                        "verticalAlign": 'top',
+                        "x": -10,
+                        "y": 10,
+                        "backgroundColor": 'rgba(255,255,255,0.85)',
+                        "borderWidth": 1
+                    }
                 });
 
             }
@@ -382,10 +392,12 @@ function plotExpected(container, dataSeries, site) {
         "chart": {
             "zoomType": "xy",
             "animation": false,
-            "renderTo": container
+            "renderTo": container,
+            "height": 650
         },
         "title": {
-            "text": title
+            "text": title,
+            "margin": 150
         },
         "subtitle": {
             "text": "At site <b>" + site.lat + "</b>°N, <b>" + site.lng + "</b>°E"
@@ -420,6 +432,7 @@ function plotExpected(container, dataSeries, site) {
             "filename": "expected-" + title,
             "sourceWidth": 1200,
             "sourceHeight": 600,
+            "scale": 1,
             "buttons": {
                 "contextButton": {
                     "symbolStroke": HIGHCHARTS_BLUE,
@@ -428,8 +441,18 @@ function plotExpected(container, dataSeries, site) {
             }
         },
         "legend": {
-            // "maxHeight": 60
-            "enabled": false
+            "enabled": true,
+            "floating": true,
+            "align": 'right',
+            "verticalAlign": 'top',
+            "x": 0,
+            "y": 50,
+            "backgroundColor": 'rgba(255,255,255,1)',
+            "borderWidth": 1,
+            "itemWidth": 160,
+            "itemStyle": {
+                "whiteSpace": 'normal'
+            }
         },
         "tooltip": {
             "formatter": tooltip
@@ -872,7 +895,18 @@ function plotPoles(dataSeries) {
                 "text": "Apparant Polar Wander Paths"
             },
             "legend": {
-                "enabled": false
+                "enabled": true,
+                "floating": true,
+                "align": 'right',
+                "verticalAlign": 'top',
+                "x": 0,
+                "y": 20,
+                "backgroundColor": 'rgba(255,255,255,1)',
+                "borderWidth": 1,
+                "itemWidth": 150,
+                "itemStyle": {
+                    "whiteSpace": 'normal'
+                }
             },
             "pane": {
                 "startAngle": 0,

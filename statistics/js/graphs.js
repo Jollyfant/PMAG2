@@ -1,51 +1,51 @@
 function showGeographicAndTectonicPlot(geographic, tectonic) {
 
-  /*
-   * Function showGeographicAndTectonicPlot
-   * Shows the extreme (geoographic & tectonic) coordinates for the Foltest module
-   */
+    /*
+     * Function showGeographicAndTectonicPlot
+     * Shows the extreme (geoographic & tectonic) coordinates for the Foltest module
+     */
 
-  const CHART_CONTAINER = "foldtest-geographic-container";
-  const CHART_CONTAINER2 = "foldtest-tectonic-container";
+    const CHART_CONTAINER = "foldtest-geographic-container";
+    const CHART_CONTAINER2 = "foldtest-tectonic-container";
 
     let dataSeriesGeographic = [];
     let dataSeriesTectonic = [];
 
-  geographic.forEach(function(components) {
+    geographic.forEach(function (components) {
 
-    components.forEach(function(component) {
-
-            // Go over each step
-            const direction = literalToCoordinates(component.coordinates).toVector(Direction);
-
-      dataSeriesGeographic.push({
-        "component": component,
-        "x": direction.dec,
-        "y": projectInclination(direction.inc),
-        "inc": direction.inc,
-      });
-
-    });
-
-  });
-
-  tectonic.forEach(function(components) {
-
-    components.forEach(function(component) {
+        components.forEach(function (component) {
 
             // Go over each step
             const direction = literalToCoordinates(component.coordinates).toVector(Direction);
 
-      dataSeriesTectonic.push({
-        "component": component,
-        "x": direction.dec,
-        "y": projectInclination(direction.inc),
-        "inc": direction.inc,
-      });
+            dataSeriesGeographic.push({
+                "component": component,
+                "x": direction.dec,
+                "y": projectInclination(direction.inc),
+                "inc": direction.inc,
+            });
+
+        });
 
     });
 
-  });
+    tectonic.forEach(function (components) {
+
+        components.forEach(function (component) {
+
+            // Go over each step
+            const direction = literalToCoordinates(component.coordinates).toVector(Direction);
+
+            dataSeriesTectonic.push({
+                "component": component,
+                "x": direction.dec,
+                "y": projectInclination(direction.inc),
+                "inc": direction.inc,
+            });
+
+        });
+
+    });
 
     const dataSeries = [{
         "name": "Geomagnetic Directions",
@@ -59,90 +59,90 @@ function showGeographicAndTectonicPlot(geographic, tectonic) {
         "data": dataSeriesTectonic
     }];
 
-  eqAreaChart(CHART_CONTAINER, dataSeries);
-  eqAreaChart(CHART_CONTAINER2, dataSeries2);
+    eqAreaChart(CHART_CONTAINER, dataSeries);
+    eqAreaChart(CHART_CONTAINER2, dataSeries2);
 
 }
 
 function bootstrapFoldtest() {
 
-  /*
-   * Function bootstrapFoldtest
-   * Completes the classical foldtest but does a bootstrap on N randomly sampled data sets
-   */
+    /*
+     * Function bootstrapFoldtest
+     * Completes the classical foldtest but does a bootstrap on N randomly sampled data sets
+     */
 
-  const NUMBER_OF_BOOTSTRAPS = 1000;
-  const NUMBER_OF_BOOTSTRAPS_SAVED = 50;
-  const progressBarElement = $("#foldtest-progress");
+    const NUMBER_OF_BOOTSTRAPS = 1000;
+    const NUMBER_OF_BOOTSTRAPS_SAVED = 50;
+    const progressBarElement = $("#foldtest-progress");
 
-  // Get a list of the selected sites
-  var collections = getSelectedCollections();
+    // Get a list of the selected sites
+    var collections = getSelectedCollections();
 
-  if(collections.length === 0) {
-    return notify("danger", "Select at least one collection.");
-  }
-
-  if(foldtestRunning) {
-    return notify("warning", "The foldtest module is already running.");
-  }
-
-  foldtestRunning = true;
-
-  // Get the components for each site (no cutoff applied)
-  var cutoffCollectionsG = collections.map(function(collection) {
-    return collection.components.map(x => x.inReferenceCoordinates("geographic"));
-  });
-
-  // The same for tectonic coordinates
-  var cutoffCollectionsT = collections.map(function(collection) {
-    return collection.components.map(x => x.inReferenceCoordinates("tectonic"));
-  });
-
-  // Show the extremes
-  showGeographicAndTectonicPlot(cutoffCollectionsG,  cutoffCollectionsT);
-
-  // Combine all geographic components to a single array
-  var vectors = new Array().concat(...cutoffCollectionsG);
-
-  var untilts = new Array();
-  var savedBootstraps = new Array();
-
-  // Save the unfolding of actual data
-  savedBootstraps.push(unfold(vectors, 0).taus);
-
-  // No bootstrap, only unfold the data
-  if(!document.getElementById("foldtest-bootstrap-checkbox").checked) {
-    return plotFoldtestCDF(untilts, savedBootstraps);
-  }
-
-  var result, next;
-  var iteration = 0;
-
-  // Asynchronous bootstrapping
-  (next = function() {
-
-    // Number of bootstraps were completed
-    if(++iteration > NUMBER_OF_BOOTSTRAPS) {
-      return plotFoldtestCDF(untilts, savedBootstraps);
+    if (collections.length === 0) {
+        return notify("danger", "Select at least one collection.");
     }
 
-    result = unfold(drawBootstrap(vectors), iteration);
-
-    // Save the index of maximum untilting
-    untilts.push(result.index);
-
-    // Save the first N bootstraps
-    if(iteration < NUMBER_OF_BOOTSTRAPS_SAVED) {
-      savedBootstraps.push(result.taus);
+    if (foldtestRunning) {
+        return notify("warning", "The foldtest module is already running.");
     }
 
-    // Update the DOM progress bar with the percentage completion
-    progressBarElement.css("width", 100 * (iteration / NUMBER_OF_BOOTSTRAPS) + "%");
+    foldtestRunning = true;
 
-    // Queue for next bootstrap but release UI thread
-    setTimeout(next);
+    // Get the components for each site (no cutoff applied)
+    var cutoffCollectionsG = collections.map(function (collection) {
+        return collection.components.map(x => x.inReferenceCoordinates("geographic"));
+    });
 
-  })();
+    // The same for tectonic coordinates
+    var cutoffCollectionsT = collections.map(function (collection) {
+        return collection.components.map(x => x.inReferenceCoordinates("tectonic"));
+    });
+
+    // Show the extremes
+    showGeographicAndTectonicPlot(cutoffCollectionsG, cutoffCollectionsT);
+
+    // Combine all geographic components to a single array
+    var vectors = new Array().concat(...cutoffCollectionsG);
+
+    var untilts = new Array();
+    var savedBootstraps = new Array();
+
+    // Save the unfolding of actual data
+    savedBootstraps.push(unfold(vectors, 0).taus);
+
+    // No bootstrap, only unfold the data
+    if (!document.getElementById("foldtest-bootstrap-checkbox").checked) {
+        return plotFoldtestCDF(untilts, savedBootstraps);
+    }
+
+    var result, next;
+    var iteration = 0;
+
+    // Asynchronous bootstrapping
+    (next = function () {
+
+        // Number of bootstraps were completed
+        if (++iteration > NUMBER_OF_BOOTSTRAPS) {
+            return plotFoldtestCDF(untilts, savedBootstraps);
+        }
+
+        result = unfold(drawBootstrap(vectors), iteration);
+
+        // Save the index of maximum untilting
+        untilts.push(result.index);
+
+        // Save the first N bootstraps
+        if (iteration < NUMBER_OF_BOOTSTRAPS_SAVED) {
+            savedBootstraps.push(result.taus);
+        }
+
+        // Update the DOM progress bar with the percentage completion
+        progressBarElement.css("width", 100 * (iteration / NUMBER_OF_BOOTSTRAPS) + "%");
+
+        // Queue for next bootstrap but release UI thread
+        setTimeout(next);
+
+    })();
 
 }
 
@@ -156,135 +156,134 @@ function bootstrapShallowing() {
      * Bootstraps the inclination shallowing module
      */
 
-  function formatHSArray(x) {
+    function formatHSArray(x) {
 
-    /*
-     * Function formatHSArray
-     * Formats the derived elongation, flattening as a highcharts point object
-     */
+        /*
+         * Function formatHSArray
+         * Formats the derived elongation, flattening as a highcharts point object
+         */
 
-    return {
-      "x": x.inclination,
-      "y": x.elongation,
-      "f": x.flattening
+        return {
+            "x": x.inclination,
+            "y": x.elongation,
+            "f": x.flattening
+        }
+
     }
 
-  }
+    const NUMBER_OF_BOOTSTRAPS = 1000;
+    const NUMBER_OF_BOOTSTRAPS_SAVED = 25;
+    const NUMBER_OF_COMPONENTS_REQUIRED = 80;
 
-  const NUMBER_OF_BOOTSTRAPS = 1000;
-  const NUMBER_OF_BOOTSTRAPS_SAVED = 25;
-  const NUMBER_OF_COMPONENTS_REQUIRED = 80;
+    const progressBarElement = $("#shallowing-progress");
 
-  const progressBarElement = $("#shallowing-progress");
+    // Get the single selected site
+    var collections = getSelectedCollections();
 
-  // Get the single selected site
-  var collections = getSelectedCollections();
+    if (collections.length === 0) {
+        return notify("danger", "No collections are selected.");
+    }
 
-  if(collections.length === 0) {
-    return notify("danger", "No collections are selected.");
-  }
+    if (collections.length > 1) {
+        return notify("danger", "Only one collection may be selected.");
+    }
 
-  if(collections.length > 1) {
-    return notify("danger", "Only one collection may be selected.");
-  }
+    if (shallowingRunning) {
+        return notify("warning", "The inclination shallowing module is already running.");
+    }
 
-  if(shallowingRunning) {
-    return notify("warning", "The inclination shallowing module is already running.");
-  }
+    // Get the vector in the reference coordinates
+    var dirs = doCutoff(collections[0].components.map(x => x.inReferenceCoordinates())).components;
 
-  // Get the vector in the reference coordinates
-  var dirs = doCutoff(collections[0].components.map(x => x.inReferenceCoordinates())).components;
+    dirs = dirs.filter(x => !x.rejected);
 
-  dirs = dirs.filter(x => !x.rejected);
+    if (dirs.length < NUMBER_OF_COMPONENTS_REQUIRED) {
+        notify("warning", "A minimum of " + NUMBER_OF_COMPONENTS_REQUIRED + " components is recommended.");
+    }
 
-  if(dirs.length < NUMBER_OF_COMPONENTS_REQUIRED) {
-    notify("warning", "A minimum of " + NUMBER_OF_COMPONENTS_REQUIRED + " components is recommended.");
-  }
-
-  shallowingRunning = true;
+    shallowingRunning = true;
 
     var inclinations = [];
-  var nIntersections = 0;
-  var bootstrapIteration = 0;
+    var nIntersections = 0;
+    var bootstrapIteration = 0;
 
     var originalInclination = meanDirection(dirs.map(x => x.coordinates)).inc;
-  var originalInclination = meanDirection(dirs.map(x => x.coordinates)).inc;
-  var originalUnflatted = unflattenDirections(dirs);
+    var originalUnflatted = unflattenDirections(dirs);
 
     var savedBootstraps = [];
 
-  // Original data does not have an intersection with TK03.GAD
-  if(originalUnflatted !== null) {
-    savedBootstraps.push(originalUnflatted.map(formatHSArray));
-    unflattenedInclination = originalUnflatted[originalUnflatted.length - 1].inclination;
-  } else {
-    savedBootstraps.push({"x": null, "y": null});
-    unflattenedInclination = null;
-  }
-
-  // No bootstrap requested
-  if(!document.getElementById("shallowing-bootstrap-checkbox").checked) {
-    return EICompletionCallback(inclinations, originalInclination, unflattenedInclination, savedBootstraps);
-  }
-
-  var next;
-  var iteration = 0;
-
-  // Asynchronous bootstrapping
-  (next = function() {
-
-    progressBarElement.css("width", 100 * (iteration / NUMBER_OF_BOOTSTRAPS) + "%");
-
-    // Bootstrapp completed: finish
-    if(++iteration > NUMBER_OF_BOOTSTRAPS) {
-      return EICompletionCallback(inclinations, originalInclination, unflattenedInclination, savedBootstraps);
+    // Original data does not have an intersection with TK03.GAD
+    if (originalUnflatted !== null) {
+        savedBootstraps.push(originalUnflatted.map(formatHSArray));
+        unflattenedInclination = originalUnflatted[originalUnflatted.length - 1].inclination;
+    } else {
+        savedBootstraps.push({"x": null, "y": null});
+        unflattenedInclination = null;
     }
 
-    var result = unflattenDirections(drawBootstrap(dirs));
-
-    // No intersection with TK03.GAD: proceed immediately next bootstrap
-    if(result === null) {
-      return setTimeout(next);
+    // No bootstrap requested
+    if (!document.getElementById("shallowing-bootstrap-checkbox").checked) {
+        return EICompletionCallback(inclinations, originalInclination, unflattenedInclination, savedBootstraps);
     }
 
-    // Save the first 24 bootstraps
-    if(iteration < NUMBER_OF_BOOTSTRAPS_SAVED) {
-      savedBootstraps.push(result.map(formatHSArray));
-    }
+    var next;
+    var iteration = 0;
 
-    // Save the inclination of intersection
-    inclinations.push(result.pop().inclination);
+    // Asynchronous bootstrapping
+    (next = function () {
 
-    // Queue for next bootstrap
-    setTimeout(next);
+        progressBarElement.css("width", 100 * (iteration / NUMBER_OF_BOOTSTRAPS) + "%");
 
-  })();
+        // Bootstrapp completed: finish
+        if (++iteration > NUMBER_OF_BOOTSTRAPS) {
+            return EICompletionCallback(inclinations, originalInclination, unflattenedInclination, savedBootstraps);
+        }
+
+        var result = unflattenDirections(drawBootstrap(dirs));
+
+        // No intersection with TK03.GAD: proceed immediately next bootstrap
+        if (result === null) {
+            return setTimeout(next);
+        }
+
+        // Save the first 24 bootstraps
+        if (iteration < NUMBER_OF_BOOTSTRAPS_SAVED) {
+            savedBootstraps.push(result.map(formatHSArray));
+        }
+
+        // Save the inclination of intersection
+        inclinations.push(result.pop().inclination);
+
+        // Queue for next bootstrap
+        setTimeout(next);
+
+    })();
 
 }
 
 function EICompletionCallback(inclinations, originalInclination, unflattenedInclination, bootstraps) {
 
-  /*
-   * Function EICompletionCallback
-   * Callback fired when the EI module has completed
-   */
+    /*
+     * Function EICompletionCallback
+     * Callback fired when the EI module has completed
+     */
 
-  // Unlock
-  shallowingRunning = false;
-  $("#shallowing-progress").css("width", "0%");
+    // Unlock
+    shallowingRunning = false;
+    $("#shallowing-progress").css("width", "0%");
 
-  // Initialize the two charts
-  plotEIBootstraps(bootstraps, inclinations.length);
-  plotEICDF(inclinations, originalInclination, unflattenedInclination);
+    // Initialize the two charts
+    plotEIBootstraps(bootstraps, inclinations.length);
+    plotEICDF(inclinations, originalInclination, unflattenedInclination);
 
 }
 
 function EIBootstrapTooltipFormatter() {
 
-  /*
-   * Function EIBootstrapTooltipFormatter
-   * Formatter for the EI bootstrap chart
-   */
+    /*
+     * Function EIBootstrapTooltipFormatter
+     * Formatter for the EI bootstrap chart
+     */
 
     if (this.series.name === "Bootstraps") {
         return [
@@ -587,301 +586,301 @@ function calculatePValue(Lmin, Lmin_b, NUMBER_OF_BOOTSTRAPS) {
 
 function getPolynomialSeries() {
 
-  /*
-   * Function getPolynomialSeries
-   * Gets the TK03.GAD Polynomial as a Highcharts data array from min to max
-   */
+    /*
+     * Function getPolynomialSeries
+     * Gets the TK03.GAD Polynomial as a Highcharts data array from min to max
+     */
 
-  const MINIMUM_LATITUDE = -90;
-  const MAXIMUM_LATITUDE = +90;
+    const MINIMUM_LATITUDE = -90;
+    const MAXIMUM_LATITUDE = +90;
 
     var TK03Poly = [];
 
-  for(var i = MINIMUM_LATITUDE; i <= MAXIMUM_LATITUDE; i++) {
-    TK03Poly.push({
-      "x": i,
-      "y": TK03Polynomial(i)
-    });
-  }
+    for (var i = MINIMUM_LATITUDE; i <= MAXIMUM_LATITUDE; i++) {
+        TK03Poly.push({
+            "x": i,
+            "y": TK03Polynomial(i)
+        });
+    }
 
-  return TK03Poly;
+    return TK03Poly;
 
 }
 
 function plotEIBootstraps(bootstraps, totalBootstraps) {
 
-  /*
-   * Function plotEIBootstraps
-   * Plotting function for the EI bootstraps
-   */
+    /*
+     * Function plotEIBootstraps
+     * Plotting function for the EI bootstraps
+     */
 
-  const CHART_CONTAINER = "ei-bootstrap-container";
+    const CHART_CONTAINER = "ei-bootstrap-container";
 
-  // Define the initial series (TK03.GAD Polynomial) and the unflattening of the actual non-bootstrapped data (kept in data[0])
-  var mySeries = [{
-    "name": "TK03.GAD Polynomial",
-    "data": getPolynomialSeries(),
-    "dashStyle": "ShortDash",
-    "lineWidth": 3,
-    "zIndex": 100,
-    "type": "spline",
-    "marker": {
-      "enabled": false
-    }
-  }, {
-    "name": "Bootstraps",
-    "color": HIGHCHARTS_PINK,
-    "id": "bootstrap",
-    "type": 'spline',
-    "data": bootstraps.shift(),
-    "zIndex": 100,
-    "lineWidth": 3,
-    "marker": {
-      "enabled": false,
-      "symbol": "circle",
-    }
-  }]
-
-  // Add the other bootstraps
-  bootstraps.forEach(function(bootstrap) {
-    mySeries.push({
-      "data": bootstrap,
-      "type": "spline",
-      "color": PLOTBAND_COLOR_BLUE,
-      "linkedTo": "bootstrap",
-      "enableMouseTracking": false,
-      "marker": {
-        "enabled": false
-      }
-    })
-  });
-
-  new Highcharts.chart(CHART_CONTAINER, {
-    "chart": {
-      "id": "EI-bootstraps",
-      "zoomType": "x"
-    },
-    "title": {
-      "text": "Bootstrapped E-I Pairs",
-    },
-    "subtitle": {
-      "text": "Found " + totalBootstraps + " bootstrapped intersections with the TK03.GAD Field Model (" + COORDINATES + " coordinates)"
-    },
-    "exporting": {
-      "filename": "TK03-EI",
-      "sourceWidth": 1200,
-      "sourceHeight": 600,
-      "buttons": {
-        "contextButton": {
-          "symbolStroke": "#7798BF",
-          "align": "right"
+    // Define the initial series (TK03.GAD Polynomial) and the unflattening of the actual non-bootstrapped data (kept in data[0])
+    var mySeries = [{
+        "name": "TK03.GAD Polynomial",
+        "data": getPolynomialSeries(),
+        "dashStyle": "ShortDash",
+        "lineWidth": 3,
+        "zIndex": 100,
+        "type": "spline",
+        "marker": {
+            "enabled": false
         }
-      }
-    },
-    "xAxis": {
-      "min": -90,
-      "max": 90,
-      "title": {
-        "text": "Inclination (°)"
-      }
-    },
-    "yAxis": {
-      "floor": 1,
-      "ceiling": 3,
-      "title": {
-        "text": "Elongation (τ2/τ3)"
-      },
-    },
-    "credits": {
-      "enabled": ENABLE_CREDITS,
-      "text": "Paleomagnetism.org [EI Module] - <i>after Tauxe et al., 2008 </i>",
-      "href": ""
-    },
-    "plotOptions": {
-      "series": {
-        "turboThreshold": 0,
-        "point": {
-          "events": {
-            "click": plotUnflattenedData
-          }
+    }, {
+        "name": "Bootstraps",
+        "color": HIGHCHARTS_PINK,
+        "id": "bootstrap",
+        "type": 'spline',
+        "data": bootstraps.shift(),
+        "zIndex": 100,
+        "lineWidth": 3,
+        "marker": {
+            "enabled": false,
+            "symbol": "circle",
         }
-      }
-    },
-    "tooltip": {
-      "formatter": EIBootstrapTooltipFormatter
-    },
-    "series": mySeries
-  });
+    }]
+
+    // Add the other bootstraps
+    bootstraps.forEach(function (bootstrap) {
+        mySeries.push({
+            "data": bootstrap,
+            "type": "spline",
+            "color": PLOTBAND_COLOR_BLUE,
+            "linkedTo": "bootstrap",
+            "enableMouseTracking": false,
+            "marker": {
+                "enabled": false
+            }
+        })
+    });
+
+    new Highcharts.chart(CHART_CONTAINER, {
+        "chart": {
+            "id": "EI-bootstraps",
+            "zoomType": "x"
+        },
+        "title": {
+            "text": "Bootstrapped E-I Pairs",
+        },
+        "subtitle": {
+            "text": "Found " + totalBootstraps + " bootstrapped intersections with the TK03.GAD Field Model (" + COORDINATES + " coordinates)"
+        },
+        "exporting": {
+            "filename": "TK03-EI",
+            "sourceWidth": 1200,
+            "sourceHeight": 600,
+            "buttons": {
+                "contextButton": {
+                    "symbolStroke": "#7798BF",
+                    "align": "right"
+                }
+            }
+        },
+        "xAxis": {
+            "min": -90,
+            "max": 90,
+            "title": {
+                "text": "Inclination (°)"
+            }
+        },
+        "yAxis": {
+            "floor": 1,
+            "ceiling": 3,
+            "title": {
+                "text": "Elongation (τ2/τ3)"
+            },
+        },
+        "credits": {
+            "enabled": ENABLE_CREDITS,
+            "text": "Paleomagnetism.org [EI Module] - <i>after Tauxe et al., 2008 </i>",
+            "href": ""
+        },
+        "plotOptions": {
+            "series": {
+                "turboThreshold": 0,
+                "point": {
+                    "events": {
+                        "click": plotUnflattenedData
+                    }
+                }
+            }
+        },
+        "tooltip": {
+            "formatter": EIBootstrapTooltipFormatter
+        },
+        "series": mySeries
+    });
 
 }
 
 
 function plotUnfoldedData() {
 
-  const CHART_CONTAINER = "modal-container";
+    const CHART_CONTAINER = "modal-container";
 
-  if(this.series.name !== "Bootstraps") {
-    return;
-  }
-
-  var unfolding = this.x;
-
-  // Get the single selected site
-  var collections = getSelectedCollections();
-
-  // Get the components for each site (no cutoff)
-  var cutoffCollectionsG = collections.map(function(collection) {
-    return collection.components.map(x => x.inReferenceCoordinates("geographic"));
-  });
-
-  // Combine all geographic components to a single array
-  var dirs = new Array().concat(...cutoffCollectionsG);
-
-  // Also check in the original data for plotting
-  var originalData = dirs.map(function(component) {
-
-    var direction = literalToCoordinates(component.coordinates).toVector(Direction);
-
-    return {
-      "component": component,
-      "x": direction.dec,
-      "y": projectInclination(direction.inc),
-      "inc": direction.inc
+    if (this.series.name !== "Bootstraps") {
+        return;
     }
 
-  });
+    var unfolding = this.x;
 
-  // Apply the King, 1966 flattening factor
-  var unfoldedData = dirs.map(function(component) {
+    // Get the single selected site
+    var collections = getSelectedCollections();
 
-    var direction = literalToCoordinates(component.coordinates).correctBedding(component.beddingStrike, 1E-2 * unfolding * component.beddingDip).toVector(Direction);
+    // Get the components for each site (no cutoff)
+    var cutoffCollectionsG = collections.map(function (collection) {
+        return collection.components.map(x => x.inReferenceCoordinates("geographic"));
+    });
 
-    return {
-      "component": component,
-      "x": direction.dec,
-      "y": projectInclination(direction.inc),
-      "inc": direction.inc
-    }
+    // Combine all geographic components to a single array
+    var dirs = new Array().concat(...cutoffCollectionsG);
 
-  });
+    // Also check in the original data for plotting
+    var originalData = dirs.map(function (component) {
 
-  var plotData = [{
-    "name": "Unfolded Directions",
-    "data": unfoldedData,
-    "type": "scatter",
-    "marker": {
-      "symbol": "circle"
-    }
-  }, {
-    "name": "Original Directions",
-    "type": "scatter",
-    "data": originalData,
-    "enableMouseTracking": false,
-    "color": "lightgrey"
-  }, {
-    "linkedTo": ":previous",
-    "type": "line",
-    "data": createConnectingLine(originalData, unfoldedData),
-    "color": "lightgrey",
-    "marker": {
-      "enabled": false
-    },
-    "enableMouseTracking": false,
-  }];
+        var direction = literalToCoordinates(component.coordinates).toVector(Direction);
+
+        return {
+            "component": component,
+            "x": direction.dec,
+            "y": projectInclination(direction.inc),
+            "inc": direction.inc
+        }
+
+    });
+
+    // Apply the King, 1966 flattening factor
+    var unfoldedData = dirs.map(function (component) {
+
+        var direction = literalToCoordinates(component.coordinates).correctBedding(component.beddingStrike, 1E-2 * unfolding * component.beddingDip).toVector(Direction);
+
+        return {
+            "component": component,
+            "x": direction.dec,
+            "y": projectInclination(direction.inc),
+            "inc": direction.inc
+        }
+
+    });
+
+    var plotData = [{
+        "name": "Unfolded Directions",
+        "data": unfoldedData,
+        "type": "scatter",
+        "marker": {
+            "symbol": "circle"
+        }
+    }, {
+        "name": "Original Directions",
+        "type": "scatter",
+        "data": originalData,
+        "enableMouseTracking": false,
+        "color": "lightgrey"
+    }, {
+        "linkedTo": ":previous",
+        "type": "line",
+        "data": createConnectingLine(originalData, unfoldedData),
+        "color": "lightgrey",
+        "marker": {
+            "enabled": false
+        },
+        "enableMouseTracking": false,
+    }];
 
 
-  // Update the chart title
-  document.getElementById("modal-title").innerHTML = "Geomagnetic Directions at <b>" + unfolding + "</b>% unfolding.";
-  eqAreaChart(CHART_CONTAINER, plotData);
+    // Update the chart title
+    document.getElementById("modal-title").innerHTML = "Geomagnetic Directions at <b>" + unfolding + "</b>% unfolding.";
+    eqAreaChart(CHART_CONTAINER, plotData);
 
-  // Show the modal
-  $("#map-modal-2").modal("show");
+    // Show the modal
+    $("#map-modal-2").modal("show");
 
 }
 
 function plotUnflattenedData() {
 
-  /*
-   * Function plotUnflattenedData
-   * Plots unflattened data at a given flattening factor
-   */
+    /*
+     * Function plotUnflattenedData
+     * Plots unflattened data at a given flattening factor
+     */
 
-  const CHART_CONTAINER = "modal-container";
+    const CHART_CONTAINER = "modal-container";
 
-  if(this.series.name !== "Bootstraps") {
-    return;
-  }
-
-  var flattening = this.f;
-
-  // Get the single selected site
-  var collections = getSelectedCollections();
-
-  // Get the vector in the reference coordinates
-  var dirs = doCutoff(collections[0].components.map(x => x.inReferenceCoordinates())).components;
-  dirs = dirs.filter(x => !x.rejected);
-
-  // Apply the King, 1966 flattening factor
-  var unflattenData = dirs.map(function(component) {
-
-    var direction = literalToCoordinates(component.coordinates).toVector(Direction);
-
-    // Unflatten inclination at the requested flattening factor
-    var uInclination = Math.atan(Math.tan(direction.inc * RADIANS) / flattening) / RADIANS;
-
-    return {
-      "component": component,
-      "x": direction.dec,
-      "y": projectInclination(uInclination),
-      "inc": uInclination
+    if (this.series.name !== "Bootstraps") {
+        return;
     }
 
-  });
+    var flattening = this.f;
 
-  // Also check in the original data for plotting
-  var originalData = dirs.map(function(component) {
+    // Get the single selected site
+    var collections = getSelectedCollections();
 
-    var direction = literalToCoordinates(component.coordinates).toVector(Direction);
+    // Get the vector in the reference coordinates
+    var dirs = doCutoff(collections[0].components.map(x => x.inReferenceCoordinates())).components;
+    dirs = dirs.filter(x => !x.rejected);
 
-    return {
-      "component": component,
-      "x": direction.dec,
-      "y": projectInclination(direction.inc),
-      "inc": direction.inc
-    }
+    // Apply the King, 1966 flattening factor
+    var unflattenData = dirs.map(function (component) {
 
-  });
+        var direction = literalToCoordinates(component.coordinates).toVector(Direction);
 
-  var plotData = [{
-    "name": "Unflattened Directions",
-    "data": unflattenData,
-    "type": "scatter",
-    "marker": {
-      "symbol": "circle"
-    }
-  }, {
-    "name": "Original Directions",
-    "type": "scatter",
-    "data": originalData,
-    "enableMouseTracking": false,
-    "color": "lightgrey"
-  }, {
-    "linkedTo": ":previous",
-    "type": "line",
-    "data": createConnectingLine(originalData, unflattenData),
-    "color": "lightgrey",
-    "marker": {
-      "enabled": false
-    },
-    "enableMouseTracking": false,
-  }];
+        // Unflatten inclination at the requested flattening factor
+        var uInclination = Math.atan(Math.tan(direction.inc * RADIANS) / flattening) / RADIANS;
 
-  // Update the chart title
-  document.getElementById("modal-title").innerHTML = "Unflattened Directions with factor <b>" + flattening + "</b>.";
-  eqAreaChart(CHART_CONTAINER, plotData);
+        return {
+            "component": component,
+            "x": direction.dec,
+            "y": projectInclination(uInclination),
+            "inc": uInclination
+        }
 
-  // Show the modal
-  $("#map-modal-2").modal("show");
+    });
+
+    // Also check in the original data for plotting
+    var originalData = dirs.map(function (component) {
+
+        var direction = literalToCoordinates(component.coordinates).toVector(Direction);
+
+        return {
+            "component": component,
+            "x": direction.dec,
+            "y": projectInclination(direction.inc),
+            "inc": direction.inc
+        }
+
+    });
+
+    var plotData = [{
+        "name": "Unflattened Directions",
+        "data": unflattenData,
+        "type": "scatter",
+        "marker": {
+            "symbol": "circle"
+        }
+    }, {
+        "name": "Original Directions",
+        "type": "scatter",
+        "data": originalData,
+        "enableMouseTracking": false,
+        "color": "lightgrey"
+    }, {
+        "linkedTo": ":previous",
+        "type": "line",
+        "data": createConnectingLine(originalData, unflattenData),
+        "color": "lightgrey",
+        "marker": {
+            "enabled": false
+        },
+        "enableMouseTracking": false,
+    }];
+
+    // Update the chart title
+    document.getElementById("modal-title").innerHTML = "Unflattened Directions with factor <b>" + flattening + "</b>.";
+    eqAreaChart(CHART_CONTAINER, plotData);
+
+    // Show the modal
+    $("#map-modal-2").modal("show");
 
 }
 
@@ -889,321 +888,321 @@ function createConnectingLine(one, two) {
 
     var lines = [];
 
-  one.forEach(function(x, i) {
-    lines.push({
-      "x": one[i].x,
-      "y": one[i].y
-    }, {
-      "x": two[i].x,
-      "y": two[i].y
-    }, {
-      "x": null,
-      "y": null
+    one.forEach(function (x, i) {
+        lines.push({
+            "x": one[i].x,
+            "y": one[i].y
+        }, {
+            "x": two[i].x,
+            "y": two[i].y
+        }, {
+            "x": null,
+            "y": null
+        });
     });
-  });
 
-  return lines;
+    return lines;
 
 }
 
 function getAverageInclination(cdf) {
 
-  /*
-   * Function getAverageInclination
-   * Returns the average from the cumulative distribution
-   */
+    /*
+     * Function getAverageInclination
+     * Returns the average from the cumulative distribution
+     */
 
-  var sum = 0;
+    var sum = 0;
 
-  cdf.forEach(function(x) {
-    sum = sum + x.x;
-  });
+    cdf.forEach(function (x) {
+        sum = sum + x.x;
+    });
 
-  return sum / cdf.length;
+    return sum / cdf.length;
 
 }
 
 function getConfidence(cdf) {
 
-  /*
-   * Function getConfidence
-   * Returns the upper and lower 2.5% of a cumulative distribution function
-   */
+    /*
+     * Function getConfidence
+     * Returns the upper and lower 2.5% of a cumulative distribution function
+     */
 
-  var array = cdf.map(x => x.x);
+    var array = cdf.map(x => x.x);
 
-  var lower = array[parseInt(0.025 * array.length, 10)];
-  var upper = array[parseInt(0.975 * array.length, 10)];
+    var lower = array[parseInt(0.025 * array.length, 10)];
+    var upper = array[parseInt(0.975 * array.length, 10)];
 
-  return { lower, upper }
+    return {lower, upper}
 
 }
 
 function getVerticalLine(x) {
 
-  /*
-   * Function getVerticalLine
-   * Return a vertical line in a CDF chart from 0 -> 1 at position x
-   */
+    /*
+     * Function getVerticalLine
+     * Return a vertical line in a CDF chart from 0 -> 1 at position x
+     */
 
     return [[x, 0], [x, 1]];
 }
 
 function plotEICDF(inclinations, originalInclination, unflattenedInclination) {
 
-  /*
-   * Function plotEICDF
-   * Creates the CDF chart for the EI module
-   */
-
-  function tooltip() {
-
     /*
-     * Function plotEICDF::tooltip
-     * Handles tooltip for the EI CDF Chart
+     * Function plotEICDF
+     * Creates the CDF chart for the EI module
      */
 
-    return [
-      "<b>Cumulative Distribution </b>",
-      "<b>Latitude: </b>" + this.x.toFixed(2),
-      "<b>CDF: </b>" + this.point.y.toFixed(3)
-    ].join("<br>");
+    function tooltip() {
 
-  }
+        /*
+         * Function plotEICDF::tooltip
+         * Handles tooltip for the EI CDF Chart
+         */
 
-  const CHART_CONTAINER = "ei-cdf-container";
+        return [
+            "<b>Cumulative Distribution </b>",
+            "<b>Latitude: </b>" + this.x.toFixed(2),
+            "<b>CDF: </b>" + this.point.y.toFixed(3)
+        ].join("<br>");
 
-  // Calculate the cumulative distribution
-  // And round to full degrees to get a nicer step function
-  var cdf = getCDF(inclinations.map(x => Math.round(x)));
-
-  // Get the lower and upper 2.5%
-  var confidence = getConfidence(cdf);
-  var lower = confidence.lower || -90;
-  var upper = confidence.upper || 90;
-
-  // Add the confidence plot band
-  var plotBands = [{
-    "id": "plotband",
-    "color": PLOTBAND_COLOR_BLUE,
-    "from": lower,
-    "to": upper
-  }];
-
-  var mySeries = [{
-    "name": "Original Inclination",
-    "type": "line",
-    "data": getVerticalLine(originalInclination),
-    "color": HIGHCHARTS_PINK,
-    "enableMouseTracking": false,
-    "marker": {
-      "enabled": false
     }
-  }];
 
-  //Define the cumulative distribution function
-  if(cdf.length) {
+    const CHART_CONTAINER = "ei-cdf-container";
 
-    // Calculate the average inclination of all bootstraps
-    var averageInclination = getAverageInclination(cdf);
+    // Calculate the cumulative distribution
+    // And round to full degrees to get a nicer step function
+    var cdf = getCDF(inclinations.map(x => Math.round(x)));
 
-    mySeries.push({
-      "name": "Cumulative Distribution",
-      "data": cdf,
-      "step": true,
-      "marker": {
-        "enabled": false
-      }
-    }, {
-      "name": "Average Bootstrapped Inclination",
-      "type": "line",
-      "data": getVerticalLine(averageInclination),
-      "color": HIGHCHARTS_ORANGE,
-      "enableMouseTracking": false,
-      "marker": {
-        "enabled": false
-      }
-    });
+    // Get the lower and upper 2.5%
+    var confidence = getConfidence(cdf);
+    var lower = confidence.lower || -90;
+    var upper = confidence.upper || 90;
 
-  }
+    // Add the confidence plot band
+    var plotBands = [{
+        "id": "plotband",
+        "color": PLOTBAND_COLOR_BLUE,
+        "from": lower,
+        "to": upper
+    }];
 
-  // If the original data intersected with TK03.GAD
-  if(unflattenedInclination !== null) {
+    var mySeries = [{
+        "name": "Original Inclination",
+        "type": "line",
+        "data": getVerticalLine(originalInclination),
+        "color": HIGHCHARTS_PINK,
+        "enableMouseTracking": false,
+        "marker": {
+            "enabled": false
+        }
+    }];
 
-    mySeries.push({
-      "name": "Unflattened Inclination",
-      "type": "line",
-      "color": HIGHCHARTS_GREEN,
-      "data": getVerticalLine(unflattenedInclination),
-      "enableMouseTracking": false,
-      "marker": {
-        "enabled": false
-      }
-    });
+    //Define the cumulative distribution function
+    if (cdf.length) {
 
-  }
+        // Calculate the average inclination of all bootstraps
+        var averageInclination = getAverageInclination(cdf);
 
-  mySeries.push({
-    "color": HIGHCHARTS_BLUE,
-    "name": "Confidence Interval",
-    "lineWidth": 0,
-    "marker": {
-      "symbol": "square"
-    },
-    "events": {
-      "legendItemClick": (function(closure) {
-        return function(event) {
-          closure.forEach(function(plotBand) {
-            if(this.visible) {
-              this.chart.xAxis[0].removePlotBand(plotBand.id);
-            } else {
-              this.chart.xAxis[0].addPlotBand(plotBand);
+        mySeries.push({
+            "name": "Cumulative Distribution",
+            "data": cdf,
+            "step": true,
+            "marker": {
+                "enabled": false
             }
-          }, this);
-        }
-      })(memcpy(plotBands))
-    }
-  });
+        }, {
+            "name": "Average Bootstrapped Inclination",
+            "type": "line",
+            "data": getVerticalLine(averageInclination),
+            "color": HIGHCHARTS_ORANGE,
+            "enableMouseTracking": false,
+            "marker": {
+                "enabled": false
+            }
+        });
 
-  new Highcharts.chart(CHART_CONTAINER, {
-    "chart": {
-      "zoomType": "x"
-    },
-    "title": {
-      "text": "Cumulative Distribution of bootstrapped TK03.GAD intersections",
-    },
-    "exporting": {
-      "filename": "TK03_CDF",
-      "sourceWidth": 1200,
-      "sourceHeight": 600,
-      "buttons": {
-        "contextButton": {
-          "symbolStroke": "#7798BF",
-          "align": "right"
+    }
+
+    // If the original data intersected with TK03.GAD
+    if (unflattenedInclination !== null) {
+
+        mySeries.push({
+            "name": "Unflattened Inclination",
+            "type": "line",
+            "color": HIGHCHARTS_GREEN,
+            "data": getVerticalLine(unflattenedInclination),
+            "enableMouseTracking": false,
+            "marker": {
+                "enabled": false
+            }
+        });
+
+    }
+
+    mySeries.push({
+        "color": HIGHCHARTS_BLUE,
+        "name": "Confidence Interval",
+        "lineWidth": 0,
+        "marker": {
+            "symbol": "square"
+        },
+        "events": {
+            "legendItemClick": (function (closure) {
+                return function (event) {
+                    closure.forEach(function (plotBand) {
+                        if (this.visible) {
+                            this.chart.xAxis[0].removePlotBand(plotBand.id);
+                        } else {
+                            this.chart.xAxis[0].addPlotBand(plotBand);
+                        }
+                    }, this);
+                }
+            })(memcpy(plotBands))
         }
-      }
-    },
-    "subtitle": {
-      "text": "<b>Original Inclination</b>: " + originalInclination.toFixed(2) + " <b>Unflattened Inclination</b>: " + (unflattenedInclination === null ? "NaN" : unflattenedInclination.toFixed(2)) + " <b>Bootstrapped Confidence</b>: " + lower.toFixed(2) + " to " + upper.toFixed(2) + " (" + COORDINATES + " coordinates)"
-    },
-    "xAxis": {
-      "min": -90,
-      "max": 90,
-      "plotBands": plotBands,
-      "title": {
-        "text": "Inclination (°)"
-      }
-    },
-    "plotOptions": {
-      "series": {
-        "turboThreshold": 0
-      }
-    },
-    "credits": {
-      "enabled": ENABLE_CREDITS,
-      "text": "Paleomagnetism.org [EI Module] - <i>after Tauxe et al., 2008 </i>",
-      "href": ""
-    },
-    "tooltip": {
-      "formatter": tooltip
-    },
-    "yAxis": {
-      "min": 0,
-      "max": 1,
-      "title": {
-        "text": "Cumulative Distribution"
-      }
-    },
-    "series": mySeries
-  });
+    });
+
+    new Highcharts.chart(CHART_CONTAINER, {
+        "chart": {
+            "zoomType": "x"
+        },
+        "title": {
+            "text": "Cumulative Distribution of bootstrapped TK03.GAD intersections",
+        },
+        "exporting": {
+            "filename": "TK03_CDF",
+            "sourceWidth": 1200,
+            "sourceHeight": 600,
+            "buttons": {
+                "contextButton": {
+                    "symbolStroke": "#7798BF",
+                    "align": "right"
+                }
+            }
+        },
+        "subtitle": {
+            "text": "<b>Original Inclination</b>: " + originalInclination.toFixed(2) + " <b>Unflattened Inclination</b>: " + (unflattenedInclination === null ? "NaN" : unflattenedInclination.toFixed(2)) + " <b>Bootstrapped Confidence</b>: " + lower.toFixed(2) + " to " + upper.toFixed(2) + " (" + COORDINATES + " coordinates)"
+        },
+        "xAxis": {
+            "min": -90,
+            "max": 90,
+            "plotBands": plotBands,
+            "title": {
+                "text": "Inclination (°)"
+            }
+        },
+        "plotOptions": {
+            "series": {
+                "turboThreshold": 0
+            }
+        },
+        "credits": {
+            "enabled": ENABLE_CREDITS,
+            "text": "Paleomagnetism.org [EI Module] - <i>after Tauxe et al., 2008 </i>",
+            "href": ""
+        },
+        "tooltip": {
+            "formatter": tooltip
+        },
+        "yAxis": {
+            "min": 0,
+            "max": 1,
+            "title": {
+                "text": "Cumulative Distribution"
+            }
+        },
+        "series": mySeries
+    });
 
 }
 
 function unflattenDirections(data) {
 
-  /*
-   * Function unflattenDirections
-   * Unflatted a list of directions towards the TK03.GAD polynomial
-   */
+    /*
+     * Function unflattenDirections
+     * Unflatted a list of directions towards the TK03.GAD polynomial
+     */
 
-  data = data.map(x => x.coordinates.toVector(Direction));
+    data = data.map(x => x.coordinates.toVector(Direction));
 
-  // Get the tan of the observed inclinations (equivalent of tan(Io))
-  var tanInclinations = data.map(x => Math.tan(x.inc * RADIANS));
+    // Get the tan of the observed inclinations (equivalent of tan(Io))
+    var tanInclinations = data.map(x => Math.tan(x.inc * RADIANS));
 
     var results = [];
 
-  // Decrement over the flattening values f from 100 to 20
-  // We will find f with a resolution of 1%
-  for(var i = 100; i >= 20; i--) {
+    // Decrement over the flattening values f from 100 to 20
+    // We will find f with a resolution of 1%
+    for (var i = 100; i >= 20; i--) {
 
-    // Flattening factor (from 1 to 0.2)
-    var f = i / 100;
+        // Flattening factor (from 1 to 0.2)
+        var f = i / 100;
 
-    // Unflattening function after King, 1955
-    // (tanIo = f tanIf) where tanIo is observed and tanIf is recorded.
-    // Create unflattenedData containing (dec, inc) pair for a particular f
-    var unflattenedData = tanInclinations.map(function(x, i) {
-      return new Direction(data[i].dec, Math.atan(x / f) / RADIANS)
-    });
+        // Unflattening function after King, 1955
+        // (tanIo = f tanIf) where tanIo is observed and tanIf is recorded.
+        // Create unflattenedData containing (dec, inc) pair for a particular f
+        var unflattenedData = tanInclinations.map(function (x, i) {
+            return new Direction(data[i].dec, Math.atan(x / f) / RADIANS)
+        });
 
-    // Calculate mean inclination for unflattenedData and get eigenvalues
-    var meanInc = meanDirection(unflattenedData.map(x => x.toCartesian())).inc;
-    var eigenvalues = getEigenvaluesFast(TMatrix(unflattenedData.map(x => x.toCartesian().toArray())));
-    var elongation = eigenvalues.t2 / eigenvalues.t3;
+        // Calculate mean inclination for unflattenedData and get eigenvalues
+        var meanInc = meanDirection(unflattenedData.map(x => x.toCartesian())).inc;
+        var eigenvalues = getEigenvaluesFast(TMatrix(unflattenedData.map(x => x.toCartesian().toArray())));
+        var elongation = eigenvalues.t2 / eigenvalues.t3;
 
-    results.push({
-      "flattening": f,
-      "elongation": elongation,
-      "inclination": meanInc
-    });
+        results.push({
+            "flattening": f,
+            "elongation": elongation,
+            "inclination": meanInc
+        });
 
-    // In case we initially start above the TK03.GAD Polynomial
-    // For each point check if we are above the polynomial; if so pop the parameters and do not save them
-    // This simple algorithm finds the line below the TK03.GAD polynomial
-    // Compare expected elongation with elongation from data from TK03.GAD
-    // Only do this is Epoly < Edata
-    // If there is more than 1 consecutive flattening factor in the array
-    // This means we have a line under the TK03.GAD Polynomial
-    // So we can return our parameters
+        // In case we initially start above the TK03.GAD Polynomial
+        // For each point check if we are above the polynomial; if so pop the parameters and do not save them
+        // This simple algorithm finds the line below the TK03.GAD polynomial
+        // Compare expected elongation with elongation from data from TK03.GAD
+        // Only do this is Epoly < Edata
+        // If there is more than 1 consecutive flattening factor in the array
+        // This means we have a line under the TK03.GAD Polynomial
+        // So we can return our parameters
 
-    if(TK03Polynomial(meanInc) <= elongation) {
+        if (TK03Polynomial(meanInc) <= elongation) {
 
-      if(results.length === 1) {
-        results.pop();
-        continue;
-      }
+            if (results.length === 1) {
+                results.pop();
+                continue;
+            }
 
-      return results;
+            return results;
+
+        }
 
     }
 
-  }
-
-  // No intersection with TK03.GAD polynomial
-  return null;
+    // No intersection with TK03.GAD polynomial
+    return null;
 
 }
 
 function TK03Polynomial(inclination) {
 
-  /*
-   * Function polynomial
-   * Plots the foldtest data (coefficients taken from Pmag.py (Lisa Tauxe))
-   */
+    /*
+     * Function polynomial
+     * Plots the foldtest data (coefficients taken from Pmag.py (Lisa Tauxe))
+     */
 
-  const COEFFICIENTS = [
-    +3.15976125E-06,
-    -3.52459817E-04,
-    -1.46641090E-02,
-    +2.89538539E+00
-  ];
+    const COEFFICIENTS = [
+        +3.15976125E-06,
+        -3.52459817E-04,
+        -1.46641090E-02,
+        +2.89538539E+00
+    ];
 
-  // Symmetrical
-  var inc = Math.abs(inclination);
+    // Symmetrical
+    var inc = Math.abs(inclination);
 
-  // Polynomial coefficients
-  return COEFFICIENTS[0] * Math.pow(inc, 3) + COEFFICIENTS[1] * Math.pow(inc, 2) + COEFFICIENTS[2] * inc + COEFFICIENTS[3];
+    // Polynomial coefficients
+    return COEFFICIENTS[0] * Math.pow(inc, 3) + COEFFICIENTS[1] * Math.pow(inc, 2) + COEFFICIENTS[2] * inc + COEFFICIENTS[3];
 
 }
 
@@ -1319,13 +1318,13 @@ function plotFoldtestCDF(untilt, savedBootstraps) {
 
     function tooltip() {
 
-        if(this.series.name === "Bootstraps") {
+        if (this.series.name === "Bootstraps") {
             return [
                 "<b>Original Data</b>",
                 "<b>Unfolding Percentage</b>: " + this.x + "%",
                 "<b>Maximum Eigenvalue</b>: " + this.y.toFixed(3)
             ].join("<br>");
-        } else if(this.series.name === "CDF") {
+        } else if (this.series.name === "CDF") {
             return [
                 "<b>Cumulative Probability</b>",
                 "<b>Unfolding Percentage</b>: " + this.x + "%",
@@ -1348,7 +1347,7 @@ function plotFoldtestCDF(untilt, savedBootstraps) {
     var upper = untilt[parseInt(0.975 * cdf.length, 10)] || UNFOLDING_MAX;
 
     // Create plotband for 95% bootstrapped confidence interval
-    var plotBands =  [{
+    var plotBands = [{
         "id": "plotband",
         "color": PLOTBAND_COLOR_BLUE,
         "from": lower,
@@ -1392,7 +1391,7 @@ function plotFoldtestCDF(untilt, savedBootstraps) {
         }
     });
 
-    savedBootstraps.forEach(function(bootstrap) {
+    savedBootstraps.forEach(function (bootstrap) {
         mySeries.push({
             "color": PLOTBAND_COLOR_BLUE,
             "data": bootstrap,
@@ -1412,10 +1411,10 @@ function plotFoldtestCDF(untilt, savedBootstraps) {
             "symbol": "square"
         },
         "events": {
-            "legendItemClick": (function(closure) {
-                return function(event) {
-                    closure.forEach(function(plotBand) {
-                        if(this.visible) {
+            "legendItemClick": (function (closure) {
+                return function (event) {
+                    closure.forEach(function (plotBand) {
+                        if (this.visible) {
                             this.chart.xAxis[0].removePlotBand(plotBand.id);
                         } else {
                             this.chart.xAxis[0].addPlotBand(plotBand);
@@ -1495,31 +1494,31 @@ function plotFoldtestCDF(untilt, savedBootstraps) {
 
 function unfold(vectors, iteration) {
 
-  /*
-   * Function unfold
-   * Unfolds a bunch of vectors following their bedding
-   */
-
-  function eigenvaluesOfUnfoldedDirections(vectors, unfoldingPercentage) {
-
     /*
-     * Function eigenvaluesOfUnfoldedDirections
-     * Returns the three eigenvalues of a cloud of vectors at a percentage of unfolding
+     * Function unfold
+     * Unfolds a bunch of vectors following their bedding
      */
 
-    // Do the tilt correction on all points in pseudoDirections
-    var tilts = vectors.map(function(vector) {
-      return literalToCoordinates(vector.coordinates).correctBedding(vector.beddingStrike, 1E-2 * unfoldingPercentage * vector.beddingDip);
-    });
+    function eigenvaluesOfUnfoldedDirections(vectors, unfoldingPercentage) {
 
-    // Return the eigen values of a real, symmetrical matrix
-    return getEigenvaluesFast(TMatrix(tilts.map(x => x.toArray())));
+        /*
+         * Function eigenvaluesOfUnfoldedDirections
+         * Returns the three eigenvalues of a cloud of vectors at a percentage of unfolding
+         */
 
-  }
+        // Do the tilt correction on all points in pseudoDirections
+        var tilts = vectors.map(function (vector) {
+            return literalToCoordinates(vector.coordinates).correctBedding(vector.beddingStrike, 1E-2 * unfoldingPercentage * vector.beddingDip);
+        });
 
-  const UNFOLDING_MIN = -50;
-  const UNFOLDING_MAX = 150;
-  const NUMBER_OF_BOOTSTRAPS_SAVED = 24;
+        // Return the eigen values of a real, symmetrical matrix
+        return getEigenvaluesFast(TMatrix(tilts.map(x => x.toArray())));
+
+    }
+
+    const UNFOLDING_MIN = -50;
+    const UNFOLDING_MAX = 150;
+    const NUMBER_OF_BOOTSTRAPS_SAVED = 24;
 
     // Variable max to keep track of the maximum eigenvalue and its unfolding % index
     var max = 0;
@@ -1528,134 +1527,134 @@ function unfold(vectors, iteration) {
     // Array to capture all maximum eigenvalues for one bootstrap over the unfolding range
     var taus = [];
 
-  // For this particular random set of directions unfold from the specified min to max percentages
-  // With increments of 10 degrees
-  for(var i = UNFOLDING_MIN; i <= UNFOLDING_MAX; i += 10) {
+    // For this particular random set of directions unfold from the specified min to max percentages
+    // With increments of 10 degrees
+    for (var i = UNFOLDING_MIN; i <= UNFOLDING_MAX; i += 10) {
 
-    // Calculate the eigenvalues
-    var tau = eigenvaluesOfUnfoldedDirections(vectors, i);
+        // Calculate the eigenvalues
+        var tau = eigenvaluesOfUnfoldedDirections(vectors, i);
 
-    // Save the first 24 bootstraps
-    if(iteration < NUMBER_OF_BOOTSTRAPS_SAVED) {
-      taus.push({
-        "x": i,
-        "y": tau.t1
-      });
+        // Save the first 24 bootstraps
+        if (iteration < NUMBER_OF_BOOTSTRAPS_SAVED) {
+            taus.push({
+                "x": i,
+                "y": tau.t1
+            });
+        }
+
+        if (tau.t1 > max) {
+            max = tau.t1;
+            index = i;
+        }
+
     }
 
-    if(tau.t1 > max) {
-      max = tau.t1;
-      index = i;
+    // Hone in with a granularity of a single degree
+    for (var i = index - 9; i <= index + 9; i++) {
+
+        // Only if within specified minimum and maximum bounds
+        if (i < UNFOLDING_MIN || i > UNFOLDING_MAX) {
+            continue;
+        }
+
+        // Calculate the eigenvalues
+        var tau = eigenvaluesOfUnfoldedDirections(vectors, i);
+
+        // Save the maximum eigenvalue for this bootstrap and unfolding increment
+        if (tau.t1 > max) {
+            max = tau.t1;
+            index = i;
+        }
+
     }
 
-  }
-
-  // Hone in with a granularity of a single degree
-  for(var i = index - 9; i <= index + 9; i++) {
-
-    // Only if within specified minimum and maximum bounds
-    if(i < UNFOLDING_MIN || i > UNFOLDING_MAX) {
-      continue;
-  	}
-
-    // Calculate the eigenvalues
-    var tau = eigenvaluesOfUnfoldedDirections(vectors, i);
-
-    // Save the maximum eigenvalue for this bootstrap and unfolding increment
-    if(tau.t1 > max) {
-      max = tau.t1;
-      index = i;
+    return {
+        "index": index,
+        "taus": taus
     }
-
-  }
-
-  return {
-    "index": index,
-    "taus": taus
-  }
 
 }
 
 function getEigenvaluesFast(T) {
 
-  /*
-   * Function getEigenvaluesFast
-   * Algorithm to find eigenvalues of a symmetric, real matrix.
-   * We need to compute the eigenvalues for many (> 100.000) real, symmetric matrices (Orientation Matrix T).
-   * Calling available libraries (Numeric.js) is much slower so we implement this algorithm instead.
-   * Publication: O.K. Smith, Eigenvalues of a symmetric 3 × 3 matrix - Communications of the ACM (1961)
-   * See https://en.wikipedia.org/wiki/Eigenvalue_algorithm#3.C3.973_matrices
-   */
+    /*
+     * Function getEigenvaluesFast
+     * Algorithm to find eigenvalues of a symmetric, real matrix.
+     * We need to compute the eigenvalues for many (> 100.000) real, symmetric matrices (Orientation Matrix T).
+     * Calling available libraries (Numeric.js) is much slower so we implement this algorithm instead.
+     * Publication: O.K. Smith, Eigenvalues of a symmetric 3 × 3 matrix - Communications of the ACM (1961)
+     * See https://en.wikipedia.org/wiki/Eigenvalue_algorithm#3.C3.973_matrices
+     */
 
-  // Calculate the trace of the orientation matrix
-  // 3m is equal to the trace
-  var m = (T[0][0] + T[1][1] + T[2][2]) / 3;
+    // Calculate the trace of the orientation matrix
+    // 3m is equal to the trace
+    var m = (T[0][0] + T[1][1] + T[2][2]) / 3;
 
-  // Calculate the sum of squares
-  var p1 = Math.pow(T[0][1], 2) + Math.pow(T[0][2], 2) + Math.pow(T[1][2], 2);
-  var p2 = Math.pow((T[0][0] - m), 2) + Math.pow((T[1][1] - m), 2) + Math.pow((T[2][2] - m), 2) + 2 * p1;
+    // Calculate the sum of squares
+    var p1 = Math.pow(T[0][1], 2) + Math.pow(T[0][2], 2) + Math.pow(T[1][2], 2);
+    var p2 = Math.pow((T[0][0] - m), 2) + Math.pow((T[1][1] - m), 2) + Math.pow((T[2][2] - m), 2) + 2 * p1;
 
-  // 6p is equal to the sum of squares of elements
-  var p = Math.sqrt(p2 / 6);
+    // 6p is equal to the sum of squares of elements
+    var p = Math.sqrt(p2 / 6);
 
-  // Identity Matrix I and empty storage matrix B
-  var B = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
-  var I = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
+    // Identity Matrix I and empty storage matrix B
+    var B = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+    var I = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
 
-  for (var i = 0; i < 3; i++ ) {
-    for (var k = 0; k < 3; k++) {
-      B[i][k] = (1 / p) * (T[i][k] - m * I[i][k]);
+    for (var i = 0; i < 3; i++) {
+        for (var k = 0; k < 3; k++) {
+            B[i][k] = (1 / p) * (T[i][k] - m * I[i][k]);
+        }
     }
-  }
 
-  // Half determinant of matrix B.
-  var r = 0.5 * numeric.det(B);
+    // Half determinant of matrix B.
+    var r = 0.5 * numeric.det(B);
 
-  var phi;
-  if(r <= -1) {
-    phi = Math.PI / 3;
-  } else if(r >= 1) {
-    phi = 0;
-  } else {
-    phi = Math.acos(r) / 3;
-  }
+    var phi;
+    if (r <= -1) {
+        phi = Math.PI / 3;
+    } else if (r >= 1) {
+        phi = 0;
+    } else {
+        phi = Math.acos(r) / 3;
+    }
 
-  // Calculate the three eigenvalues
-  var eig1 = m + 2 * p * Math.cos(phi);
-  var eig3 = m + 2 * p * Math.cos(phi + (2 * Math.PI / 3));
+    // Calculate the three eigenvalues
+    var eig1 = m + 2 * p * Math.cos(phi);
+    var eig3 = m + 2 * p * Math.cos(phi + (2 * Math.PI / 3));
 
-  // Last eigenvector can be derived
-  var eig2 = 3 * m - eig1 - eig3;
+    // Last eigenvector can be derived
+    var eig2 = 3 * m - eig1 - eig3;
 
-  // Normalize eigenvalues
-  var tr = eig1 + eig2 + eig3;
+    // Normalize eigenvalues
+    var tr = eig1 + eig2 + eig3;
 
-  return {
-    "t1": eig1 / tr,
-    "t2": eig2 / tr,
-    "t3": eig3 / tr
-  }
+    return {
+        "t1": eig1 / tr,
+        "t2": eig2 / tr,
+        "t3": eig3 / tr
+    }
 
 }
 
 function getSelectedComponents() {
 
-  /*
-   * Function getSelectedComponents
-   * Gets all the components from all collections as if it was a single collection
-   */
+    /*
+     * Function getSelectedComponents
+     * Gets all the components from all collections as if it was a single collection
+     */
 
     var components = [];
 
-  getSelectedCollections().forEach(function(collection) {
+    getSelectedCollections().forEach(function (collection) {
 
-    // Get the components in the correct coordinate system
-    var collectionComponents = collection.components.map(x => x.inReferenceCoordinates());
-    components = components.concat(collectionComponents);
+        // Get the components in the correct coordinate system
+        var collectionComponents = collection.components.map(x => x.inReferenceCoordinates());
+        components = components.concat(collectionComponents);
 
-  });
+    });
 
-  return components;
+    return components;
 
 }
 
@@ -1669,111 +1668,111 @@ function createCTMDGrid() {
         "<small class='text-muted'>* This calculation is an estimate. Correct data is calculated in pairs.</small>"
     ]
 
-  var collections = getSelectedCollections();
+    var collections = getSelectedCollections();
 
-  if(collections.length < 2) {
-    return notify("danger", "Select two or more selections for the grid view.");
-  }
+    if (collections.length < 2) {
+        return notify("danger", "Select two or more selections for the grid view.");
+    }
 
-  var names = collections.map(x => x.name);
+    var names = collections.map(x => x.name);
 
-  // Asynchronous call (using setTimeout)
-  CTMDPermutations(collections, function(result) {
+    // Asynchronous call (using setTimeout)
+    CTMDPermutations(collections, function (result) {
 
         // Create heatmap data series
         var success = [];
         var fail = [];
 
-    result.forEach(function(x) {
+        result.forEach(function (x) {
 
-      // Push to the correct data series
-      if(x.match) {
-        success.push({"x": x.i, "y": x.j}, {"x": x.j, "y": x.i})
-      } else {
-        fail.push({"x": x.i, "y": x.j}, {"x": x.j, "y": x.i});
-      }
+            // Push to the correct data series
+            if (x.match) {
+                success.push({"x": x.i, "y": x.j}, {"x": x.j, "y": x.i})
+            } else {
+                fail.push({"x": x.i, "y": x.j}, {"x": x.j, "y": x.i});
+            }
+
+        });
+
+        // Create the heat map
+        CTMDHeatmapChart(names, success, fail);
 
     });
-
-    // Create the heat map
-    CTMDHeatmapChart(names, success, fail);
-
-  });
 
 }
 
 function CTMDHeatmapChart(names, match, noMatch) {
 
-  /*
-   * Function CTMDHeatmapChart
-   * Creates a heatmap of all selected collection pairs
-   */
+    /*
+     * Function CTMDHeatmapChart
+     * Creates a heatmap of all selected collection pairs
+     */
 
     // Put a black square on the diagonal
     var empty = [];
 
-  for(var i = 0; i < Math.sqrt(match.length + noMatch.length); i++) {
-    empty.push({"x": i, "y": i});
-  }
+    for (var i = 0; i < Math.sqrt(match.length + noMatch.length); i++) {
+        empty.push({"x": i, "y": i});
+    }
 
-  new Highcharts.chart("permutation-table", {
-    "chart": {
-      "width": 600,
-      "height": 600,
-      "type": "heatmap",
-    },
-    "xAxis": {
-      "categories": names,
-      "tickInterval":  1,
-      "gridLineWidth": 2,
-      "tickLength": 0,
-      "lineWidth": 1,
-    },
-    "title": {
-      "text": "Common True Mean Directions",
-    },
-    "tooltip": {
-      "formatter": function() {
-        return [
-          "<b>Common True Mean Direction Results</b>",
-          "<b>Collection one:</b>" + this.series.yAxis.categories[this.point.y],
-          "<b>Collection two:</b>" + this.series.xAxis.categories[this.point.x]
-        ].join("<br>");
-      }
-    },
-    "subtitle": {
-      "text": "Showing " + (Math.pow(empty.length, 2) - empty.length) + " permutations"
-    },
-    "credits": {
-      "enabled": ENABLE_CREDITS
-    },
-    "yAxis": {
-      "categories": names,
-      "tickInterval":  1,
-      "gridLineWidth": 2,
-      "tickLength": 0,
-      "lineWidth": 1
-    },
-    "plotOptions": {
-      "heatmap": {
-        "pointPadding": 1
-      }
-    },
-    "series": [{
-      "name": "Match",
-      "data": match,
-      "color": HIGHCHARTS_GREEN,
-    }, {
-      "name": "No Match",
-      "data": noMatch,
-      "color": HIGHCHARTS_RED
-    }, {
-      "showInLegend": false,
-      "enableMouseTracking": false,
-      "data": empty,
-      "color": HIGHCHARTS_BLACK
-    }]
-  });
+    new Highcharts.chart("permutation-table", {
+        "chart": {
+            "width": 600,
+            "height": 600,
+            "type": "heatmap",
+        },
+        "xAxis": {
+            "categories": names,
+            "tickInterval": 1,
+            "gridLineWidth": 2,
+            "tickLength": 0,
+            "lineWidth": 1,
+        },
+        "title": {
+            "text": "Common True Mean Directions",
+        },
+        "tooltip": {
+            "formatter": function () {
+                return [
+                    "<b>Common True Mean Direction Results</b>",
+                    "<b>Collection one:</b>" + this.series.yAxis.categories[this.point.y],
+                    "<b>Collection two:</b>" + this.series.xAxis.categories[this.point.x]
+                ].join("<br>");
+            }
+        },
+        "subtitle": {
+            "text": "Showing " + (Math.pow(empty.length, 2) - empty.length) + " permutations"
+        },
+        "credits": {
+            "enabled": ENABLE_CREDITS
+        },
+        "yAxis": {
+            "categories": names,
+            "tickInterval": 1,
+            "gridLineWidth": 2,
+            "tickLength": 0,
+            "lineWidth": 1
+        },
+        "plotOptions": {
+            "heatmap": {
+                "pointPadding": 1
+            }
+        },
+        "series": [{
+            "name": "Match",
+            "data": match,
+            "color": HIGHCHARTS_GREEN,
+        }, {
+            "name": "No Match",
+            "data": noMatch,
+            "color": HIGHCHARTS_RED
+        }, {
+            "showInLegend": false,
+            "enableMouseTracking": false,
+            "data": empty,
+            "color": HIGHCHARTS_BLACK
+        }]
+    });
 
 }
 
@@ -1834,23 +1833,23 @@ function simulateCTMDGrid(one, two) {
 
 function CTMDPermutations(collections, callback) {
 
-  /*
-   * Function CTMDPermutations
-   * Does CTMD test on all permutations of selected collections
-   */
-
-  function getPairs(collections) {
-
     /*
-     * function CTMDPermutations::getPairs
-     * Returns permutation pairs for all selected collections
+     * Function CTMDPermutations
+     * Does CTMD test on all permutations of selected collections
      */
+
+    function getPairs(collections) {
+
+        /*
+         * function CTMDPermutations::getPairs
+         * Returns permutation pairs for all selected collections
+         */
 
         var pairs = [];
 
-    // All permutations: j starts after i
-    for(var i = 0; i < collections.length; i++) {
-      for(var j = i + 1; j < collections.length; j++) {
+        // All permutations: j starts after i
+        for (var i = 0; i < collections.length; i++) {
+            for (var j = i + 1; j < collections.length; j++) {
 
                 // Create a permutation pair
                 pairs.push({
@@ -1861,45 +1860,45 @@ function CTMDPermutations(collections, callback) {
                     })
                 });
 
-      }
+            }
+        }
+
+        return pairs;
+
     }
 
-    return pairs;
-
-  }
-
-  // Create collection permutations
-  var pairs = getPairs(collections);
+    // Create collection permutations
+    var pairs = getPairs(collections);
 
     var results = [];
 
-  // Run through all permutations but non-blocking
-  (next = function() {
+    // Run through all permutations but non-blocking
+    (next = function () {
 
-    // Iteration can be stopped
-    if(pairs.length === 0) {
-      return callback(results);
-    }
+        // Iteration can be stopped
+        if (pairs.length === 0) {
+            return callback(results);
+        }
 
-    var permutation = pairs.pop();
+        var permutation = pairs.pop();
 
         // Simulate the current pair
         var result = simulateCTMDGrid(...permutation.pair)
 
-    var x = {
-      "one": getConfidence(getCDF(result.xOne)),
-      "two": getConfidence(getCDF(result.xTwo))
-    }
+        var x = {
+            "one": getConfidence(getCDF(result.xOne)),
+            "two": getConfidence(getCDF(result.xTwo))
+        }
 
-    var y = {
-      "one": getConfidence(getCDF(result.yOne)),
-      "two": getConfidence(getCDF(result.yTwo))
-    }
+        var y = {
+            "one": getConfidence(getCDF(result.yOne)),
+            "two": getConfidence(getCDF(result.yTwo))
+        }
 
-    var z = {
-      "one": getConfidence(getCDF(result.zOne)),
-      "two": getConfidence(getCDF(result.zTwo))
-    }
+        var z = {
+            "one": getConfidence(getCDF(result.zOne)),
+            "two": getConfidence(getCDF(result.zTwo))
+        }
 
         // Check whether the two collections are statistically "equivalent"
         results.push({
@@ -1908,10 +1907,10 @@ function CTMDPermutations(collections, callback) {
             "match": doesMatchBootstrap(x, y, z)
         });
 
-    // Proceed
-    setTimeout(next);
+        // Proceed
+        setTimeout(next);
 
-  })();
+    })();
 
 }
 
@@ -1992,8 +1991,8 @@ function simulateCTMD(one, two, grid, containers, selectedCollections) {
     var zOne = [];
     var zTwo = [];
 
-  one = one.filter(x => !x.rejected);
-  two = two.filter(x => !x.rejected);
+    one = one.filter(x => !x.rejected);
+    two = two.filter(x => !x.rejected);
 
     for (let c of one) {
         xOne.push(c.coordinates.x)
@@ -2127,17 +2126,17 @@ function simulateCTMD(one, two, grid, containers, selectedCollections) {
 
 async function bootstrapCTMD() {
 
-  /*
-   * Function bootstrapCTMD
-   * Does a bootstrap on the true data
-   */
+    /*
+     * Function bootstrapCTMD
+     * Does a bootstrap on the true data
+     */
 
     $("#CMDT-progress").css("width", "0%")
     await new Promise(r => setTimeout(r, 1000));
 
-  const CONTAINER_X = "ctmd-container-x";
-  const CONTAINER_Y = "ctmd-container-y";
-  const CONTAINER_Z = "ctmd-container-z";
+    const CONTAINER_X = "ctmd-container-x";
+    const CONTAINER_Y = "ctmd-container-y";
+    const CONTAINER_Z = "ctmd-container-z";
 
     const containers = {
         "x": CONTAINER_X,
@@ -2147,14 +2146,14 @@ async function bootstrapCTMD() {
 
     var collections = getSelectedCollections();
 
-  if(collections.length !== 2) {
-    return notify("danger", "Select two collections to compare.");
-  }
+    if (collections.length !== 2) {
+        return notify("danger", "Select two collections to compare.");
+    }
 
-  // Get the site components in reference coordinates
-  cSites = collections.map(function(collection) {
-    return doCutoff(collection.components.map(x => x.inReferenceCoordinates()));
-  });
+    // Get the site components in reference coordinates
+    cSites = collections.map(function (collection) {
+        return doCutoff(collection.components.map(x => x.inReferenceCoordinates()));
+    });
 
     simulateCTMD(cSites[0].components, cSites[1].components, false, containers, collections);
 }
@@ -2209,10 +2208,10 @@ function updateCTMDWithDirectionTable(confidenceRegion, testedDirection) {
 
 function doesMatch(CMDTValue, CMDTCriticalValue, CMDTPValue) {
 
-  /*
-   * Function doesMatch
-   * Checks whether two CTMD bootstraps overlap and are statistically "equivalent"
-   */
+    /*
+     * Function doesMatch
+     * Checks whether two CTMD bootstraps overlap and are statistically "equivalent"
+     */
 
     // Are the confidence regions overlapping?
 
@@ -2234,27 +2233,27 @@ function doesMatchBootstrap(xParams, yParams, zParams) {
 
 function updateCTMDTable(names, xParams, yParams, zParams, CMDTValue, CMDTCriticalValue, CMDTPValue, T_b, Ahat, X1c_di, X2c_di, mhat12) {
 
-  /*
-   * Function updateCTMDTable
-   * Updates the CTMD table with the two collections and parameters
-   */
-
-  function getMatchHTML(match) {
-
     /*
-     * Function getMatchHTML
-     * Returns HTML showing whether the test was a match or not
+     * Function updateCTMDTable
+     * Updates the CTMD table with the two collections and parameters
      */
 
-    if(match) {
-      return "<span class='text-success'><b><i class='fas fa-check'></i> Match!</b></span>";
-    } else {
-      return "<span class='text-danger'><b><i class='fas fa-times'></i> No Match!</b></span>";
+    function getMatchHTML(match) {
+
+        /*
+         * Function getMatchHTML
+         * Returns HTML showing whether the test was a match or not
+         */
+
+        if (match) {
+            return "<span class='text-success'><b><i class='fas fa-check'></i> Match!</b></span>";
+        } else {
+            return "<span class='text-danger'><b><i class='fas fa-times'></i> No Match!</b></span>";
+        }
+
     }
 
-  }
-
-  const PRECISION = 2;
+    const PRECISION = 2;
 
     var match = doesMatch(CMDTValue, CMDTCriticalValue, CMDTPValue);
     var matchBootstrap = doesMatchBootstrap(xParams, yParams, zParams);
@@ -2346,305 +2345,305 @@ function updateCTMDTable(names, xParams, yParams, zParams, CMDTValue, CMDTCritic
 
 function getCDF(input) {
 
-  /*
-   * Functiom getCDF
-   * Returns the cumulative distribution function of an array
-   */
+    /*
+     * Functiom getCDF
+     * Returns the cumulative distribution function of an array
+     */
 
-  // Calculate the cumulative distribution function of the sorted input
-  return input.sort(numericSort).map(function(x, i) {
-    return {
-      "x": x,
-      "y": i / (input.length - 1)
-    }
-  });
+    // Calculate the cumulative distribution function of the sorted input
+    return input.sort(numericSort).map(function (x, i) {
+        return {
+            "x": x,
+            "y": i / (input.length - 1)
+        }
+    });
 
 }
 
 function plotCartesianBootstrap(container, cdfOne, cdfTwo, names, nBootstraps) {
 
-  /*
-   * Function plotCartesianBootstrap
-   * Plots a single cartesian bootstrap to a container
-   */
-
-  function CTMDTooltip() {
-
     /*
-     * Function CTMDTooltip
-     * Returns the formatted CTMD tooltip
+     * Function plotCartesianBootstrap
+     * Plots a single cartesian bootstrap to a container
      */
 
-    return [
-      "<b>Cumulative Distribution </b>",
-      "<b>Collection: </b>" + this.series.name,
-      "<b>Coordinate: </b>" + this.x.toFixed(2),
-      "<b>CDF: </b>" + this.point.y.toFixed(3)
-    ].join("<br>");
+    function CTMDTooltip() {
 
-  }
+        /*
+         * Function CTMDTooltip
+         * Returns the formatted CTMD tooltip
+         */
 
-  // Get the index of the upper and lower 5%
-  var lower = parseInt(0.025 * nBootstraps, 10);
-  var upper = parseInt(0.975 * nBootstraps, 10);
+        return [
+            "<b>Cumulative Distribution </b>",
+            "<b>Collection: </b>" + this.series.name,
+            "<b>Coordinate: </b>" + this.x.toFixed(2),
+            "<b>CDF: </b>" + this.point.y.toFixed(3)
+        ].join("<br>");
 
-  //Define plot bands to represent confidence envelopes
-  var plotBands = [{
-    "from": cdfOne[lower].x,
-    "to": cdfOne[upper].x,
-    "color": PLOTBAND_COLOR_BLUE
-  }, {
-    "from": cdfTwo[lower].x,
-    "to": cdfTwo[upper].x,
-    "color": PLOTBAND_COLOR_RED
-  }];
-
-  //Define the cumulative distribution function
-  //Info array contains site names
-  var coordinateSeries = [{
-    "name": names.one,
-    "data": cdfOne,
-    "step": true,
-    "color": HIGHCHARTS_BLUE,
-    "marker": {
-      "enabled": false
     }
-  }, {
-    "name": names.two,
-    "color": HIGHCHARTS_RED,
-    "step": true,
-    "data": cdfTwo,
-    "marker": {
-      "enabled": false
-    }
-  }];
 
-  new Highcharts.chart(container, {
-    "title": {
-      "text": container.slice(-1) + "-component",
-    },
-    "exporting": {
-      "filename": "coordinate-bootstrap",
-      "sourceWidth": 400,
-      "sourceHeight": 400,
-      "buttons": {
-        "contextButton": {
-          "symbolStroke": "#7798BF",
-          "align": "right"
+    // Get the index of the upper and lower 5%
+    var lower = parseInt(0.025 * nBootstraps, 10);
+    var upper = parseInt(0.975 * nBootstraps, 10);
+
+    //Define plot bands to represent confidence envelopes
+    var plotBands = [{
+        "from": cdfOne[lower].x,
+        "to": cdfOne[upper].x,
+        "color": PLOTBAND_COLOR_BLUE
+    }, {
+        "from": cdfTwo[lower].x,
+        "to": cdfTwo[upper].x,
+        "color": PLOTBAND_COLOR_RED
+    }];
+
+    //Define the cumulative distribution function
+    //Info array contains site names
+    var coordinateSeries = [{
+        "name": names.one,
+        "data": cdfOne,
+        "step": true,
+        "color": HIGHCHARTS_BLUE,
+        "marker": {
+            "enabled": false
+        }
+    }, {
+        "name": names.two,
+        "color": HIGHCHARTS_RED,
+        "step": true,
+        "data": cdfTwo,
+        "marker": {
+            "enabled": false
+        }
+    }];
+
+    new Highcharts.chart(container, {
+        "title": {
+            "text": container.slice(-1) + "-component",
         },
-      }
-    },
-    "subtitle": {
-      "text": "(" + COORDINATES + " coordinates; N = " + nBootstraps + ")"
-    },
-    "plotOptions": {
-      "series": {
-        "turboThreshold": 0
-      }
-    },
-    "xAxis": {
-      "title": {
-        "text": "Cartesian Coordinate on Unit Sphere"
-      },
-      "plotBands": plotBands,
-    },
-    "credits": {
-      "enabled": ENABLE_CREDITS,
-      "text": "Paleomagnetism.org [CTMD] - Coordinate Bootstrap (Tauxe et al., 2010)",
-      "href": ""
-    },
-    "tooltip": {
-      "formatter": CTMDTooltip
-    },
-    "yAxis": {
-      "min": 0,
-      "max": 1,
-      "title": {
-        "text": "Cumulative Distribution"
-      }
-    },
-    "series": coordinateSeries
-  });
+        "exporting": {
+            "filename": "coordinate-bootstrap",
+            "sourceWidth": 400,
+            "sourceHeight": 400,
+            "buttons": {
+                "contextButton": {
+                    "symbolStroke": "#7798BF",
+                    "align": "right"
+                },
+            }
+        },
+        "subtitle": {
+            "text": "(" + COORDINATES + " coordinates; N = " + nBootstraps + ")"
+        },
+        "plotOptions": {
+            "series": {
+                "turboThreshold": 0
+            }
+        },
+        "xAxis": {
+            "title": {
+                "text": "Cartesian Coordinate on Unit Sphere"
+            },
+            "plotBands": plotBands,
+        },
+        "credits": {
+            "enabled": ENABLE_CREDITS,
+            "text": "Paleomagnetism.org [CTMD] - Coordinate Bootstrap (Tauxe et al., 2010)",
+            "href": ""
+        },
+        "tooltip": {
+            "formatter": CTMDTooltip
+        },
+        "yAxis": {
+            "min": 0,
+            "max": 1,
+            "title": {
+                "text": "Cumulative Distribution"
+            }
+        },
+        "series": coordinateSeries
+    });
 
-  // Return the confidence bounds for the table
-  return {
-    "one": getConfidence(cdfOne),
-    "two": getConfidence(cdfTwo)
-  }
+    // Return the confidence bounds for the table
+    return {
+        "one": getConfidence(cdfOne),
+        "two": getConfidence(cdfTwo)
+    }
 
 }
 
 function drawBootstrap(data) {
 
-  /*
-   * Function drawBootstrap
-   * Draws a random new distribution from a distribution of the same size
-   */
-
-  function randomSample() {
-
     /*
-     * Function drawBootstrap::randomSample
-     * Returns a random sample from an array
+     * Function drawBootstrap
+     * Draws a random new distribution from a distribution of the same size
      */
 
-    return data[Math.floor(Math.random() * data.length)];
+    function randomSample() {
 
-  }
+        /*
+         * Function drawBootstrap::randomSample
+         * Returns a random sample from an array
+         */
 
-  return data.map(randomSample);
+        return data[Math.floor(Math.random() * data.length)];
+
+    }
+
+    return data.map(randomSample);
 
 }
 
 function generateHemisphereTooltip() {
 
-  /*
-   * Function generateHemisphereTooltip
-   * Generates the appropriate tooltip for each series
-   */
+    /*
+     * Function generateHemisphereTooltip
+     * Generates the appropriate tooltip for each series
+     */
 
-  const PRECISION = 1;
+    const PRECISION = 1;
 
-  if(this.series.name === "ChRM Directions" || this.series.name === "Geomagnetic Directions" || this.series.name === "Unflattened Directions") {
-    return [
-      "<b>Sample: </b>" + this.point.component.name,
-      "<b>Declination: </b>" + this.x.toFixed(PRECISION),
-      "<b>Inclination </b>" + this.point.inc.toFixed(PRECISION)
-    ].join("<br>");
-  } else if(this.series.name === "VGPs") {
-    return [
-      "<b>Sample: </b>" + this.point.component.name,
-      "<b>Longitude: </b>" + this.x.toFixed(PRECISION),
-      "<br><b>Latitude: </b>" + this.point.inc.toFixed(PRECISION)
-    ].join("<br>");
-  } else if(this.series.name.startsWith("Mean Direction")) {
-    return [
-      "<b>Mean Direction</b>",
-      "<b>Declination: </b>" + this.x.toFixed(PRECISION),
-      "<br><b>Inclination: </b>" + this.point.inc.toFixed(PRECISION)
-    ].join("<br>");
-  } else if(this.series.name === "Mean VGP") {
-    return [
-      "<b>Mean VGP</b>",
-      "<b>Longitude: </b>" + this.x.toFixed(PRECISION),
-      "<br><b>Latitude: </b>" + this.point.inc.toFixed(PRECISION)
-    ].join("<br>");
-  }
+    if (this.series.name === "ChRM Directions" || this.series.name === "Geomagnetic Directions" || this.series.name === "Unflattened Directions") {
+        return [
+            "<b>Sample: </b>" + this.point.component.name,
+            "<b>Declination: </b>" + this.x.toFixed(PRECISION),
+            "<b>Inclination </b>" + this.point.inc.toFixed(PRECISION)
+        ].join("<br>");
+    } else if (this.series.name === "VGPs") {
+        return [
+            "<b>Sample: </b>" + this.point.component.name,
+            "<b>Longitude: </b>" + this.x.toFixed(PRECISION),
+            "<br><b>Latitude: </b>" + this.point.inc.toFixed(PRECISION)
+        ].join("<br>");
+    } else if (this.series.name.startsWith("Mean Direction")) {
+        return [
+            "<b>Mean Direction</b>",
+            "<b>Declination: </b>" + this.x.toFixed(PRECISION),
+            "<br><b>Inclination: </b>" + this.point.inc.toFixed(PRECISION)
+        ].join("<br>");
+    } else if (this.series.name === "Mean VGP") {
+        return [
+            "<b>Mean VGP</b>",
+            "<b>Longitude: </b>" + this.x.toFixed(PRECISION),
+            "<br><b>Latitude: </b>" + this.point.inc.toFixed(PRECISION)
+        ].join("<br>");
+    }
 
 }
 
 function addCollectionMetadata(index) {
 
-  // Reference the collection
-  openedCollection = collections[index]
+    // Reference the collection
+    openedCollection = collections[index]
 
-  document.getElementById("metadata-modal-title").innerHTML = "Metadata for collection <b>" + openedCollection.name + "</b>";
-  document.getElementById("color-preview").style.backgroundColor = openedCollection.color || "grey";
+    document.getElementById("metadata-modal-title").innerHTML = "Metadata for collection <b>" + openedCollection.name + "</b>";
+    document.getElementById("color-preview").style.backgroundColor = openedCollection.color || "grey";
 
-  document.getElementById("metadata-comments").value = openedCollection.comments || "";
-  document.getElementById("metadata-authors").value = openedCollection.authors || "";
-  document.getElementById("metadata-reference").value = openedCollection.doi || "";
-  document.getElementById("metadata-year").value = openedCollection.year || "";
+    document.getElementById("metadata-comments").value = openedCollection.comments || "";
+    document.getElementById("metadata-authors").value = openedCollection.authors || "";
+    document.getElementById("metadata-reference").value = openedCollection.doi || "";
+    document.getElementById("metadata-year").value = openedCollection.year || "";
 
-  $("#metadata-modal").modal("show");
+    $("#metadata-modal").modal("show");
 
 }
 
 
 function changeColor(color) {
 
-  /*
-   * Function changeColor
-   * Changes the color of the selected collection
-   */
+    /*
+     * Function changeColor
+     * Changes the color of the selected collection
+     */
 
-  // Set the new color
-  openedCollection.color = color;
-  document.getElementById("color-preview").style.backgroundColor = openedCollection.color || "grey";
+    // Set the new color
+    openedCollection.color = color;
+    document.getElementById("color-preview").style.backgroundColor = openedCollection.color || "grey";
 
 }
 
 
 function updateCollectionMetadata() {
 
-  /*
-   * function updateCollectionMetadata
-   * Updates metadata from input window
-   */
+    /*
+     * function updateCollectionMetadata
+     * Updates metadata from input window
+     */
 
-  let comments = document.getElementById("metadata-comments").value;
-  let authors = document.getElementById("metadata-authors").value;
-  let reference = document.getElementById("metadata-reference").value;
-  let year = document.getElementById("metadata-year").value;
+    let comments = document.getElementById("metadata-comments").value;
+    let authors = document.getElementById("metadata-authors").value;
+    let reference = document.getElementById("metadata-reference").value;
+    let year = document.getElementById("metadata-year").value;
 
-  if(reference !== "" && !reference.startsWith("10.")) {
-    return notify("danger", "The submitted DOI: <b>" + reference + "</b> is invalid.")
-  }
+    if (reference !== "" && !reference.startsWith("10.")) {
+        return notify("danger", "The submitted DOI: <b>" + reference + "</b> is invalid.")
+    }
 
-  openedCollection.comments = comments || null;
-  openedCollection.doi = reference || null;
-  openedCollection.authors = authors || null;
+    openedCollection.comments = comments || null;
+    openedCollection.doi = reference || null;
+    openedCollection.authors = authors || null;
 
-  if(year !== "") {
-    openedCollection.year = Number(year);
-  } else {
-    openedCollection.year = null;
-  }
+    if (year !== "") {
+        openedCollection.year = Number(year);
+    } else {
+        openedCollection.year = null;
+    }
 
-  notify("success", "Metadata for collection <b>" + openedCollection.name + "</b> has been succesfully updated.");
+    notify("success", "Metadata for collection <b>" + openedCollection.name + "</b> has been succesfully updated.");
 
-  // Deference
-  openedCollection = null;
+    // Deference
+    openedCollection = null;
 
-  eqAreaProjectionMean();
-  saveLocalStorage();
+    eqAreaProjectionMean();
+    saveLocalStorage();
 
 }
 
 function eqAreaProjectionMean() {
 
-  /*
-   * Function eqAreaProjectionMean
-   * Plotting routine for collection means
-   */
+    /*
+     * Function eqAreaProjectionMean
+     * Plotting routine for collection means
+     */
 
-  const CHART_CONTAINER = "mean-container";
-  const TABLE_CONTAINER = "mean-table";
+    const CHART_CONTAINER = "mean-container";
+    const TABLE_CONTAINER = "mean-table";
 
-  const PRECISION = 2;
+    const PRECISION = 2;
 
     var dataSeries = [];
     var statisticsRows = [];
 
-  var selectedCollections = getSelectedCollections();
+    var selectedCollections = getSelectedCollections();
 
-  // Clear the charts
-  if(selectedCollections.length === 0) {
-    return document.getElementById(CHART_CONTAINER).innerHTML = document.getElementById(TABLE_CONTAINER).innerHTML = "";
-  }
-
-  selectedCollections.forEach(function(site) {
-
-    let sampleColor = HIGHCHARTS_BLUE;
-    let meanColor = HIGHCHARTS_GREEN;
-    let ellipseColor = HIGHCHARTS_RED;
-
-    // Overwrite with the selected color
-    if(site.color) {
-      meanColor = site.color;
-      sampleColor = site.color;
-      ellipseColor = site.color;
+    // Clear the charts
+    if (selectedCollections.length === 0) {
+        return document.getElementById(CHART_CONTAINER).innerHTML = document.getElementById(TABLE_CONTAINER).innerHTML = "";
     }
 
-    if(document.getElementById("random-mean-color").checked) {
-      sampleColor = meanColor = ellipseColor = "#" + (0x1000000 + Math.random() * 0xFFFFFF).toString(16).substr(1, 6);
-    }
+    selectedCollections.forEach(function (site) {
 
-    var cutofC = doCutoff(site.components.map(x => x.inReferenceCoordinates()));
-    var statistics = getStatisticalParameters(cutofC.components);
+        let sampleColor = HIGHCHARTS_BLUE;
+        let meanColor = HIGHCHARTS_GREEN;
+        let ellipseColor = HIGHCHARTS_RED;
 
-    // Check if a polarity switch is requested
-    var A95Ellipse = getConfidenceEllipse(statistics.pole.confidence);
+        // Overwrite with the selected color
+        if (site.color) {
+            meanColor = site.color;
+            sampleColor = site.color;
+            ellipseColor = site.color;
+        }
+
+        if (document.getElementById("random-mean-color").checked) {
+            sampleColor = meanColor = ellipseColor = "#" + (0x1000000 + Math.random() * 0xFFFFFF).toString(16).substr(1, 6);
+        }
+
+        var cutofC = doCutoff(site.components.map(x => x.inReferenceCoordinates()));
+        var statistics = getStatisticalParameters(cutofC.components);
+
+        // Check if a polarity switch is requested
+        var A95Ellipse = getConfidenceEllipse(statistics.pole.confidence);
 
         var a95ellipse
         if (A95_CONFIDENCE) {
@@ -2653,70 +2652,70 @@ function eqAreaProjectionMean() {
             a95ellipse = getPlaneData(statistics.dir.mean, statistics.dir.confidence);
         }
 
-    dataSeries.push({
-      "name": "Mean Direction " + site.name,
-      "type": "scatter",
-      "data": new Array(statistics.dir.mean).map(prepareDirectionData),
-      "color": meanColor,
-      "zIndex": 100,
-      "marker": {
-        "symbol": "circle",
-        "radius": 6,
-        "lineColor": meanColor,
-        "lineWidth": 1,
-        "fillColor": (statistics.dir.mean.inc < 0 ? HIGHCHARTS_WHITE : meanColor)
-      }
-    }, {
-      "name": "Confidence Ellipse",
-      "linkedTo": ":previous",
-      "type": "line",
-      "color": ellipseColor,
-      "data": a95ellipse,
-      "enableMouseTracking": false,
-      "marker": {
-        "enabled": false
-      }
-    });
+        dataSeries.push({
+            "name": "Mean Direction " + site.name,
+            "type": "scatter",
+            "data": new Array(statistics.dir.mean).map(prepareDirectionData),
+            "color": meanColor,
+            "zIndex": 100,
+            "marker": {
+                "symbol": "circle",
+                "radius": 6,
+                "lineColor": meanColor,
+                "lineWidth": 1,
+                "fillColor": (statistics.dir.mean.inc < 0 ? HIGHCHARTS_WHITE : meanColor)
+            }
+        }, {
+            "name": "Confidence Ellipse",
+            "linkedTo": ":previous",
+            "type": "line",
+            "color": ellipseColor,
+            "data": a95ellipse,
+            "enableMouseTracking": false,
+            "marker": {
+                "enabled": false
+            }
+        });
 
-    if(document.getElementById("show-samples-mean").checked) {
+        if (document.getElementById("show-samples-mean").checked) {
 
             let componentSeries = [];
 
-      site.components.map(x => x.inReferenceCoordinates()).forEach(function(component) {
+            site.components.map(x => x.inReferenceCoordinates()).forEach(function (component) {
 
-          // Go over each step
-          var direction = literalToCoordinates(component.coordinates).toVector(Direction);
+                // Go over each step
+                var direction = literalToCoordinates(component.coordinates).toVector(Direction);
 
-          // Do not show rejected
-          if(component.rejected) {
-            return;
-          }
+                // Do not show rejected
+                if (component.rejected) {
+                    return;
+                }
 
-          componentSeries.push({
-            "x": direction.dec,
-            "y": projectInclination(direction.inc),
-            "inc": direction.inc,
-            "component": component,
-            "marker": {
-              "fillColor": (direction.inc < 0 ? HIGHCHARTS_WHITE : sampleColor),
-              "lineWidth": 1,
-              "lineColor": sampleColor,
-              "symbol": "circle"
-            }
-          })
+                componentSeries.push({
+                    "x": direction.dec,
+                    "y": projectInclination(direction.inc),
+                    "inc": direction.inc,
+                    "component": component,
+                    "marker": {
+                        "fillColor": (direction.inc < 0 ? HIGHCHARTS_WHITE : sampleColor),
+                        "lineWidth": 1,
+                        "lineColor": sampleColor,
+                        "symbol": "circle"
+                    }
+                })
 
-      });
+            });
 
-      dataSeries.push({
-        "name": "",
-        "type": "scatter",
-        "data": componentSeries,
-        "color": sampleColor,
-        "linkedTo": ":previous",
-        "enableMouseTracking": false
-      });
+            dataSeries.push({
+                "name": "",
+                "type": "scatter",
+                "data": componentSeries,
+                "color": sampleColor,
+                "linkedTo": ":previous",
+                "enableMouseTracking": false
+            });
 
-    }
+        }
 
         var icon
         if (site.doi) {
@@ -2725,65 +2724,65 @@ function eqAreaProjectionMean() {
             icon = "<span class='text-danger'><i class='fas fa-id-card'></i></span>";
         }
 
-    statisticsRows.push([
-      "<tr>",
-      "  <td>" + site.name + "</td>",
-      "  <td>" + cutofC.components.filter(x => !x.rejected).length + "</td>",
-      "  <td>" + cutofC.components.length + "</td>",
-      "  <td>" + cutofC.cutoff.toFixed(PRECISION) + "</td>",
-      "  <td>" + cutofC.scatter.toFixed(PRECISION) + "</td>",
-      "  <td>" + statistics.dir.mean.dec.toFixed(PRECISION) + "</td>",
-      "  <td>" + statistics.dir.mean.inc.toFixed(PRECISION) + "</td>",
-      "  <td>" + statistics.dir.R.toFixed(PRECISION) + "</td>",
-      "  <td>" + statistics.dir.dispersion.toFixed(PRECISION) + "</td>",
-      "  <td>" + statistics.dir.confidence.toFixed(PRECISION) + "</td>",
-      "  <td>" + statistics.pole.dispersion.toFixed(PRECISION) + "</td>",
-      "  <td>" + statistics.pole.confidence.toFixed(PRECISION) + "</td>",
-      "  <td>" + statistics.pole.confidenceMin.toFixed(PRECISION) + "</td>",
-      "  <td>" + statistics.pole.confidenceMax.toFixed(PRECISION) + "</td>",
-      "  <td>" + statistics.butler.dDx.toFixed(PRECISION) + "</td>",
-      "  <td>" + statistics.butler.dIx.toFixed(PRECISION) + "</td>",
-      "  <td>" + statistics.dir.lambda.toFixed(PRECISION) + "</td>",
-      "  <td onclick='addCollectionMetadata(" + site.index + ");' style='cursor: pointer;'>" + icon + "</td>",
-      "</tr>"
-    ].join("\n"));
+        statisticsRows.push([
+            "<tr>",
+            "  <td>" + site.name + "</td>",
+            "  <td>" + cutofC.components.filter(x => !x.rejected).length + "</td>",
+            "  <td>" + cutofC.components.length + "</td>",
+            "  <td>" + cutofC.cutoff.toFixed(PRECISION) + "</td>",
+            "  <td>" + cutofC.scatter.toFixed(PRECISION) + "</td>",
+            "  <td>" + statistics.dir.mean.dec.toFixed(PRECISION) + "</td>",
+            "  <td>" + statistics.dir.mean.inc.toFixed(PRECISION) + "</td>",
+            "  <td>" + statistics.dir.R.toFixed(PRECISION) + "</td>",
+            "  <td>" + statistics.dir.dispersion.toFixed(PRECISION) + "</td>",
+            "  <td>" + statistics.dir.confidence.toFixed(PRECISION) + "</td>",
+            "  <td>" + statistics.pole.dispersion.toFixed(PRECISION) + "</td>",
+            "  <td>" + statistics.pole.confidence.toFixed(PRECISION) + "</td>",
+            "  <td>" + statistics.pole.confidenceMin.toFixed(PRECISION) + "</td>",
+            "  <td>" + statistics.pole.confidenceMax.toFixed(PRECISION) + "</td>",
+            "  <td>" + statistics.butler.dDx.toFixed(PRECISION) + "</td>",
+            "  <td>" + statistics.butler.dIx.toFixed(PRECISION) + "</td>",
+            "  <td>" + statistics.dir.lambda.toFixed(PRECISION) + "</td>",
+            "  <td onclick='addCollectionMetadata(" + site.index + ");' style='cursor: pointer;'>" + icon + "</td>",
+            "</tr>"
+        ].join("\n"));
 
-  });
+    });
 
-  document.getElementById(TABLE_CONTAINER).innerHTML = [
-    "  <caption>",
-    "    <div class='text-right'>",
-    "      <button class='btn btn-sm btn-light' onclick='exportMeanCSV()'><i class='far fa-file-image'></i> CSV</button>",
-    "      <button class='btn btn-sm btn-light' onclick='exportMeanJSON()'><i class='far fa-file-image'></i> JSON</button>",
-    "    </div>",
-    "  </caption>",
-    "  <thead>",
-    "  <tr>",
-    "    <td>Collection</td>",
-    "    <td>N</td>",
-    "    <td>Ns</td>",
-    "    <td>Cutoff</td>",
-    "    <td>S</td>",
-    "    <td>Dec</td>",
-    "    <td>Inc</td>",
-    "    <td>R</td>",
-    "    <td>k</td>",
-    "    <td>a95</td>",
-    "    <td>K</td>",
-    "    <td>A95</td>",
-    "    <td>A95min</td>",
-    "    <td>A95max</td>",
-    "    <td>ΔDx</td>",
-    "    <td>ΔIx</td>",
-    "    <td>λ</td>",
-    "    <td>Metadata</td>",
-    "  </tr>",
-    "  </thead>",
-    "  <tbody>",
-  ].concat(statisticsRows).join("\n");
+    document.getElementById(TABLE_CONTAINER).innerHTML = [
+        "  <caption>",
+        "    <div class='text-right'>",
+        "      <button class='btn btn-sm btn-light' onclick='exportMeanCSV()'><i class='far fa-file-image'></i> CSV</button>",
+        "      <button class='btn btn-sm btn-light' onclick='exportMeanJSON()'><i class='far fa-file-image'></i> JSON</button>",
+        "    </div>",
+        "  </caption>",
+        "  <thead>",
+        "  <tr>",
+        "    <td>Collection</td>",
+        "    <td>N</td>",
+        "    <td>Ns</td>",
+        "    <td>Cutoff</td>",
+        "    <td>S</td>",
+        "    <td>Dec</td>",
+        "    <td>Inc</td>",
+        "    <td>R</td>",
+        "    <td>k</td>",
+        "    <td>a95</td>",
+        "    <td>K</td>",
+        "    <td>A95</td>",
+        "    <td>A95min</td>",
+        "    <td>A95max</td>",
+        "    <td>ΔDx</td>",
+        "    <td>ΔIx</td>",
+        "    <td>λ</td>",
+        "    <td>Metadata</td>",
+        "  </tr>",
+        "  </thead>",
+        "  <tbody>",
+    ].concat(statisticsRows).join("\n");
 
-  // Create the chart
-  eqAreaChart(CHART_CONTAINER, dataSeries);
+    // Create the chart
+    eqAreaChart(CHART_CONTAINER, dataSeries);
 
 }
 
@@ -2793,24 +2792,24 @@ function eqAreaProjectionStatistics(vgp) {
      * Description: Handles plotting for equal area projection
      */
 
-  const CHART_CONTAINER = "direction-container";
-  const CHART_CONTAINER2 = "pole-container";
-  const TABLE_CONTAINER = "direction-table";
+    const CHART_CONTAINER = "direction-container";
+    const CHART_CONTAINER2 = "pole-container";
+    const TABLE_CONTAINER = "direction-table";
 
-  // Clear if nothing is selected
-  var selectedCollections = getSelectedCollections();
-  if(selectedCollections.length === 0) {
-    return document.getElementById(CHART_CONTAINER).innerHTML = document.getElementById(CHART_CONTAINER2).innerHTML = document.getElementById(TABLE_CONTAINER).innerHTML = "";
-  }
+    // Clear if nothing is selected
+    var selectedCollections = getSelectedCollections();
+    if (selectedCollections.length === 0) {
+        return document.getElementById(CHART_CONTAINER).innerHTML = document.getElementById(CHART_CONTAINER2).innerHTML = document.getElementById(TABLE_CONTAINER).innerHTML = "";
+    }
 
-  // Get a list of the selected sites
-  var allComponents = doCutoff(getSelectedComponents());
-  var statistics = getStatisticalParameters(allComponents.components);
+    // Get a list of the selected sites
+    var allComponents = doCutoff(getSelectedComponents());
+    var statistics = getStatisticalParameters(allComponents.components);
 
     var dataSeries = [];
     var dataSeriesPole = [];
 
-  var baseSite = new Site(0, 0);
+    var baseSite = new Site(0, 0);
 
     var convertedComps = allComponents.components.filter(x => x.latitude !== null && x.longitude !== null).map(function (x) {
         var site = new Site(x.longitude, x.latitude);
@@ -2831,19 +2830,19 @@ function eqAreaProjectionStatistics(vgp) {
             color = HIGHCHARTS_BLUE;
         }
 
-    dataSeries.push({
-      "x": direction.dec,
-      "y": projectInclination(direction.inc),
-      "inc": direction.inc,
-      "component": component,
-      "marker": {
-        "fillColor": (direction.inc < 0 ? HIGHCHARTS_WHITE : color),
-        "lineWidth": 1,
-        "lineColor": color
-      }
-    });
+        dataSeries.push({
+            "x": direction.dec,
+            "y": projectInclination(direction.inc),
+            "inc": direction.inc,
+            "component": component,
+            "marker": {
+                "fillColor": (direction.inc < 0 ? HIGHCHARTS_WHITE : color),
+                "lineWidth": 1,
+                "lineColor": color
+            }
+        });
 
-    var pole = baseSite.poleFrom(new Direction(direction.dec, direction.inc));
+        var pole = baseSite.poleFrom(new Direction(direction.dec, direction.inc));
 
         // Simple rotation rotate all vectors with mean vector to up/north
         if (!vgp || !component.latitude || !component.longitude) {
@@ -2854,19 +2853,19 @@ function eqAreaProjectionStatistics(vgp) {
             pole = baseSite.poleFrom(literalToCoordinates(component.coordinates).toVector(Direction))
         }
 
-    dataSeriesPole.push({
-      "x": pole.lng,
-      "y": projectInclination(pole.lat),
-      "inc": pole.lat,
-      "component": component,
-      "marker": {
-        "fillColor": (pole.lat < 0 ? HIGHCHARTS_WHITE : color),
-        "lineWidth": 1,
-        "lineColor": color
-      }
-    });
+        dataSeriesPole.push({
+            "x": pole.lng,
+            "y": projectInclination(pole.lat),
+            "inc": pole.lat,
+            "component": component,
+            "marker": {
+                "fillColor": (pole.lat < 0 ? HIGHCHARTS_WHITE : color),
+                "lineWidth": 1,
+                "lineColor": color
+            }
+        });
 
-  });
+    });
 
     var A95Ellipse = getConfidenceEllipse(statistics.pole.confidence);
     var A95EllipsePole = getPlaneData(poleStatistics.dir.mean, poleStatistics.dir.confidence);
@@ -2924,7 +2923,7 @@ function eqAreaProjectionStatistics(vgp) {
         if (!vgp) {
             poleSeries.push({
                 "name": "Deenen Criteria " + (vgp ? markPole : mark),
-                "data":getConfidenceEllipse(statistics.pole.confidenceMax).map(prepareDirectionData),
+                "data": getConfidenceEllipse(statistics.pole.confidenceMax).map(prepareDirectionData),
                 "type": "line",
                 "color": HIGHCHARTS_ORANGE,
                 "enableMouseTracking": false,
@@ -2945,55 +2944,55 @@ function eqAreaProjectionStatistics(vgp) {
             });
         }
 
-  }
+    }
 
-  const PRECISION = 2;
+    const PRECISION = 2;
 
-  document.getElementById(TABLE_CONTAINER).innerHTML = [
-    "  <caption>Statistical parameters for this distribution</caption>",
-    "  <thead>",
-    "  <tr>",
-    "    <td>N</td>",
-    "    <td>Ns</td>",
-    "    <td>Cutoff</td>",
-    "    <td>S</td>",
-    "    <td>Dec</td>",
-    "    <td>Inc</td>",
-    "    <td>R</td>",
-    "    <td>k</td>",
-    "    <td>a95</td>",
-    "    <td>K</td>",
-    "    <td>A95</td>",
-    "    <td>A95min</td>",
-    "    <td>A95max</td>",
-    "    <td>ΔDx</td>",
-    "    <td>ΔIx</td>",
-    "    <td>λ</td>",
-    "    <td>Save</td>",
-    "  </tr>",
-    "  </thead>",
-    "  <tbody>",
-    "  <tr>",
-    "    <td>" + allComponents.components.filter(x => !x.rejected).length + "</td>",
-    "    <td>" + allComponents.components.length + "</td>",
-    "    <td>" + allComponents.cutoff.toFixed(PRECISION) + "</td>",
-    "    <td>" + allComponents.scatter.toFixed(PRECISION) + "</td>",
-    "    <td>" + statistics.dir.mean.dec.toFixed(PRECISION) + "</td>",
-    "    <td>" + statistics.dir.mean.inc.toFixed(PRECISION) + "</td>",
-    "    <td>" + statistics.dir.R.toFixed(PRECISION) + "</td>",
-    "    <td>" + statistics.dir.dispersion.toFixed(PRECISION) + "</td>",
-    "    <td>" + statistics.dir.confidence.toFixed(PRECISION) + "</td>",
-    "    <td>" + statistics.pole.dispersion.toFixed(PRECISION) + "</td>",
-    "    <td>" + statistics.pole.confidence.toFixed(PRECISION) + "</td>",
-    "    <td>" + statistics.pole.confidenceMin.toFixed(PRECISION) + "</td>",
-    "    <td>" + statistics.pole.confidenceMax.toFixed(PRECISION) + "</td>",
-    "    <td>" + statistics.butler.dDx.toFixed(PRECISION) + "</td>",
-    "    <td>" + statistics.butler.dIx.toFixed(PRECISION) + "</td>",
-    "    <td>" + statistics.dir.lambda.toFixed(PRECISION) + "</td>",
-    "    <td onclick='saveCombinedCollection();' style='cursor: pointer;'><span class='text-success'><i class='fas fa-save'></i></span></td>",
-    "  </tr>",
-    "  </tbody>",
-  ].join("\n");
+    document.getElementById(TABLE_CONTAINER).innerHTML = [
+        "  <caption>Statistical parameters for this distribution</caption>",
+        "  <thead>",
+        "  <tr>",
+        "    <td>N</td>",
+        "    <td>Ns</td>",
+        "    <td>Cutoff</td>",
+        "    <td>S</td>",
+        "    <td>Dec</td>",
+        "    <td>Inc</td>",
+        "    <td>R</td>",
+        "    <td>k</td>",
+        "    <td>a95</td>",
+        "    <td>K</td>",
+        "    <td>A95</td>",
+        "    <td>A95min</td>",
+        "    <td>A95max</td>",
+        "    <td>ΔDx</td>",
+        "    <td>ΔIx</td>",
+        "    <td>λ</td>",
+        "    <td>Save</td>",
+        "  </tr>",
+        "  </thead>",
+        "  <tbody>",
+        "  <tr>",
+        "    <td>" + allComponents.components.filter(x => !x.rejected).length + "</td>",
+        "    <td>" + allComponents.components.length + "</td>",
+        "    <td>" + allComponents.cutoff.toFixed(PRECISION) + "</td>",
+        "    <td>" + allComponents.scatter.toFixed(PRECISION) + "</td>",
+        "    <td>" + statistics.dir.mean.dec.toFixed(PRECISION) + "</td>",
+        "    <td>" + statistics.dir.mean.inc.toFixed(PRECISION) + "</td>",
+        "    <td>" + statistics.dir.R.toFixed(PRECISION) + "</td>",
+        "    <td>" + statistics.dir.dispersion.toFixed(PRECISION) + "</td>",
+        "    <td>" + statistics.dir.confidence.toFixed(PRECISION) + "</td>",
+        "    <td>" + statistics.pole.dispersion.toFixed(PRECISION) + "</td>",
+        "    <td>" + statistics.pole.confidence.toFixed(PRECISION) + "</td>",
+        "    <td>" + statistics.pole.confidenceMin.toFixed(PRECISION) + "</td>",
+        "    <td>" + statistics.pole.confidenceMax.toFixed(PRECISION) + "</td>",
+        "    <td>" + statistics.butler.dDx.toFixed(PRECISION) + "</td>",
+        "    <td>" + statistics.butler.dIx.toFixed(PRECISION) + "</td>",
+        "    <td>" + statistics.dir.lambda.toFixed(PRECISION) + "</td>",
+        "    <td onclick='saveCombinedCollection();' style='cursor: pointer;'><span class='text-success'><i class='fas fa-save'></i></span></td>",
+        "  </tr>",
+        "  </tbody>",
+    ].join("\n");
 
     var a95ellipse
     if (A95_CONFIDENCE) {
@@ -3002,243 +3001,243 @@ function eqAreaProjectionStatistics(vgp) {
         a95ellipse = getPlaneData(statistics.dir.mean, statistics.dir.confidence);
     }
 
-  var directionSeries = [{
-    "name": "ChRM Directions",
-    "type": "scatter",
-    "zIndex": 5,
-    "color": HIGHCHARTS_BLUE,
-    "data": dataSeries
-  }, {
-    "name": "Mean Direction",
-    "data": new Array(statistics.dir.mean).map(prepareDirectionData),
-    "type": "scatter",
-    "zIndex": 10,
-    "color": HIGHCHARTS_GREEN,
-    "marker": {
-      "symbol": "circle",
-      "radius": 6,
-      "lineColor": HIGHCHARTS_GREEN,
-      "lineWidth": 1,
-      "fillColor": (statistics.dir.mean.inc < 0 ? HIGHCHARTS_WHITE : HIGHCHARTS_GREEN)
-    }
-  }, {
-    "name": "Confidence Ellipse",
-    "type": "line",
-    "zIndex": 10,
-    "color": HIGHCHARTS_RED,
-    "data": a95ellipse,
-    "enableMouseTracking": false,
-    "marker": {
-      "enabled": false
-    }
-  }];
+    var directionSeries = [{
+        "name": "ChRM Directions",
+        "type": "scatter",
+        "zIndex": 5,
+        "color": HIGHCHARTS_BLUE,
+        "data": dataSeries
+    }, {
+        "name": "Mean Direction",
+        "data": new Array(statistics.dir.mean).map(prepareDirectionData),
+        "type": "scatter",
+        "zIndex": 10,
+        "color": HIGHCHARTS_GREEN,
+        "marker": {
+            "symbol": "circle",
+            "radius": 6,
+            "lineColor": HIGHCHARTS_GREEN,
+            "lineWidth": 1,
+            "fillColor": (statistics.dir.mean.inc < 0 ? HIGHCHARTS_WHITE : HIGHCHARTS_GREEN)
+        }
+    }, {
+        "name": "Confidence Ellipse",
+        "type": "line",
+        "zIndex": 10,
+        "color": HIGHCHARTS_RED,
+        "data": a95ellipse,
+        "enableMouseTracking": false,
+        "marker": {
+            "enabled": false
+        }
+    }];
 
-  var plotBands = eqAreaPlotBand(statistics.dir.mean.dec, statistics.butler.dDx);
+    var plotBands = eqAreaPlotBand(statistics.dir.mean.dec, statistics.butler.dDx);
 
-  // Delegate to plotting routines
-  eqAreaChart(CHART_CONTAINER, directionSeries, plotBands);
-  eqAreaChart(CHART_CONTAINER2, poleSeries);
+    // Delegate to plotting routines
+    eqAreaChart(CHART_CONTAINER, directionSeries, plotBands);
+    eqAreaChart(CHART_CONTAINER2, poleSeries);
 
 }
 
 function saveCombinedCollection() {
 
-  /*
-   * function saveCombinedCollection
-   * Saves a combined collection
-   */
-
-  function modalConfirmCallback() {
-
     /*
-     * function modalConfirmCallback
-     * Callback fired when modal confirm is clicked for saving
+     * function saveCombinedCollection
+     * Saves a combined collection
      */
 
-    var name = document.getElementById("modal-name").value;
-    var discardRejected = document.getElementById("modal-discard-rejected").checked;
+    function modalConfirmCallback() {
 
-    // Name was not properly filled in
-    if(name === "") {
-      return notify("danger", "Could not add collection with an empty name.");
-    }
+        /*
+         * function modalConfirmCallback
+         * Callback fired when modal confirm is clicked for saving
+         */
 
-    var components = getSelectedComponents();
+        var name = document.getElementById("modal-name").value;
+        var discardRejected = document.getElementById("modal-discard-rejected").checked;
 
-    if(discardRejected) {
-      components = doCutoff(components).components.filter(x => !x.rejected);
-    }
+        // Name was not properly filled in
+        if (name === "") {
+            return notify("danger", "Could not add collection with an empty name.");
+        }
 
-    if(document.getElementById("modal-mirror-components").checked) {
-      switch(document.getElementById("flip-components-direction").value) {
-        case "mirror":
-          components = components.map(x => new Component(x, x.coordinates.reflect()));
-          break
-        case "positive":
-          components = components.map(function(x) {
-            if(x.coordinates.z > 0) {
-              return x;
-            } else {
-              return new Component(x, x.coordinates.reflect());
+        var components = getSelectedComponents();
+
+        if (discardRejected) {
+            components = doCutoff(components).components.filter(x => !x.rejected);
+        }
+
+        if (document.getElementById("modal-mirror-components").checked) {
+            switch (document.getElementById("flip-components-direction").value) {
+                case "mirror":
+                    components = components.map(x => new Component(x, x.coordinates.reflect()));
+                    break
+                case "positive":
+                    components = components.map(function (x) {
+                        if (x.coordinates.z > 0) {
+                            return x;
+                        } else {
+                            return new Component(x, x.coordinates.reflect());
+                        }
+                    });
+                    break
+                case "negative":
+                    components = components.map(function (x) {
+                        if (x.coordinates.z < 0) {
+                            return x;
+                        } else {
+                            return new Component(x, x.coordinates.reflect());
+                        }
+                    });
+                    break
             }
-          });
-          break
-        case "negative":
-          components = components.map(function(x) {
-            if(x.coordinates.z < 0) {
-              return x;
-            } else {
-              return new Component(x, x.coordinates.reflect());
-            }
-          });
-          break
-      }
+        }
+
+        // Make sure the coordinates are set back to specimen coordinates
+        // A user may complete a cutoff in a particular reference frame
+        components = components.map(x => new Component(x, fromReferenceCoordinates(COORDINATES, x, x.coordinates)));
+
+        collections.push({
+            "name": name,
+            "dirty": true,
+            "type": "collection",
+            "reference": null,
+            "components": components,
+            "created": new Date().toISOString()
+        });
+
+        notify("success", "Succesfully added collection <b>" + name + "</b> with <b>" + components.length + "</b> components in <b>" + COORDINATES + "</b> coordinates.");
+        updateSpecimenSelect();
+        saveLocalStorage();
+
     }
 
-    // Make sure the coordinates are set back to specimen coordinates
-    // A user may complete a cutoff in a particular reference frame
-    components = components.map(x => new Component(x, fromReferenceCoordinates(COORDINATES, x, x.coordinates)));
+    // Attach callback to the click event
+    document.getElementById("modal-confirm").onclick = modalConfirmCallback;
 
-    collections.push({
-      "name": name,
-      "dirty": true,
-      "type": "collection",
-      "reference": null,
-      "components": components,
-      "created": new Date().toISOString()
-    });
-
-    notify("success", "Succesfully added collection <b>" + name + "</b> with <b>" + components.length + "</b> components in <b>" + COORDINATES + "</b> coordinates.");
-    updateSpecimenSelect();
-    saveLocalStorage();
-
-  }
-
-  // Attach callback to the click event
-  document.getElementById("modal-confirm").onclick = modalConfirmCallback;
-
-  $("#map-modal").modal("show");
+    $("#map-modal").modal("show");
 
 }
 
 function transformEllipse(A95Ellipse, dir) {
 
-  /*
-   * Function transformEllipse
-   * Transforms the A95 confidence ellipse to a direction
-   */
+    /*
+     * Function transformEllipse
+     * Transforms the A95 confidence ellipse to a direction
+     */
 
-  // Create a fake site at the location of the expected paleolatitude for the transfomration
-  var site = new Site(0, dir.lambda);
+    // Create a fake site at the location of the expected paleolatitude for the transfomration
+    var site = new Site(0, dir.lambda);
 
-  // Go over each point and transform VGP to direction at location
-  var a95Ellipse = A95Ellipse.map(function(point) {
-    return site.directionFrom(new Pole(point.dec, point.inc)).toCartesian().rotateTo(dir.mean.dec, 90).toVector(Direction);
-  });
+    // Go over each point and transform VGP to direction at location
+    var a95Ellipse = A95Ellipse.map(function (point) {
+        return site.directionFrom(new Pole(point.dec, point.inc)).toCartesian().rotateTo(dir.mean.dec, 90).toVector(Direction);
+    });
 
-  let ellipse = a95Ellipse.map(prepareDirectionData);
+    let ellipse = a95Ellipse.map(prepareDirectionData);
 
-  // Flip was requested
-  if(document.getElementById("flip-ellipse").checked) {
-    return flipEllipse(dir.mean.inc, ellipse);
-  }
+    // Flip was requested
+    if (document.getElementById("flip-ellipse").checked) {
+        return flipEllipse(dir.mean.inc, ellipse);
+    }
 
-  return ellipse;
+    return ellipse;
 
 }
 
 function eqAreaPlotBand(mDec, decError) {
 
-  /*
-   * Function eqAreaPlotBand
-   * Creates a plot band around a declination, with a particular declination error
-   */
+    /*
+     * Function eqAreaPlotBand
+     * Creates a plot band around a declination, with a particular declination error
+     */
 
-  var minError = mDec - decError;
-  var maxError = mDec + decError;
+    var minError = mDec - decError;
+    var maxError = mDec + decError;
 
-  var plotBands = [{
-    "id": "plotband",
-    "from": minError,
-    "to": maxError,
-    "color": PLOTBAND_COLOR_BLUE,
-    "innerRadius": "0%",
-    "thickness": "100%",
-  }];
+    var plotBands = [{
+        "id": "plotband",
+        "from": minError,
+        "to": maxError,
+        "color": PLOTBAND_COLOR_BLUE,
+        "innerRadius": "0%",
+        "thickness": "100%",
+    }];
 
-  // Plotbands in polar charts cannot go below through North (e.g. 350 - 10)
-  // so we go from (360 - 10) and (350 - 360) instead
-  if(minError < 0) {
+    // Plotbands in polar charts cannot go below through North (e.g. 350 - 10)
+    // so we go from (360 - 10) and (350 - 360) instead
+    if (minError < 0) {
 
-    plotBands.push({
-      "id": "plotbandNeg",
-      "from": 360,
-      "to": minError + 360,
-      "color": PLOTBAND_COLOR_BLUE,
-      "innerRadius": "0%",
-      "thickness": "100%",
-    });
+        plotBands.push({
+            "id": "plotbandNeg",
+            "from": 360,
+            "to": minError + 360,
+            "color": PLOTBAND_COLOR_BLUE,
+            "innerRadius": "0%",
+            "thickness": "100%",
+        });
 
-  }
+    }
 
-  if(maxError > 360) {
+    if (maxError > 360) {
 
-    plotBands.push({
-      "id": "plotbandPos",
-      "from": 0,
-      "to": maxError - 360,
-      "color": PLOTBAND_COLOR_BLUE,
-      "innerRadius": "0%",
-      "thickness": "100%",
-    });
+        plotBands.push({
+            "id": "plotbandPos",
+            "from": 0,
+            "to": maxError - 360,
+            "color": PLOTBAND_COLOR_BLUE,
+            "innerRadius": "0%",
+            "thickness": "100%",
+        });
 
-  }
+    }
 
-  return plotBands;
+    return plotBands;
 
 }
 
 function prepareDirectionData(direction) {
 
-  /*
-   * Function prepareDirectionData
-   * Prepared a direction for plotting by projecting the inclination
-   */
+    /*
+     * Function prepareDirectionData
+     * Prepared a direction for plotting by projecting the inclination
+     */
 
-  return {
-    "x": direction.dec,
-    "y": projectInclination(direction.inc),
-    "inc": direction.inc
-  }
+    return {
+        "x": direction.dec,
+        "y": projectInclination(direction.inc),
+        "inc": direction.inc
+    }
 
 }
 
 function eqAreaChart(container, dataSeries, plotBands, tickPositions) {
 
-  /*
-   * Function eqAreaChart
-   * Creates an equal area chart
-   */
-
-  function addDegree() {
-
     /*
-     * Function addDegree
-     * Adds a degree symbol
+     * Function eqAreaChart
+     * Creates an equal area chart
      */
 
-    return this.value + "\u00B0";
+    function addDegree() {
 
-  }
+        /*
+         * Function addDegree
+         * Adds a degree symbol
+         */
 
-  function exportCSVPole() {
+        return this.value + "\u00B0";
 
-    /*
-     * Function exportCSVPole
-     * Exports VGP Distribution to CSV file
-     */
+    }
 
-    const HEADER = new Array("Sample, Pole Longitude, Pole Latitude, Core Azimuth, Core Dip, Bedding Strike, Bedding Dip, Latitude, Longitude, Age, Age Min, Age max");
+    function exportCSVPole() {
+
+        /*
+         * Function exportCSVPole
+         * Exports VGP Distribution to CSV file
+         */
+
+        const HEADER = new Array("Sample, Pole Longitude, Pole Latitude, Core Azimuth, Core Dip, Bedding Strike, Bedding Dip, Latitude, Longitude, Age, Age Min, Age max");
 
         var csv = HEADER.concat(dataSeries[0].data.map(function (point) {
             return [point.component.name,
@@ -3255,9 +3254,9 @@ function eqAreaChart(container, dataSeries, plotBands, tickPositions) {
                 point.component.ageMax].join(ITEM_DELIMITER)
         })).join(LINE_DELIMITER);
 
-    downloadAsCSV("VGP-distribution.csv", csv);
+        downloadAsCSV("VGP-distribution.csv", csv);
 
-  }
+    }
 
     function exportCSVDirection() {
 
@@ -3289,75 +3288,75 @@ function eqAreaChart(container, dataSeries, plotBands, tickPositions) {
 
     }
 
-  function exportCSV() {
+    function exportCSV() {
 
-    switch(container) {
-      case "pole-container":
-        return exportCSVPole();
-      case "direction-container":
-      case "modal-container":
-      case "foldtest-geographic-container":
-      case "foldtest-tectonic-container":
-      case "mean-container":
-        return exportCSVDirection();
-      default:
-        return;
+        switch (container) {
+            case "pole-container":
+                return exportCSVPole();
+            case "direction-container":
+            case "modal-container":
+            case "foldtest-geographic-container":
+            case "foldtest-tectonic-container":
+            case "mean-container":
+                return exportCSVDirection();
+            default:
+                return;
+        }
+
     }
 
-  }
+    const PRECISION = 2;
 
-  const PRECISION = 2;
+    var title;
+    if (container === "pole-container") {
+        title = "VGP Distribution";
+    } else if (container === "direction-container" || container === "modal-container") {
+        title = "ChRM Distribution";
+    } else if (container === "mean-container") {
+        title = "Mean Directions";
+    } else if (container === "foldtest-geographic-container") {
+        title = "Geographic Coordinates";
+    } else if (container === "foldtest-tectonic-container") {
+        title = "Tectonic Coordinates";
+    }
 
-  var title;
-  if(container === "pole-container") {
-    title = "VGP Distribution";
-  } else if(container === "direction-container" || container === "modal-container") {
-    title = "ChRM Distribution";
-  } else if(container === "mean-container") {
-    title = "Mean Directions";
-  } else if(container === "foldtest-geographic-container") {
-    title = "Geographic Coordinates";
-  } else if(container === "foldtest-tectonic-container") {
-    title = "Tectonic Coordinates";
-  }
+    var subtitle;
+    if (container === "foldtest-geographic-container") {
+        subtitle = "";
+    } else if (container === "foldtest-tectonic-container") {
+        subtitle = "";
+    } else {
+        subtitle = "(" + COORDINATES + " coordinates)";
+    }
 
-  var subtitle;
-  if(container === "foldtest-geographic-container") {
-    subtitle = "";
-  } else if(container === "foldtest-tectonic-container") {
-    subtitle = "";
-  } else {
-    subtitle = "(" + COORDINATES + " coordinates)";
-  }
+    // Add plotband to the legend and make it a toggle
+    if (plotBands !== undefined) {
 
-  // Add plotband to the legend and make it a toggle
-  if(plotBands !== undefined) {
+        // The legend item click must contain a closure for the plotband data
+        // Loop over the plotband data to add or remove it
+        dataSeries.push({
+            "color": HIGHCHARTS_BLUE,
+            "name": "ΔDx Confidence Parachute",
+            "lineWidth": 0,
+            "marker": {
+                "symbol": "square"
+            },
+            "events": {
+                "legendItemClick": (function (closure) {
+                    return function (event) {
+                        closure.forEach(function (plotBand) {
+                            if (this.visible) {
+                                this.chart.xAxis[0].removePlotBand(plotBand.id);
+                            } else {
+                                this.chart.xAxis[0].addPlotBand(plotBand);
+                            }
+                        }, this);
+                    }
+                })(memcpy(plotBands))
+            }
+        });
 
-    // The legend item click must contain a closure for the plotband data
-    // Loop over the plotband data to add or remove it
-    dataSeries.push({
-      "color": HIGHCHARTS_BLUE,
-      "name": "ΔDx Confidence Parachute",
-      "lineWidth": 0,
-      "marker": {
-        "symbol": "square"
-      },
-      "events": {
-        "legendItemClick": (function(closure) {
-          return function(event) {
-            closure.forEach(function(plotBand) {
-              if(this.visible) {
-                this.chart.xAxis[0].removePlotBand(plotBand.id);
-              } else {
-                this.chart.xAxis[0].addPlotBand(plotBand);
-              }
-            }, this);
-          }
-        })(memcpy(plotBands))
-      }
-    });
-
-  }
+    }
 
     // Default tick positions
     if (tickPositions === undefined) {

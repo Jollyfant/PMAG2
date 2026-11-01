@@ -23,13 +23,13 @@ function exportHandlerPredicted(event) {
     var charts = [
         $("#declination-container").highcharts(),
         $("#inclination-container").highcharts(),
-        $("#paleolatitude-container").highcharts()
+        $("#paleolatitude-container").highcharts(),
+        $("#poles-container").highcharts()
     ];
 
   if(charts.includes(undefined)) {
     return notify("danger", "Can not export charts that are not rendered.");
   }
-
   exportChartsWrapper("predicted", charts, event.target.id);
 
 }
