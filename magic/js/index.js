@@ -293,7 +293,11 @@ function exportMagIC() {
     "bed_dip",
     // Geography
     "lat",
-    "lon"
+    "lon",
+    "height",
+    // Geology
+    "geologic_classes",
+    "lithologies"
   );
   
   var specimensHeader = new Array(
@@ -306,6 +310,9 @@ function exportMagIC() {
     "method_codes",
     "citations",
     "software_packages",
+    // Geology
+    "geologic_classes",
+    "lithologies",
     // Interpretation
     "dir_comp",
     "dir_dec",
@@ -410,8 +417,12 @@ function exportMagIC() {
     return notify("danger", new Exception("No specimens to export."));
   }
 
-  // Samples are named after the specimens
-  notifyMagicOrientationConflicts(fileSpecimens.flat().filter(x => specimenTypes.get(x)), x => x.name);
+  notifyMagicOrientationConflicts(fileSpecimens.flat().filter(x => specimenTypes.get(x)), x => x.sample || x.name);
+
+  // Sites are taken from the sample names by a naming convention entered by the user
+  var siteOf = getMagicSiteNaming();
+  var magicSampleRecords = new Object();
+  var magicSiteRecords = new Object();
 
   data.forEach(function(file, locationIndex) {
 
@@ -431,12 +442,12 @@ function exportMagIC() {
     var ages = new Array();
     var levels = new Array();
 
-    // Collect samples to sites based on lat/lng
+    // Collect samples to sites by the sample naming convention
     var groupedSites = new Object();
 
     specimens.forEach(function(specimen) {
 
-      let key = specimen.latitude + "/" + specimen.longitude;
+      let key = siteOf(specimen.sample || specimen.name);
 
       if(!groupedSites.hasOwnProperty(key)) {
         groupedSites[key] = new Array();
@@ -447,20 +458,26 @@ function exportMagIC() {
     });
 
     // Go over all grouped specimens
-    Object.values(groupedSites).forEach(function(value, siteIndex) {
+    Object.entries(groupedSites).forEach(function([siteName, value]) {
 
-      let siteCollection = new Object({
-        "geologies": new Set(),
-        "lithologies": new Set(),
-        "demagnetizationTypes": new Set(),
-        "latitude": value.latitude,
-        "longitude": value.longitude,
-        "ages": new Array()
-      });
+      // One site record across all files, in the location of the file it first appears in
+      if(!magicSiteRecords.hasOwnProperty(siteName)) {
+        magicSiteRecords[siteName] = new Object({
+          "location": "location-" + locationIndex,
+          "geologies": new Set(),
+          "lithologies": new Set(),
+          "demagnetizationTypes": new Set(),
+          "positions": new Array(),
+          "ages": new Array()
+        });
+      }
+
+      let siteCollection = magicSiteRecords[siteName];
 
       value.forEach(function(specimen) {
 
         var type = specimenTypes.get(specimen);
+        var sampleName = specimen.sample || specimen.name;
 
         // The step code names the experiment (numbered if a specimen name occurs more than once in a file);
         // the protocol is the method of samples, sites and locations
@@ -489,34 +506,44 @@ function exportMagIC() {
         geologies.add(specimen.geology);
 
         // For sites
-        siteCollection.ages.push(specimen.ageMin, specimen.ageMax);
+        siteCollection.ages.push([specimen.age, specimen.ageMin, specimen.ageMax]);
         siteCollection.demagnetizationTypes.add(protocol);
         siteCollection.lithologies.add(specimen.lithology);
         siteCollection.geologies.add(specimen.geology);
+        siteCollection.positions.push([specimen.latitude, specimen.longitude]);
 
-        magicSamples.push([
-          specimen.name,
-          "site-" + siteIndex,
-          "s",
-          "g",
-          protocol,
-          "This study",
-          roundToPrecisionOf(specimen.coreAzimuth % 360, specimen.coreAzimuth),
-          roundToPrecisionOf(specimen.coreDip - 90, specimen.coreDip),
-          roundToPrecisionOf((specimen.beddingStrike + 90) % 360, specimen.beddingStrike),
-          specimen.beddingDip,
-          specimen.latitude,
-          longitude
-        ].join(TAB_DELIMITER));
+        // One sample record, with the orientation of its first specimen
+        if(!magicSampleRecords.hasOwnProperty(sampleName)) {
+          magicSampleRecords[sampleName] = {
+            "site": siteName,
+            "azimuth": getMagicAzimuth(specimen.coreAzimuth),
+            "dip": getMagicDip(specimen.coreDip),
+            "bed_dip_direction": getMagicAzimuth(specimen.beddingStrike, 90),
+            "bed_dip": specimen.beddingDip,
+            "height": specimen.level,
+            "protocols": new Array(),
+            "positions": new Array(),
+            "geologies": new Array(),
+            "lithologies": new Array()
+          };
+        }
+
+        var sampleRecord = magicSampleRecords[sampleName];
+        sampleRecord.protocols.push(protocol);
+        sampleRecord.positions.push([specimen.latitude, specimen.longitude]);
+        sampleRecord.geologies.push(specimen.geology);
+        sampleRecord.lithologies.push(specimen.lithology);
       
         var specimenBase = {
           "specimen": specimen.name,
-          "sample": specimen.name,
+          "sample": sampleName,
           "experiments": experiment,
           "result_quality": "g",
           "citations": "This study",
-          "azimuth": roundToPrecisionOf(specimen.coreAzimuth % 360, specimen.coreAzimuth),
-          "dip": roundToPrecisionOf(specimen.coreDip - 90, specimen.coreDip)
+          "geologic_classes": specimen.geology,
+          "lithologies": specimen.lithology,
+          "azimuth": getMagicAzimuth(specimen.coreAzimuth),
+          "dip": getMagicDip(specimen.coreDip)
         };
 
         // One row per interpretation and reference frame, or one row for a specimen without interpretations
@@ -572,8 +599,9 @@ function exportMagIC() {
             x,
             y,
             z,
-            direction.dec,
-            direction.inc,
+            // A direction that cannot be computed (a vector of length near 0) is left empty
+            (isNaN(direction.dec) || isNaN(direction.inc)) ? "" : direction.dec,
+            (isNaN(direction.dec) || isNaN(direction.inc)) ? "" : direction.inc,
             // A/m
             1E-6 * direction.length
           ].join(TAB_DELIMITER));
@@ -581,28 +609,6 @@ function exportMagIC() {
         });
       
       });
-
-      siteCollection.ages.sort(numericSort);
-      let averageSiteAge = siteCollection.ages.reduce((a, b) => a + b) / siteCollection.ages.length;
-
-      // TODO handling of ages/locations
-      magicSites.push([
-        "site-" + siteIndex,
-        "location-" + locationIndex,
-        "i",
-        "g",
-        Array.from(siteCollection.demagnetizationTypes).join(":"),
-        "This study",
-        Array.from(siteCollection.geologies).join(":"),
-        "Not Specified",
-        Array.from(siteCollection.lithologies).join(":"),
-        siteCollection.latitude,
-        siteCollection.longitude,
-        averageSiteAge,
-        siteCollection.ages[0],
-        siteCollection.ages[siteCollection.ages.length - 1],
-        "Ma"
-      ].join(TAB_DELIMITER));
 
     });
 
@@ -627,6 +633,47 @@ function exportMagIC() {
       "paleomagnetism.org-" + __VERSION__
     ].join(TAB_DELIMITER));
 
+  });
+
+  // One row per site
+  Object.entries(magicSiteRecords).forEach(function([siteName, siteCollection]) {
+
+    // Ages given by the specimens (Ma)
+    var siteAge = getMagicSiteAge(siteCollection.ages);
+    let sitePosition = getMagicMeanPosition(siteCollection.positions) || { "lat": "", "lon": "" };
+
+    // TODO handling of locations
+    magicSites.push([
+      siteName,
+      siteCollection.location,
+      "i",
+      "g",
+      Array.from(siteCollection.demagnetizationTypes).join(":"),
+      "This study",
+      joinMagicValues(Array.from(siteCollection.geologies)),
+      "Not Specified",
+      joinMagicValues(Array.from(siteCollection.lithologies)),
+      sitePosition.lat,
+      sitePosition.lon,
+      siteAge.age,
+      siteAge.age_low,
+      siteAge.age_high,
+      siteAge.age_unit
+    ].join(TAB_DELIMITER));
+
+  });
+
+  // One row per sample
+  Object.entries(magicSampleRecords).forEach(function([sampleName, record]) {
+    magicSamples.push(getMagicRow(sampleHeader, Object.assign({}, record, {
+      "sample": sampleName,
+      "result_type": "s",
+      "result_quality": "g",
+      "method_codes": joinMagicValues(record.protocols),
+      "citations": "This study",
+      "geologic_classes": joinMagicValues(record.geologies),
+      "lithologies": joinMagicValues(record.lithologies)
+    }, getMagicMeanPosition(record.positions) || {})));
   });
 
   // Concatenate information of all the MagIC tables

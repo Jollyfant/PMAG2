@@ -299,6 +299,91 @@ function notifyMagicOrientationConflicts(specimens, getSample) {
     "Give these specimens distinct names and samples before exporting.");
 }
 
+// Returns a function giving the site of a sample by one of PmagPy's sample naming conventions
+// ("1", "2", "3", "4-Z", "5", "7-Z"), or null for an answer that is not one of them
+function parseMagicSiteNaming(answer) {
+  if (answer === null || answer === undefined) return null;
+  const match = String(answer).trim().match(/^([1-57])(?:-(\d+))?$/);
+  if (!match) return null;
+  const convention = match[1];
+  const z = Number(match[2]);
+  if ((convention === "4" || convention === "7") && !(z > 0)) return null;
+  const site = function(sample) {
+    switch (convention) {
+      case "1": return sample.slice(0, -1);
+      case "2": return sample.replace(/^-+|-+$/g, "").split("-")[0];
+      case "3": return sample.split(".")[0];
+      case "4": return sample.slice(0, -z);
+      case "7": return sample.slice(0, z);
+      default: return sample;
+    }
+  };
+  // A convention that leaves nothing of the name gives the sample name
+  return sample => site(String(sample)) || String(sample);
+}
+
+// Asks once how site names follow from the sample names; an answer that is not a convention uses the sample names
+function getMagicSiteNaming() {
+  const answer = prompt(
+    "Sites are taken from the sample names. Enter the sample naming convention: " +
+    "1 = XXXXY (site XXXX, sample letter Y); 2 = XXXX-YY; 3 = XXXX.YY; " +
+    "4-Z = XXXXYYY with a sample designation of Z characters; 5 = site name same as sample; " +
+    "7-Z = XXXXYYY with a site designation of Z characters.", "5");
+  const naming = parseMagicSiteNaming(answer);
+  if (naming === null) {
+    notify("warning", "No sample naming convention was given (" + answer + "): each sample is exported as its own site.");
+    return parseMagicSiteNaming("5");
+  }
+  return naming;
+}
+
+// MagIC dip (the plunge of the specimen X axis) from the Paleomagnetism.org core dip, between -180 and 180
+function getMagicDip(coreDip) {
+  if (coreDip === null || coreDip === undefined || coreDip === "") return "";
+  const dip = ((coreDip - 90 + 180) % 360 + 360) % 360 - 180;
+  return roundToPrecisionOf(dip, coreDip);
+}
+
+// MagIC azimuth (0-360) from a Paleomagnetism.org azimuth or strike plus an offset, or "" when it is not set
+function getMagicAzimuth(value, offset) {
+  if (value === null || value === undefined || value === "") return "";
+  return roundToPrecisionOf((((value + (offset || 0)) % 360) + 360) % 360, value);
+}
+
+// Returns the age columns of a site from the [age, ageMin, ageMax] of its specimens (Ma): their age (the mean
+// when they differ) and the lowest and highest bounds, or empty columns without ages
+function getMagicSiteAge(ages) {
+  const numbers = (k) => ages.map(x => x[k]).filter(x => x !== null && x !== undefined && x !== "" && !isNaN(x)).map(Number);
+  const age = numbers(0), low = numbers(1), high = numbers(2);
+  if (age.length + low.length + high.length === 0) return { age: "", age_low: "", age_high: "", age_unit: "" };
+  return {
+    age: age.length === 0 ? "" : (new Set(age).size === 1 ? age[0] : age.reduce((a, b) => a + b) / age.length),
+    age_low: low.length ? Math.min(...low) : "",
+    age_high: high.length ? Math.max(...high) : "",
+    age_unit: "Ma"
+  };
+}
+
+// Returns the mean of positions [latitude, longitude] as { lat, lon } (longitude 0-360), or null without positions
+function getMagicMeanPosition(positions) {
+  const valid = positions.filter(p => p[0] !== null && p[0] !== undefined && p[1] !== null && p[1] !== undefined);
+  if (valid.length === 0) return null;
+  let x = 0, y = 0, z = 0;
+  valid.forEach(function([lat, lon]) {
+    x += Math.cos(lat * RADIANS) * Math.cos(lon * RADIANS);
+    y += Math.cos(lat * RADIANS) * Math.sin(lon * RADIANS);
+    z += Math.sin(lat * RADIANS);
+  });
+  const lat = Math.atan2(z, Math.sqrt(x * x + y * y)) / RADIANS;
+  const lon = ((Math.atan2(y, x) / RADIANS) + 360) % 360;
+  return { lat: Number(lat.toFixed(6)), lon: Number(lon.toFixed(6)) };
+}
+
+// Joins the distinct, non-empty values of a list with ":"
+function joinMagicValues(values) {
+  return [...new Set(values.filter(x => x !== null && x !== undefined && String(x).trim() !== "").map(String))].join(":");
+}
+
 // Returns a tab-delimited row of a MagIC table, in the order of its header
 function getMagicRow(header, row) {
   return header.map(column => (row[column] === undefined || row[column] === null) ? "" : row[column]).join("\t");

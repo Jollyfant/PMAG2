@@ -1370,6 +1370,9 @@ function convert_MAGIC() {
 
   notifyMagicOrientationConflicts(exportSpecimens, x => x.sample || x.name);
 
+  // Sites are taken from the sample names by a naming convention entered by the user
+  let siteOf = getMagicSiteNaming();
+
   let sitesMap = {};
   let samplesMap = {};
 
@@ -1379,55 +1382,34 @@ function convert_MAGIC() {
       specimen.sample || specimen.name;
 
     let siteName =
-      specimen.site || "unknown_site";
+      siteOf(sampleName);
+
+    let protocol =
+      MAGIC_PROTOCOL_CODES[specimenTypes.get(specimen)];
 
     if(!sitesMap[siteName]) {
-
-      sitesMap[siteName] = {
-
-        lat:
-          specimen.latitude != null
-            ? specimen.latitude
-            : "",
-
-        lon:
-          specimen.longitude != null
-            ? (
-                specimen.longitude < 0
-                  ? specimen.longitude + 360
-                  : specimen.longitude
-              )
-            : "",
-
-        age:
-          specimen.age != null
-            ? specimen.age
-            : "",
-
-        age_low:
-          specimen.ageMin != null
-            ? specimen.ageMin
-            : "",
-
-        age_high:
-          specimen.ageMax != null
-            ? specimen.ageMax
-            : "",
-
-        age_sigma: ""
-
-      };
-
+      sitesMap[siteName] = { positions: [], geology: [], lithology: [], protocols: [], ages: [] };
     }
+
+    let site = sitesMap[siteName];
+
+    site.positions.push([specimen.latitude, specimen.longitude]);
+    site.geology.push(specimen.geology);
+    site.lithology.push(specimen.lithology);
+    site.protocols.push(protocol);
+    site.ages.push([specimen.age, specimen.ageMin, specimen.ageMax]);
 
     if(!samplesMap[sampleName]) {
 
+      // The orientation of the first specimen of a sample
       samplesMap[sampleName] = {
 
         site: siteName,
 
-        level:
-          specimen.level || "",
+        height:
+          specimen.level != null
+            ? specimen.level
+            : "",
 
         bed_dip_direction:
           specimen.beddingStrike != null
@@ -1447,38 +1429,65 @@ function convert_MAGIC() {
         // MagIC dip is the plunge of the specimen X-axis (positive down)
         dip:
           specimen.coreDip != null
-            ? roundToPrecisionOf(specimen.coreDip - 90, specimen.coreDip)
-            : ""
+            ? getMagicDip(specimen.coreDip)
+            : "",
+
+        positions: [], geology: [], lithology: [], protocols: []
 
       };
 
     }
 
+    let sample = samplesMap[sampleName];
+
+    sample.positions.push([specimen.latitude, specimen.longitude]);
+    sample.geology.push(specimen.geology);
+    sample.lithology.push(specimen.lithology);
+    sample.protocols.push(protocol);
+
   });
+
+  const sitesHeader = [
+    "site", "lat", "lon", "age", "age_low", "age_high", "age_unit",
+    "geologic_classes", "lithologies", "method_codes", "citations"
+  ];
 
   let sitesLines = [
     "tab delimited\tsites",
-    "site\tlat\tlon\tage\tage_low\tage_high\tage_sigma"
+    sitesHeader.join("\t")
   ];
 
   Object.entries(sitesMap).forEach(function([siteName, s]) {
 
-    sitesLines.push(
-      `${siteName}\t${s.lat}\t${s.lon}\t${s.age}\t${s.age_low}\t${s.age_high}\t${s.age_sigma}`
-    );
+    sitesLines.push(getMagicRow(sitesHeader, Object.assign({
+      site: siteName,
+      geologic_classes: joinMagicValues(s.geology),
+      lithologies: joinMagicValues(s.lithology),
+      method_codes: joinMagicValues(s.protocols),
+      citations: "This study"
+    }, getMagicMeanPosition(s.positions) || {}, getMagicSiteAge(s.ages))));
 
   });
 
+  const samplesHeader = [
+    "sample", "site", "lat", "lon", "height", "azimuth", "dip", "bed_dip_direction", "bed_dip",
+    "geologic_classes", "lithologies", "method_codes", "citations"
+  ];
+
   let samplesLines = [
     "tab delimited\tsamples",
-    "sample\tsite\tlevel\tbed_dip_direction\tbed_dip\tazimuth\tdip"
+    samplesHeader.join("\t")
   ];
 
   Object.entries(samplesMap).forEach(function([sampleName, s]) {
 
-    samplesLines.push(
-      `${sampleName}\t${s.site}\t${s.level}\t${s.bed_dip_direction}\t${s.bed_dip}\t${s.azimuth}\t${s.dip}`
-    );
+    samplesLines.push(getMagicRow(samplesHeader, Object.assign({}, s, {
+      sample: sampleName,
+      geologic_classes: joinMagicValues(s.geology),
+      lithologies: joinMagicValues(s.lithology),
+      method_codes: joinMagicValues(s.protocols),
+      citations: "This study"
+    }, getMagicMeanPosition(s.positions) || {})));
 
   });
 
@@ -1488,7 +1497,8 @@ function convert_MAGIC() {
     "dir_comp", "dir_dec", "dir_inc", "dir_tilt_correction",
     "dir_mad_free", "dir_mad_anc", "dir_dang", "dir_n_measurements",
     "meas_step_min", "meas_step_max", "meas_step_unit",
-    "result_quality", "method_codes", "software_packages", "description"
+    "geologic_classes", "lithologies", "result_quality", "method_codes", "software_packages",
+    "citations", "description"
   ];
 
   let specimensLines = [
@@ -1498,7 +1508,7 @@ function convert_MAGIC() {
 
   let measurementsLines = [
     "tab delimited\tmeasurements",
-    "measurement\texperiment\tspecimen\tsequence\tquality\ttreat_temp\ttreat_ac_field\tdir_dec\tdir_inc\tmagn_moment\tmethod_codes"
+    "measurement\texperiment\tspecimen\tsequence\tquality\ttreat_temp\ttreat_ac_field\tdir_dec\tdir_inc\tmagn_moment\tmethod_codes\tcitations"
   ];
 
   let measurementCounter = 1;
@@ -1530,7 +1540,10 @@ function convert_MAGIC() {
       specimen: specimen.name,
       sample: sampleName,
       experiments: experiment,
-      volume: volumeM3
+      volume: volumeM3,
+      geologic_classes: specimen.geology || "",
+      lithologies: specimen.lithology || "",
+      citations: "This study"
     };
 
     // One row per interpretation and reference frame, or one row for a specimen without interpretations
@@ -1580,8 +1593,13 @@ function convert_MAGIC() {
 
       }
 
+      // A direction that cannot be computed (a vector of length near 0) is left empty
+      let hasDirection = !isNaN(dir.dec) && !isNaN(dir.inc);
+      let dirDec = hasDirection ? dir.dec : "";
+      let dirInc = hasDirection ? dir.inc : "";
+
       measurementsLines.push(
-        `${experiment}-${i + 1}\t${experiment}\t${specimen.name}\t${measurementCounter++}\t${quality}\t${treatment.treat_temp}\t${treatment.treat_ac_field}\t${dir.dec}\t${dir.inc}\t${magnMoment}\t${treatment.method_codes}`
+        `${experiment}-${i + 1}\t${experiment}\t${specimen.name}\t${measurementCounter++}\t${quality}\t${treatment.treat_temp}\t${treatment.treat_ac_field}\t${dirDec}\t${dirInc}\t${magnMoment}\t${treatment.method_codes}\tThis study`
       );
 
     });
