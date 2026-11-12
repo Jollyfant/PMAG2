@@ -1358,10 +1358,20 @@ function convert_MAGIC() {
     "\tAnonymous\t3.0"
   ];
 
+  // One demagnetization type per specimen, used in every table
+  let specimenTypes = getMagicDemagnetizationTypes(specimens);
+
+  let exportSpecimens = specimens.filter(x => specimenTypes.get(x));
+
+  if(exportSpecimens.length === 0) {
+    alert("No specimens to export.");
+    return;
+  }
+
   let sitesMap = {};
   let samplesMap = {};
 
-  specimens.forEach(function(specimen) {
+  exportSpecimens.forEach(function(specimen) {
 
     let sampleName =
       specimen.sample || specimen.name;
@@ -1472,100 +1482,56 @@ function convert_MAGIC() {
 
   let specimensLines = [
     "tab delimited\tspecimens",
-    "specimen\tsample\tvolume\tmeas_step_min\tmeas_step_max\tmeas_step_unit\tmethod_codes"
+    "specimen\tsample\texperiments\tvolume\tmeas_step_min\tmeas_step_max\tmeas_step_unit\tmethod_codes"
   ];
 
   let measurementsLines = [
     "tab delimited\tmeasurements",
-    "measurement\tspecimen\ttreat_temp\ttreat_ac_field\tdir_dec\tdir_inc\tmagn_moment\tmethod_codes"
+    "measurement\texperiment\tspecimen\tsequence\tquality\ttreat_temp\ttreat_ac_field\tdir_dec\tdir_inc\tmagn_moment\tmethod_codes"
   ];
 
   let measurementCounter = 1;
+  let experiments = {};
+  let unreadSteps = [];
 
-  specimens.forEach(function(specimen) {
+  exportSpecimens.forEach(function(specimen) {
 
     let sampleName =
       specimen.sample || specimen.name;
 
-    let methodCodes = [];
+    let type = specimenTypes.get(specimen);
+    let protocol = MAGIC_PROTOCOL_CODES[type];
 
-    if(specimen.demagnetizationType === "alternating") {
-      methodCodes.push("LP-DIR-AF");
-    } else {
-      methodCodes.push("LP-DIR-T");
+    // The measurements of a specimen are one experiment (numbered if a specimen name is loaded more than once)
+    let experiment = specimen.name + "_" + protocol;
+    experiments[experiment] = (experiments[experiment] || 0) + 1;
+    if(experiments[experiment] > 1) {
+      experiment += "_" + experiments[experiment];
     }
-
-    if(specimen.interpretations &&
-       specimen.interpretations.length > 0) {
-
-      let interp = specimen.interpretations[0];
-
-      if(interp.type === "TAU3") {
-        methodCodes.push("DE-BFP");
-      } else {
-        methodCodes.push("DE-BFL");
-      }
-
-      if(interp.anchored) {
-        methodCodes.push("DE-BFL-A");
-      }
-
-    }
-
-    methodCodes = methodCodes.join(":");
 
     let steps = specimen.steps;
-
-    if(!steps || steps.length === 0) {
-      return;
-    }
-
-    let stepValues =
-      steps.map(s => parseFloat(s.step));
-
-    let minStep = Math.min(...stepValues);
-    let maxStep = Math.max(...stepValues);
-
-    let stepUnit =
-      specimen.demagnetizationType === "alternating"
-        ? "T"
-        : "K";
 
     let volumeM3 =
       (specimen.volume || 10) / 1E6;
 
-    let minStepExport =
-      specimen.demagnetizationType === "alternating"
-        ? minStep / 1000
-        : minStep + 273;
-
-    let maxStepExport =
-      specimen.demagnetizationType === "alternating"
-        ? maxStep / 1000
-        : maxStep + 273;
+    let range = getMagicStepRange(type, specimen);
 
     specimensLines.push(
-      `${specimen.name}\t${sampleName}\t${volumeM3}\t${minStepExport}\t${maxStepExport}\t${stepUnit}\t${methodCodes}`
+      `${specimen.name}\t${sampleName}\t${experiment}\t${volumeM3}\t${range.meas_step_min}\t${range.meas_step_max}\t${range.meas_step_unit}\t${protocol}`
     );
 
-    steps.forEach(function(step) {
+    steps.forEach(function(step, i) {
 
       let dir = stepToDirection(step);
 
-      let treatTemp = "";
-      let treatAF = "";
+      let treatment = getMagicMeasurementTreatment(type, step.step, i);
 
-      if(specimen.demagnetizationType === "thermal") {
-
-        treatTemp =
-          parseFloat(step.step) + 273;
-
-      } else {
-
-        treatAF =
-          parseFloat(step.step) / 1000;
-
+      if(isNaN(treatment.value)) {
+        unreadSteps.push(specimen.name + " " + step.step);
       }
+
+      // Steps hidden in Paleomagnetism.org
+      let quality = step.visible === false ? "b" : "g";
 
       let magnMoment;
 
@@ -1585,12 +1551,16 @@ function convert_MAGIC() {
       }
 
       measurementsLines.push(
-        `${measurementCounter++}\t${specimen.name}\t${treatTemp}\t${treatAF}\t${dir.dec}\t${dir.inc}\t${magnMoment}\t${methodCodes}`
+        `${experiment}-${i + 1}\t${experiment}\t${specimen.name}\t${measurementCounter++}\t${quality}\t${treatment.treat_temp}\t${treatment.treat_ac_field}\t${dir.dec}\t${dir.inc}\t${magnMoment}\t${treatment.method_codes}`
       );
 
     });
 
   });
+
+  if(unreadSteps.length > 0) {
+    notify("warning", "The treatment of " + unreadSteps.length + " step(s) could not be read from the step label and was left empty (" + unreadSteps.slice(0, 3).join(", ") + (unreadSteps.length > 3 ? ", ..." : "") + ").");
+  }
 
   let content = [
 

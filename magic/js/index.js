@@ -185,11 +185,7 @@ function checkSpecimen(specimen) {
 
   try {
   
-    // Check all the required metadata
-    if(specimen.demagnetizationType === null) {
-      throw("Demagnetization type is not set.");
-    }
-
+    // Check all the required metadata (a missing demagnetization type is resolved by the export)
     if(specimen.age === null) {
       throw("Age is not set.");
     }
@@ -304,6 +300,7 @@ function exportMagIC() {
     // Names
     "specimen",
     "sample",
+    "experiments",
     // Result
     "result_quality",
     "method_codes",
@@ -392,9 +389,22 @@ function exportMagIC() {
   var magicLocations = new Array();
   var experimentCounter = 0;
 
+  // One demagnetization type per specimen, used in every table
+  var fileSpecimens = data.map(file => JSON.parse(file.data).specimens);
+  var specimenTypes = getMagicDemagnetizationTypes(fileSpecimens.flat());
+  var experimentNames = new Object();
+
+  if(!fileSpecimens.flat().some(x => specimenTypes.get(x))) {
+    return notify("danger", new Exception("No specimens to export."));
+  }
+
   data.forEach(function(file, locationIndex) {
 
-    var specimens = JSON.parse(file.data).specimens;
+    var specimens = fileSpecimens[locationIndex].filter(x => specimenTypes.get(x));
+
+    if(specimens.length === 0) {
+      return;
+    }
 
     // Create a new set for the demagnetization codes
     var demagnetizationTypes = new Set();
@@ -435,14 +445,16 @@ function exportMagIC() {
 
       value.forEach(function(specimen) {
 
-        var demagnetizationType;
-      
-        if(specimen.demagnetizationType === "thermal") {
-          demagnetizationType = DEMAGNETIZATION_THERMAL;
-        } else if(specimen.demagnetizationType === "alternating") {
-          demagnetizationType = DEMAGNETIZATION_ALTERNATING;
-        } else {
-          throw(new Exception("Could not determine demagnetization type for specimen " + specimen.name));
+        var type = specimenTypes.get(specimen);
+
+        // The step code names the experiment (numbered if a specimen name occurs more than once in a file);
+        // the protocol is the method of samples, sites and locations
+        var demagnetizationType = (type === "thermal" ? DEMAGNETIZATION_THERMAL : DEMAGNETIZATION_ALTERNATING);
+        var protocol = MAGIC_PROTOCOL_CODES[type];
+        var experiment = specimen.name + "_" + locationIndex + "_" + demagnetizationType;
+        experimentNames[experiment] = (experimentNames[experiment] || 0) + 1;
+        if(experimentNames[experiment] > 1) {
+          experiment += "_" + experimentNames[experiment];
         }
       
         let longitude = specimen.longitude;
@@ -457,13 +469,13 @@ function exportMagIC() {
       
         // Save the minimum and maximum ages
         ages.push(specimen.ageMin, specimen.ageMax);
-        demagnetizationTypes.add(demagnetizationType);
+        demagnetizationTypes.add(protocol);
         lithologies.add(specimen.lithology);
         geologies.add(specimen.geology);
 
         // For sites
         siteCollection.ages.push(specimen.ageMin, specimen.ageMax);
-        siteCollection.demagnetizationTypes.add(demagnetizationType);
+        siteCollection.demagnetizationTypes.add(protocol);
         siteCollection.lithologies.add(specimen.lithology);
         siteCollection.geologies.add(specimen.geology);
 
@@ -472,7 +484,7 @@ function exportMagIC() {
           "site-" + siteIndex,
           "s",
           "g",
-          demagnetizationType,
+          protocol,
           "This study",
           roundToPrecisionOf(specimen.coreAzimuth % 360, specimen.coreAzimuth),
           roundToPrecisionOf(specimen.coreDip - 90, specimen.coreDip),
@@ -483,18 +495,18 @@ function exportMagIC() {
         ].join(TAB_DELIMITER));
       
         // Determine minimum and maximum step in correct units
-        var minimumStep = (demagnetizationType === DEMAGNETIZATION_ALTERNATING ? toTesla(specimen.steps[0].step) : toKelvin(specimen.steps[0].step));
-        var maximumStep = (demagnetizationType === DEMAGNETIZATION_ALTERNATING ? toTesla(specimen.steps[specimen.steps.length - 1].step) : toKelvin(specimen.steps[specimen.steps.length - 1].step));
+        var range = getMagicStepRange(type, specimen);
       
         magicSpecimens.push([
           specimen.name,
           specimen.name,
+          experiment,
           "g",
-          demagnetizationType,
+          protocol,
           "This study",
-          minimumStep,
-          maximumStep,
-          getStepUnit(demagnetizationType),
+          range.meas_step_min,
+          range.meas_step_max,
+          range.meas_step_unit,
           roundToPrecisionOf(specimen.coreAzimuth % 360, specimen.coreAzimuth),
           roundToPrecisionOf(specimen.coreDip - 90, specimen.coreDip)
         ].join(TAB_DELIMITER));
@@ -504,6 +516,7 @@ function exportMagIC() {
       
           // Convert x, y, z in specimen coordinates to a direction
           var direction = new Coordinates(step.x, step.y, step.z).toVector(Direction);
+          var treatment = getMagicMeasurementTreatment(type, step.step, i);
       
           // Intensities are in Am^2 in MagIC.
           // Our values are in μA/m so convert it: for Utrecht bug we already normalised to volume
@@ -518,16 +531,17 @@ function exportMagIC() {
           }
       
           magicMeasurements.push([
-            specimen.name + "_" + locationIndex + "_" + step.step,
-            specimen.name + "_" + locationIndex + "_" + demagnetizationType,
+            experiment + "-" + (i + 1),
+            experiment,
             specimen.name,
             experimentCounter++,
             "u",
-            "g",
-            demagnetizationType,
+            // Steps hidden in Paleomagnetism.org
+            (step.visible === false ? "b" : "g"),
+            treatment.method_codes,
             "This study",
-            (demagnetizationType === DEMAGNETIZATION_ALTERNATING ? toTesla(step.step) : 0),
-            (demagnetizationType === DEMAGNETIZATION_THERMAL ? toKelvin(step.step) : 293),
+            treatment.treat_ac_field,
+            treatment.treat_temp,
             x,
             y,
             z,
@@ -598,44 +612,6 @@ function exportMagIC() {
   ).map(table => table.join(LINE_DELIMITER)).join(LINE_DELIMITER + MAGIC_TABLE_DELIMITER + LINE_DELIMITER);
 
   downloadMagICTXT(lines);
-
-}
-
-function getStepUnit(demagnetizationType) {
-
-  /*
-   * Function getStepUnit
-   * Returns the step unit based ont he demagnetization type (Tesla T or Kelvin K)
-   */
-
-  switch(demagnetizationType) {
-    case DEMAGNETIZATION_ALTERNATING:
-      return "T";
-    case DEMAGNETIZATION_THERMAL:
-      return "K";
-  }
-
-}
-
-function toTesla(step) {
-
-  /*
-   * Function toTesla
-   * Converts a step to a value in Tesla (assumes mT)
-   */
-
-  return 1E-3 * extractNumbers(step);
-
-}
-
-function toKelvin(step) {
-
-  /*
-   * Function toKelvin
-   * Converts a step to a value in Kelvin (assumes C)
-   */
-
-  return 273 + extractNumbers(step);
 
 }
 
