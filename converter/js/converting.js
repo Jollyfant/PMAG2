@@ -1449,7 +1449,7 @@ function convert_MAGIC() {
 
   const sitesHeader = [
     "site", "lat", "lon", "age", "age_low", "age_high", "age_unit",
-    "geologic_classes", "lithologies", "method_codes", "citations"
+    "geologic_classes", "geologic_types", "lithologies", "method_codes", "citations"
   ];
 
   let sitesLines = [
@@ -1461,7 +1461,8 @@ function convert_MAGIC() {
 
     sitesLines.push(getMagicRow(sitesHeader, Object.assign({
       site: siteName,
-      geologic_classes: joinMagicValues(s.geology),
+      geologic_classes: getMagicGeologicClasses(s.geology),
+      geologic_types: MAGIC_NOT_SPECIFIED,
       lithologies: joinMagicValues(s.lithology),
       method_codes: joinMagicValues(s.protocols),
       citations: "This study"
@@ -1483,7 +1484,7 @@ function convert_MAGIC() {
 
     samplesLines.push(getMagicRow(samplesHeader, Object.assign({}, s, {
       sample: sampleName,
-      geologic_classes: joinMagicValues(s.geology),
+      geologic_classes: getMagicGeologicClasses(s.geology),
       lithologies: joinMagicValues(s.lithology),
       method_codes: joinMagicValues(s.protocols),
       citations: "This study"
@@ -1541,7 +1542,7 @@ function convert_MAGIC() {
       sample: sampleName,
       experiments: experiment,
       volume: volume === null ? "" : volume / 1E6,
-      geologic_classes: specimen.geology || "",
+      geologic_classes: getMagicGeologicClasses(specimen.geology),
       lithologies: specimen.lithology || "",
       citations: "This study"
     };

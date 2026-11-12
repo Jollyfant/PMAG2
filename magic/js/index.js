@@ -538,7 +538,7 @@ function exportMagIC() {
           "result_quality": "g",
           "citations": "This study",
           "volume": getMagicVolume(specimen) === null ? "" : getMagicVolume(specimen) / 1E6, // m³
-          "geologic_classes": specimen.geology,
+          "geologic_classes": getMagicGeologicClasses(specimen.geology),
           "lithologies": specimen.lithology,
           "azimuth": getMagicAzimuth(specimen.coreAzimuth),
           "dip": getMagicDip(specimen.coreDip)
@@ -609,8 +609,8 @@ function exportMagIC() {
     magicLocations.push([
       "location-" + locationIndex,
       determineLocationType(latitudes, longitudes, levels),
-      Array.from(geologies.values()).join(":"),
-      Array.from(lithologies.values()).join(":"),
+      getMagicGeologicClasses(Array.from(geologies)),
+      joinMagicValues(Array.from(lithologies)),
       latitudes[0],
       latitudes[latitudes.length - 1],
       longitudes[0],
@@ -639,8 +639,8 @@ function exportMagIC() {
       "g",
       Array.from(siteCollection.demagnetizationTypes).join(":"),
       "This study",
-      joinMagicValues(Array.from(siteCollection.geologies)),
-      "Not Specified",
+      getMagicGeologicClasses(Array.from(siteCollection.geologies)),
+      MAGIC_NOT_SPECIFIED,
       joinMagicValues(Array.from(siteCollection.lithologies)),
       sitePosition.lat,
       sitePosition.lon,
@@ -660,7 +660,7 @@ function exportMagIC() {
       "result_quality": "g",
       "method_codes": joinMagicValues(record.protocols),
       "citations": "This study",
-      "geologic_classes": joinMagicValues(record.geologies),
+      "geologic_classes": getMagicGeologicClasses(record.geologies),
       "lithologies": joinMagicValues(record.lithologies)
     }, getMagicMeanPosition(record.positions) || {})));
   });

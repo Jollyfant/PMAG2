@@ -384,6 +384,14 @@ function joinMagicValues(values) {
   return [...new Set(values.filter(x => x !== null && x !== undefined && String(x).trim() !== "").map(String))].join(":");
 }
 
+// MagIC vocabulary value for a geologic class or type that is not given
+const MAGIC_NOT_SPECIFIED = "Not Specified";
+
+// Returns the geologic classes of a value or list of values, or "Not Specified" without any
+function getMagicGeologicClasses(values) {
+  return joinMagicValues([].concat(values)) || MAGIC_NOT_SPECIFIED;
+}
+
 // Lab formats that give magnetizations (A/m) without a specimen volume, and the volume (cc) their importers set
 const MAGIC_ASSUMED_VOLUMES = { ANU: 10, JR5: 10, JR6: 10, CENIEH: 10, CENIEHREG: 10, MUNICH: 10, XIAN: 10, RS3: 1 };
 
