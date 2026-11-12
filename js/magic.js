@@ -384,6 +384,42 @@ function joinMagicValues(values) {
   return [...new Set(values.filter(x => x !== null && x !== undefined && String(x).trim() !== "").map(String))].join(":");
 }
 
+// Lab formats that give magnetizations (A/m) without a specimen volume, and the volume (cc) their importers set
+const MAGIC_ASSUMED_VOLUMES = { ANU: 10, JR5: 10, JR6: 10, CENIEH: 10, CENIEHREG: 10, MUNICH: 10, XIAN: 10, RS3: 1 };
+
+// Returns the specimen volume in cc, or null when it is not given or was assumed on import
+function getMagicVolume(specimen) {
+  const volume = Number(specimen.volume);
+  if (specimen.volume === null || specimen.volume === undefined || specimen.volume === "" || !(volume > 0)) return null;
+  if (specimen.volumeAssumed || MAGIC_ASSUMED_VOLUMES[specimen.format] === volume) return null;
+  return volume;
+}
+
+// Returns the magnetization of a step: magn_volume (A/m) and, with a specimen volume, the moment magn_moment
+// and its components magn_x, magn_y, magn_z (Am²). Steps are in μA/m, or in pAm² for the Utrecht intensity bug.
+// Specimens marked volumeAssumed were imported from moments with an assumed volume: they get the moment only.
+function getMagicMagnetization(specimen, step) {
+  const volume = getMagicVolume(specimen);
+  const length = Math.sqrt(step.x * step.x + step.y * step.y + step.z * step.z);
+  let momentScale = null, volumeScale = null;
+  if (specimen.volumeAssumed && Number(specimen.volume) > 0) {
+    momentScale = 1E-12 * Number(specimen.volume);
+  } else if (isUtrechtIntensityBug(specimen)) {
+    momentScale = 1E-12;
+    if (volume !== null) volumeScale = 1E-6 / volume;
+  } else {
+    volumeScale = 1E-6;
+    if (volume !== null) momentScale = 1E-12 * volume;
+  }
+  return {
+    magn_x: momentScale === null ? "" : momentScale * step.x,
+    magn_y: momentScale === null ? "" : momentScale * step.y,
+    magn_z: momentScale === null ? "" : momentScale * step.z,
+    magn_moment: momentScale === null ? "" : momentScale * length,
+    magn_volume: volumeScale === null ? "" : volumeScale * length
+  };
+}
+
 // Returns a tab-delimited row of a MagIC table, in the order of its header
 function getMagicRow(header, row) {
   return header.map(column => (row[column] === undefined || row[column] === null) ? "" : row[column]).join("\t");

@@ -1508,7 +1508,7 @@ function convert_MAGIC() {
 
   let measurementsLines = [
     "tab delimited\tmeasurements",
-    "measurement\texperiment\tspecimen\tsequence\tquality\ttreat_temp\ttreat_ac_field\tdir_dec\tdir_inc\tmagn_moment\tmethod_codes\tcitations"
+    "measurement\texperiment\tspecimen\tsequence\tquality\ttreat_temp\ttreat_ac_field\tdir_dec\tdir_inc\tmagn_moment\tmagn_volume\tmethod_codes\tcitations"
   ];
 
   let measurementCounter = 1;
@@ -1533,14 +1533,14 @@ function convert_MAGIC() {
 
     let steps = specimen.steps;
 
-    let volumeM3 =
-      (specimen.volume || 10) / 1E6;
+    // Volume in cc, or null when not given or assumed on import
+    let volume = getMagicVolume(specimen);
 
     let base = {
       specimen: specimen.name,
       sample: sampleName,
       experiments: experiment,
-      volume: volumeM3,
+      volume: volume === null ? "" : volume / 1E6,
       geologic_classes: specimen.geology || "",
       lithologies: specimen.lithology || "",
       citations: "This study"
@@ -1576,22 +1576,8 @@ function convert_MAGIC() {
 
       let quality = excludedSteps.excluded.has(i) ? "b" : "g";
 
-      let magnMoment;
-
-      if(step.moment != null) {
-
-        magnMoment = step.moment;
-
-      } else {
-
-        let intensity = dir.length;
-
-        magnMoment =
-          intensity *
-          volumeM3 /
-          1E5;
-
-      }
+      // Moment (Am²) with a specimen volume, and magnetization (A/m)
+      let magnetization = getMagicMagnetization(specimen, step);
 
       // A direction that cannot be computed (a vector of length near 0) is left empty
       let hasDirection = !isNaN(dir.dec) && !isNaN(dir.inc);
@@ -1599,7 +1585,7 @@ function convert_MAGIC() {
       let dirInc = hasDirection ? dir.inc : "";
 
       measurementsLines.push(
-        `${experiment}-${i + 1}\t${experiment}\t${specimen.name}\t${measurementCounter++}\t${quality}\t${treatment.treat_temp}\t${treatment.treat_ac_field}\t${dirDec}\t${dirInc}\t${magnMoment}\t${treatment.method_codes}\tThis study`
+        `${experiment}-${i + 1}\t${experiment}\t${specimen.name}\t${measurementCounter++}\t${quality}\t${treatment.treat_temp}\t${treatment.treat_ac_field}\t${dirDec}\t${dirInc}\t${magnetization.magn_moment}\t${magnetization.magn_volume}\t${treatment.method_codes}\tThis study`
       );
 
     });

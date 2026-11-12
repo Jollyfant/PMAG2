@@ -214,11 +214,6 @@ function checkSpecimen(specimen) {
       throw("Geology is not set.");
     }
 
-    if(specimen.volume === null) {
-      specimen.volume = 10.5;
-      notify("warning", "Volume is not set: assuming a volume of 10.5cc.");
-    }
-
   } catch(exception) {
     throw(new Exception(specimen.name + " " + exception));
   }
@@ -305,6 +300,7 @@ function exportMagIC() {
     "specimen",
     "sample",
     "experiments",
+    "volume",
     // Result
     "result_quality",
     "method_codes",
@@ -353,6 +349,7 @@ function exportMagIC() {
     "dir_dec",
     "dir_inc",
     // Magnetization
+    "magn_moment",
     "magn_volume"
   );
 
@@ -540,6 +537,7 @@ function exportMagIC() {
           "experiments": experiment,
           "result_quality": "g",
           "citations": "This study",
+          "volume": getMagicVolume(specimen) === null ? "" : getMagicVolume(specimen) / 1E6, // m³
           "geologic_classes": specimen.geology,
           "lithologies": specimen.lithology,
           "azimuth": getMagicAzimuth(specimen.coreAzimuth),
@@ -573,17 +571,8 @@ function exportMagIC() {
           var direction = new Coordinates(step.x, step.y, step.z).toVector(Direction);
           var treatment = getMagicMeasurementTreatment(type, step.step, i);
       
-          // Intensities are in Am^2 in MagIC.
-          // Our values are in μA/m so convert it: for Utrecht bug we already normalised to volume
-          if(isUtrechtIntensityBug(specimen)) {
-            var x = 1E-12 * step.x;
-            var y = 1E-12 * step.y;
-            var z = 1E-12 * step.z;
-          } else {
-            var x = 1E-12 * step.x * (specimen.volume || 10.5);
-            var y = 1E-12 * step.y * (specimen.volume || 10.5);
-            var z = 1E-12 * step.z * (specimen.volume || 10.5);
-          }
+          // Moments (Am²) with a specimen volume, and magnetization (A/m)
+          var magnetization = getMagicMagnetization(specimen, step);
       
           magicMeasurements.push([
             experiment + "-" + (i + 1),
@@ -596,14 +585,14 @@ function exportMagIC() {
             "This study",
             treatment.treat_ac_field,
             treatment.treat_temp,
-            x,
-            y,
-            z,
+            magnetization.magn_x,
+            magnetization.magn_y,
+            magnetization.magn_z,
             // A direction that cannot be computed (a vector of length near 0) is left empty
             (isNaN(direction.dec) || isNaN(direction.inc)) ? "" : direction.dec,
             (isNaN(direction.dec) || isNaN(direction.inc)) ? "" : direction.inc,
-            // A/m
-            1E-6 * direction.length
+            magnetization.magn_moment,
+            magnetization.magn_volume
           ].join(TAB_DELIMITER));
       
         });

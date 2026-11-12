@@ -468,7 +468,8 @@ function importMagic(file) {
           ageHigh = NaNTo(ageHigh, null);
 
           var level = NaNTo(sample.level, null);
-          var volume = NaNTo(object.volume, 1E-5);
+          // Specimen volume in m³, or null when not given
+          var volume = Number(object.volume) > 0 ? Number(object.volume) : null;
 
           // MagIC dip is the plunge of the specimen X-axis: coreDip = dip + 90.
           // A missing dip gives coreDip 90 and a missing azimuth 0: geographic = specimen coordinates.
@@ -506,7 +507,7 @@ function importMagic(file) {
             "ageMax": ageHigh,
             "lithology": null,
             "name": object.specimen,
-            "volume": 1E6 * volume,
+            "volume": volume === null ? null : 1E6 * volume,
             "beddingStrike": Number(sample["bed_dip_direction"]) - 90 || 0,
             "beddingDip": Number(sample["bed_dip"]) || 0,
             "coreAzimuth": Number(sample["azimuth"]) || 0,
@@ -542,7 +543,16 @@ function importMagic(file) {
             return;
           }
 
-          var intensity = 1E6 * object["magn_moment"] / (specimen.volume / 1E5);
+          // Intensity in μA/m from magn_volume (A/m), or from magn_moment (Am²) and the volume in cc (10 cc when not given)
+          if(object["magn_volume"] !== undefined && object["magn_volume"] !== "") {
+            var intensity = 1E6 * Number(object["magn_volume"]);
+          } else {
+            if(specimen.volume === null) {
+              specimen.volume = 10;
+              specimen.volumeAssumed = true;
+            }
+            var intensity = 1E12 * Number(object["magn_moment"]) / specimen.volume;
+          }
           var coordinates = new Direction(object["dir_dec"], object["dir_inc"], intensity).toCartesian();
           specimen.steps.push(new Measurement(step.toString(), coordinates, null));
           specimen.demagnetizationType = demagnetizationType;
@@ -2543,6 +2553,7 @@ function importCryoThing(sitFile, meaFile) {
       "sample": specimenName,
       "name": specimenName,
       "volume": volume,                   // cm³
+      "volumeAssumed": !(Number(parts[6]) > 0), // moments were divided by the default volume
       "beddingStrike": beddingStrike,
       "beddingDip": beddingDip,
       "coreAzimuth": coreAzimuth,
