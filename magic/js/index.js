@@ -399,6 +399,7 @@ function exportMagIC() {
   var magicMeasurements = new Array();
   var magicLocations = new Array();
   var experimentCounter = 0;
+  var skippedStepConflicts = new Array();
 
   // One demagnetization type per specimen, used in every table
   var fileSpecimens = data.map(file => JSON.parse(file.data).specimens);
@@ -531,6 +532,13 @@ function exportMagIC() {
           magicSpecimens.push(getMagicRow(specimensHeader, row));
         });
       
+        // Steps hidden, or left out of an interpretation within its range, are marked b
+        var excludedSteps = getMagicExcludedSteps(specimen);
+
+        if(excludedSteps.conflicts.length > 0 || excludedSteps.ambiguous) {
+          skippedStepConflicts.push(specimen.name);
+        }
+
         // Add all measurement steps
         specimen.steps.forEach(function(step, i) {
       
@@ -556,8 +564,7 @@ function exportMagIC() {
             specimen.name,
             experimentCounter++,
             "u",
-            // Steps hidden in Paleomagnetism.org
-            (step.visible === false ? "b" : "g"),
+            (excludedSteps.excluded.has(i) ? "b" : "g"),
             treatment.method_codes,
             "This study",
             treatment.treat_ac_field,
@@ -630,6 +637,8 @@ function exportMagIC() {
     createTable("specimens", specimensHeader, magicSpecimens),
     createTable("measurements", measurementHeader, magicMeasurements)
   ).map(table => table.join(LINE_DELIMITER)).join(LINE_DELIMITER + MAGIC_TABLE_DELIMITER + LINE_DELIMITER);
+
+  notifyMagicSkippedStepConflicts(skippedStepConflicts);
 
   downloadMagICTXT(lines);
 

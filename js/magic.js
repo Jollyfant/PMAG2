@@ -225,6 +225,41 @@ function getMagicInterpretationSteps(specimen, interpretation) {
   return { indices: indices, ambiguous: ambiguous };
 }
 
+// Returns the steps (indices) that MagIC marks b, so that the interpretations can be re-made from the measurements:
+// steps hidden in Paleomagnetism.org, and steps between the first and last step of an interpretation that it does
+// not use. A step that an interpretation uses is not marked; if another interpretation skips it, it is a conflict,
+// as are steps that cannot be told apart from those an interpretation uses.
+function getMagicExcludedSteps(specimen) {
+  const skipped = new Set();
+  const used = new Set();
+  let ambiguous = false;
+
+  (specimen.interpretations || []).forEach(function(interpretation) {
+    const steps = getMagicInterpretationSteps(specimen, interpretation);
+    const indices = steps.indices;
+    if (steps.ambiguous) ambiguous = true;
+    if (indices.length === 0) return;
+    indices.forEach(i => used.add(i));
+    for (let i = Math.min(...indices); i <= Math.max(...indices); i++) {
+      if (!indices.includes(i)) skipped.add(i);
+    }
+  });
+
+  const hidden = specimen.steps.map((step, i) => step.visible === false ? i : -1).filter(i => i >= 0);
+
+  return {
+    excluded: new Set([...skipped, ...hidden].filter(i => !used.has(i))),
+    conflicts: [...skipped].filter(i => used.has(i)),
+    ambiguous: ambiguous
+  };
+}
+
+// Warns about specimens in which a step left out of one interpretation is used by another
+function notifyMagicSkippedStepConflicts(names) {
+  if (names.length === 0) return;
+  notify("warning", `In ${names.length} specimen(s) an interpretation cannot be re-made from the MagIC measurements, because a step left out of one interpretation is used by another, or steps with the same label cannot be told apart: ${names.slice(0, 5).join(", ")}${names.length > 5 ? ", ..." : ""}.`);
+}
+
 // Returns the direction of an interpretation in a reference frame: as stored with the interpretation (editing the
 // orientation of a specimen removes its interpretations), or rotated from specimen coordinates
 function getMagicInterpretationCoordinates(specimen, interpretation, reference) {

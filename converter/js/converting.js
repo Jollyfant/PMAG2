@@ -1504,6 +1504,7 @@ function convert_MAGIC() {
   let measurementCounter = 1;
   let experiments = {};
   let unreadSteps = [];
+  let skippedStepConflicts = [];
 
   exportSpecimens.forEach(function(specimen) {
 
@@ -1543,6 +1544,13 @@ function convert_MAGIC() {
       specimensLines.push(getMagicRow(specimensHeader, row));
     });
 
+    // Steps hidden, or left out of an interpretation within its range, are marked b
+    let excludedSteps = getMagicExcludedSteps(specimen);
+
+    if(excludedSteps.conflicts.length > 0 || excludedSteps.ambiguous) {
+      skippedStepConflicts.push(specimen.name);
+    }
+
     steps.forEach(function(step, i) {
 
       let dir = stepToDirection(step);
@@ -1553,8 +1561,7 @@ function convert_MAGIC() {
         unreadSteps.push(specimen.name + " " + step.step);
       }
 
-      // Steps hidden in Paleomagnetism.org
-      let quality = step.visible === false ? "b" : "g";
+      let quality = excludedSteps.excluded.has(i) ? "b" : "g";
 
       let magnMoment;
 
@@ -1580,6 +1587,8 @@ function convert_MAGIC() {
     });
 
   });
+
+  notifyMagicSkippedStepConflicts(skippedStepConflicts);
 
   if(unreadSteps.length > 0) {
     notify("warning", "The treatment of " + unreadSteps.length + " step(s) could not be read from the step label and was left empty (" + unreadSteps.slice(0, 3).join(", ") + (unreadSteps.length > 3 ? ", ..." : "") + ").");
