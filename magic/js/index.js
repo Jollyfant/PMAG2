@@ -305,13 +305,24 @@ function exportMagIC() {
     "result_quality",
     "method_codes",
     "citations",
+    "software_packages",
+    // Interpretation
+    "dir_comp",
+    "dir_dec",
+    "dir_inc",
+    "dir_tilt_correction",
+    "dir_mad_free",
+    "dir_mad_anc",
+    "dir_dang",
+    "dir_n_measurements",
     // Measurement Parameters
     "meas_step_min",
     "meas_step_max",
     "meas_step_unit",
     // Orientation
     "azimuth",
-    "dip"
+    "dip",
+    "description"
   );
   
   var measurementHeader = new Array(
@@ -397,6 +408,9 @@ function exportMagIC() {
   if(!fileSpecimens.flat().some(x => specimenTypes.get(x))) {
     return notify("danger", new Exception("No specimens to export."));
   }
+
+  // Samples are named after the specimens
+  notifyMagicOrientationConflicts(fileSpecimens.flat().filter(x => specimenTypes.get(x)), x => x.name);
 
   data.forEach(function(file, locationIndex) {
 
@@ -494,22 +508,28 @@ function exportMagIC() {
           longitude
         ].join(TAB_DELIMITER));
       
-        // Determine minimum and maximum step in correct units
-        var range = getMagicStepRange(type, specimen);
-      
-        magicSpecimens.push([
-          specimen.name,
-          specimen.name,
-          experiment,
-          "g",
-          protocol,
-          "This study",
-          range.meas_step_min,
-          range.meas_step_max,
-          range.meas_step_unit,
-          roundToPrecisionOf(specimen.coreAzimuth % 360, specimen.coreAzimuth),
-          roundToPrecisionOf(specimen.coreDip - 90, specimen.coreDip)
-        ].join(TAB_DELIMITER));
+        var specimenBase = {
+          "specimen": specimen.name,
+          "sample": specimen.name,
+          "experiments": experiment,
+          "result_quality": "g",
+          "citations": "This study",
+          "azimuth": roundToPrecisionOf(specimen.coreAzimuth % 360, specimen.coreAzimuth),
+          "dip": roundToPrecisionOf(specimen.coreDip - 90, specimen.coreDip)
+        };
+
+        // One row per interpretation and reference frame, or one row for a specimen without interpretations
+        var specimenRows = getMagicInterpretationRows(specimen, type, specimenBase);
+
+        if(specimenRows.length === 0) {
+          specimenRows.push(Object.assign({}, specimenBase, getMagicStepRange(type, specimen), {
+            "method_codes": protocol
+          }));
+        }
+
+        specimenRows.forEach(function(row) {
+          magicSpecimens.push(getMagicRow(specimensHeader, row));
+        });
       
         // Add all measurement steps
         specimen.steps.forEach(function(step, i) {

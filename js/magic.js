@@ -122,6 +122,148 @@ function getMagicStepRange(type, specimen, indices) {
   };
 }
 
+// The reference frames of the interpretations, with their MagIC tilt correction and method code
+const MAGIC_REFERENCE_FRAMES = [
+  { reference: "specimen", tiltCorrection: -1, code: "DA-DIR" },
+  { reference: "geographic", tiltCorrection: 0, code: "DA-DIR-GEO" },
+  { reference: "tectonic", tiltCorrection: 100, code: "DA-DIR-TILT" }
+];
+
+// Returns the rows of the specimens table for the interpretations of a specimen: one row per interpretation
+// in specimen, geographic and (with bedding) tectonic coordinates. base holds the columns of every row.
+// A plane fitted to a mean direction (McFadden & McElhinny, 1988) has a fitted line: it is not written
+// as an interpretation, and the description of the plane gives its direction.
+function getMagicInterpretationRows(specimen, type, base) {
+  const protocol = MAGIC_PROTOCOL_CODES[type];
+  const isSet = (value) => value !== null && value !== undefined;
+  const hasOrientation = isSet(specimen.coreAzimuth) && isSet(specimen.coreDip);
+  const hasBedding = hasOrientation && isSet(specimen.beddingStrike) && isSet(specimen.beddingDip);
+  const interpretations = specimen.interpretations || [];
+  const components = [];
+  const rows = [];
+
+  interpretations.forEach(function(interpretation) {
+
+    if (interpretation.fitted && interpretation.type === "TAU1") return;
+
+    // Component names are unique per specimen (ChRM, ChRM_2, ...)
+    const group = interpretation.group || "DEFAULT";
+    const count = components.filter(x => x === group).length;
+    components.push(group);
+
+    let code = "DE-BFL";
+    if (interpretation.type === "TAU3") code = "DE-BFP";
+    else if (interpretation.anchored) code = "DE-BFL-A";
+
+    const row = Object.assign({}, base, getMagicStepRange(type, specimen, getMagicInterpretationSteps(specimen, interpretation).indices), {
+      dir_comp: count === 0 ? group : group + "_" + (count + 1),
+      dir_n_measurements: interpretation.steps.length,
+      result_quality: "g",
+      software_packages: ("Paleomagnetism.org " + (interpretation.version || "")).trim()
+    });
+
+    if (isSet(interpretation.MAD) && !isNaN(interpretation.MAD)) {
+      row[interpretation.anchored ? "dir_mad_anc" : "dir_mad_free"] = Number(Number(interpretation.MAD).toFixed(4));
+    }
+
+    // Angle between a free line and the center of mass of its steps
+    const centerMass = interpretation.specimen.centerMass;
+    if (code === "DE-BFL" && centerMass && literalToCoordinates(centerMass).length > 0) {
+      const cosine = literalToCoordinates(interpretation.specimen.coordinates).unit().dot(literalToCoordinates(centerMass).unit());
+      row.dir_dang = Number((Math.acos(Math.max(-1, Math.min(1, cosine))) / RADIANS).toFixed(4));
+    }
+
+    // The fitted line of this plane, if it was fitted to a mean direction
+    const fitted = interpretations.find(x => x.fitted && x.type === "TAU1" && x.group === interpretation.group && x.steps.join() === interpretation.steps.join());
+
+    MAGIC_REFERENCE_FRAMES.forEach(function(frame) {
+
+      if (frame.reference === "geographic" && !hasOrientation) return;
+      if (frame.reference === "tectonic" && !hasBedding) return;
+
+      const direction = getMagicInterpretationCoordinates(specimen, interpretation, frame.reference).toVector(Direction);
+
+      const notes = [];
+      if (interpretation.type === "TAU3") {
+        notes.push("pole to the best-fit plane " + (interpretation.anchored ? "through the origin" : "through the center of mass of the steps"));
+      }
+      if (fitted) {
+        const fittedDirection = getMagicInterpretationCoordinates(specimen, fitted, frame.reference).toVector(Direction);
+        notes.push(`direction on this plane fitted to a mean direction (McFadden and McElhinny, 1988): ${fittedDirection.dec.toFixed(1)} / ${fittedDirection.inc.toFixed(1)}`);
+      }
+      if (interpretation.comment) notes.push(String(interpretation.comment));
+
+      rows.push(Object.assign({}, row, {
+        dir_dec: Number(direction.dec.toFixed(4)),
+        dir_inc: Number(direction.inc.toFixed(4)),
+        dir_tilt_correction: frame.tiltCorrection,
+        method_codes: [protocol, code, frame.code].join(":"),
+        description: notes.join("; ")
+      }));
+
+    });
+
+  });
+
+  return rows;
+}
+
+// Returns the steps (indices) an interpretation uses. Interpretations keep the labels of their steps, and only
+// visible steps can be selected, so each label is matched in order to the next visible step with that label (or,
+// without one, the next step with it). The steps are ambiguous when another visible step has one of the labels.
+function getMagicInterpretationSteps(specimen, interpretation) {
+  const indices = [];
+  let from = 0;
+  interpretation.steps.forEach(function(label) {
+    const next = (visibleOnly) => specimen.steps.findIndex((step, i) => i >= from && step.step === label && (!visibleOnly || step.visible !== false));
+    const index = next(true) >= 0 ? next(true) : next(false);
+    if (index < 0) return;
+    indices.push(index);
+    from = index + 1;
+  });
+  const ambiguous = specimen.steps.some((step, i) => !indices.includes(i) && step.visible !== false && interpretation.steps.includes(step.step));
+  return { indices: indices, ambiguous: ambiguous };
+}
+
+// Returns the direction of an interpretation in a reference frame: as stored with the interpretation (editing the
+// orientation of a specimen removes its interpretations), or rotated from specimen coordinates
+function getMagicInterpretationCoordinates(specimen, interpretation, reference) {
+  if (interpretation[reference] && interpretation[reference].coordinates) {
+    return literalToCoordinates(interpretation[reference].coordinates);
+  }
+  const coordinates = inReferenceCoordinates(reference, specimen, literalToCoordinates(interpretation.specimen.coordinates));
+  // Poles to planes are in the upper hemisphere
+  return (interpretation.type === "TAU3" && coordinates.z > 0) ? coordinates.reflect() : coordinates;
+}
+
+// Warns about samples whose specimens (or copies of one specimen) have different orientations or bedding:
+// the samples table holds one orientation per sample
+function notifyMagicOrientationConflicts(specimens, getSample) {
+  const orientations = new Map();
+  const conflicts = [];
+
+  specimens.forEach(function(specimen) {
+    const sample = getSample(specimen);
+    const orientation = JSON.stringify([specimen.coreAzimuth, specimen.coreDip, specimen.beddingStrike, specimen.beddingDip]);
+    if (!orientations.has(sample)) orientations.set(sample, orientation);
+    else if (orientations.get(sample) !== orientation && !conflicts.includes(sample)) conflicts.push(sample);
+  });
+
+  // A specimen name that occurs more than once is exported as one specimen with the measurements of all copies
+  const names = specimens.map(x => x.name);
+  const repeated = [...new Set(names.filter((name, i) => names.indexOf(name) !== i))];
+  if (repeated.length > 0) {
+    notify("warning", `${repeated.length} specimen name(s) occur more than once: ${repeated.slice(0, 5).join(", ")}${repeated.length > 5 ? ", ..." : ""}. ` +
+      "Their copies are exported as numbered experiments of one specimen. Give them distinct names if they are different specimens.");
+  }
+
+  if (conflicts.length === 0) return;
+
+  notify("warning", `${conflicts.length} sample(s) have specimens (or copies of a specimen) with different orientations or bedding: ${conflicts.slice(0, 5).join(", ")}${conflicts.length > 5 ? ", ..." : ""}. ` +
+    "The MagIC samples table holds the orientation of the first, so the geographic and tilt-corrected directions of the others do not follow from it. " +
+    "Give these specimens distinct names and samples before exporting.");
+}
+
 // Returns a tab-delimited row of a MagIC table, in the order of its header
 function getMagicRow(header, row) {
   return header.map(column => (row[column] === undefined || row[column] === null) ? "" : row[column]).join("\t");

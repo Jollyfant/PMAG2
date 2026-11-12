@@ -1368,6 +1368,8 @@ function convert_MAGIC() {
     return;
   }
 
+  notifyMagicOrientationConflicts(exportSpecimens, x => x.sample || x.name);
+
   let sitesMap = {};
   let samplesMap = {};
 
@@ -1480,9 +1482,18 @@ function convert_MAGIC() {
 
   });
 
+  // Interpretations add columns that are empty for specimens without them
+  const specimensHeader = [
+    "specimen", "sample", "experiments", "volume",
+    "dir_comp", "dir_dec", "dir_inc", "dir_tilt_correction",
+    "dir_mad_free", "dir_mad_anc", "dir_dang", "dir_n_measurements",
+    "meas_step_min", "meas_step_max", "meas_step_unit",
+    "result_quality", "method_codes", "software_packages", "description"
+  ];
+
   let specimensLines = [
     "tab delimited\tspecimens",
-    "specimen\tsample\texperiments\tvolume\tmeas_step_min\tmeas_step_max\tmeas_step_unit\tmethod_codes"
+    specimensHeader.join("\t")
   ];
 
   let measurementsLines = [
@@ -1514,11 +1525,23 @@ function convert_MAGIC() {
     let volumeM3 =
       (specimen.volume || 10) / 1E6;
 
-    let range = getMagicStepRange(type, specimen);
+    let base = {
+      specimen: specimen.name,
+      sample: sampleName,
+      experiments: experiment,
+      volume: volumeM3
+    };
 
-    specimensLines.push(
-      `${specimen.name}\t${sampleName}\t${experiment}\t${volumeM3}\t${range.meas_step_min}\t${range.meas_step_max}\t${range.meas_step_unit}\t${protocol}`
-    );
+    // One row per interpretation and reference frame, or one row for a specimen without interpretations
+    let specimenRows = getMagicInterpretationRows(specimen, type, base);
+
+    if(specimenRows.length === 0) {
+      specimenRows.push(Object.assign({}, base, getMagicStepRange(type, specimen), { method_codes: protocol }));
+    }
+
+    specimenRows.forEach(function(row) {
+      specimensLines.push(getMagicRow(specimensHeader, row));
+    });
 
     steps.forEach(function(step, i) {
 
