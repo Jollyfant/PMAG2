@@ -1373,6 +1373,9 @@ function convert_MAGIC() {
   // Sites are taken from the sample names by a naming convention entered by the user
   let siteOf = getMagicSiteNaming();
 
+  // One location for the study, which every site belongs to
+  const locationName = getMagicLocationName("Study area");
+
   let sitesMap = {};
   let samplesMap = {};
 
@@ -1448,7 +1451,7 @@ function convert_MAGIC() {
   });
 
   const sitesHeader = [
-    "site", "lat", "lon", "age", "age_low", "age_high", "age_unit",
+    "site", "location", "lat", "lon", "age", "age_low", "age_high", "age_unit",
     "geologic_classes", "geologic_types", "lithologies", "method_codes", "citations"
   ];
 
@@ -1461,6 +1464,7 @@ function convert_MAGIC() {
 
     sitesLines.push(getMagicRow(sitesHeader, Object.assign({
       site: siteName,
+      location: locationName,
       geologic_classes: getMagicGeologicClasses(s.geology),
       geologic_types: MAGIC_NOT_SPECIFIED,
       lithologies: joinMagicValues(s.lithology),
@@ -1469,6 +1473,13 @@ function convert_MAGIC() {
     }, getMagicMeanPosition(s.positions) || {}, getMagicSiteAge(s.ages))));
 
   });
+
+  const locationsLines = [
+    "tab delimited\tlocations",
+    MAGIC_LOCATION_HEADER.join("\t"),
+    getMagicRow(MAGIC_LOCATION_HEADER, getMagicLocationRow(locationName, exportSpecimens,
+      exportSpecimens.map(x => MAGIC_PROTOCOL_CODES[specimenTypes.get(x)])))
+  ];
 
   const samplesHeader = [
     "sample", "site", "lat", "lon", "height", "azimuth", "dip", "bed_dip_direction", "bed_dip",
@@ -1602,6 +1613,10 @@ function convert_MAGIC() {
   let content = [
 
     contributionLines.join("\n"),
+
+    DELIM,
+
+    locationsLines.join("\n"),
 
     DELIM,
 

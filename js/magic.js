@@ -364,6 +364,65 @@ function getMagicSiteAge(ages) {
   };
 }
 
+// One location holds all sites of the export (MagIC requires each site to have one). Locations that group
+// sites differently, such as those of poles, can be added to it later.
+const MAGIC_LOCATION_HEADER = [
+  "location", "location_type", "geologic_classes", "lithologies", "lat_s", "lat_n", "lon_w", "lon_e",
+  "age_low", "age_high", "age_unit", "method_codes", "citations", "software_packages", "description"
+];
+
+// Asks for the name of the location of the study; an empty answer or cancel keeps the default name
+function getMagicLocationName(defaultName) {
+  const answer = prompt("All sites are put in one location for the study. Enter its name (for example the study area):", defaultName);
+  return (answer === null || answer.trim() === "") ? defaultName : answer.trim();
+}
+
+// Returns the row of the study location from its specimens: latitude and longitude bounds (longitudes 0-360,
+// across 0 when that spans less), ages, geology, lithology and the protocol codes
+function getMagicLocationRow(name, specimens, protocols) {
+  const isNumber = (x) => x !== null && x !== undefined && x !== "" && !isNaN(x);
+  const positioned = specimens.filter(x => isNumber(x.latitude) && isNumber(x.longitude));
+  const latitudes = positioned.map(x => Number(x.latitude));
+  const wrap = (x) => (x % 360 < 0 ? x % 360 + 360 : x % 360);
+  const longitudes = [...new Set(positioned.map(x => wrap(Number(x.longitude))))].sort((a, b) => a - b);
+
+  // West and east bounds are on either side of the widest gap between longitudes
+  let west = "", east = "";
+  if (longitudes.length > 0) {
+    let gap = longitudes[0] + 360 - longitudes[longitudes.length - 1];
+    west = longitudes[0];
+    east = longitudes[longitudes.length - 1];
+    for (let i = 1; i < longitudes.length; i++) {
+      if (longitudes[i] - longitudes[i - 1] > gap) {
+        gap = longitudes[i] - longitudes[i - 1];
+        west = longitudes[i];
+        east = longitudes[i - 1];
+      }
+    }
+  }
+
+  const lows = specimens.flatMap(x => [x.ageMin, x.age]).filter(isNumber).map(Number);
+  const highs = specimens.flatMap(x => [x.ageMax, x.age]).filter(isNumber).map(Number);
+
+  return {
+    location: name,
+    location_type: determineLocationType(latitudes, positioned.map(x => x.longitude), specimens.map(x => x.level)),
+    geologic_classes: getMagicGeologicClasses(specimens.map(x => x.geology)),
+    lithologies: joinMagicValues(specimens.map(x => x.lithology)),
+    lat_s: latitudes.length ? Math.min(...latitudes) : "",
+    lat_n: latitudes.length ? Math.max(...latitudes) : "",
+    lon_w: west,
+    lon_e: east,
+    age_low: lows.length ? Math.min(...lows) : "",
+    age_high: highs.length ? Math.max(...highs) : "",
+    age_unit: lows.length || highs.length ? "Ma" : "",
+    method_codes: joinMagicValues(protocols),
+    citations: "This study",
+    software_packages: "Paleomagnetism.org " + __VERSION__,
+    description: "All sites of the study"
+  };
+}
+
 // Returns the mean of positions [latitude, longitude] as { lat, lon } (longitude 0-360), or null without positions
 function getMagicMeanPosition(positions) {
   const valid = positions.filter(p => p[0] !== null && p[0] !== undefined && p[1] !== null && p[1] !== undefined);

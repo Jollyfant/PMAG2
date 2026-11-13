@@ -376,27 +376,6 @@ function exportMagIC() {
     "age_unit"
   );
 
-  // Required fields in the MagIC 3.0 data model
-  var locationHeader = new Array(
-    // Names
-    "location",
-    "location_type",
-    // Geology
-    "geologic_classes",
-    "lithologies",
-    // Geography
-    "lat_s",
-    "lat_n",
-    "lon_w",
-    "lon_e",
-    // Age
-    "age_low",
-    "age_high",
-    "age_unit",
-    "citations",
-    "software_packages"
-  );
-
   var magicSpecimens = new Array();
   var magicSites = new Array();
   var magicSamples = new Array();
@@ -418,26 +397,19 @@ function exportMagIC() {
 
   // Sites are taken from the sample names by a naming convention entered by the user
   var siteOf = getMagicSiteNaming();
+
+  // One location for the study, which every site belongs to
+  var locationName = getMagicLocationName(data.length === 1 ? data[0].name.split(".").shift() : "Study area");
   var magicSampleRecords = new Object();
   var magicSiteRecords = new Object();
 
-  data.forEach(function(file, locationIndex) {
+  data.forEach(function(file, fileIndex) {
 
-    var specimens = fileSpecimens[locationIndex].filter(x => specimenTypes.get(x));
+    var specimens = fileSpecimens[fileIndex].filter(x => specimenTypes.get(x));
 
     if(specimens.length === 0) {
       return;
     }
-
-    // Create a new set for the demagnetization codes
-    var demagnetizationTypes = new Set();
-    var lithologies = new Set();
-    var geologies = new Set();
-
-    var latitudes = new Array();
-    var longitudes = new Array();
-    var ages = new Array();
-    var levels = new Array();
 
     // Collect samples to sites by the sample naming convention
     var groupedSites = new Object();
@@ -457,10 +429,10 @@ function exportMagIC() {
     // Go over all grouped specimens
     Object.entries(groupedSites).forEach(function([siteName, value]) {
 
-      // One site record across all files, in the location of the file it first appears in
+      // One site record across all files
       if(!magicSiteRecords.hasOwnProperty(siteName)) {
         magicSiteRecords[siteName] = new Object({
-          "location": "location-" + locationIndex,
+          "location": locationName,
           "geologies": new Set(),
           "lithologies": new Set(),
           "demagnetizationTypes": new Set(),
@@ -480,28 +452,12 @@ function exportMagIC() {
         // the protocol is the method of samples, sites and locations
         var demagnetizationType = (type === "thermal" ? DEMAGNETIZATION_THERMAL : DEMAGNETIZATION_ALTERNATING);
         var protocol = MAGIC_PROTOCOL_CODES[type];
-        var experiment = specimen.name + "_" + locationIndex + "_" + demagnetizationType;
+        var experiment = specimen.name + "_" + fileIndex + "_" + demagnetizationType;
         experimentNames[experiment] = (experimentNames[experiment] || 0) + 1;
         if(experimentNames[experiment] > 1) {
           experiment += "_" + experimentNames[experiment];
         }
       
-        let longitude = specimen.longitude;
-      
-        if(longitude < 0) {
-          longitude += 360;
-        }
-      
-        latitudes.push(specimen.latitude);
-        longitudes.push(longitude);
-        levels.push(specimen.level);
-      
-        // Save the minimum and maximum ages
-        ages.push(specimen.ageMin, specimen.ageMax);
-        demagnetizationTypes.add(protocol);
-        lithologies.add(specimen.lithology);
-        geologies.add(specimen.geology);
-
         // For sites
         siteCollection.ages.push([specimen.age, specimen.ageMin, specimen.ageMax]);
         siteCollection.demagnetizationTypes.add(protocol);
@@ -601,28 +557,12 @@ function exportMagIC() {
 
     });
 
-    // Sort latitudes, longitudes & ages to find the minimum and maximum
-    latitudes.sort(numericSort);
-    longitudes.sort(numericSort);
-    ages.sort(numericSort);
-
-    magicLocations.push([
-      "location-" + locationIndex,
-      determineLocationType(latitudes, longitudes, levels),
-      getMagicGeologicClasses(Array.from(geologies)),
-      joinMagicValues(Array.from(lithologies)),
-      latitudes[0],
-      latitudes[latitudes.length - 1],
-      longitudes[0],
-      longitudes[longitudes.length - 1],
-      ages[0],
-      ages[ages.length - 1],
-      "Ma",
-      "This study",
-      "paleomagnetism.org-" + __VERSION__
-    ].join(TAB_DELIMITER));
-
   });
+
+  // The study location, from all exported specimens
+  var exportedSpecimens = fileSpecimens.flat().filter(x => specimenTypes.get(x));
+  magicLocations.push(getMagicRow(MAGIC_LOCATION_HEADER, getMagicLocationRow(locationName, exportedSpecimens,
+    exportedSpecimens.map(x => MAGIC_PROTOCOL_CODES[specimenTypes.get(x)]))));
 
   // One row per site
   Object.entries(magicSiteRecords).forEach(function([siteName, siteCollection]) {
@@ -667,7 +607,7 @@ function exportMagIC() {
 
   // Concatenate information of all the MagIC tables
   var lines = new Array(
-    createTable("locations", locationHeader, magicLocations),
+    createTable("locations", MAGIC_LOCATION_HEADER, magicLocations),
     createTable("sites", siteHeader, magicSites),
     createTable("samples", sampleHeader, magicSamples),
     createTable("specimens", specimensHeader, magicSpecimens),
